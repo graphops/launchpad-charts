@@ -1,4 +1,4 @@
-# erigon
+# Erigon Helm Chart
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
@@ -39,7 +39,9 @@ $ helm install my-release foo-bar/erigon
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | fullnameOverride | string | `""` |  |
-| grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards by creating TODO CRD |
+| grafana.dashboards | bool | `true` | Enable creation of Grafana dashboards. Grafana chart must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
+| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the Grafana chart |
+| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the Grafana chart |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"thorax/erigon"` | Image for Erigon |
 | image.tag | string | Chart.appVersion | Overrides the image tag |
@@ -66,8 +68,8 @@ $ helm install my-release foo-bar/erigon
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
 | statefulNode.affinity | object | `{}` |  |
-| statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple erigon instances on the same host |
-| statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to erigon |
+| statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
+| statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to `erigon` |
 | statefulNode.nodeSelector | object | `{}` |  |
 | statefulNode.podAnnotations | object | `{}` | Annotations to attach to the Pod |
 | statefulNode.podSecurityContext | object | `{}` |  |
@@ -78,11 +80,12 @@ $ helm install my-release foo-bar/erigon
 | statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
 | statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose sidecar rpcdaemon JSON-RPC interface on (if enabled) |
 | statefulNode.service.type | string | `"ClusterIP"` |  |
-| statefulNode.sidecarRpc.enabled | bool | `true` | Enables a high-performance sidecar rpcdaemon container inside the erigon pod |
-| statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws"]` | Additional CLI arguments to pass to rpcdaemon |
-| statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the erigon process |
+| statefulNode.sidecarRpc.enabled | bool | `true` | Enables a high-performance sidecar rpcdaemon container inside the Erigon pod |
+| statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace"]` | Additional CLI arguments to pass to rpcdaemon |
+| statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{}` | PersistentVolumeClaim.spec for erigon storage |
+| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1024Gi"}},"storageClassName":"default"}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
+| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"1024Gi"` | The amount of disk space to provision for Erigon |
 
 ## Troubleshooting
 

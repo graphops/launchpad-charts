@@ -30,26 +30,30 @@ prometheus:
   # alertingRukes: true # TODO
 
 grafana:
-  # -- Enable creation of Grafana dashboards by creating TODO CRD
-  dashboards: false
+  # -- Enable creation of Grafana dashboards. Grafana chart must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: true
+  # -- Must match `sidecar.dashboards.label` value for the Grafana chart
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the Grafana chart
+  dashboardsConfigMapLabelValue: ""
 
 statefulNode:
-  # -- Additional CLI arguments to pass to erigon
+  # -- Additional CLI arguments to pass to `erigon`
   extraArgs: []
     # - "--prune=" # disables all pruning
     # - "--metrics.expensive"
     # - "--chain=bsc"
 
   sidecarRpc:
-    # -- Enables a high-performance sidecar rpcdaemon container inside the erigon pod
+    # -- Enables a high-performance sidecar rpcdaemon container inside the Erigon pod
     enabled: true
     # -- Additional CLI arguments to pass to rpcdaemon
     extraArgs:
       - --http.api=eth,debug,net,trace
-      - --trace.maxtraces=10000 # optional
-      - --http.vhosts=* # optional
-      - --http.corsdomain=* # optional
-      - --ws # enable ws for dshackle
+      # - --trace.maxtraces=10000 # optional
+      # - --http.vhosts=* # optional
+      # - --http.corsdomain=* # optional
+      # - --ws # enable ws for dshackle
 
   # TODO examples for:
   # - hostPath
@@ -58,18 +62,19 @@ statefulNode:
   # - openebs volume
   # - tmpfs
 
-  # -- PersistentVolumeClaim.spec for erigon storage
-  volumeClaimSpec: {}
-    # accessModes: ["ReadWriteOnce"]
-    # storageClassName: "my-storage-class"
-    # resources:
-    #   requests:
-    #     storage: 100Gi
+  # -- PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    storageClassName: "default"
+    resources:
+      requests:
+        # -- The amount of disk space to provision for Erigon
+        storage: 1024Gi
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely, which can lead
   # to data integrity issues
-  # -- Amount of time to wait before force-killing the erigon process
+  # -- Amount of time to wait before force-killing the Erigon process
   terminationGracePeriodSeconds: 300
 
   # -- Annotations to attach to the Pod
@@ -114,7 +119,7 @@ statefulNode:
   tolerations: []
 
   affinityPresets:
-    # -- Configure anti-affinity rules to prevent multiple erigon instances on the same host
+    # -- Configure anti-affinity rules to prevent multiple Erigon instances on the same host
     antiAffinityByHostname: true
 
   affinity: {}

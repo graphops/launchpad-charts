@@ -1,7 +1,8 @@
-{{ template "chart.header" . }}
+# {{ (cat .Name "Helm Chart") | title }}
+
 {{ template "chart.description" . }}
 
-{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+{{ template "chart.badgesSection" . }}
 
 ## Features
 

@@ -1,11 +1,12 @@
-{{- if $.Values.grafana.dashboards }}
+{{- $values := $.Values.grafana }}
+{{- if $values.dashboards }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "erigon.fullname" . }}-dashboards
   labels:
     {{- include "erigon.labels" . | nindent 4 }}
-    grafana_dashboard: "argocd" # TODO this should be cinfigrable
+    {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
 data:
 {{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
 {{- end }}
