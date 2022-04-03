@@ -1,0 +1,9 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+helm-docs
+
+for FILE in charts/**/README.md; do
+   [ -f "$FILE" ] || continue
+   git add $FILE
+done
