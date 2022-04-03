@@ -1,0 +1,171 @@
+# Default values for erigon.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for Erigon
+  repository: thorax/erigon
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+prometheus:
+  # -- Enable monitoring by creating PodMonitor CRDs
+  podMonitors: true
+  # alertingRukes: true # TODO
+
+grafana:
+  # -- Enable creation of Grafana dashboards by creating TODO CRD
+  dashboards: false
+
+statefulNode:
+  # -- Additional CLI arguments to pass to erigon
+  extraArgs: []
+    # - "--prune=" # disables all pruning
+    # - "--metrics.expensive"
+    # - "--chain=bsc"
+
+  sidecarRpc:
+    # -- Enables a high-performance sidecar rpcdaemon container inside the erigon pod
+    enabled: true
+    # -- Additional CLI arguments to pass to rpcdaemon
+    extraArgs:
+      - --http.api=eth,debug,net,trace
+      - --trace.maxtraces=10000 # optional
+      - --http.vhosts=* # optional
+      - --http.corsdomain=* # optional
+      - --ws # enable ws for dshackle
+
+  # TODO examples for:
+  # - hostPath
+  # - regular cloud NAS mount
+  # - s3 mount? better at application layer? yes?
+  # - openebs volume
+  # - tmpfs
+
+  # -- PersistentVolumeClaim.spec for erigon storage
+  volumeClaimSpec: {}
+    # accessModes: ["ReadWriteOnce"]
+    # storageClassName: "my-storage-class"
+    # resources:
+    #   requests:
+    #     storage: 100Gi
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely, which can lead
+  # to data integrity issues
+  # -- Amount of time to wait before force-killing the erigon process
+  terminationGracePeriodSeconds: 300
+
+  # -- Annotations to attach to the Pod
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  # TODO MOVE THIS INTO DEFS?
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    readOnlyRootFilesystem: true
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Erigon GRPC interface on
+      grpc-erigon: 9090
+      # -- Service Port to expose sidecar rpcdaemon JSON-RPC interface on (if enabled)
+      http-jsonrpc: 8545 # Provided by sidecar rpcdaemon, if enabled
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple erigon instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+rpcDaemons:
+  # -- Enable a Deployment of rpcdaemons that can be scaled independently
+  enabled: false
+  # -- Number of rpcdaemons to run
+  replicaCount: 1
+  autoscaling:
+    # -- Enable auto-scaling of the rpcdaemons Deployment
+    enabled: false
+    # -- Minimum number of replicas
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage:
+    targetMemoryUtilizationPercentage:
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod (see templates/rpcdaemons/deployment.yaml)
+      # -- Service Port to expose rpcdaemons JSON-RPC interface on
+      http-jsonrpc: 8545
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}

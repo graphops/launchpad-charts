@@ -1,0 +1,48 @@
+{{ template "chart.header" . }}
+{{ template "chart.description" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+## Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct memory sharing and higher performance for the sidecar `rpcdaemon`
+- Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
+- Good performance defaults (opens up `ulimit`)
+- Good security defaults (non-root execution, ready-only root filesystem, ensure file permissions on start)
+- Preconfigured Kubernetes readiness checks to ensure traffic only hits instances that are ready
+- TODO MONTIORING Prometheus integration including scrape targets and Grafana dashboards
+- pod anti-affinity
+
+
+## Quickstart
+
+Todos
+- health checks
+- aux group of rpcdaemons
+- prometheus https://github.com/prometheus-operator/prometheus-operator#customresourcedefinitions
+- add commit hooks for linting and auto generating stuff
+- auto publish chart
+- clean up scripts/validate.sh
+
+## Installing the Chart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add foo-bar http://charts.foo-bar.com
+$ helm install my-release foo-bar/{{ template "chart.name" . }}
+```
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+
+## Troubleshooting
+
+## Contributing
+
+- install deps (helm, helm-docs)
+- install git hooks
+- CLA?

@@ -1,0 +1,167 @@
+{{- $values := $.Values.statefulNode }}
+{{- $componentName := "stateful-node" }}
+{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "erigon.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "erigon.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "erigon.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates: # TODO support using an existing PV/PVC?
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "erigon.selectorLabels" . | nindent 6 }}
+        {{- $componentLabel | nindent 6 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "erigon.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      initContainers:
+        - name: increase-fd-ulimit
+          image: busybox
+          command: ["sh", "-c", "ulimit -n 65536"]
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: true
+        - name: ensure-storage-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 1000:1000 /storage"] # does the uid/guid correspond with some security context?
+          securityContext: # does this need this??
+            privileged: true
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+      containers:
+        - name: {{ .Chart.Name }}-{{ $componentName }}
+          {{- with $values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - erigon
+            - --datadir=/storage
+            - --private.api.addr=0.0.0.0:9090
+            - --metrics.addr=0.0.0.0:6060
+            - --metrics
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: grpc-erigon
+              containerPort: 9090
+              protocol: TCP
+            - name: http-erigon-metrics
+              containerPort: 6060
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: 30303
+              protocol: UDP
+            - name: tcp-p2p
+              protocol: TCP
+              containerPort: 30303
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml $values.resources | nindent 12 }}
+        {{- if $values.sidecarRpc.enabled }}
+        - name: {{ .Chart.Name }}-rpcdaemon
+          {{- with $values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - rpcdaemon
+            - --datadir=/storage # same storage path as stateful process, requires shared IPC namespace
+            - --private.api.addr=127.0.0.1:9090 # grpc interface of stateful process
+            - --http.addr=0.0.0.0:8545
+            - --metrics
+            - --metrics.addr=0.0.0.0:6061
+            {{- with $values.sidecarRpc.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: http-rpcdaemon-metrics
+              containerPort: 6061
+              protocol: TCP
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http-jsonrpc
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-jsonrpc
+          {{- with $values.sidecarRpc.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - {{ $.Release.Name }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
