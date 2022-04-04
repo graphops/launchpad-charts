@@ -70,8 +70,9 @@ spec:
             - erigon
             - --datadir=/storage
             - --private.api.addr=0.0.0.0:9090
-            - --metrics.addr=0.0.0.0:6060
             - --metrics
+            - --metrics.addr=0.0.0.0
+            - --metrics.port=6060
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
@@ -113,9 +114,11 @@ spec:
             - rpcdaemon
             - --datadir=/storage # same storage path as stateful process, requires shared IPC namespace
             - --private.api.addr=127.0.0.1:9090 # grpc interface of stateful process
-            - --http.addr=0.0.0.0:8545
+            - --http.addr=0.0.0.0
+            - --http.port=8545
             - --metrics
-            - --metrics.addr=0.0.0.0:6061
+            - --metrics.addr=0.0.0.0
+            - --metrics.port=6061
             {{- with $values.sidecarRpc.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
@@ -123,7 +126,7 @@ spec:
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
-            - name: http-rpcdaemon-metrics
+            - name: http-rpcmetrics
               containerPort: 6061
               protocol: TCP
           volumeMounts:

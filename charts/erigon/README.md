@@ -7,7 +7,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 ## Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
-- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct memory sharing and higher performance for the sidecar `rpcdaemon`
+- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct database access and higher performance for the sidecar `rpcdaemon`
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Good performance defaults (opens up `ulimit`)
 - Good security defaults (non-root execution, ready-only root filesystem, ensure file permissions on start)
@@ -45,7 +45,7 @@ $ helm install my-release graphops/erigon
 | image.tag | string | Chart.appVersion | Overrides the image tag |
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | nameOverride | string | `""` |  |
-| prometheus.podMonitors | bool | `true` | Enable monitoring by creating PodMonitor CRDs |
+| prometheus.podMonitors | bool | `false` | Enable monitoring by creating PodMonitor CRDs |
 | rpcDaemons.affinity | object | `{}` |  |
 | rpcDaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcDaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment |
@@ -54,6 +54,7 @@ $ helm install my-release graphops/erigon
 | rpcDaemons.autoscaling.targetCPUUtilizationPercentage | string | `nil` |  |
 | rpcDaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
 | rpcDaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
+| rpcDaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcDaemons.nodeSelector | object | `{}` |  |
 | rpcDaemons.podAnnotations | object | `{}` |  |
 | rpcDaemons.podSecurityContext | object | `{}` |  |
@@ -82,7 +83,7 @@ $ helm install my-release graphops/erigon
 | statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose sidecar rpcdaemon JSON-RPC interface on (if enabled) |
 | statefulNode.service.type | string | `"ClusterIP"` |  |
 | statefulNode.sidecarRpc.enabled | bool | `true` | Enables a high-performance sidecar rpcdaemon container inside the Erigon pod |
-| statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace"]` | Additional CLI arguments to pass to rpcdaemon |
+| statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
 | statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1024Gi"}},"storageClassName":"default"}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |

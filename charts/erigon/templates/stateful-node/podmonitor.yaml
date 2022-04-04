@@ -19,6 +19,6 @@ spec:
   podMetricsEndpoints:
   - port: http-erigon-metrics
   {{- if $values.sidecarRpc.enabled }}
-  - port: http-rpcdaemon-metrics
+  - port: http-rpcmetrics
   {{- end }}
 {{- end }}

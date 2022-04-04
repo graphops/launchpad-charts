@@ -53,9 +53,11 @@ spec:
           command:
             - rpcdaemon
             - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:{{ get $.Values.statefulNode.service.ports "grpc-erigon" }} # grpc interface of stateful process
-            - --http.addr=0.0.0.0:8545
+            - --http.addr=0.0.0.0
+            - --http.port=8545
             - --metrics
-            - --metrics.addr=0.0.0.0:6061
+            - --metrics.addr=0.0.0.0
+            - --metrics.port=6061
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
@@ -63,7 +65,7 @@ spec:
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
-            - name: http-rpcdaemon-metrics
+            - name: http-rpcmetrics
               containerPort: 6061
               protocol: TCP
           # livenessProbe:

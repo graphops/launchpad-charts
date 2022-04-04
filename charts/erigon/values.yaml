@@ -26,7 +26,7 @@ serviceAccount:
 
 prometheus:
   # -- Enable monitoring by creating PodMonitor CRDs
-  podMonitors: true
+  podMonitors: false
   # alertingRukes: true # TODO
 
 grafana:
@@ -43,17 +43,20 @@ statefulNode:
     # - "--prune=" # disables all pruning
     # - "--metrics.expensive"
     # - "--chain=bsc"
+    # - "--staticpeers=value"
+    # - "--private.api.ratelimit=31872" # default
 
   sidecarRpc:
     # -- Enables a high-performance sidecar rpcdaemon container inside the Erigon pod
     enabled: true
-    # -- Additional CLI arguments to pass to rpcdaemon
+    # -- Additional CLI arguments to pass to `rpcdaemon`
     extraArgs:
-      - --http.api=eth,debug,net,trace
-      # - --trace.maxtraces=10000 # optional
-      # - --http.vhosts=* # optional
-      # - --http.corsdomain=* # optional
-      # - --ws # enable ws for dshackle
+      - "--http.api=eth,debug,net,trace"
+      - "--trace.maxtraces=10000" # optional
+      # - "--http.vhosts=*" # optional
+      # - "--http.corsdomain=*" # optional
+      # - "--ws" # enable ws for dshackle
+      # - "--rpc.batch.concurrency=4" # default 2
 
   # TODO examples for:
   # - hostPath
@@ -131,6 +134,11 @@ rpcDaemons:
   enabled: false
   # -- Number of rpcdaemons to run
   replicaCount: 1
+
+  # -- Additional CLI arguments to pass to `rpcdaemon`
+  extraArgs: []
+    # - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
+
   autoscaling:
     # -- Enable auto-scaling of the rpcdaemons Deployment
     enabled: false
