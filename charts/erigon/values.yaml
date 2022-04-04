@@ -30,11 +30,11 @@ prometheus:
   # alertingRukes: true # TODO
 
 grafana:
-  # -- Enable creation of Grafana dashboards. Grafana chart must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
-  dashboards: true
-  # -- Must match `sidecar.dashboards.label` value for the Grafana chart
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabel: grafana_dashboard
-  # -- Must match `sidecar.dashboards.labelValue` value for the Grafana chart
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
 statefulNode:
@@ -110,9 +110,11 @@ statefulNode:
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
 
   nodeSelector: {}
 
@@ -142,7 +144,10 @@ rpcDaemons:
   podSecurityContext: {}
     # fsGroup: 2000
 
-  securityContext: {}
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    readOnlyRootFilesystem: true
     # capabilities:
     #   drop:
     #   - ALL
@@ -165,12 +170,18 @@ rpcDaemons:
     # limits:
     #   cpu: 100m
     #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
 
   nodeSelector: {}
 
   tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple Erigon instances on the same host
+    antiAffinityByHostname: true
 
   affinity: {}

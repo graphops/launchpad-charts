@@ -27,8 +27,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "erigon.selectorLabels" . | nindent 6 }}
-        {{- $componentLabel | nindent 6 }}
+        {{- include "erigon.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
@@ -42,15 +42,17 @@ spec:
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       initContainers:
         - name: increase-fd-ulimit
-          image: busybox
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "ulimit -n 65536"]
           securityContext:
             privileged: true
             readOnlyRootFilesystem: true
         - name: ensure-storage-permissions
-          image: busybox
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "chown -R 1000:1000 /storage"] # does the uid/guid correspond with some security context?
-          securityContext: # does this need this??
+          securityContext:
             privileged: true
             readOnlyRootFilesystem: true
           volumeMounts:

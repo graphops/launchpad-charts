@@ -18,12 +18,10 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 ## Quickstart
 
 Todos
-- health checks
-- aux group of rpcdaemons
+- validate health checks work as expected, allow overriding of readiness and liveness check?
 - prometheus https://github.com/prometheus-operator/prometheus-operator#customresourcedefinitions
-- add commit hooks for linting and auto generating stuff
-- auto publish chart
-- clean up scripts/validate.sh
+- mvp of documentation for usage of Chart
+- move securityContext defs into templates for better security defaults
 
 ## Installing the Chart
 
@@ -39,9 +37,9 @@ $ helm install my-release foo-bar/erigon
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | fullnameOverride | string | `""` |  |
-| grafana.dashboards | bool | `true` | Enable creation of Grafana dashboards. Grafana chart must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
-| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the Grafana chart |
-| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the Grafana chart |
+| grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
+| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
+| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"thorax/erigon"` | Image for Erigon |
 | image.tag | string | Chart.appVersion | Overrides the image tag |
@@ -49,6 +47,7 @@ $ helm install my-release foo-bar/erigon
 | nameOverride | string | `""` |  |
 | prometheus.podMonitors | bool | `true` | Enable monitoring by creating PodMonitor CRDs |
 | rpcDaemons.affinity | object | `{}` |  |
+| rpcDaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcDaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment |
 | rpcDaemons.autoscaling.maxReplicas | int | `100` |  |
 | rpcDaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
@@ -60,7 +59,9 @@ $ helm install my-release foo-bar/erigon
 | rpcDaemons.podSecurityContext | object | `{}` |  |
 | rpcDaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
 | rpcDaemons.resources | object | `{}` |  |
-| rpcDaemons.securityContext | object | `{}` |  |
+| rpcDaemons.securityContext.readOnlyRootFilesystem | bool | `true` |  |
+| rpcDaemons.securityContext.runAsNonRoot | bool | `true` |  |
+| rpcDaemons.securityContext.runAsUser | int | `1000` |  |
 | rpcDaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
 | rpcDaemons.service.type | string | `"ClusterIP"` |  |
 | rpcDaemons.tolerations | list | `[]` |  |

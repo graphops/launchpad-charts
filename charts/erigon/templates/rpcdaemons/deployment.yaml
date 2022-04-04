@@ -1,0 +1,105 @@
+{{- $values := $.Values.rpcDaemons }}
+{{- $componentName := "rpcdaemons" }}
+{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "erigon.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "erigon.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "erigon.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "erigon.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      initContainers:
+        - name: increase-fd-ulimit
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "ulimit -n 65536"]
+          securityContext:
+            privileged: true
+            readOnlyRootFilesystem: true
+      containers:
+        - name: {{ .Chart.Name }}-{{ $componentName }}
+          {{- with $values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - rpcdaemon
+            - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:9090 # grpc interface of stateful process
+            - --http.addr=0.0.0.0:8545
+            - --metrics
+            - --metrics.addr=0.0.0.0:6061
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: http-rpcdaemon-metrics
+              containerPort: 6061
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http-jsonrpc
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http-jsonrpc
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app.kubernetes.io/instance
+                operator: In
+                values:
+                - {{ $.Release.Name }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
