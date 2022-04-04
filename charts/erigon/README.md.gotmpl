@@ -2,7 +2,7 @@
 
 {{ template "chart.description" . }}
 
-{{ template "chart.badgesSection" . }}
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 
 ## Features
 
@@ -29,8 +29,8 @@ Todos
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add foo-bar http://charts.foo-bar.com
-$ helm install my-release foo-bar/{{ template "chart.name" . }}
+$ helm repo add graphops http://graphops.github.io/charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
 {{ template "chart.requirementsSection" . }}
