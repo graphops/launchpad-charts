@@ -53,12 +53,12 @@ $ helm install my-release graphops/erigon
 | rpcDaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
 | rpcDaemons.autoscaling.targetCPUUtilizationPercentage | string | `nil` |  |
 | rpcDaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcDaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
+| rpcDaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
 | rpcDaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcDaemons.nodeSelector | object | `{}` |  |
 | rpcDaemons.podAnnotations | object | `{}` |  |
 | rpcDaemons.podSecurityContext | object | `{}` |  |
-| rpcDaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
+| rpcDaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
 | rpcDaemons.resources | object | `{}` |  |
 | rpcDaemons.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | rpcDaemons.securityContext.runAsNonRoot | bool | `true` |  |
@@ -86,8 +86,8 @@ $ helm install my-release graphops/erigon
 | statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1024Gi"}},"storageClassName":"default"}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
-| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"1024Gi"` | The amount of disk space to provision for Erigon |
+| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":"openebs-hostpath"}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
+| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for Erigon |
 
 ## Troubleshooting
 

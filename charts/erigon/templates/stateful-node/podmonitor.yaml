@@ -6,8 +6,6 @@ apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ include "erigon.fullname" . }}-{{ $componentName }}
-  annotations:
-    kube-score/ignore: "all"
   labels:
     {{- include "erigon.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}

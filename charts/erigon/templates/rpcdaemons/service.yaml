@@ -1,6 +1,7 @@
 {{- $values := $.Values.rpcDaemons }}
 {{- $componentName := "rpcdaemons" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,3 +21,4 @@ spec:
   selector:
     {{- include "erigon.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
+{{- end }}

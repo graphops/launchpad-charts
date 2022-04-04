@@ -1,13 +1,12 @@
 {{- $values := $.Values.rpcDaemons }}
 {{- $componentName := "rpcdaemons" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
 {{- if $.Values.prometheus.podMonitors }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
   name: {{ include "erigon.fullname" . }}-{{ $componentName }}
-  annotations:
-    kube-score/ignore: "all"
   labels:
     {{- include "erigon.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -18,4 +17,5 @@ spec:
       {{- $componentLabel | nindent 6 }}
   podMetricsEndpoints:
   - port: http-rpcmetrics
+{{- end }}
 {{- end }}

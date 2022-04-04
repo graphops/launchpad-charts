@@ -1,6 +1,7 @@
 {{- $values := $.Values.rpcDaemons }}
 {{- $componentName := "rpcdaemons" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,7 +39,7 @@ spec:
         - name: increase-fd-ulimit
           image: busybox:stable
           imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "ulimit -n 65536"]
+          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
             privileged: true
             readOnlyRootFilesystem: true
@@ -105,3 +106,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
