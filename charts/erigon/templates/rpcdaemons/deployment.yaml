@@ -52,7 +52,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - rpcdaemon
-            - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:9090 # grpc interface of stateful process
+            - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:{{ get $.Values.statefulNode.service.ports "grpc-erigon" }} # grpc interface of stateful process
             - --http.addr=0.0.0.0:8545
             - --metrics
             - --metrics.addr=0.0.0.0:6061
