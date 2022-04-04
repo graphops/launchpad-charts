@@ -70,8 +70,8 @@ spec:
             - erigon
             - --datadir=/storage
             - --private.api.addr=0.0.0.0:9090
-            - --metrics
             - --metrics.addr=0.0.0.0
+            - --metrics
             - --metrics.port=6060
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
@@ -80,7 +80,7 @@ spec:
             - name: grpc-erigon
               containerPort: 9090
               protocol: TCP
-            - name: http-erigon-metrics
+            - name: http-metrics
               containerPort: 6060
               protocol: TCP
             - name: udp-p2p

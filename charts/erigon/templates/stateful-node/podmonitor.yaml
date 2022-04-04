@@ -17,7 +17,7 @@ spec:
       {{- include "erigon.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   podMetricsEndpoints:
-  - port: http-erigon-metrics
+  - port: http-metrics
   {{- if $values.sidecarRpc.enabled }}
   - port: http-rpcmetrics
   {{- end }}
