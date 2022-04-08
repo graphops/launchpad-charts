@@ -9,18 +9,19 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
 - Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct database access and higher performance for the sidecar `rpcdaemon`
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
-- Good performance defaults (opens up `ulimit`)
-- Good security defaults (non-root execution, ready-only root filesystem, ensure file permissions on start)
-- Preconfigured Kubernetes readiness checks to ensure traffic only hits instances that are ready
-- TODO MONTIORING Prometheus integration including scrape targets and Grafana dashboards
-- pod anti-affinity
+- Good security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits Pods that are ready
+- Support for installing [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) `PodMonitor`s to configure Prometheus to scrape metrics
+- Support for installing [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Grafana dashboards for Erigon
+
+## Todo
+
+- Support for installing [grafana-operator](https://github.com/grafana-operator/grafana-operator) `Dashboard`s
+- Figure out release notes automation
+- Move ulimit config to separate chart
+- Test removing chmod initContainer given that we gave fsGroup
 
 ## Quickstart
-
-Todos
-- validate health checks work as expected
-
-## Installing the Chart
 
 To install the chart with the release name `my-release`:
 
