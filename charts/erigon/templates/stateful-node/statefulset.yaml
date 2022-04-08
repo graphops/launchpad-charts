@@ -74,8 +74,8 @@ spec:
             - erigon
             - --datadir=/storage
             - --private.api.addr=0.0.0.0:9090
-            - --metrics.addr=0.0.0.0
             - --metrics
+            - --metrics.addr=0.0.0.0
             - --metrics.port=6060
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
@@ -96,16 +96,11 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
-            - mountPath: /tmp
-              name: tmp
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
+            - name: tmp
+              mountPath: /tmp
           readinessProbe:
-            httpGet:
-              path: /
-              port: http # TODO THIS IS BROKEN, use grpc health probe?
+            grpc:
+              port: 9090 # named ports not supported yet by grpc probes
           resources:
             {{- toYaml $values.resources | nindent 12 }}
         {{- if $values.sidecarRpc.enabled }}
@@ -138,14 +133,10 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http-jsonrpc
           readinessProbe:
-            initialDelaySeconds: 10
-            grpc:
-              port: 9090
+            httpGet:
+              path: /
+              port: http-jsonrpc
           {{- with $values.sidecarRpc.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -163,13 +154,17 @@ spec:
       {{- if $values.affinityPresets.antiAffinityByHostname }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                - {{ $.Release.Name }}
-            topologyKey: "kubernetes.io/hostname"
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
       {{- end }}
       {{- end }}
       {{- with $values.tolerations }}

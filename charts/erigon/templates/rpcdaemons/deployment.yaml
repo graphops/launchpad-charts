@@ -69,10 +69,6 @@ spec:
             - name: http-rpcmetrics
               containerPort: 6061
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http-jsonrpc
           readinessProbe:
             httpGet:
               path: /
@@ -93,13 +89,17 @@ spec:
       {{- if $values.affinityPresets.antiAffinityByHostname }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app.kubernetes.io/instance
-                operator: In
-                values:
-                - {{ $.Release.Name }}
-            topologyKey: "kubernetes.io/hostname"
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
       {{- end }}
       {{- end }}
       {{- with $values.tolerations }}

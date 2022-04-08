@@ -18,10 +18,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 ## Quickstart
 
 Todos
-- validate health checks work as expected, allow overriding of readiness and liveness check?
-- prometheus https://github.com/prometheus-operator/prometheus-operator#customresourcedefinitions
-- mvp of documentation for usage of Chart
-- move securityContext defs into templates for better security defaults
+- validate health checks work as expected
 
 ## Installing the Chart
 
@@ -60,6 +57,8 @@ $ helm install my-release graphops/erigon
 | rpcDaemons.podSecurityContext | object | `{}` |  |
 | rpcDaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
 | rpcDaemons.resources | object | `{}` |  |
+| rpcDaemons.securityContext.capabilities.add[0] | string | `"NET_BIND_SERVICE"` |  |
+| rpcDaemons.securityContext.capabilities.drop[0] | string | `"all"` |  |
 | rpcDaemons.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | rpcDaemons.securityContext.runAsNonRoot | bool | `true` |  |
 | rpcDaemons.securityContext.runAsUser | int | `1000` |  |
@@ -76,6 +75,8 @@ $ helm install my-release graphops/erigon
 | statefulNode.podAnnotations | object | `{}` | Annotations to attach to the Pod |
 | statefulNode.podSecurityContext | object | `{}` |  |
 | statefulNode.resources | object | `{}` |  |
+| statefulNode.securityContext.capabilities.add[0] | string | `"NET_BIND_SERVICE"` |  |
+| statefulNode.securityContext.capabilities.drop[0] | string | `"all"` |  |
 | statefulNode.securityContext.readOnlyRootFilesystem | bool | `true` |  |
 | statefulNode.securityContext.runAsNonRoot | bool | `true` |  |
 | statefulNode.securityContext.runAsUser | int | `1000` |  |
