@@ -123,7 +123,7 @@ statefulNode:
 
   affinity: {}
 
-rpcDaemons:
+rpcdaemons:
   # -- Enable a Deployment of rpcdaemons that can be scaled independently
   enabled: false
   # -- Number of rpcdaemons to run
@@ -135,7 +135,7 @@ rpcDaemons:
 
   podAnnotations: {}
 
-  # -- Pod-wide security context for locking down container permissions
+  # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 101337
@@ -154,23 +154,24 @@ rpcDaemons:
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
     # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
+    limits: {}
+      # cpu: 100m
+      # memory: 128Mi
+      # ephemeral-storage: 100Mi
+    # -- Requests must be specified if you are using autoscaling
     requests:
-      cpu: 1000m
+      cpu: 500m
       memory: 4Gi
-      ephemeral-storage: 100Mi
+      # ephemeral-storage: 100Mi
 
   autoscaling:
-    # -- Enable auto-scaling of the rpcdaemons Deployment
+    # -- Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons.
     enabled: false
     # -- Minimum number of replicas
     minReplicas: 1
     # -- Maximum number of replicas
     maxReplicas: 10
-    targetCPUUtilizationPercentage: 50
+    targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage:
 
   nodeSelector: {}

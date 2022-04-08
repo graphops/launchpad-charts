@@ -31,6 +31,19 @@ $ helm repo add graphops http://graphops.github.io/charts
 $ helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
+## JSON-RPC
+
+### High-performance sidecar
+
+
+### Scalable `Deployment`
+
+
+#### Autoscaling
+
+- must specify resources.requests
+- target utilization
+
 {{ template "chart.requirementsSection" . }}
 
 {{ template "chart.valuesSection" . }}
@@ -42,6 +55,8 @@ host-ulimit-config, dshackle
 ## Troubleshooting
 
 ## Contributing
+
+Please see the [Code Of Conduct](/code-of-conduct.md) for this repository.
 
 - install deps (helm, helm-docs)
 - install git hooks

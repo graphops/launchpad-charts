@@ -31,6 +31,17 @@ $ helm repo add graphops http://graphops.github.io/charts
 $ helm install my-release graphops/erigon
 ```
 
+## JSON-RPC
+
+### High-performance sidecar
+
+### Scalable `Deployment`
+
+#### Autoscaling
+
+- must specify resources.requests
+- target utilization
+
 ## Values
 
 | Key | Type | Default | Description |
@@ -45,25 +56,24 @@ $ helm install my-release graphops/erigon
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | nameOverride | string | `""` |  |
 | prometheus.podMonitors | bool | `false` | Enable monitoring by creating PodMonitor CRDs |
-| rpcDaemons.affinity | object | `{}` |  |
-| rpcDaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| rpcDaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment |
-| rpcDaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
-| rpcDaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
-| rpcDaemons.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| rpcDaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcDaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
-| rpcDaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
-| rpcDaemons.nodeSelector | object | `{}` |  |
-| rpcDaemons.podAnnotations | object | `{}` |  |
-| rpcDaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context for locking down container permissions |
-| rpcDaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
-| rpcDaemons.resources.requests.cpu | string | `"1000m"` |  |
-| rpcDaemons.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
-| rpcDaemons.resources.requests.memory | string | `"4Gi"` |  |
-| rpcDaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
-| rpcDaemons.service.type | string | `"ClusterIP"` |  |
-| rpcDaemons.tolerations | list | `[]` |  |
+| rpcdaemons.affinity | object | `{}` |  |
+| rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
+| rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |
+| rpcdaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
+| rpcdaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
+| rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
+| rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
+| rpcdaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
+| rpcdaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
+| rpcdaemons.nodeSelector | object | `{}` |  |
+| rpcdaemons.podAnnotations | object | `{}` |  |
+| rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
+| rpcdaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
+| rpcdaemons.resources.limits | object | `{}` |  |
+| rpcdaemons.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
+| rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
+| rpcdaemons.service.type | string | `"ClusterIP"` |  |
+| rpcdaemons.tolerations | list | `[]` |  |
 | serviceAccount.annotations | object | `{}` |  |
 | serviceAccount.create | bool | `true` |  |
 | serviceAccount.name | string | `""` |  |
@@ -92,6 +102,8 @@ host-ulimit-config, dshackle
 ## Troubleshooting
 
 ## Contributing
+
+Please see the [Code Of Conduct](/code-of-conduct.md) for this repository.
 
 - install deps (helm, helm-docs)
 - install git hooks

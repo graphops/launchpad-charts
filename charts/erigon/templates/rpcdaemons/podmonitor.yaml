@@ -1,7 +1,8 @@
-{{- $values := $.Values.rpcDaemons }}
+{{- $values := $.Values.rpcdaemons }}
 {{- $componentName := "rpcdaemons" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
+{{- /* If podMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.podMonitors }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor

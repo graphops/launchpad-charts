@@ -1,4 +1,4 @@
-{{- $values := $.Values.rpcDaemons }}
+{{- $values := $.Values.rpcdaemons }}
 {{- $componentName := "rpcdaemons" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 {{- if $values.autoscaling.enabled }}
