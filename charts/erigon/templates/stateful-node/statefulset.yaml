@@ -143,9 +143,9 @@ spec:
           #     path: /
           #     port: http-jsonrpc
           readinessProbe:
-            httpGet:
-              path: /
-              port: http-jsonrpc
+            initialDelaySeconds: 10
+            grpc:
+              port: 9090
           {{- with $values.sidecarRpc.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
