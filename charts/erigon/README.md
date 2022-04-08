@@ -20,6 +20,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Figure out release notes automation
 - Move ulimit config to separate chart
 - Test removing chmod initContainer given that we gave fsGroup
+- Make another pass on values.yaml and annotate with docs
 
 ## Quickstart
 
@@ -47,17 +48,19 @@ $ helm install my-release graphops/erigon
 | rpcDaemons.affinity | object | `{}` |  |
 | rpcDaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcDaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment |
-| rpcDaemons.autoscaling.maxReplicas | int | `100` |  |
+| rpcDaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
 | rpcDaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
-| rpcDaemons.autoscaling.targetCPUUtilizationPercentage | string | `nil` |  |
+| rpcDaemons.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
 | rpcDaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcDaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
+| rpcDaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
 | rpcDaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcDaemons.nodeSelector | object | `{}` |  |
 | rpcDaemons.podAnnotations | object | `{}` |  |
 | rpcDaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context for locking down container permissions |
-| rpcDaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
-| rpcDaemons.resources | object | `{}` |  |
+| rpcDaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
+| rpcDaemons.resources.requests.cpu | string | `"1000m"` |  |
+| rpcDaemons.resources.requests.ephemeral-storage | string | `"100Mi"` |  |
+| rpcDaemons.resources.requests.memory | string | `"4Gi"` |  |
 | rpcDaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
 | rpcDaemons.service.type | string | `"ClusterIP"` |  |
 | rpcDaemons.tolerations | list | `[]` |  |
@@ -78,9 +81,13 @@ $ helm install my-release graphops/erigon
 | statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
+| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage |
 | statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
 | statefulNode.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for Erigon |
+
+## See also
+
+host-ulimit-config, dshackle
 
 ## Troubleshooting
 

@@ -20,6 +20,7 @@
 - Figure out release notes automation
 - Move ulimit config to separate chart
 - Test removing chmod initContainer given that we gave fsGroup
+- Make another pass on values.yaml and annotate with docs
 
 ## Quickstart
 
@@ -34,6 +35,9 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 {{ template "chart.valuesSection" . }}
 
+## See also
+
+host-ulimit-config, dshackle
 
 ## Troubleshooting
 

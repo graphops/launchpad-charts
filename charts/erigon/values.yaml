@@ -64,7 +64,7 @@ statefulNode:
   # - openebs volume
   # - tmpfs
 
-  # -- PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
     # -- The storage class to use when provisioning a persistent volume for Erigon
@@ -125,22 +125,14 @@ statefulNode:
 
 rpcDaemons:
   # -- Enable a Deployment of rpcdaemons that can be scaled independently
-  enabled: true
+  enabled: false
   # -- Number of rpcdaemons to run
-  replicaCount: 2
+  replicaCount: 1
 
   # -- Additional CLI arguments to pass to `rpcdaemon`
   extraArgs: []
     # - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
 
-  autoscaling:
-    # -- Enable auto-scaling of the rpcdaemons Deployment
-    enabled: false
-    # -- Minimum number of replicas
-    minReplicas: 1
-    maxReplicas: 100
-    targetCPUUtilizationPercentage:
-    targetMemoryUtilizationPercentage:
   podAnnotations: {}
 
   # -- Pod-wide security context for locking down container permissions
@@ -157,7 +149,7 @@ rpcDaemons:
       # -- Service Port to expose rpcdaemons JSON-RPC interface on
       http-jsonrpc: 8545
 
-  resources: {}
+  resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -166,10 +158,20 @@ rpcDaemons:
     #   cpu: 100m
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
+    requests:
+      cpu: 1000m
+      memory: 4Gi
+      ephemeral-storage: 100Mi
+
+  autoscaling:
+    # -- Enable auto-scaling of the rpcdaemons Deployment
+    enabled: false
+    # -- Minimum number of replicas
+    minReplicas: 1
+    # -- Maximum number of replicas
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage:
 
   nodeSelector: {}
 
