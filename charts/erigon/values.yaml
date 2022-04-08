@@ -27,7 +27,6 @@ serviceAccount:
 prometheus:
   # -- Enable monitoring by creating PodMonitor CRDs
   podMonitors: false
-  # alertingRules: true # TODO
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
@@ -68,11 +67,12 @@ statefulNode:
   # -- PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
-    storageClassName: "openebs-hostpath"
+    # -- The storage class to use when provisioning a persistent volume for Erigon
+    storageClassName: 
     resources:
       requests:
         # -- The amount of disk space to provision for Erigon
-        storage: 1Ti
+        storage: 3Ti
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely, which can lead
@@ -83,18 +83,12 @@ statefulNode:
   # -- Annotations to attach to the Pod
   podAnnotations: {}
 
-  podSecurityContext: {}
-
-  securityContext:
+  # -- Pod-wide security context
+  podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
-    readOnlyRootFilesystem: true
-    capabilities:
-      drop:
-        - all
-      add:
-        - NET_BIND_SERVICE
-    # readOnlyRootFilesystem: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
 
   service:
     type: ClusterIP
@@ -149,18 +143,12 @@ rpcDaemons:
     targetMemoryUtilizationPercentage:
   podAnnotations: {}
 
-  podSecurityContext: {}
-    # fsGroup: 2000
-
-  securityContext:
+  # -- Pod-wide security context for locking down container permissions
+  podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
-    readOnlyRootFilesystem: true
-    capabilities:
-      drop:
-        - all
-      add:
-        - NET_BIND_SERVICE
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
 
   service:
     type: ClusterIP

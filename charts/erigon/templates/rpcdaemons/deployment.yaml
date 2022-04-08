@@ -36,21 +36,21 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       initContainers:
-        - name: increase-fd-ulimit
+        - name: increase-fd-ulimit # TODO remove when replaced with DaemonSet
           image: busybox:stable
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
-            privileged: true
-            readOnlyRootFilesystem: true
+            privileged: true # required for ulimit change
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
-          {{- with $values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           command:
             - rpcdaemon
             - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:{{ get $.Values.statefulNode.service.ports "grpc-erigon" }} # grpc interface of stateful process

@@ -23,3 +23,4 @@ echo "$TEMPLATE_OUTPUT"
 
 echo "$TEMPLATE_OUTPUT" | kubeval
 echo "$TEMPLATE_OUTPUT" | kube-score score -
+echo "$TEMPLATE_OUTPUT" | docker run -i kubesec/kubesec scan /dev/stdin

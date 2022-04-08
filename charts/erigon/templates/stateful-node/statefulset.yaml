@@ -41,35 +41,40 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       volumes:
-        - name: tmp
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
       initContainers:
+        # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
         - name: increase-fd-ulimit
           image: busybox:stable
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
-            privileged: true
-            readOnlyRootFilesystem: true
-        - name: ensure-storage-permissions
+            privileged: true # required for ulimit change
+        - name: ensure-storage-permissions # TODO might be able to get rid of this because of securityContext.fsGroup
           image: busybox:stable
           imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "set -ex; chown -R 1000:1000 /storage; ls -lah /storage"] # does the uid/guid correspond with some security context?
+          command: ["sh", "-c", "set -ex; chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage; ls -lah /storage"]
           securityContext:
-            privileged: true
-            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add: # these are required to chown
+                - CHOWN
+                - DAC_OVERRIDE # TODO this could be tighter
           volumeMounts:
             - name: storage
               mountPath: /storage
       shareProcessNamespace: true # This allows the sidecar rpc daemon to share access to the stateful database
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
-          {{- with $values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           command:
             - erigon
             - --datadir=/storage
@@ -105,12 +110,13 @@ spec:
             {{- toYaml $values.resources | nindent 12 }}
         {{- if $values.sidecarRpc.enabled }}
         - name: {{ .Chart.Name }}-rpcdaemon
-          {{- with $values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           command:
             - rpcdaemon
             - --datadir=/storage # same storage path as stateful process, requires shared IPC namespace

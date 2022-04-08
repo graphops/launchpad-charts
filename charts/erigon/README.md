@@ -54,14 +54,9 @@ $ helm install my-release graphops/erigon
 | rpcDaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcDaemons.nodeSelector | object | `{}` |  |
 | rpcDaemons.podAnnotations | object | `{}` |  |
-| rpcDaemons.podSecurityContext | object | `{}` |  |
+| rpcDaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context for locking down container permissions |
 | rpcDaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
 | rpcDaemons.resources | object | `{}` |  |
-| rpcDaemons.securityContext.capabilities.add[0] | string | `"NET_BIND_SERVICE"` |  |
-| rpcDaemons.securityContext.capabilities.drop[0] | string | `"all"` |  |
-| rpcDaemons.securityContext.readOnlyRootFilesystem | bool | `true` |  |
-| rpcDaemons.securityContext.runAsNonRoot | bool | `true` |  |
-| rpcDaemons.securityContext.runAsUser | int | `1000` |  |
 | rpcDaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
 | rpcDaemons.service.type | string | `"ClusterIP"` |  |
 | rpcDaemons.tolerations | list | `[]` |  |
@@ -73,13 +68,8 @@ $ helm install my-release graphops/erigon
 | statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to `erigon` |
 | statefulNode.nodeSelector | object | `{}` |  |
 | statefulNode.podAnnotations | object | `{}` | Annotations to attach to the Pod |
-| statefulNode.podSecurityContext | object | `{}` |  |
+| statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
 | statefulNode.resources | object | `{}` |  |
-| statefulNode.securityContext.capabilities.add[0] | string | `"NET_BIND_SERVICE"` |  |
-| statefulNode.securityContext.capabilities.drop[0] | string | `"all"` |  |
-| statefulNode.securityContext.readOnlyRootFilesystem | bool | `true` |  |
-| statefulNode.securityContext.runAsNonRoot | bool | `true` |  |
-| statefulNode.securityContext.runAsUser | int | `1000` |  |
 | statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
 | statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose sidecar rpcdaemon JSON-RPC interface on (if enabled) |
 | statefulNode.service.type | string | `"ClusterIP"` |  |
@@ -87,8 +77,9 @@ $ helm install my-release graphops/erigon
 | statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":"openebs-hostpath"}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
-| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for Erigon |
+| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | PersistentVolumeClaimSpec for Erigon storage, see https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core |
+| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
+| statefulNode.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for Erigon |
 
 ## Troubleshooting
 
