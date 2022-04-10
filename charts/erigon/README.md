@@ -1,3 +1,5 @@
+
+
 # Erigon Helm Chart
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -11,8 +13,8 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Good security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits Pods that are ready
-- Support for installing [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) `PodMonitor`s to configure Prometheus to scrape metrics
-- Support for installing [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Grafana dashboards for Erigon
+- Support for [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) `PodMonitor`s to configure Prometheus to scrape metrics
+- Support for [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Grafana dashboards for Erigon
 
 ## Todo
 
@@ -35,12 +37,21 @@ $ helm install my-release graphops/erigon
 
 ### High-performance sidecar
 
+You can enable the deployment of an `rpcdaemon` instance as a sidecar within the stateful Erigon `Pod`. In this mode, the `rpcdaemon` shares a PID namespace with the `erigon` process and can access the node database directly, cutting out the gRPC API and improving synchronous request performance.
+
+When enabled, you can access the JSON-RPC API via the stateful node `Service` on port `8545` by default. See the Values section to configure the sidecar.
+
 ### Scalable `Deployment`
+
+For workloads where synchronous performance is less important than the scalability of request throughput, you can enable an independent scalable `Deployment` of `rpcdaemon`s. In this mode, the `rpcdaemon`s can be scaled up arbitrarily and connect to the stateful node process via the gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
+
+When enabled, a dedicated `Service` will be created to access JSON-RPC via the scalable `Deployment`.
 
 #### Autoscaling
 
-- must specify resources.requests
-- target utilization
+You can enable autoscaling for the scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a Horizontal Pod Autoscaler into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
+
+If doing this, be sure to configure `rpcdaemons.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
 
 ## Values
 
@@ -99,12 +110,8 @@ $ helm install my-release graphops/erigon
 
 host-ulimit-config, dshackle
 
-## Troubleshooting
-
 ## Contributing
 
-Please see the [Code Of Conduct](/code-of-conduct.md) for this repository.
+We welcome your contributions!
 
-- install deps (helm, helm-docs)
-- install git hooks
-- CLA?
+Please see the [Code Of Conduct](CODE_OF_CONDUCT.md) and [Security Notes](SECURITY.md) for this repository.
