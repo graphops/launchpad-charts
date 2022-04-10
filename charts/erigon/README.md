@@ -114,4 +114,4 @@ host-ulimit-config, dshackle
 
 We welcome your contributions!
 
-Please see the [Code Of Conduct](CODE_OF_CONDUCT.md) and [Security Notes](SECURITY.md) for this repository.
+Please see the [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
