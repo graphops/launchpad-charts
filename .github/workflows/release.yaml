@@ -69,6 +69,8 @@ jobs:
                   --tag-filter-pattern "${chart_name}"      \
                   --next-tag "${chart_tag}"                 \
                   --path "${chart_path}" "${chart_tag}"
+
+              (set -x; cat ${chart_path}/RELEASE-NOTES.md)
           done
 
       - name: Run chart-releaser
