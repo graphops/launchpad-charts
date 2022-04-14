@@ -42,7 +42,7 @@ jobs:
 
       - name: Install main dependencies
         run: |
-          apk add bash
+          apk add bash git grep yq
 
       - name: Install Helm
         uses: azure/setup-helm@v1
@@ -53,7 +53,6 @@ jobs:
         shell: bash
         run: |
           set -x
-          apk add git grep yq
           # TODO: Bundle all of that logic in a Github Action to make it easy to share.
           for chart_file in ${{ needs.find-charts-to-release.outputs.modified-charts-files }}; do
               chart_name=$(grep -Po "(?<=^name: ).+" ${chart_file})
