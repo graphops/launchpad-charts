@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  erigon:
+  - apiVersion: v2
+    appVersion: v2022.03.02
+    created: "2022-04-14T20:10:00.686769599Z"
+    description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
+      inside Kubernetes with ease
+    digest: 3499f31834faf44184a0700ef258741881846f93d2f9987ee607a7093de79565
+    name: erigon
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-14T20:10:00.686783499Z"
