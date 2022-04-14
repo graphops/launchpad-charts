@@ -8,7 +8,7 @@ on:
       - main
   # Commented out until needed
   # Allow to run the workflow from GitHub UI and other workflows.
-  # workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
   find-charts-to-release:
