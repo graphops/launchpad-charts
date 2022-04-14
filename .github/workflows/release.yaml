@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-  # Commented out until needed
   # Allow to run the workflow from GitHub UI and other workflows.
   workflow_dispatch:
     branches:
