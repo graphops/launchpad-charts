@@ -9,18 +9,19 @@
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
 - Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct database access and higher performance for the sidecar `rpcdaemon`
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
-- Good security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
-- Readiness checks to ensure traffic only hits Pods that are ready
-- Support for [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) `PodMonitor`s to configure Prometheus to scrape metrics
-- Support for [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) Grafana dashboards for Erigon
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `PodMonitor`s to configure Prometheus to scrape metrics ([kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack))
+- Support for configuring Grafana dashboards for Erigon ([kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack))
 
 ## Todo
 
 - Support for installing [grafana-operator](https://github.com/grafana-operator/grafana-operator) `Dashboard`s
-- Figure out release notes automation
+- Figure out release notes automation https://github.com/helm/helm/blob/main/scripts/release-notes.sh
 - Move ulimit config to separate chart
 - Test removing chmod initContainer given that we gave fsGroup
 - Make another pass on values.yaml and annotate with docs
+- https://github.com/grafana/helm-charts/blob/main/charts/grafana/templates/servicemonitor.yaml
 
 ## Quickstart
 
