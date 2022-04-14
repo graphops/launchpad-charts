@@ -10,6 +10,7 @@ on:
   # Allow to run the workflow from GitHub UI and other workflows.
   workflow_dispatch:
     branches:
+      - main
       - "release/*"
 
 jobs:
@@ -44,7 +45,7 @@ jobs:
 
       - name: Install main dependencies
         run: |
-          apk add bash git grep yq
+          apk add bash git grep yq curl
 
       - name: Install Helm
         uses: azure/setup-helm@v1
