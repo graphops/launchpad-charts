@@ -9,6 +9,8 @@ on:
   # Commented out until needed
   # Allow to run the workflow from GitHub UI and other workflows.
   workflow_dispatch:
+    branches:
+      - "release/*"
 
 jobs:
   find-charts-to-release:
