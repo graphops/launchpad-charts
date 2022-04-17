@@ -9,7 +9,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 ## Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
-- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, allowing direct database access and higher performance for the sidecar `rpcdaemon`
+- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, enabling shared state access and higher performance for the sidecar `rpcdaemon`
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
@@ -19,11 +19,11 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 ## Todo
 
 - Support for installing [grafana-operator](https://github.com/grafana-operator/grafana-operator) `Dashboard`s
-- Figure out release notes automation https://github.com/helm/helm/blob/main/scripts/release-notes.sh
 - Move ulimit config to separate chart
 - Test removing chmod initContainer given that we gave fsGroup
 - Make another pass on values.yaml and annotate with docs
 - https://github.com/grafana/helm-charts/blob/main/charts/grafana/templates/servicemonitor.yaml
+- Expand quickstart
 
 ## Quickstart
 
@@ -38,21 +38,29 @@ $ helm install my-release graphops/erigon
 
 ### High-performance sidecar
 
-You can enable the deployment of an `rpcdaemon` instance as a sidecar within the stateful Erigon `Pod`. In this mode, the `rpcdaemon` shares a PID namespace with the `erigon` process and can access the node database directly, cutting out the gRPC API and improving synchronous request performance.
+You can enable the deployment of an `rpcdaemon` instance as a sidecar within the stateful Erigon `Pod`. In this mode, the `rpcdaemon` shares a PID namespace with the `erigon` process and can access the node state database directly, cutting out the gRPC API and improving synchronous request performance.
 
-When enabled, you can access the JSON-RPC API via the stateful node `Service` on port `8545` by default. See the Values section to configure the sidecar.
+When enabled, you can access the JSON-RPC API via the stateful node `Service` on port `8545` by default. See the Values section to enable and configure the sidecar.
 
 ### Scalable `Deployment`
 
 For workloads where synchronous performance is less important than the scalability of request throughput, you can enable an independent scalable `Deployment` of `rpcdaemon`s. In this mode, the `rpcdaemon`s can be scaled up arbitrarily and connect to the stateful node process via the gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-When enabled, a dedicated `Service` will be created to access JSON-RPC via the scalable `Deployment`.
+When enabled, a dedicated `Service` will be created to load balance JSON-RPC requests across `Pod`s in the scalable `Deployment`. See the Values section to enable and configure the `Deployment`.
 
 #### Autoscaling
 
-You can enable autoscaling for the scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a Horizontal Pod Autoscaler into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
+You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
 If doing this, be sure to configure `rpcdaemons.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
+
+## Upgrading
+
+We recommend that you pin the version of the Chart that you deploy. TODO TODODODODODODOO
+
+This project uses [Semantic Versioning](https://semver.org/). Changes to the version of the application (the `appVersion`) that the Chart deploys will generally result in a patch version bump for the Chart. Breaking changes to the Chart or its `values.yaml` interface will be reflected with a major version bump.
+
+We do not recommend that you upgrade the application by overriding `image.tag`. Instead, use the version of the Chart that is built for your desired `appVersion`.
 
 ## Values
 
@@ -107,12 +115,10 @@ If doing this, be sure to configure `rpcdaemons.resources.requests` with appropr
 | statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
 | statefulNode.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for Erigon |
 
+## Contributing
+
+We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
+
 ## See also
 
 host-ulimit-config, dshackle
-
-## Contributing
-
-We welcome your contributions!
-
-Please see the [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
