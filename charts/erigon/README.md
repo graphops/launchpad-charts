@@ -13,8 +13,8 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
-- Support for `PodMonitor`s to configure Prometheus to scrape metrics ([kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack))
-- Support for configuring Grafana dashboards for Erigon ([kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack))
+- Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
 
 ## Todo
 
@@ -75,7 +75,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | image.tag | string | Chart.appVersion | Overrides the image tag |
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | nameOverride | string | `""` |  |
-| prometheus.podMonitors | bool | `false` | Enable monitoring by creating PodMonitor CRDs |
+| prometheus.podMonitors.enabled | bool | `true` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
+| prometheus.podMonitors.interval | string | `nil` |  |
+| prometheus.podMonitors.labels | object | `{}` |  |
+| prometheus.podMonitors.relabelings | list | `[]` |  |
+| prometheus.podMonitors.scrapeTimeout | string | `nil` |  |
 | rpcdaemons.affinity | object | `{}` |  |
 | rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |

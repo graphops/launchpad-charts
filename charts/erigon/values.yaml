@@ -25,8 +25,13 @@ serviceAccount:
   name: ""
 
 prometheus:
-  # -- Enable monitoring by creating PodMonitor CRDs
-  podMonitors: false
+  podMonitors:
+    # -- Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: true
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
