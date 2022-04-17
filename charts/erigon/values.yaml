@@ -52,7 +52,7 @@ statefulNode:
 
   sidecarRpc:
     # -- Enables a high-performance sidecar rpcdaemon container inside the Erigon pod
-    enabled: true
+    enabled: false
     # -- Additional CLI arguments to pass to `rpcdaemon`
     extraArgs:
       - "--http.api=eth,debug,net,trace"
@@ -123,9 +123,9 @@ statefulNode:
 
 rpcdaemons:
   # -- Enable a Deployment of rpcdaemons that can be scaled independently
-  enabled: false
+  enabled: true
   # -- Number of rpcdaemons to run
-  replicaCount: 1
+  replicaCount: 2
 
   # -- Additional CLI arguments to pass to `rpcdaemon`
   extraArgs: []
@@ -167,7 +167,7 @@ rpcdaemons:
     # -- Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons.
     enabled: false
     # -- Minimum number of replicas
-    minReplicas: 1
+    minReplicas: 2
     # -- Maximum number of replicas
     maxReplicas: 10
     targetCPUUtilizationPercentage: 75

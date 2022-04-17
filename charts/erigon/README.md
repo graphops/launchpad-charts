@@ -75,15 +75,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |
 | rpcdaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
-| rpcdaemons.autoscaling.minReplicas | int | `1` | Minimum number of replicas |
+| rpcdaemons.autoscaling.minReplicas | int | `2` | Minimum number of replicas |
 | rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
 | rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcdaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
+| rpcdaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
 | rpcdaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcdaemons.nodeSelector | object | `{}` |  |
 | rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| rpcdaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
+| rpcdaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
 | rpcdaemons.resources.limits | object | `{}` |  |
 | rpcdaemons.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
 | rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
@@ -102,7 +102,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
 | statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose sidecar rpcdaemon JSON-RPC interface on (if enabled) |
 | statefulNode.service.type | string | `"ClusterIP"` |  |
-| statefulNode.sidecarRpc.enabled | bool | `true` | Enables a high-performance sidecar rpcdaemon container inside the Erigon pod |
+| statefulNode.sidecarRpc.enabled | bool | `false` | Enables a high-performance sidecar rpcdaemon container inside the Erigon pod |
 | statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | statefulNode.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
