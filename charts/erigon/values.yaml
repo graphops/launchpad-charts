@@ -16,18 +16,18 @@ image:
 imagePullSecrets: []
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
+  # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
 prometheus:
   podMonitors:
     # -- Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-    enabled: true
+    enabled: false
     labels: {}
     interval:
     scrapeTimeout:
@@ -47,7 +47,7 @@ statefulNode:
     # - "--prune=" # disables all pruning
     # - "--metrics.expensive"
     # - "--chain=bsc"
-    # - "--staticpeers=value"
+    # - "--staticpeers=value" # TODO automatic configuration of in-cluster node peering
     # - "--private.api.ratelimit=31872" # default
 
   sidecarRpc:
@@ -62,13 +62,6 @@ statefulNode:
       # - "--ws" # enable ws for dshackle
       # - "--rpc.batch.concurrency=4" # default 2
 
-  # TODO examples for:
-  # - hostPath
-  # - regular cloud NAS mount
-  # - s3 mount? better at application layer? yes?
-  # - openebs volume
-  # - tmpfs
-
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
@@ -80,12 +73,12 @@ statefulNode:
         storage: 3Ti
 
   # Increasing the grace termination period prevents Kubernetes
-  # from killing the node process prematurely, which can lead
-  # to data integrity issues
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
   # -- Amount of time to wait before force-killing the Erigon process
-  terminationGracePeriodSeconds: 300
+  terminationGracePeriodSeconds: 60
 
-  # -- Annotations to attach to the Pod
+  # -- Annotations for the `Pod`
   podAnnotations: {}
 
   # -- Pod-wide security context
@@ -138,6 +131,7 @@ rpcdaemons:
   extraArgs: []
     # - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
 
+  # -- Annotations for the `Pod`
   podAnnotations: {}
 
   # -- Pod-wide security context

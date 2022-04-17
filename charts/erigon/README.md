@@ -4,7 +4,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.03.02](https://img.shields.io/badge/AppVersion-v2022.03.02-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.02](https://img.shields.io/badge/AppVersion-v2022.04.02-informational?style=flat-square)
 
 ## Features
 
@@ -15,15 +15,6 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
-
-## Todo
-
-- Support for installing [grafana-operator](https://github.com/grafana-operator/grafana-operator) `Dashboard`s
-- Move ulimit config to separate chart
-- Test removing chmod initContainer given that we gave fsGroup
-- Make another pass on values.yaml and annotate with docs
-- https://github.com/grafana/helm-charts/blob/main/charts/grafana/templates/servicemonitor.yaml
-- Expand quickstart
 
 ## Quickstart
 
@@ -75,7 +66,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | image.tag | string | Chart.appVersion | Overrides the image tag |
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | nameOverride | string | `""` |  |
-| prometheus.podMonitors.enabled | bool | `true` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
+| prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
 | prometheus.podMonitors.interval | string | `nil` |  |
 | prometheus.podMonitors.labels | object | `{}` |  |
 | prometheus.podMonitors.relabelings | list | `[]` |  |
@@ -90,7 +81,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | rpcdaemons.enabled | bool | `false` | Enable a Deployment of rpcdaemons that can be scaled independently |
 | rpcdaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcdaemons.nodeSelector | object | `{}` |  |
-| rpcdaemons.podAnnotations | object | `{}` |  |
+| rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
 | rpcdaemons.replicaCount | int | `1` | Number of rpcdaemons to run |
 | rpcdaemons.resources.limits | object | `{}` |  |
@@ -98,14 +89,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
 | rpcdaemons.service.type | string | `"ClusterIP"` |  |
 | rpcdaemons.tolerations | list | `[]` |  |
-| serviceAccount.annotations | object | `{}` |  |
-| serviceAccount.create | bool | `true` |  |
-| serviceAccount.name | string | `""` |  |
+| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
+| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
+| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | statefulNode.affinity | object | `{}` |  |
 | statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to `erigon` |
 | statefulNode.nodeSelector | object | `{}` |  |
-| statefulNode.podAnnotations | object | `{}` | Annotations to attach to the Pod |
+| statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
 | statefulNode.resources | object | `{}` |  |
 | statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
@@ -113,7 +104,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | statefulNode.service.type | string | `"ClusterIP"` |  |
 | statefulNode.sidecarRpc.enabled | bool | `true` | Enables a high-performance sidecar rpcdaemon container inside the Erigon pod |
 | statefulNode.sidecarRpc.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000"]` | Additional CLI arguments to pass to `rpcdaemon` |
-| statefulNode.terminationGracePeriodSeconds | int | `300` | Amount of time to wait before force-killing the Erigon process |
+| statefulNode.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
 | statefulNode.tolerations | list | `[]` |  |
 | statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage |
 | statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
