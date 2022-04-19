@@ -21,7 +21,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add graphops http://graphops.github.io/charts
+$ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/erigon
 ```
 
