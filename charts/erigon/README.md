@@ -117,7 +117,3 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 ## Contributing
 
 We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
-
-## See also
-
-host-ulimit-config, dshackle
