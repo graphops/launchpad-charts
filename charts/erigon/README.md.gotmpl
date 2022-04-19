@@ -7,8 +7,8 @@
 ## Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, enabling shared state access and higher performance for the sidecar `rpcdaemon`
-- Supports an independent pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
