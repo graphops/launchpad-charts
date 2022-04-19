@@ -25,7 +25,7 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/erigon
 ```
 
-Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See Values below to install Prometheus `PodMonitor`s and a Grafana dashboard.
+Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `PodMonitor`s and a Grafana dashboard.
 
 JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
 
@@ -51,7 +51,7 @@ If doing this, be sure to configure `rpcdaemons.resources.requests` with appropr
 
 ## Upgrading
 
-We recommend that you pin the version of the Chart that you deploy. TODO TODODODODODODOO
+We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
 
 This project uses [Semantic Versioning](https://semver.org/). Changes to the version of the application (the `appVersion`) that the Chart deploys will generally result in a patch version bump for the Chart. Breaking changes to the Chart or its `values.yaml` interface will be reflected with a major version bump.
 
