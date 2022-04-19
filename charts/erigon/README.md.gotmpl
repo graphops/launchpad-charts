@@ -23,19 +23,23 @@ $ helm repo add graphops http://graphops.github.io/charts
 $ helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
+Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See Values below to install Prometheus `PodMonitor`s and a Grafana dashboard.
+
+JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
+
 ## JSON-RPC
 
 ### High-performance sidecar
 
 You can enable the deployment of an `rpcdaemon` instance as a sidecar within the stateful Erigon `Pod`. In this mode, the `rpcdaemon` shares a PID namespace with the `erigon` process and can access the node state database directly, cutting out the gRPC API and improving synchronous request performance.
 
-When enabled, you can access the JSON-RPC API via the stateful node `Service` on port `8545` by default. See the Values section to enable and configure the sidecar.
+When enabled, you can access the JSON-RPC API via the stateful node `Service` (`<release-name>-erigon-stateful-node`) on port `8545` by default. See the Values section to enable and configure the sidecar.
 
 ### Scalable `Deployment`
 
 For workloads where synchronous performance is less important than the scalability of request throughput, you can enable an independent scalable `Deployment` of `rpcdaemon`s. In this mode, the `rpcdaemon`s can be scaled up arbitrarily and connect to the stateful node process via the gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-When enabled, a dedicated `Service` will be created to load balance JSON-RPC requests across `Pod`s in the scalable `Deployment`. See the Values section to enable and configure the `Deployment`.
+When enabled, a dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
 #### Autoscaling
 
