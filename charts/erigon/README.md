@@ -1,5 +1,3 @@
-
-
 # Erigon Helm Chart
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -83,7 +81,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
 | rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
 | rpcdaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
-| rpcdaemons.extraArgs | list | `[]` | Additional CLI arguments to pass to `rpcdaemon` |
+| rpcdaemons.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` | Additional CLI arguments to pass to `rpcdaemon` |
 | rpcdaemons.nodeSelector | object | `{}` |  |
 | rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
