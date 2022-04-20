@@ -128,8 +128,14 @@ rpcdaemons:
   replicaCount: 2
 
   # -- Additional CLI arguments to pass to `rpcdaemon`
-  extraArgs: []
-    # - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
+  extraArgs:
+      - "--http.api=eth,debug,net,trace"
+      - "--trace.maxtraces=10000" # optional
+      - "--http.vhosts=*" # optional
+      - "--http.corsdomain=*" # optional
+      - "--ws" # enable ws for dshackle
+      - "--rpc.batch.concurrency=4" # default 2
+      - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
 
   # -- Annotations for the `Pod`
   podAnnotations: {}
