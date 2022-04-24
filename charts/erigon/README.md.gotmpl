@@ -8,7 +8,6 @@
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
 - Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
-- Supports deploying a `rpcdaemon` sidecar within the `Pod` that contains the stateful `erigon` container, enabling shared state access and higher performance for the sidecar `rpcdaemon`
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -29,19 +28,19 @@ JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
 
 ## JSON-RPC
 
-### High-performance sidecar
+### Built-in JSON-RPC
 
-You can enable the deployment of an `rpcdaemon` instance as a sidecar within the stateful Erigon `Pod`. In this mode, the `rpcdaemon` shares a PID namespace with the `erigon` process and can access the node state database directly, cutting out the gRPC API and improving synchronous request performance.
+You can access JSON-RPC via the stateful node `Service` (`<release-name>-erigon-stateful-node`) on port `8545` by default.
 
-When enabled, you can access the JSON-RPC API via the stateful node `Service` (`<release-name>-erigon-stateful-node`) on port `8545` by default. See the Values section to enable and configure the sidecar.
+Synchronous request performance is typically best when using the built-in JSON-RPC server, however for large throughput workloads you should use a scalable set of `rpcdaemon`s.
 
-### Scalable `Deployment`
+### Scalable `Deployment` of `rpcdaemon`s
 
-For workloads where synchronous performance is less important than the scalability of request throughput, you can enable an independent scalable `Deployment` of `rpcdaemon`s. In this mode, the `rpcdaemon`s can be scaled up arbitrarily and connect to the stateful node process via the gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
+For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-When enabled, a dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
+A dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
-#### Autoscaling
+#### JSON-RPC Autoscaling
 
 You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
