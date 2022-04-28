@@ -47,41 +47,52 @@ spec:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
+          # securityContext:
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          # command: ["sh", "-c", "HEIMDALL_DIR=/storage /root/heimdall/docker/entrypoint.sh start"]
           command:
-            - heimdalld start
-            - --home=/storage
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+            - sh
+            - -c
+            - >-
+              set -x;
+
+              export HEIMDALL_DIR=/storage;
+
+              /root/heimdall/docker/entrypoint.sh \
+                {{- range $arg := $values.extraArgs }}
+                  {{- $arg  | nindent 16 }} \
+                {{- end }}
+                start
           ports:
-            - name: http-metrics
-              containerPort: 6060
-              protocol: TCP
+            # - name: http-metrics
+            #   containerPort: 6060
+            #   protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
+            - name: tcp-rpc
+              containerPort: 26657
+              protocol: TCP
             - name: udp-p2p
-              containerPort: 30303 #may be different port
+              containerPort: 26656 
               protocol: UDP
             - name: tcp-p2p
               protocol: TCP
-              containerPort: 30303
+              containerPort: 26656
           volumeMounts:
             - name: storage
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
-          readinessProbe:
-            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-            grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

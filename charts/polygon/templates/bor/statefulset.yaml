@@ -43,21 +43,51 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+            # An array of keys from the ConfigMap to create as files
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   capabilities:
+          #     drop:
+          #       - ALL
           command:
-            - bor 
-            - --datadir=/storage
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+            - sh
+            - -c
+            - >-
+              set -x;
+
+              apk update;
+              apk add curl;
+
+              while [[ "$(curl -v --silent http://polygon-heimdall.default.svc:26657/status 2>&1 | grep catching_up)" =~ "true" ]]; do
+                echo "Waiting for heimdall to finish syncing";
+                sleep 10;
+              done;
+
+              BOR_DIR=/storage;
+              DATA_DIR=$BOR_DIR/data;
+              NODE_KEY_PATH=$DATA_DIR/bor/nodekey;
+
+              mkdir -p $BOR_DIR $BOR_DIR/keystore;
+
+              bor --datadir $DATA_DIR init /config/genesis.json;
+
+              if [ ! -f $NODE_KEY_PATH ]; then
+                bootnode -genkey $NODE_KEY_PATH;
+              fi;
+
+              bor \
+                {{- range $arg := $values.extraArgs }}
+                  {{- $arg  | nindent 16 }} \
+                {{- end }}
+                --datadir=/storage 
           ports:
             - name: http-metrics
               containerPort: 6060
@@ -76,12 +106,14 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
-          readinessProbe:
-            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-            grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+            - name: config
+              mountPath: /config
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

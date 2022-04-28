@@ -4,6 +4,8 @@
 nameOverride: ""
 fullnameOverride: ""
 
+network: testnet # can be testnet or mainnet
+
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
@@ -34,24 +36,21 @@ grafana:
 bor:
   # -- Enable a Deployment of bor that can be scaled independently
   enabled: true
-  replicaCount: 1
   image:
     # -- Image for Bor
     repository: maticnetwork/bor
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
     tag: "v0.2.16-beta2"
 
   # -- Additional CLI arguments to pass to `bor`
   extraArgs:
     - "--http"
-    - "--http.addr=127.0.0.1"
+    - "--http.addr=0.0.0.0"
     - "--http.vhosts=*"
     - "--http.corsdomain=*"
     - "--http.port=8545"
     - "--http.api=eth,net,web3,txpool,bor"
-    - "--syncmode=full"
+    - "--syncmode=full" 
     - "--networkid=137"
     - "--miner.gasprice=30000000000" # default: 100000000
     - "--miner.gaslimit=20000000" # default: 8000000
@@ -77,13 +76,13 @@ bor:
     resources:
       requests:
         # -- The amount of disk space to provision for polygon
-        storage: 3Ti
+        storage: 3Ti # 12Ti for archival mode
 
   podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsNonRoot: false
+    # runAsUser: 101337
+    # runAsGroup: 101337
+    # fsGroup: 101337
 
   service:
     type: ClusterIP
@@ -101,18 +100,16 @@ bor:
     antiAffinityByHostname: true
 
   affinity: {}
+  
 
 
 heimdall:
   enabled: true
   # -- Number of heimdall replicas to run
-  replicaCount: 1
   image:
     # -- Image for Bor
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
     tag: "v0.2.9"
 
   # -- Annotations for the `Pod`
@@ -126,14 +123,14 @@ heimdall:
     resources:
       requests:
         # -- The amount of disk space to provision for polygon
-        storage: 3Ti
+        storage: 1Ti
 
   # -- Pod-wide security context
   podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsNonRoot: false
+    # runAsUser: 101337
+    # runAsGroup: 101337
+    # fsGroup: 101337
 
   service:
     type: ClusterIP
