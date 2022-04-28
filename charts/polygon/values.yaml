@@ -4,7 +4,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-network: testnet # can be testnet or mainnet
+network: mainnet # can be testnet or mainnet
 
 serviceAccount:
   # -- Specifies whether a service account should be created
@@ -34,7 +34,7 @@ grafana:
 
 
 bor:
-  # -- Enable a Deployment of bor that can be scaled independently
+  # -- Enable creation of `StatefulSet` for Bor
   enabled: true
   image:
     # -- Image for Bor
@@ -42,7 +42,7 @@ bor:
     pullPolicy: IfNotPresent
     tag: "v0.2.16-beta2"
 
-  # -- Additional CLI arguments to pass to `bor`
+  # -- Additional CLI arguments to pass to Bor
   extraArgs:
     - "--http"
     - "--http.addr=0.0.0.0"
@@ -104,6 +104,7 @@ bor:
 
 
 heimdall:
+  # -- Enable creation of `StatefulSet` for Heimdall
   enabled: true
   # -- Number of heimdall replicas to run
   image:
@@ -111,6 +112,10 @@ heimdall:
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
     tag: "v0.2.9"
+
+  # -- Additional CLI arguments to pass to Heimdall
+  extraArgs:
+  - --rpc.laddr=tcp://0.0.0.0:26657
 
   # -- Annotations for the `Pod`
   podAnnotations: {}
@@ -135,7 +140,8 @@ heimdall:
   service:
     type: ClusterIP
     ports:
-      http-rpc: 8545
+      tcp-abci: 26658 # TODO what is this port for? what's the right name?
+
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious

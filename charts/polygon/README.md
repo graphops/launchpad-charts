@@ -1,6 +1,6 @@
-# Erigon Helm Chart
+# Polygon Helm Chart
 
-Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+Deploy and scale [Polygon](https://github.com/maticnetwork/) inside Kubernetes with ease
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.03](https://img.shields.io/badge/AppVersion-v2022.04.03-informational?style=flat-square)
 
@@ -11,7 +11,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for configuring Grafana dashboards for polygon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
 
 ## Quickstart
 
@@ -19,18 +19,18 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add graphops http://graphops.github.io/helm-charts
-$ helm install my-release graphops/erigon
+$ helm install my-release graphops/polygon
 ```
 
-Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `PodMonitor`s and a Grafana dashboard.
+Once the release is installed, polygon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `PodMonitor`s and a Grafana dashboard.
 
-JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
+JSON-RPC is available at `<release-name>-polygon-rpcdaemons:8545` by default.
 
 ## JSON-RPC
 
 ### Built-in JSON-RPC
 
-You can access JSON-RPC via the stateful node `Service` (`<release-name>-erigon-stateful-node`) on port `8545` by default.
+You can access JSON-RPC via the stateful node `Service` (`<release-name>-polygon-stateful-node`) on port `8545` by default.
 
 Synchronous request performance is typically best when using the built-in JSON-RPC server, however for large throughput workloads you should use a scalable set of `rpcdaemon`s.
 
@@ -38,7 +38,7 @@ Synchronous request performance is typically best when using the built-in JSON-R
 
 For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-A dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
+A dedicated `Service` (`<release-name>-polygon-rpcdaemons`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
 #### JSON-RPC Autoscaling
 
@@ -58,57 +58,51 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| bor.affinity | object | `{}` |  |
+| bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
+| bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
+| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool,bor","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0"]` | Additional CLI arguments to pass to Bor |
+| bor.image.pullPolicy | string | `"IfNotPresent"` |  |
+| bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
+| bor.image.tag | string | `"v0.2.16-beta2"` |  |
+| bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
+| bor.service.ports.grpc-polygon | int | `9090` | Service Port to expose polygon GRPC interface on |
+| bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
+| bor.service.type | string | `"ClusterIP"` |  |
+| bor.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
+| bor.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for polygon |
+| bor.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
 | fullnameOverride | string | `""` |  |
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"thorax/erigon"` | Image for Erigon |
-| image.tag | string | Chart.appVersion | Overrides the image tag |
-| imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
+| heimdall.affinity | object | `{}` |  |
+| heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
+| heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
+| heimdall.extraArgs | list | `["--rpc.laddr=tcp://0.0.0.0:26657"]` | Additional CLI arguments to pass to Heimdall |
+| heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
+| heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
+| heimdall.nodeSelector | object | `{}` |  |
+| heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
+| heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
+| heimdall.resources.limits | object | `{}` |  |
+| heimdall.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
+| heimdall.service.ports.tcp-abci | int | `26658` |  |
+| heimdall.service.type | string | `"ClusterIP"` |  |
+| heimdall.tolerations | list | `[]` |  |
+| heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
+| heimdall.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for polygon |
+| heimdall.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
 | nameOverride | string | `""` |  |
+| network | string | `"mainnet"` |  |
 | prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
 | prometheus.podMonitors.interval | string | `nil` |  |
 | prometheus.podMonitors.labels | object | `{}` |  |
 | prometheus.podMonitors.relabelings | list | `[]` |  |
 | prometheus.podMonitors.scrapeTimeout | string | `nil` |  |
-| rpcdaemons.affinity | object | `{}` |  |
-| rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |
-| rpcdaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
-| rpcdaemons.autoscaling.minReplicas | int | `2` | Minimum number of replicas |
-| rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
-| rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcdaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
-| rpcdaemons.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` | Additional CLI arguments to pass to `rpcdaemon` |
-| rpcdaemons.nodeSelector | object | `{}` |  |
-| rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| rpcdaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
-| rpcdaemons.resources.limits | object | `{}` |  |
-| rpcdaemons.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
-| rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
-| rpcdaemons.service.type | string | `"ClusterIP"` |  |
-| rpcdaemons.tolerations | list | `[]` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| statefulNode.affinity | object | `{}` |  |
-| statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to `erigon` |
-| statefulNode.nodeSelector | object | `{}` |  |
-| statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| statefulNode.resources | object | `{}` |  |
-| statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
-| statefulNode.service.ports.http-engineapi | int | `8550` | Service Port to expose engineAPI interface on |
-| statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
-| statefulNode.service.type | string | `"ClusterIP"` |  |
-| statefulNode.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
-| statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage |
-| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
-| statefulNode.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for Erigon |
 
 ## Contributing
 

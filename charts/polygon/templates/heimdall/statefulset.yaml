@@ -67,13 +67,10 @@ spec:
                 {{- end }}
                 start
           ports:
-            # - name: http-metrics
+            # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
             #   containerPort: 6060
             #   protocol: TCP
-            - name: http-jsonrpc
-              containerPort: 8545
-              protocol: TCP
-            - name: tcp-rpc
+            - name: tcp-rpc # TODO Is this an HTTP API, if so, we want http- prefix in port name
               containerPort: 26657
               protocol: TCP
             - name: udp-p2p

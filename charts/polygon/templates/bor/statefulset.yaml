@@ -48,6 +48,31 @@ spec:
             # Provide the name of the ConfigMap you want to mount.
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
             # An array of keys from the ConfigMap to create as files
+      initContainers:
+        - name: wait-for-heimdall
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - bash
+            - -c
+            - >-
+              set -x;
+
+              HEIMDALL_SERVICE="{{ include "polygon.fullname" . }}-heimdall"
+
+              while [[ "$(curl -v --silent http://$HEIMDALL_SERVICE:26657/status 2>&1 | grep catching_up)" =~ "true" ]]; do
+                echo "Waiting for Heimdall to finish syncing";
+                sleep 10;
+              done;
+
+              curl -v http://$HEIMDALL_SERVICE:26657/status
+
+              echo "READY!"
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -62,14 +87,6 @@ spec:
             - -c
             - >-
               set -x;
-
-              apk update;
-              apk add curl;
-
-              while [[ "$(curl -v --silent http://polygon-heimdall.default.svc:26657/status 2>&1 | grep catching_up)" =~ "true" ]]; do
-                echo "Waiting for heimdall to finish syncing";
-                sleep 10;
-              done;
 
               BOR_DIR=/storage;
               DATA_DIR=$BOR_DIR/data;
