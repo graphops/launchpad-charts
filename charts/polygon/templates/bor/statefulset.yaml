@@ -68,9 +68,12 @@ spec:
               check() {
                 wget -O - http://$HEIMDALL_SERVICE:26657/status 2>&1 | grep '"catching_up": false';
                 EXIT_CODE=$?
-              }
+              };
 
-              check
+              check;
+
+              # TODO migrate to jq approach?
+              # need to check the block number too?
 
               while [ "$EXIT_CODE" != "0" ]; do
                 echo "Waiting for Heimdall to finish syncing";
@@ -96,7 +99,7 @@ spec:
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                --datadir=/storage 
+                --datadir=/storage
           ports:
             - name: http-metrics
               containerPort: 6060
@@ -105,11 +108,11 @@ spec:
               containerPort: 8545
               protocol: TCP
             - name: udp-p2p
-              containerPort: 30303 #may be different port
+              containerPort: 30303
               protocol: UDP
             - name: tcp-p2p
-              protocol: TCP
               containerPort: 30303
+              protocol: TCP
           volumeMounts:
             - name: storage
               mountPath: /storage

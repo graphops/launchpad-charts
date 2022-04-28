@@ -77,8 +77,8 @@ spec:
               containerPort: 26656 
               protocol: UDP
             - name: tcp-p2p
-              protocol: TCP
               containerPort: 26656
+              protocol: TCP
           volumeMounts:
             - name: storage
               mountPath: /storage
