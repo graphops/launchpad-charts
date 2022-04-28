@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.03](https://img.shields.io/badge/AppVersion-v2022.04.03-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.04](https://img.shields.io/badge/AppVersion-v2022.04.04-informational?style=flat-square)
 
 ## Features
 
@@ -95,7 +95,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | statefulNode.affinity | object | `{}` |  |
 | statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| statefulNode.extraArgs | list | `[]` | Additional CLI arguments to pass to `erigon` |
+| statefulNode.extraArgs | list | `["--torrent.download.rate=100mb"]` | Additional CLI arguments to pass to `erigon` |
 | statefulNode.nodeSelector | object | `{}` |  |
 | statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |

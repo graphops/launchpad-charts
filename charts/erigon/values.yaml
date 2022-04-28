@@ -43,7 +43,10 @@ grafana:
 
 statefulNode:
   # -- Additional CLI arguments to pass to `erigon`
-  extraArgs: []
+  extraArgs:
+  - --torrent.download.rate=100mb
+  # - --chain=bsc
+  # - --prune=tc
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:

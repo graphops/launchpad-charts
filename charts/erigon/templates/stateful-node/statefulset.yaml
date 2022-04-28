@@ -51,7 +51,6 @@ spec:
           command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
             privileged: true # required for ulimit change
-      shareProcessNamespace: true # This allows the sidecar rpc daemon to share access to the stateful database
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -91,8 +90,14 @@ spec:
               containerPort: 30303
               protocol: UDP
             - name: tcp-p2p
-              protocol: TCP
               containerPort: 30303
+              protocol: TCP
+            - name: udp-torrent
+              containerPort: 42069
+              protocol: UDP
+            - name: tcp-torrent
+              containerPort: 42069
+              protocol: TCP
           volumeMounts:
             - name: storage
               mountPath: /storage
