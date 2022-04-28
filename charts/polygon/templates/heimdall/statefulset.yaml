@@ -61,16 +61,16 @@ spec:
 
               export HEIMDALL_DIR=/storage;
 
-              /root/heimdall/docker/entrypoint.sh \
+              /root/heimdall/docker/entrypoint.sh start \
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                start
+                --rpc.laddr=tcp://0.0.0.0:26657
           ports:
             # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
             #   containerPort: 6060
             #   protocol: TCP
-            - name: tcp-rpc # TODO Is this an HTTP API, if so, we want http- prefix in port name
+            - name: http-rpc
               containerPort: 26657
               protocol: TCP
             - name: udp-p2p

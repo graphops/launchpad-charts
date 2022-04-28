@@ -61,7 +61,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.affinity | object | `{}` |  |
 | bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
-| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool,bor","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0"]` | Additional CLI arguments to pass to Bor |
+| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0"]` | Additional CLI arguments to pass to Bor |
 | bor.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
@@ -79,7 +79,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.affinity | object | `{}` |  |
 | heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
-| heimdall.extraArgs | list | `["--rpc.laddr=tcp://0.0.0.0:26657"]` | Additional CLI arguments to pass to Heimdall |
+| heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
 | heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
 | heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
 | heimdall.nodeSelector | object | `{}` |  |
@@ -87,7 +87,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
 | heimdall.resources.limits | object | `{}` |  |
 | heimdall.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
-| heimdall.service.ports.tcp-abci | int | `26658` |  |
+| heimdall.service.ports.http-rpc | int | `26657` |  |
 | heimdall.service.type | string | `"ClusterIP"` |  |
 | heimdall.tolerations | list | `[]` |  |
 | heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
