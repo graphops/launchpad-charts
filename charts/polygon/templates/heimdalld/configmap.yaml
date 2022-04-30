@@ -1,5 +1,5 @@
-{{- $values := $.Values.bor }}
-{{- $componentName := "bor" }}
+{{- $values := $.Values.heimdalld }}
+{{- $componentName := "heimdalld" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
 
 apiVersion: v1

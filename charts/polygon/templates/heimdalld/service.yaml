@@ -1,5 +1,5 @@
-{{- $values := $.Values.heimdall }}
-{{- $componentName := "heimdall" }}
+{{- $values := $.Values.heimdalld }}
+{{- $componentName := "heimdalld" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service

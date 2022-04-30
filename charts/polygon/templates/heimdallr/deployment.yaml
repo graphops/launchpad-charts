@@ -1,25 +1,20 @@
-{{- $values := $.Values.bor }}
-{{- $componentName := "bor" }}
+{{- $values := $.Values.heimdallr }}
+{{- $componentName := "heimdallr" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ include "polygon.fullname" . }}-{{ $componentName }}
   labels:
     {{- include "polygon.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "polygon.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
   selector:
     matchLabels:
       {{- include "polygon.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
-  volumeClaimTemplates: # TODO support using an existing PV/PVC?
-    - metadata:
-        name: storage
-      spec:
-        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -40,94 +35,54 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      volumes:
-        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
-          emptyDir: {}
-        - name: config
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "polygon.fullname" . }}-{{ $componentName }}
-            # An array of keys from the ConfigMap to create as files
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:
-          #   readOnlyRootFilesystem: true
+          #   readOnlyRootFilesystem: false
           #   capabilities:
           #     drop:
           #       - ALL
+          # command: ["sh", "-c", "HEIMDALL_DIR=/storage /root/heimdall/docker/entrypoint.sh start"]
           command:
             - sh
             - -c
             - >-
               set -x;
 
-              HEIMDALLR_SERVICE="{{ include "polygon.fullname" . }}-heimdallr";
+              export HEIMDALL_DIR=/storage;
 
-              # Check if you can get the same info from heimdallr instead of heimdalld
-              # if not check the right port for this
-              check() {
-                wget -O - http://$HEIMDALLR_SERVICE:26657/status 2>&1 | grep '"catching_up": false';
-                EXIT_CODE=$?;
-              };
-
-              check;
-
-              # TODO migrate to jq approach?
-              # need to check the block number too?
-
-              while [ "$EXIT_CODE" != "0" ]; do
-                echo "Waiting for Heimdall to finish syncing";
-                sleep 10;
-                check
-              done;
-
-              wget -O - http://$HEIMDALLR_SERVICE:26657/status;
-
-              BOR_DIR=/storage;
-              DATA_DIR=$BOR_DIR/data;
-              NODE_KEY_PATH=$DATA_DIR/bor/nodekey;
-
-              mkdir -p $BOR_DIR $BOR_DIR/keystore;
-
-              bor --datadir $DATA_DIR init /config/genesis.json;
-
-              if [ ! -f $NODE_KEY_PATH ]; then
-                bootnode -genkey $NODE_KEY_PATH;
-              fi;
-
-              bor \
+              /root/heimdall/docker/entrypoint.sh rest-server \
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                --datadir=$DATA_DIR
+                --chain-id=137 \
+                --node=tcp://heimdalld:26657 \
+                --trust-node=true \
+                --max-open=1000 \
+                --laddr=tcp://0.0.0.0:1317   
           ports:
-            - name: http-metrics
-              containerPort: 6060
-              protocol: TCP
+            # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
+            #   containerPort: 6060
+            #   protocol: TCP
             - name: http-rpc
-              containerPort: 8545
+              containerPort: 26657
+              protocol: TCP
+            - name: http-rest
+              containerPort: 13317
               protocol: TCP
             - name: udp-p2p
-              containerPort: 30303
+              containerPort: 26656 
               protocol: UDP
             - name: tcp-p2p
-              containerPort: 30303
+              containerPort: 26656
               protocol: TCP
-          volumeMounts:
-            - name: storage
-              mountPath: /storage
-            - name: tmp
-              mountPath: /tmp
-            - name: config
-              mountPath: /config
-          # readinessProbe:
-          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-          #   grpc:
-          #     port: 9090 # named ports not supported yet by grpc probes
+          # volumeMounts:
+          #   - name: storage
+          #     mountPath: /storage
+          #   - name: tmp
+          #     mountPath: /tmp
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -161,3 +116,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

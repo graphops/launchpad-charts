@@ -1,5 +1,5 @@
-{{- $values := $.Values.heimdall }}
-{{- $componentName := "heimdall" }}
+{{- $values := $.Values.heimdalld }}
+{{- $componentName := "heimdalld" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
 apiVersion: apps/v1
 kind: StatefulSet
@@ -43,6 +43,11 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+            # An array of keys from the ConfigMap to create as files
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -59,7 +64,7 @@ spec:
             - >-
               set -x;
 
-              export HEIMDALL_DIR=/storage;
+              export HEIMDALL_DIR=/storage/data;
 
               /root/heimdall/docker/entrypoint.sh start \
                 {{- range $arg := $values.extraArgs }}
@@ -84,6 +89,8 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
+            - name: config
+              mountPath: /config
           # readinessProbe:
           #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
           #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe

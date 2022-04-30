@@ -1,5 +1,5 @@
-{{- $values := $.Values.heimdall }}
-{{- $componentName := "heimdall" }}
+{{- $values := $.Values.heimdalld }}
+{{- $componentName := "heimdalld" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
 {{- /* If podMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.podMonitors.enabled }}
