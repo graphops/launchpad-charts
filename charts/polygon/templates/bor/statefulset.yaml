@@ -146,7 +146,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
-                - key: app.kubernetes.io/instance
+                - key: app.kubernetes.io/instance # TODO what about cross-release antiAffinity
                   operator: In
                   values:
                   - {{ $.Release.Name }}

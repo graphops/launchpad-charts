@@ -76,23 +76,40 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| heimdall.affinity | object | `{}` |  |
-| heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
-| heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
-| heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
-| heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
-| heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
-| heimdall.nodeSelector | object | `{}` |  |
-| heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
-| heimdall.resources.limits | object | `{}` |  |
-| heimdall.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
-| heimdall.service.ports.http-rpc | int | `26657` |  |
-| heimdall.service.type | string | `"ClusterIP"` |  |
-| heimdall.tolerations | list | `[]` |  |
-| heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
-| heimdall.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for polygon |
-| heimdall.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
+| heimdalld.affinity | object | `{}` |  |
+| heimdalld.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
+| heimdalld.enabled | bool | `true` | Enable creation of `StatefulSet` for heimdalld |
+| heimdalld.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
+| heimdalld.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
+| heimdalld.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
+| heimdalld.nodeSelector | object | `{}` |  |
+| heimdalld.podAnnotations | object | `{}` | Annotations for the `Pod` |
+| heimdalld.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
+| heimdalld.resources.limits | object | `{}` |  |
+| heimdalld.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
+| heimdalld.service.ports.http-rpc | int | `26657` |  |
+| heimdalld.service.type | string | `"ClusterIP"` |  |
+| heimdalld.tolerations | list | `[]` |  |
+| heimdalld.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
+| heimdalld.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for polygon |
+| heimdalld.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
+| heimdallr.affinity | object | `{}` |  |
+| heimdallr.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
+| heimdallr.enabled | bool | `true` | Enable creation of `Deployment?` for heimdallr |
+| heimdallr.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
+| heimdallr.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
+| heimdallr.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
+| heimdallr.nodeSelector | object | `{}` |  |
+| heimdallr.podAnnotations | object | `{}` | Annotations for the `Pod` |
+| heimdallr.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
+| heimdallr.resources.limits | object | `{}` |  |
+| heimdallr.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
+| heimdallr.service.ports.http-rpc | int | `26657` |  |
+| heimdallr.service.type | string | `"ClusterIP"` |  |
+| heimdallr.tolerations | list | `[]` |  |
+| heimdallr.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
+| heimdallr.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for polygon |
+| heimdallr.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
 | nameOverride | string | `""` |  |
 | network | string | `"mainnet"` |  |
 | prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
