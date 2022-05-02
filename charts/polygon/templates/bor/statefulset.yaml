@@ -48,6 +48,57 @@ spec:
             # Provide the name of the ConfigMap you want to mount.
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
             # An array of keys from the ConfigMap to create as files
+      initContainers:
+        - name: {{ .Chart.Name }}-{{ $componentName }}-init
+          image: "{{ $values.initImage.repository }}:{{ $values.initImage.tag }}"
+          imagePullPolicy: {{ $values.initImage.pullPolicy }}
+          # securityContext:
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          # command: ["sh", "-c", "HEIMDALL_DIR=/storage /root/heimdall/docker/entrypoint.sh start"]
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+
+              sleep 10
+
+              HEIMDALL_SERVICE="{{ include "polygon.fullname" . }}-heimdall"
+              BOR_HOME="/storage"=/storage
+              DATA_DIR=$BOR_DIR/data
+
+              bor --datadir $DATA_DIR init /config/genesis.json
+
+              if [ "${BOOTSTRAP}" = 1 ] && [ "${SNAPSHOT_URL}" != "" ] && [ ! -f "$BOR_HOME/from_snapshot" ]; then
+                mkdir -p ${BOR_HOME}/data
+                wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${BOR_HOME}/data
+                echo "${SNAPSHOT_URL}" > ${BOR_HOME}/from_snapshot
+              fi
+
+              READY=$(curl -s http://$HEIMDALL_SERVICE:26657/status | jq '.result.sync_info.catching_up')
+              while [[ "${READY}" != "false" ]];
+              do
+                  echo "Waiting for heimdall to catch up."
+                  sleep 30
+                  READY=$(curl -s $HEIMDALL_SERVICE:26657/status | jq '.result.sync_info.catching_up')
+              done
+
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: genesis-config
+              mountPath: /genesis-config
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -58,49 +109,11 @@ spec:
           #     drop:
           #       - ALL
           command:
-            - sh
-            - -c
-            - >-
-              set -x;
-
-              sleep 10;
-
-              HEIMDALL_SERVICE="{{ include "polygon.fullname" . }}-heimdall";
-
-              # Check if you can get the same info from heimdallr instead of heimdalld
-              # if not check the right port for this
-              check() {
-                wget -O - http://$HEIMDALL_SERVICE:26657/status 2>&1 | grep '"catching_up": false';
-                EXIT_CODE=$?;
-              };
-
-              check;
-
-              while [ "$EXIT_CODE" != "0" ]; do
-                echo "Waiting for Heimdall to finish syncing";
-                sleep 10;
-                check
-              done;
-
-              wget -O - http://$HEIMDALL_SERVICE:26657/status;
-
-              BOR_DIR=/storage;
-              DATA_DIR=$BOR_DIR/data;
-              NODE_KEY_PATH=$DATA_DIR/bor/nodekey;
-
-              mkdir -p $BOR_DIR $BOR_DIR/keystore;
-
-              bor --datadir $DATA_DIR init /config/genesis.json;
-
-              if [ ! -f $NODE_KEY_PATH ]; then
-                bootnode -genkey $NODE_KEY_PATH;
-              fi;
-
-              bor \
-                {{- range $arg := $values.extraArgs }}
-                  {{- $arg  | nindent 16 }} \
-                {{- end }}
-                --datadir=$DATA_DIR
+            - bor
+            - --datadir=$DATA_DIR
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 6060

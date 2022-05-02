@@ -43,6 +43,12 @@ bor:
     pullPolicy: IfNotPresent
     tag: "v0.2.16-beta2"
 
+  initImage:
+    repository: apteno/alpine-jq
+    pullPolicy: IfNotPresent
+    tag: "2022-05-01"
+
+
   # -- Additional CLI arguments to pass to Bor
   extraArgs:
     - "--http"
