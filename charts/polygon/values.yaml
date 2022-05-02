@@ -4,6 +4,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
+# -- Specifies the Polygon network instance, one of: `mainnet`, `testnet`
 network: mainnet # can be testnet or mainnet
 
 serviceAccount:
@@ -101,7 +102,7 @@ bor:
 
 
 heimdall:
-  # -- Enable creation of `StatefulSet` for heimdall
+  # -- Enable creation of `StatefulSet` for Heimdall
   enabled: true
   # -- Number of heimdall replicas to run
   image:
@@ -132,8 +133,8 @@ heimdall:
     storageClassName: 
     resources:
       requests:
-        # -- The amount of disk space to provision for polygon
-        storage: 1Ti
+        # -- The amount of disk space to provision for Heimdall
+        storage: 256Gi
 
   # -- Pod-wide security context
   podSecurityContext:

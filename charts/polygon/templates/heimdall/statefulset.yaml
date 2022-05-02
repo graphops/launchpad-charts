@@ -43,11 +43,11 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
-        - name: genesisConfig
+        - name: genesis-config
           configMap:
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
       initContainers:
-        - name: {{ .Chart.Name }}-init
+        - name: {{ .Chart.Name }}-{{ $componentName }}-init
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:
@@ -62,13 +62,10 @@ spec:
             - >-
               set -ex;
 
-              HEIMDALLD_HOME=/storage;
+              HEIMDALLD_HOME="/storage"
 
-              mkdir -p HEIMDALLD_HOME;
-
-              if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then;
-                  heimdalld init;
-                  rm $HEIMDALLD_HOME/config/genesis.json;
+              if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
+                  heimdalld --home $HEIMDALLD_HOME init;
 
                   cp /genesis-config/genesis.json $HEIMDALLD_HOME/config/genesis.json;
                   
@@ -79,19 +76,19 @@ spec:
                   # BOR
                   sed -i "s#^bor_rpc_url.*#bor_rpc_url = \"http://{{ include "polygon.fullname" . }}-bor:{{ get $.Values.bor.service.ports "http-jsonrpc" }}\"#" heimdall-config.toml;
                   # ETH1
-                  sed -i "s#^eth_rpc_url.*#eth_rpc_url = \"${ETH1_RPC_URL}\"#" heimdall-config.toml;
-              fi;
+                  sed -i "s#^eth_rpc_url.*#eth_rpc_url = \"${ETH1_RPC_URL}\"#" heimdall-config.toml
+              fi
 
               # If snapshot bootstrapping enabled, do it if hasn't already been done
-              if [ "${BOOTSTRAP}" == 1 ] && [ -n "${SNAPSHOT_URL}" ] && [ ! -f "$HEIMDALLD_HOME/from_snapshot" ]; then;
+              if [ "${BOOTSTRAP}" == 1 ] && [ -n "${SNAPSHOT_URL}" ] && [ ! -f "$HEIMDALLD_HOME/from_snapshot" ]; then
                 echo "downloading snapshot from ${SNAPSHOT_URL}";
                 mkdir -p ${HEIMDALLD_HOME}/data;
-                wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${HEIMDALLD_HOME}/data && echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot;
+                wget --no-verbose -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${HEIMDALLD_HOME}/data && echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
               fi
           volumeMounts:
             - name: storage
               mountPath: /storage
-            - name: genesisConfig
+            - name: genesis-config
               mountPath: /genesis-config
           {{- with $values.env }}
           env:
@@ -131,7 +128,7 @@ spec:
               containerPort: 26657
               protocol: TCP
             - name: udp-p2p
-              containerPort: 26656 
+              containerPort: 26656
               protocol: UDP
             - name: tcp-p2p
               containerPort: 26656
@@ -147,7 +144,8 @@ spec:
           {{- with $values.env }}
           env:
           {{- range $key, $val := .}}
-            {{ $key }}: {{ $val | quote }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           # readinessProbe:
@@ -200,7 +198,8 @@ spec:
           {{- with $values.env }}
           env:
           {{- range $key, $val := .}}
-            {{ $key }}: {{ $val | quote }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           # readinessProbe:

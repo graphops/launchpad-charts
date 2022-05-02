@@ -77,7 +77,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | heimdall.affinity | object | `{}` |  |
 | heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
-| heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for heimdall |
+| heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
 | heimdall.env.BOOTSTRAP | int | `1` |  |
 | heimdall.env.ETH1_RPC_URL | string | `"http://eth-mainnet-0-erigon-rpcdaemons:8545"` |  |
 | heimdall.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz"` |  |
@@ -95,11 +95,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.service.ports.http-trpc | int | `26657` |  |
 | heimdall.service.type | string | `"ClusterIP"` |  |
 | heimdall.tolerations | list | `[]` |  |
-| heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
-| heimdall.volumeClaimSpec.resources.requests.storage | string | `"1Ti"` | The amount of disk space to provision for polygon |
+| heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"256Gi"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
+| heimdall.volumeClaimSpec.resources.requests.storage | string | `"256Gi"` | The amount of disk space to provision for Heimdall |
 | heimdall.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
 | nameOverride | string | `""` |  |
-| network | string | `"mainnet"` |  |
+| network | string | `"mainnet"` | Specifies the Polygon network instance, one of: `mainnet`, `testnet` |
 | prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
 | prometheus.podMonitors.interval | string | `nil` |  |
 | prometheus.podMonitors.labels | object | `{}` |  |
