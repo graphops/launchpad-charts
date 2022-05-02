@@ -117,10 +117,10 @@ spec:
           command:
             - sh
             - -c
-            - >-
-              set -x;
+            - |
+              set -x
 
-              export HEIMDALL_DIR=/storage;
+              export HEIMDALL_DIR=/storage
 
               heimdalld start \
                 {{- range $arg := $values.extraArgs }}

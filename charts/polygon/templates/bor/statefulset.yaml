@@ -43,7 +43,7 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
-        - name: config
+        - name: genesis-config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
@@ -67,10 +67,8 @@ spec:
               sleep 10
 
               HEIMDALL_SERVICE="{{ include "polygon.fullname" . }}-heimdall"
-              BOR_HOME="/storage"=/storage
-              DATA_DIR=$BOR_DIR/data
-
-              bor --datadir $DATA_DIR init /config/genesis.json
+              BOR_HOME=/storage
+              DATA_DIR=$BOR_HOME/data
 
               if [ "${BOOTSTRAP}" = 1 ] && [ "${SNAPSHOT_URL}" != "" ] && [ ! -f "$BOR_HOME/from_snapshot" ]; then
                 mkdir -p ${BOR_HOME}/data
@@ -89,8 +87,6 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
-            - name: genesis-config
-              mountPath: /genesis-config
           {{- with $values.env }}
           env:
           {{- range $key, $val := .}}
@@ -109,11 +105,20 @@ spec:
           #     drop:
           #       - ALL
           command:
-            - bor
-            - --datadir=$DATA_DIR
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+            - sh
+            - -c
+            - |
+              set -x
+
+              BOR_HOME=/storage
+              DATA_DIR=$BOR_HOME/data
+
+              bor --datadir $DATA_DIR init /config/genesis.json
+
+              bot --datadir=$DATA_DIR \
+                {{- range $arg := $values.extraArgs }}
+                  {{- $arg  | nindent 16 }} \
+                {{- end }}
           ports:
             - name: http-metrics
               containerPort: 6060
@@ -132,8 +137,8 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
-            - name: config
-              mountPath: /config
+            - name: genesis-config
+              mountPath: /genesis-config
           # readinessProbe:
           #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
           #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
