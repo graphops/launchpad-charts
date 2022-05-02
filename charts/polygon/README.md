@@ -66,7 +66,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
 | bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
-| bor.service.ports.grpc-polygon | int | `9090` | Service Port to expose polygon GRPC interface on |
 | bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
 | bor.service.type | string | `"ClusterIP"` |  |
 | bor.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
@@ -79,6 +78,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.affinity | object | `{}` |  |
 | heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for heimdall |
+| heimdall.env.BOOTSTRAP | int | `1` |  |
+| heimdall.env.ETH1_RPC_URL | string | `"http://eth-mainnet-0-erigon-rpcdaemons:8545"` |  |
+| heimdall.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz"` |  |
 | heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
 | heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
 | heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
@@ -90,7 +92,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.restServer.extraArgs | list | `[]` |  |
 | heimdall.restServer.resources | object | `{}` |  |
 | heimdall.service.ports.http-rest | int | `1317` |  |
-| heimdall.service.ports.http-rpc | int | `26657` |  |
+| heimdall.service.ports.http-trpc | int | `26657` |  |
 | heimdall.service.type | string | `"ClusterIP"` |  |
 | heimdall.tolerations | list | `[]` |  |
 | heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |

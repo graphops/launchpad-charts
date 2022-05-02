@@ -43,9 +43,64 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
-        - name: config
+        - name: genesisConfig
           configMap:
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+      initContainers:
+        - name: {{ .Chart.Name }}-init
+          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          # securityContext:
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          # command: ["sh", "-c", "HEIMDALL_DIR=/storage /root/heimdall/docker/entrypoint.sh start"]
+          command:
+            - sh
+            - -c
+            - >-
+              set -ex;
+
+              HEIMDALLD_HOME=/storage;
+
+              mkdir -p HEIMDALLD_HOME;
+
+              if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then;
+                  heimdalld init;
+                  rm $HEIMDALLD_HOME/config/genesis.json;
+
+                  cp /genesis-config/genesis.json $HEIMDALLD_HOME/config/genesis.json;
+                  
+                  sed -i "s#^cors_allowed_origins.*#cors_allowed_origins = [\"*\"]#" $HEIMDALLD_HOME/config/config.toml;
+                  sed -i "s#^seeds.*#seeds = \"${BOOTNODES:-"f4f605d60b8ffaaf15240564e58a81103510631c@159.203.9.164:26656,4fb1bc820088764a564d4f66bba1963d47d82329@44.232.55.71:26656,2eadba4be3ce47ac8db0a3538cb923b57b41c927@35.199.4.13:26656,3b23b20017a6f348d329c102ddc0088f0a10a444@35.221.13.28:26656,25f5f65a09c56e9f1d2d90618aa70cd358aa68da@35.230.116.151:26656"}\"#" $HEIMDALLD_HOME/config/config.toml;
+                  sed -i "s#^prometheus = false#prometheus = true#" $HEIMDALLD_HOME/config/config.toml;
+                  
+                  # BOR
+                  sed -i "s#^bor_rpc_url.*#bor_rpc_url = \"http://{{ include "polygon.fullname" . }}-bor:{{ get $.Values.bor.service.ports "http-jsonrpc" }}\"#" heimdall-config.toml;
+                  # ETH1
+                  sed -i "s#^eth_rpc_url.*#eth_rpc_url = \"${ETH1_RPC_URL}\"#" heimdall-config.toml;
+              fi;
+
+              # If snapshot bootstrapping enabled, do it if hasn't already been done
+              if [ "${BOOTSTRAP}" == 1 ] && [ -n "${SNAPSHOT_URL}" ] && [ ! -f "$HEIMDALLD_HOME/from_snapshot" ]; then;
+                echo "downloading snapshot from ${SNAPSHOT_URL}";
+                mkdir -p ${HEIMDALLD_HOME}/data;
+                wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${HEIMDALLD_HOME}/data && echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot;
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: genesisConfig
+              mountPath: /genesis-config
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -62,18 +117,17 @@ spec:
             - >-
               set -x;
 
-              export HEIMDALL_DIR=/storage/data;
+              export HEIMDALL_DIR=/storage;
 
-              /root/heimdall/docker/entrypoint.sh start \
+              heimdalld start \
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                --rpc.laddr=tcp://0.0.0.0:26657
+                --home=$HEIMDALL_DIR \
+                --rpc.laddr=tcp://0.0.0.0:26657 \
+                --p2p.upnp=false
           ports:
-            # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
-            #   containerPort: 6060
-            #   protocol: TCP
-            - name: http-rpc
+            - name: http-trpc # Tendermint RPC
               containerPort: 26657
               protocol: TCP
             - name: udp-p2p
@@ -82,13 +136,20 @@ spec:
             - name: tcp-p2p
               containerPort: 26656
               protocol: TCP
+            - name: http-metrics
+              containerPort: 26660
+              protocol: TCP
           volumeMounts:
             - name: storage
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
-            - name: config
-              mountPath: /config
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            {{ $key }}: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
           # readinessProbe:
           #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
           #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
@@ -113,11 +174,13 @@ spec:
             - >-
               set -x;
 
+              export HEIMDALL_DIR=/storage;
+
               heimdalld rest-server \
                 {{- range $arg := $values.restServer.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                --chain-id=137 \
+                --home=$HEIMDALL_DIR \
                 --node=tcp://127.0.0.1:26657 \
                 --trust-node=true \
                 --max-open=1000 \
@@ -134,8 +197,12 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
-            - name: config
-              mountPath: /config
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            {{ $key }}: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
           # readinessProbe:
           #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
           #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe

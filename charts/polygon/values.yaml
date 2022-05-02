@@ -88,11 +88,8 @@ bor:
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
-      # -- Service Port to expose polygon GRPC interface on
-      grpc-polygon: 9090
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
-      # -- Service Port to expose engineAPI interface on
   
 
   affinityPresets:
@@ -120,6 +117,11 @@ heimdall:
   # -- Additional CLI arguments to pass to Heimdall
   extraArgs: []
 
+  env:
+    ETH1_RPC_URL: http://eth-mainnet-0-erigon-rpcdaemons:8545
+    BOOTSTRAP: 1
+    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz
+
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
@@ -143,7 +145,7 @@ heimdall:
   service:
     type: ClusterIP
     ports:
-      http-rpc: 26657
+      http-trpc: 26657
       http-rest: 1317
 
   resources:
