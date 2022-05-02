@@ -63,12 +63,12 @@ spec:
             - >-
               set -x;
 
-              HEIMDALLR_SERVICE="{{ include "polygon.fullname" . }}-heimdallr";
+              HEIMDALLD_SERVICE="{{ include "polygon.fullname" . }}-heimdalld";
 
               # Check if you can get the same info from heimdallr instead of heimdalld
               # if not check the right port for this
               check() {
-                wget -O - http://$HEIMDALLR_SERVICE:26657/status 2>&1 | grep '"catching_up": false';
+                wget -O - http://$HEIMDALLD_SERVICE:26657/status 2>&1 | grep '"catching_up": false';
                 EXIT_CODE=$?;
               };
 
@@ -83,7 +83,7 @@ spec:
                 check
               done;
 
-              wget -O - http://$HEIMDALLR_SERVICE:26657/status;
+              wget -O - http://$HEIMDALLD_SERVICE:26657/status;
 
               BOR_DIR=/storage;
               DATA_DIR=$BOR_DIR/data;

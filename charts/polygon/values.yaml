@@ -103,8 +103,8 @@ bor:
   
 
 
-heimdalld:
-  # -- Enable creation of `StatefulSet` for heimdalld
+heimdall:
+  # -- Enable creation of `StatefulSet` for heimdall
   enabled: true
   # -- Number of heimdall replicas to run
   image:
@@ -112,6 +112,10 @@ heimdalld:
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
     tag: "v0.2.9"
+
+  restServer:
+    extraArgs: []
+    resources: {}
 
   # -- Additional CLI arguments to pass to Heimdall
   extraArgs: []
@@ -140,69 +144,7 @@ heimdalld:
     type: ClusterIP
     ports:
       http-rpc: 26657
-
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits: {}
-      # cpu: 100m
-      # memory: 128Mi
-      # ephemeral-storage: 100Mi
-    # -- Requests must be specified if you are using autoscaling
-    requests:
-      cpu: 500m
-      memory: 4Gi
-      # ephemeral-storage: 100Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinityPresets:
-    # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host
-    antiAffinityByHostname: true
-
-  affinity: {}
-
-heimdallr:
-  # -- Enable creation of `Deployment?` for heimdallr
-  enabled: true
-  # -- Number of heimdall replicas to run
-  image:
-    # -- Image for Bor
-    repository: maticnetwork/heimdall
-    pullPolicy: IfNotPresent
-    tag: "v0.2.9"
-
-  # -- Additional CLI arguments to pass to Heimdall
-  extraArgs: []
-
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume for polygon
-    storageClassName: 
-    resources:
-      requests:
-        # -- The amount of disk space to provision for polygon
-        storage: 1Ti
-
-  # -- Pod-wide security context
-  podSecurityContext:
-    runAsNonRoot: false
-    # runAsUser: 101337
-    # runAsGroup: 101337
-    # fsGroup: 101337
-
-  service:
-    type: ClusterIP
-    ports:
-      http-rpc: 26657
+      http-rest: 1317
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious

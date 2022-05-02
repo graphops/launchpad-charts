@@ -1,5 +1,5 @@
-{{- $values := $.Values.heimdalld }}
-{{- $componentName := "heimdalld" }}
+{{- $values := $.Values.heimdall }}
+{{- $componentName := "heimdall" }}
 {{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
 apiVersion: apps/v1
 kind: StatefulSet
@@ -45,9 +45,7 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            # Provide the name of the ConfigMap you want to mount.
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
-            # An array of keys from the ConfigMap to create as files
       containers:
         - name: {{ .Chart.Name }}-{{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -98,6 +96,53 @@ spec:
           #   grpc:
           #     port: 9090 # named ports not supported yet by grpc probes
           {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        - name: {{ .Chart.Name }}-{{ $componentName }}-rest-server
+          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          # securityContext:
+          #   readOnlyRootFilesystem: false
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          command: # TODO chain ID should be based on network selection
+            - sh
+            - -c
+            - >-
+              set -x;
+
+              heimdalld rest-server \
+                {{- range $arg := $values.restServer.extraArgs }}
+                  {{- $arg  | nindent 16 }} \
+                {{- end }}
+                --chain-id=137 \
+                --node=tcp://127.0.0.1:26657 \
+                --trust-node=true \
+                --max-open=1000 \
+                --laddr=tcp://0.0.0.0:1317
+          ports:
+            # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
+            #   containerPort: 6060
+            #   protocol: TCP
+            - name: http-rest
+              containerPort: 1317
+              protocol: TCP
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+            - name: config
+              mountPath: /config
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
+          {{- with $values.restServer.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
