@@ -61,10 +61,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.affinity | object | `{}` |  |
 | bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
+| bor.env.BOOTSTRAP | int | `1` |  |
+| bor.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-pruned-snapshot-2022-04-26.tar.gz"` |  |
 | bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0"]` | Additional CLI arguments to pass to Bor |
 | bor.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
+| bor.initImage.pullPolicy | string | `"IfNotPresent"` |  |
+| bor.initImage.repository | string | `"apteno/alpine-jq"` |  |
+| bor.initImage.tag | string | `"2022-05-01"` |  |
 | bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
 | bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
 | bor.service.type | string | `"ClusterIP"` |  |

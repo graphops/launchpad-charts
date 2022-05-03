@@ -68,12 +68,16 @@ spec:
 
             HEIMDALL_SERVICE="{{ include "polygon.fullname" . }}-heimdall"
             BOR_HOME=/storage
-            DATA_DIR=$BOR_HOME/data
+            DATA_DIR="$BOR_HOME/data"
+            SNAPSHOT_RESTORE_PATH="$DATA_DIR/bor/chaindata"
 
-            if [ "${BOOTSTRAP}" = 1 ] && [ "${SNAPSHOT_URL}" != "" ] && [ ! -f "$BOR_HOME/from_snapshot" ]; then
-              mkdir -p ${BOR_HOME}/data
-              wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${BOR_HOME}/data
-              echo "${SNAPSHOT_URL}" > ${BOR_HOME}/from_snapshot
+            # If enabled and snapshot URL has been provided, bootstrap snapshot
+            if [ "${BOOTSTRAP}" = 1 ] && [ "${SNAPSHOT_URL}" != "" ]; then
+              if [ ! -f "$BOR_HOME/from_snapshot" ] || [ "$(cat $BOR_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                echo "${SNAPSHOT_URL}" > ${BOR_HOME}/from_snapshot
+              fi
             fi
 
             READY=$(curl -s http://$HEIMDALL_SERVICE:26657/status | jq '.result.sync_info.catching_up')
@@ -119,6 +123,7 @@ spec:
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
+                --bor.heimdall=http://{{ include "polygon.fullname" . }}-heimdall:{{ get $.Values.heimdall.service.ports "http-rest" }}
           ports:
             - name: http-metrics
               containerPort: 6060
