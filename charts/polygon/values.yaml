@@ -52,6 +52,7 @@ bor:
   # -- Additional CLI arguments to pass to Bor
   extraArgs:
     - "--http"
+    # - "----bor-mainnet" # https://github.com/maticnetwork/bor/issues/190#issuecomment-964419670
     - "--http.addr=0.0.0.0"
     - "--http.vhosts=*"
     - "--http.corsdomain=*"
@@ -74,6 +75,11 @@ bor:
     - "--pprof"
     - "--pprof.port=7071"
     - "--pprof.addr=0.0.0.0"
+  
+  env:
+    BOOTSTRAP: 1
+    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-pruned-snapshot-2022-04-26.tar.gz
+
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
   volumeClaimSpec:
