@@ -49,7 +49,7 @@ spec:
             name: {{ include "polygon.fullname" . }}-{{ $componentName }}
             # An array of keys from the ConfigMap to create as files
       initContainers:
-      - name: {{ .Chart.Name }}-{{ $componentName }}-init
+      - name: {{ $componentName }}-init
         image: "{{ $values.initImage.repository }}:{{ $values.initImage.tag }}"
         imagePullPolicy: {{ $values.initImage.pullPolicy }}
         # securityContext:
@@ -100,7 +100,7 @@ spec:
         {{- end }}
 
       containers:
-        - name: {{ .Chart.Name }}-{{ $componentName }}
+        - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:

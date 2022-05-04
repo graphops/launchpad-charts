@@ -75,10 +75,11 @@ bor:
     - "--pprof"
     - "--pprof.port=7071"
     - "--pprof.addr=0.0.0.0"
+    - "--gcmode=archive"
   
   env:
     BOOTSTRAP: 1
-    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-pruned-snapshot-2022-04-26.tar.gz
+    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
 
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
@@ -131,7 +132,6 @@ heimdall:
   extraArgs: []
 
   env:
-    ETH1_RPC_URL: http://eth-mainnet-0-erigon-rpcdaemons:8545
     BOOTSTRAP: 1
     SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz
 
