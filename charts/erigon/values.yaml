@@ -25,8 +25,8 @@ serviceAccount:
   name: ""
 
 prometheus:
-  podMonitors:
-    # -- Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
     enabled: false
     labels: {}
     interval:

@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.04](https://img.shields.io/badge/AppVersion-v2022.04.04-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.05.02](https://img.shields.io/badge/AppVersion-v2022.05.02-informational?style=flat-square)
 
 ## Features
 
@@ -67,11 +67,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | image.tag | string | Chart.appVersion | Overrides the image tag |
 | imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
 | nameOverride | string | `""` |  |
-| prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
-| prometheus.podMonitors.interval | string | `nil` |  |
-| prometheus.podMonitors.labels | object | `{}` |  |
-| prometheus.podMonitors.relabelings | list | `[]` |  |
-| prometheus.podMonitors.scrapeTimeout | string | `nil` |  |
+| prometheus.serviceMonitors.enabled | bool | `false` | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
+| prometheus.serviceMonitors.interval | string | `nil` |  |
+| prometheus.serviceMonitors.labels | object | `{}` |  |
+| prometheus.serviceMonitors.relabelings | list | `[]` |  |
+| prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
 | rpcdaemons.affinity | object | `{}` |  |
 | rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
 | rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |

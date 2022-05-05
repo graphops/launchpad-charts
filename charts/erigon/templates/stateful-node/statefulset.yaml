@@ -45,14 +45,14 @@ spec:
           emptyDir: {}
       initContainers:
         # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
-        - name: increase-fd-ulimit
+        - name: {{ $componentName }}-init
           image: busybox:stable
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
             privileged: true # required for ulimit change
       containers:
-        - name: {{ .Chart.Name }}-{{ $componentName }}
+        - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
