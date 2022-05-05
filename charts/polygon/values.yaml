@@ -134,7 +134,8 @@ heimdall:
   env:
     BOOTSTRAP: 1
     SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz
-
+    BOOTNODES: ""  
+    ETH1_RPC_URL: "" # optional
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
