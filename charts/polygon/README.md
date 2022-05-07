@@ -61,9 +61,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.affinity | object | `{}` |  |
 | bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
-| bor.env.BOOTSTRAP | int | `1` |  |
-| bor.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-pruned-snapshot-2022-04-26.tar.gz"` |  |
-| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0"]` | Additional CLI arguments to pass to Bor |
+| bor.env.BOOTSTRAP | int | `0` |  |
+| bor.env.SNAPSHOT_URL | string | `nil` |  |
+| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive"]` | Additional CLI arguments to pass to Bor |
 | bor.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
@@ -83,8 +83,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.affinity | object | `{}` |  |
 | heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
+| heimdall.env.BOOTNODES | string | `""` |  |
 | heimdall.env.BOOTSTRAP | int | `1` |  |
-| heimdall.env.ETH1_RPC_URL | string | `"http://eth-mainnet-0-erigon-rpcdaemons:8545"` |  |
+| heimdall.env.ETH1_RPC_URL | string | `""` |  |
 | heimdall.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz"` |  |
 | heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
 | heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |

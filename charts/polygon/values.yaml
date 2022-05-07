@@ -78,8 +78,10 @@ bor:
     - "--gcmode=archive"
   
   env:
-    BOOTSTRAP: 1
-    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
+    # BOOTSTRAP: 1
+    # SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
+    BOOTSTRAP: 0
+    SNAPSHOT_URL:
 
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
