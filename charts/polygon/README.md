@@ -94,8 +94,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.nodeSelector | object | `{}` |  |
 | heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
-| heimdall.resources.limits | object | `{}` |  |
-| heimdall.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
+| heimdall.resources | object | `{}` |  |
 | heimdall.restServer.extraArgs | list | `[]` |  |
 | heimdall.restServer.resources | object | `{}` |  |
 | heimdall.service.ports.http-rest | int | `1317` |  |
