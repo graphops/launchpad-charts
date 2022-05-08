@@ -128,7 +128,7 @@ spec:
             - name: http-metrics
               containerPort: 6060
               protocol: TCP
-            - name: http-rpc
+            - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
             - name: udp-p2p

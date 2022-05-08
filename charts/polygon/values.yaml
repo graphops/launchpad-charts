@@ -34,88 +34,6 @@ grafana:
   dashboardsConfigMapLabelValue: ""
 
 
-bor:
-  # -- Enable creation of `StatefulSet` for Bor
-  enabled: true
-  image:
-    # -- Image for Bor
-    repository: maticnetwork/bor
-    pullPolicy: IfNotPresent
-    tag: "v0.2.16-beta2"
-
-  initImage:
-    repository: apteno/alpine-jq
-    pullPolicy: IfNotPresent
-    tag: "2022-05-01"
-
-
-  # -- Additional CLI arguments to pass to Bor
-  extraArgs:
-    - "--http"
-    # - "----bor-mainnet" # https://github.com/maticnetwork/bor/issues/190#issuecomment-964419670
-    - "--http.addr=0.0.0.0"
-    - "--http.vhosts=*"
-    - "--http.corsdomain=*"
-    - "--http.port=8545"
-    - "--http.api=eth,net,web3,txpool"
-    - "--syncmode=full" 
-    - "--networkid=137"
-    - "--miner.gasprice=30000000000" # default: 100000000
-    - "--miner.gaslimit=20000000" # default: 8000000
-    - "--miner.gastarget=20000000"
-    - "--txpool.nolocals"
-    - "--txpool.accountslots=16"
-    - "--txpool.globalslots=32768"
-    - "--txpool.accountqueue=16"
-    - "--txpool.globalqueue=32768"
-    - "--txpool.pricelimit=30000000000"
-    - "--txpool.lifetime=1h30m0s"
-    - "--maxpeers=200"
-    - "--metrics"
-    - "--pprof"
-    - "--pprof.port=7071"
-    - "--pprof.addr=0.0.0.0"
-    - "--gcmode=archive"
-  
-  env:
-    # BOOTSTRAP: 1
-    # SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
-    BOOTSTRAP: 0
-    SNAPSHOT_URL:
-
-
-  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume for polygon
-    storageClassName: 
-    resources:
-      requests:
-        # -- The amount of disk space to provision for polygon
-        storage: 3Ti # 12Ti for archival mode
-
-  podSecurityContext:
-    runAsNonRoot: false
-    # runAsUser: 101337
-    # runAsGroup: 101337
-    # fsGroup: 101337
-
-  service:
-    type: ClusterIP
-    ports:
-      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
-      # -- Service Port to expose JSON-RPC interface on
-      http-jsonrpc: 8545
-  
-
-  affinityPresets:
-    # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host
-    antiAffinityByHostname: true
-
-  affinity: {}
-  
-
-
 heimdall:
   # -- Enable creation of `StatefulSet` for Heimdall
   enabled: true
@@ -182,6 +100,87 @@ heimdall:
   nodeSelector: {}
 
   tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+bor:
+  # -- Enable creation of `StatefulSet` for Bor
+  enabled: true
+  image:
+    # -- Image for Bor
+    repository: maticnetwork/bor
+    pullPolicy: IfNotPresent
+    tag: "v0.2.16-beta2"
+
+  initImage:
+    repository: apteno/alpine-jq
+    pullPolicy: IfNotPresent
+    tag: "2022-05-01"
+
+  terminationGracePeriodSeconds: 300
+
+  # -- Additional CLI arguments to pass to Bor
+  extraArgs:
+    - "--http"
+    # - "----bor-mainnet" # https://github.com/maticnetwork/bor/issues/190#issuecomment-964419670
+    - "--http.addr=0.0.0.0"
+    - "--http.vhosts=*"
+    - "--http.corsdomain=*"
+    - "--http.port=8545"
+    - "--http.api=eth,net,web3,txpool"
+    - "--syncmode=full" 
+    - "--networkid=137"
+    - "--miner.gasprice=30000000000" # default: 100000000
+    - "--miner.gaslimit=20000000" # default: 8000000
+    - "--miner.gastarget=20000000"
+    - "--txpool.nolocals"
+    - "--txpool.accountslots=16"
+    - "--txpool.globalslots=32768"
+    - "--txpool.accountqueue=16"
+    - "--txpool.globalqueue=32768"
+    - "--txpool.pricelimit=30000000000"
+    - "--txpool.lifetime=1h30m0s"
+    - "--maxpeers=200"
+    - "--metrics"
+    - "--pprof"
+    - "--pprof.port=7071"
+    - "--pprof.addr=0.0.0.0"
+    - "--gcmode=archive"
+  
+  env:
+    # BOOTSTRAP: 1
+    # SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
+    BOOTSTRAP: 0
+    SNAPSHOT_URL:
+
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume for polygon
+    storageClassName: 
+    resources:
+      requests:
+        # -- The amount of disk space to provision for polygon
+        storage: 3Ti # 12Ti for archival mode
+
+  podSecurityContext:
+    runAsNonRoot: false
+    # runAsUser: 101337
+    # runAsGroup: 101337
+    # fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose JSON-RPC interface on
+      http-jsonrpc: 8545
+  
 
   affinityPresets:
     # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host

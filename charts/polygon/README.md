@@ -73,6 +73,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
 | bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
 | bor.service.type | string | `"ClusterIP"` |  |
+| bor.terminationGracePeriodSeconds | int | `300` |  |
 | bor.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
 | bor.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for polygon |
 | bor.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
