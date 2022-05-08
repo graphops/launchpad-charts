@@ -61,9 +61,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.affinity | object | `{}` |  |
 | bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
-| bor.env.BOOTSTRAP | int | `0` |  |
-| bor.env.SNAPSHOT_URL | string | `nil` |  |
+| bor.env | object | `{}` | Environment variables to set in key/value format |
 | bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive","--snapshot=false"]` | Additional CLI arguments to pass to Bor |
+| bor.fromSnapshot.enabled | bool | `false` | Enable initialising Bor from a remote Snapshot |
+| bor.fromSnapshot.snapshotUrl | string | `nil` | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) |
 | bor.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
@@ -73,7 +74,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
 | bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
 | bor.service.type | string | `"ClusterIP"` |  |
-| bor.terminationGracePeriodSeconds | int | `300` |  |
+| bor.terminationGracePeriodSeconds | int | `300` | When terminating, number of seconds to wait before force-killing containers in Pod |
 | bor.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
 | bor.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for polygon |
 | bor.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
@@ -84,19 +85,18 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.affinity | object | `{}` |  |
 | heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
 | heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
-| heimdall.env.BOOTNODES | string | `""` |  |
-| heimdall.env.BOOTSTRAP | int | `1` |  |
-| heimdall.env.ETH1_RPC_URL | string | `""` |  |
-| heimdall.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz"` |  |
+| heimdall.env | object | `{"BOOTNODES":"","ETH1_RPC_URL":""}` | Environment variables to set in key/value format |
 | heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
-| heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
+| heimdall.fromSnapshot.enabled | bool | `false` | Enable initialising Heimdall from a remote Snapshot |
+| heimdall.fromSnapshot.snapshotUrl | string | `nil` | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) |
+| heimdall.image.pullPolicy | string | `"IfNotPresent"` |  |
 | heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Heimdall |
+| heimdall.image.tag | string | `"v0.2.9"` |  |
 | heimdall.nodeSelector | object | `{}` |  |
 | heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
 | heimdall.resources | object | `{}` |  |
-| heimdall.restServer.extraArgs | list | `[]` |  |
-| heimdall.restServer.resources | object | `{}` |  |
+| heimdall.restServer | object | `{"extraArgs":[],"resources":{}}` | Options for Heimdall rest-server sidecar |
 | heimdall.service.ports.http-rest | int | `1317` |  |
 | heimdall.service.ports.http-trpc | int | `26657` |  |
 | heimdall.service.type | string | `"ClusterIP"` |  |

@@ -37,13 +37,13 @@ grafana:
 heimdall:
   # -- Enable creation of `StatefulSet` for Heimdall
   enabled: true
-  # -- Number of heimdall replicas to run
   image:
     # -- Image for Heimdall
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
     tag: "v0.2.9" # Don't forget to update appVersion in Chart.yaml
 
+  # -- Options for Heimdall rest-server sidecar
   restServer:
     extraArgs: []
     resources: {}
@@ -51,11 +51,17 @@ heimdall:
   # -- Additional CLI arguments to pass to Heimdall
   extraArgs: []
 
+  fromSnapshot:
+    # -- Enable initialising Heimdall from a remote Snapshot
+    enabled: false
+    # -- URL to snapshot to download and extract, see [here](https://snapshots.matic.today)
+    snapshotUrl:
+
+  # -- Environment variables to set in key/value format
   env:
-    BOOTSTRAP: 1
-    SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz
     BOOTNODES: ""  
     ETH1_RPC_URL: "" # optional
+
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
@@ -120,6 +126,7 @@ bor:
     pullPolicy: IfNotPresent
     tag: "2022-05-01"
 
+  # -- When terminating, number of seconds to wait before force-killing containers in Pod
   terminationGracePeriodSeconds: 300
 
   # -- Additional CLI arguments to pass to Bor
@@ -151,12 +158,15 @@ bor:
     - "--gcmode=archive"
     - "--snapshot=false"
   
-  env:
-    # BOOTSTRAP: 1
-    # SNAPSHOT_URL: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/bor-archive-node-snapshot-2022-03-27.tar.gz
-    BOOTSTRAP: 0
-    SNAPSHOT_URL:
 
+  fromSnapshot:
+    # -- Enable initialising Bor from a remote Snapshot
+    enabled: false
+    # -- URL to snapshot to download and extract, see [here](https://snapshots.matic.today)
+    snapshotUrl:
+
+  # -- Environment variables to set in key/value format
+  env: {}
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
   volumeClaimSpec:
