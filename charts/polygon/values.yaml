@@ -150,6 +150,7 @@ bor:
     - "--pprof.port=7071"
     - "--pprof.addr=0.0.0.0"
     - "--gcmode=archive"
+    - "--snapshot=false"
   
   env:
     # BOOTSTRAP: 1

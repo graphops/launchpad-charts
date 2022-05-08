@@ -63,7 +63,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
 | bor.env.BOOTSTRAP | int | `0` |  |
 | bor.env.SNAPSHOT_URL | string | `nil` |  |
-| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive"]` | Additional CLI arguments to pass to Bor |
+| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive","--snapshot=false"]` | Additional CLI arguments to pass to Bor |
 | bor.image.pullPolicy | string | `"IfNotPresent"` |  |
 | bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
 | bor.image.tag | string | `"v0.2.16-beta2"` |  |
