@@ -1,0 +1,5 @@
+# Default values for resource-injector.
+# This is a YAML-formatted file.
+
+# -- Resources in the release. Each entry should be YAML for a valid Kubernetes Resource.
+resources: []
