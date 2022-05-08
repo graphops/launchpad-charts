@@ -2,7 +2,7 @@
 
 Deploy and scale [Polygon](https://github.com/maticnetwork/) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.04.03](https://img.shields.io/badge/AppVersion-v2022.04.03-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: heimdall-v0.2.9/bor-v0.2.16-beta2](https://img.shields.io/badge/AppVersion-heimdall--v0.2.9/bor--v0.2.16--beta2-informational?style=flat-square)
 
 ## Features
 
@@ -90,7 +90,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.env.SNAPSHOT_URL | string | `"https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/heimdall-snapshot-2022-04-30.tar.gz"` |  |
 | heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
 | heimdall.image | object | `{"pullPolicy":"IfNotPresent","repository":"maticnetwork/heimdall","tag":"v0.2.9"}` | Number of heimdall replicas to run |
-| heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Bor |
+| heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Heimdall |
 | heimdall.nodeSelector | object | `{}` |  |
 | heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |

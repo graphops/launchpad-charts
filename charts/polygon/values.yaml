@@ -39,10 +39,10 @@ heimdall:
   enabled: true
   # -- Number of heimdall replicas to run
   image:
-    # -- Image for Bor
+    # -- Image for Heimdall
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
-    tag: "v0.2.9"
+    tag: "v0.2.9" # Don't forget to update appVersion in Chart.yaml
 
   restServer:
     extraArgs: []
@@ -113,7 +113,7 @@ bor:
     # -- Image for Bor
     repository: maticnetwork/bor
     pullPolicy: IfNotPresent
-    tag: "v0.2.16-beta2"
+    tag: "v0.2.16-beta2" # Don't forget to update appVersion in Chart.yaml
 
   initImage:
     repository: apteno/alpine-jq
