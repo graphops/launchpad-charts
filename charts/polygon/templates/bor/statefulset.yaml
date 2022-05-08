@@ -117,9 +117,17 @@ spec:
               BOR_HOME=/storage
               DATA_DIR=$BOR_HOME/data
 
+              # If dumb-init hasn't been added to the container state yet, do it
+              if [ ! -f "/usr/local/bin/dumb-init" ]; then
+                DUMB_INIT_VERSION="1.2.5"
+                ARCH=$(uname -m)
+                wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH}
+                chmod +x /usr/local/bin/dumb-init
+              fi
+
               bor --datadir $DATA_DIR init /genesis-config/genesis.json
 
-              bor --datadir=$DATA_DIR \
+              exec dumb-init --verbose -- bor --datadir=$DATA_DIR \
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
