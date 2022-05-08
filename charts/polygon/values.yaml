@@ -5,7 +5,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 # -- Specifies the Polygon network instance, one of: `mainnet`, `testnet`
-network: mainnet # can be testnet or mainnet
+network: mainnet
 
 serviceAccount:
   # -- Specifies whether a service account should be created
@@ -17,7 +17,7 @@ serviceAccount:
   name: ""
 
 prometheus:
-  podMonitors:
+  serviceMonitors:
     # -- Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
     enabled: false
     labels: {}

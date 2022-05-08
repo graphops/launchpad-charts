@@ -106,11 +106,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | heimdall.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
 | nameOverride | string | `""` |  |
 | network | string | `"mainnet"` | Specifies the Polygon network instance, one of: `mainnet`, `testnet` |
-| prometheus.podMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
-| prometheus.podMonitors.interval | string | `nil` |  |
-| prometheus.podMonitors.labels | object | `{}` |  |
-| prometheus.podMonitors.relabelings | list | `[]` |  |
-| prometheus.podMonitors.scrapeTimeout | string | `nil` |  |
+| prometheus.serviceMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
+| prometheus.serviceMonitors.interval | string | `nil` |  |
+| prometheus.serviceMonitors.labels | object | `{}` |  |
+| prometheus.serviceMonitors.relabelings | list | `[]` |  |
+| prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
