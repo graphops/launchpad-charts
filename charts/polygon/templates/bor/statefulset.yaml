@@ -155,6 +155,7 @@ spec:
             - name: {{ $key }}
               value: {{ $val | quote }}
           {{- end }}
+          {{- end }}
           # readinessProbe:
           #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
           #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
