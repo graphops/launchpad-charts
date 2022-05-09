@@ -125,7 +125,7 @@ spec:
 
               export HEIMDALL_DIR=/storage
 
-              heimdalld start \
+              exec heimdalld start \
                 {{- range $arg := $values.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
@@ -189,7 +189,7 @@ spec:
 
               export HEIMDALL_DIR=/storage;
 
-              heimdalld rest-server \
+              exec heimdalld rest-server \
                 {{- range $arg := $values.restServer.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
