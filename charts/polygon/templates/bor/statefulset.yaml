@@ -94,7 +94,7 @@ spec:
           env:
           {{- if $values.fromSnapshot.enabled }}
             - name: BOOTSTRAP
-              value: 1
+              value: "1"
             - name: SNAPSHOT_URL
               value: {{ $values.fromSnapshot.snapshotUrl }}
           {{- end }}
