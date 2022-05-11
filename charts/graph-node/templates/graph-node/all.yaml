@@ -2,7 +2,7 @@
        resources to be created for each group of Graph Nodes */}}
 
 {{- range $componentName, $componentValues := $.Values.graphNodes }}
-{{- $values := merge dict $componentValues $.Values.graphNodeDefaults }}
+{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
@@ -176,8 +176,8 @@ spec:
     {{- $componentLabel | nindent 4 }}
 {{/* END Services */}}
 {{/* START ServiceMonitor */}}
----
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
+---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
