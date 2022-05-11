@@ -41,12 +41,9 @@ grafana:
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
-statefulNode:
-  # -- Additional CLI arguments to pass to 
-  extraArgs:
-  - --torrent.download.rate=100mb
-  # - --chain=bsc
-  # - --prune=tc
+graphNodeDefaults:
+  # -- Additional CLI arguments to pass to Graph Node
+  extraArgs: []
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -68,12 +65,16 @@ statefulNode:
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
-      # -- Service Port to expose Erigon GRPC interface on
-      grpc-erigon: 9090
-      # -- Service Port to expose JSON-RPC interface on
-      http-jsonrpc: 8545
-      # -- Service Port to expose engineAPI interface on
-      http-engineapi: 8550
+      # -- Service Port to expose Graph Node Query endpoint on
+      http-query: 8000
+      # -- Service Port to expose Graph Node Websocket Query endpoint on
+      http-queryws: 8001
+      # -- Service Port to expose Graph Node Admin endpoint on
+      http-admin: 8020
+      # -- Service Port to expose Graph Node Status endpoint on
+      http-status: 8030
+      # -- Service Port to expose Graph Node Metrics endpoint on
+      http-metrics: 8040
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -98,69 +99,8 @@ statefulNode:
 
   affinity: {}
 
-rpcdaemons:
-  # -- Enable a Deployment of rpcdaemons that can be scaled independently
-  enabled: true
-  # -- Number of rpcdaemons to run
-  replicaCount: 2
-
-  # -- Additional CLI arguments to pass to `rpcdaemon`
-  extraArgs:
-      - "--http.api=eth,debug,net,trace"
-      - "--trace.maxtraces=10000" # optional
-      - "--http.vhosts=*" # optional
-      - "--http.corsdomain=*" # optional
-      - "--ws" # enable ws for dshackle
-      - "--rpc.batch.concurrency=4" # default 2
-      - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
-
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- Pod-wide security context
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
-
-  service:
-    type: ClusterIP
-    ports:
-      # Valid keys are names of ports that are exposed by the Pod (see templates/rpcdaemons/deployment.yaml)
-      # -- Service Port to expose rpcdaemons JSON-RPC interface on
-      http-jsonrpc: 8545
-
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits: {}
-      # cpu: 100m
-      # memory: 128Mi
-      # ephemeral-storage: 100Mi
-    # -- Requests must be specified if you are using autoscaling
-    requests:
-      cpu: 500m
-      memory: 4Gi
-      # ephemeral-storage: 100Mi
-
-  autoscaling:
-    # -- Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons.
-    enabled: false
-    # -- Minimum number of replicas
-    minReplicas: 2
-    # -- Maximum number of replicas
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 75
-    targetMemoryUtilizationPercentage:
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinityPresets:
-    antiAffinityByHostname: true
-
-  affinity: {}
+graphNodes:
+  query-node:
+    replicaCount: 1
+  index-node:
+    replicaCount: 1

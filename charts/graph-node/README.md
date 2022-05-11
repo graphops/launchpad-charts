@@ -38,6 +38,23 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
+| graphNodeDefaults.affinity | object | `{}` |  |
+| graphNodeDefaults.affinityPresets.antiAffinityByHostname | bool | `true` |  |
+| graphNodeDefaults.extraArgs | list | `[]` | Additional CLI arguments to pass to Graph Node |
+| graphNodeDefaults.nodeSelector | object | `{}` |  |
+| graphNodeDefaults.podAnnotations | object | `{}` | Annotations for the `Pod` |
+| graphNodeDefaults.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
+| graphNodeDefaults.resources | object | `{}` |  |
+| graphNodeDefaults.service.ports.http-admin | int | `8020` | Service Port to expose Graph Node Admin endpoint on |
+| graphNodeDefaults.service.ports.http-metrics | int | `8040` | Service Port to expose Graph Node Metrics endpoint on |
+| graphNodeDefaults.service.ports.http-query | int | `8000` | Service Port to expose Graph Node Query endpoint on |
+| graphNodeDefaults.service.ports.http-queryws | int | `8001` | Service Port to expose Graph Node Websocket Query endpoint on |
+| graphNodeDefaults.service.ports.http-status | int | `8030` | Service Port to expose Graph Node Status endpoint on |
+| graphNodeDefaults.service.type | string | `"ClusterIP"` |  |
+| graphNodeDefaults.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
+| graphNodeDefaults.tolerations | list | `[]` |  |
+| graphNodes.index-node.replicaCount | int | `1` |  |
+| graphNodes.query-node.replicaCount | int | `1` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"graphprotocol/graph-node"` | Image for Graph Node |
 | image.tag | string | Chart.appVersion | Overrides the image tag |
@@ -48,40 +65,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | prometheus.serviceMonitors.labels | object | `{}` |  |
 | prometheus.serviceMonitors.relabelings | list | `[]` |  |
 | prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
-| rpcdaemons.affinity | object | `{}` |  |
-| rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` |  |
-| rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |
-| rpcdaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
-| rpcdaemons.autoscaling.minReplicas | int | `2` | Minimum number of replicas |
-| rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
-| rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcdaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
-| rpcdaemons.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` | Additional CLI arguments to pass to `rpcdaemon` |
-| rpcdaemons.nodeSelector | object | `{}` |  |
-| rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| rpcdaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
-| rpcdaemons.resources.limits | object | `{}` |  |
-| rpcdaemons.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
-| rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
-| rpcdaemons.service.type | string | `"ClusterIP"` |  |
-| rpcdaemons.tolerations | list | `[]` |  |
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| statefulNode.affinity | object | `{}` |  |
-| statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` |  |
-| statefulNode.extraArgs | list | `["--torrent.download.rate=100mb"]` | Additional CLI arguments to pass to  |
-| statefulNode.nodeSelector | object | `{}` |  |
-| statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| statefulNode.resources | object | `{}` |  |
-| statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
-| statefulNode.service.ports.http-engineapi | int | `8550` | Service Port to expose engineAPI interface on |
-| statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
-| statefulNode.service.type | string | `"ClusterIP"` |  |
-| statefulNode.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
-| statefulNode.tolerations | list | `[]` |  |
 
 ## Contributing
 
