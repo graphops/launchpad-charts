@@ -1,0 +1,144 @@
+{{- $values := $.Values.statefulNode }}
+{{- $componentName := "stateful-node" }}
+{{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "graph-node.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates: # TODO support using an existing PV/PVC?
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-node.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      initContainers:
+        # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
+        - name: {{ $componentName }}-init
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - erigon
+            - --datadir=/storage
+            - --private.api.addr=0.0.0.0:9090
+            - --http
+            - --http.addr=0.0.0.0
+            - --engine.addr=0.0.0.0
+            - --healthcheck
+            - --metrics
+            - --metrics.addr=0.0.0.0
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: grpc-erigon
+              containerPort: 9090
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 6060
+              protocol: TCP
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: http-engineapi
+              containerPort: 8550
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: 30303
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: 30303
+              protocol: TCP
+            - name: udp-torrent
+              containerPort: 42069
+              protocol: UDP
+            - name: tcp-torrent
+              containerPort: 42069
+              protocol: TCP
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+            grpc:
+              port: 9090 # named ports not supported yet by grpc probes
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
