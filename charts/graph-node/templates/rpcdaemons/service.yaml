@@ -1,0 +1,24 @@
+{{- $values := $.Values.rpcdaemons }}
+{{- $componentName := "rpcdaemons" }}
+{{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "graph-node.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
