@@ -1,5 +1,6 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
+{{- range $groupName, $groupValues := $.Values.graphNodes }}
+{{- $values := merge dict $groupValues $.Values.graphNodeDefaults }}
+{{- $componentName := $groupName }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
 apiVersion: apps/v1
 kind: StatefulSet
@@ -11,15 +12,12 @@ metadata:
 spec:
   serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
+  strategy:
+    type: RollingUpdate # Treat pods in the StatefulSet like those in a Deployment
   selector:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
-  volumeClaimTemplates: # TODO support using an existing PV/PVC?
-    - metadata:
-        name: storage
-      spec:
-        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -44,7 +42,6 @@ spec:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
       initContainers:
-        # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
         - name: {{ $componentName }}-init
           image: busybox:stable
           imagePullPolicy: IfNotPresent
@@ -74,35 +71,21 @@ spec:
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
           ports:
-            - name: grpc-erigon
-              containerPort: 9090
+            - name: http-query
+              containerPort: 8000
+              protocol: TCP
+            - name: http-queryws
+              containerPort: 8001
+              protocol: TCP
+            - name: http-admin
+              containerPort: 8020
+              protocol: TCP
+            - name: http-status
+              containerPort: 8030
               protocol: TCP
             - name: http-metrics
-              containerPort: 6060
+              containerPort: 8040
               protocol: TCP
-            - name: http-jsonrpc
-              containerPort: 8545
-              protocol: TCP
-            - name: http-engineapi
-              containerPort: 8550
-              protocol: TCP
-            - name: udp-p2p
-              containerPort: 30303
-              protocol: UDP
-            - name: tcp-p2p
-              containerPort: 30303
-              protocol: TCP
-            - name: udp-torrent
-              containerPort: 42069
-              protocol: UDP
-            - name: tcp-torrent
-              containerPort: 42069
-              protocol: TCP
-          volumeMounts:
-            - name: storage
-              mountPath: /storage
-            - name: tmp
-              mountPath: /tmp
           readinessProbe:
             # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
             # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
@@ -142,3 +125,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}
