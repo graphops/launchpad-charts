@@ -53,7 +53,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | graphNodeDefaults.service.type | string | `"ClusterIP"` |  |
 | graphNodeDefaults.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
 | graphNodeDefaults.tolerations | list | `[]` |  |
-| graphNodes.index-node.replicaCount | int | `1` |  |
+| graphNodes.index-node-backfill.replicaCount | int | `1` |  |
+| graphNodes.index-node-head.replicaCount | int | `1` |  |
 | graphNodes.query-node.replicaCount | int | `1` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"graphprotocol/graph-node"` | Image for Graph Node |
