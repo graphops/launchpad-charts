@@ -102,5 +102,7 @@ graphNodeDefaults:
 graphNodes:
   query-node:
     replicaCount: 1
-  index-node:
+  index-node-head:
+    replicaCount: 1
+  index-node-backfill:
     replicaCount: 1
