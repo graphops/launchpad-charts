@@ -12,4 +12,14 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
     version: 0.1.0
-generated: "2022-04-14T20:10:00.686783499Z"
+  resource-injector:
+  - apiVersion: v2
+    created: "2022-06-01T20:36:53.123797178Z"
+    description: Manage Raw Kubernetes Resources using Helm
+    digest: da64fdfeaa92a849b298c62169b5d480198b564f8c9a460219c05002edc401ff
+    name: resource-injector
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-06-01T20:36:53.12392868Z"
