@@ -1,0 +1,44 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Usage
+
+Set `resources` to an array of Kubernetes Resources to inject into the Helm Release.
+
+Example:
+
+```yaml
+# values.yaml
+
+resources:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: mysecret
+    type: Opaque
+    data:
+      username: YWRtaW4=
+      password: MWYyZDFlMmU2N2Rm
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: my-service
+    spec:
+      selector:
+        app: MyApp
+      ports:
+        - protocol: TCP
+          port: 80
+          targetPort: 9376
+```
+
+{{- /* template "graphops.upgradingSection" . */ -}}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

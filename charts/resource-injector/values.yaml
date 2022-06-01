@@ -1,0 +1,19 @@
+# Default values for resource-injector.
+# This is a YAML-formatted file.
+
+# -- Resources in the release. Each entry should be YAML for a valid Kubernetes Resource.
+resources: []
+  # # resource example
+  # - apiVersion: bitnami.com/v1alpha1
+  #   kind: SealedSecret
+  #   metadata:
+  #     name: super-secret
+  #     namespace: test
+  #   spec:
+  #     encryptedData:
+  #       TESTER_SECRET: 'AgDXgxBqhd65Zf22pyunliiYuZGDy/8yDS9QaDy8mcR13Qp6irG0cDvoVw9g/wYcfpmxKoFIaHDzHl5L9wEeUdjITIPbFvMTrdRqYWRB9m3npC9gxWWAEoeWMj2xaO4eR1cVp2V0DcZ1AyC7ZS6sXfX78GMzM9V/6THfVBOeTcLvhuQ3hbHJitP0+27O7Xxka5AbhN3jyEVy0HdiTY38vZrGt9ovvh8fogfu1vs4IqOUC6XOzvpm//M1GBb3qdVx4zEY9Imoc66J596wLQxZbAPY2epHpOd6qP8uC1aMsFze/Ll/+fYLHTcLOezMufywXLM640F2LwOSjKW4u2qfVpRFOosjClFNsjrrtBpX9Qd49GlDwyAp6fTnlf5aFJjH6vZtj7gm2mtvRw5lVzpWC/PUQdryA1+28irqgIu5Kc7H65+DPSkkXNCNX57b6dPgsdh5rsHwqxY5b0/WYWWxiJ7uMHL7zqYwr4DyE4OR7hi5XRgYU7iRxq7JU58M+s254Iykm2RDlNva6CfBFVEg4RhuZeP/o5dxkwVu++jQZxBPUlxnHgFjB3oaDqGj+LJ9aeA3X9R56nN2OK4chBjzQ+Unqr/EN6s0TypCKUXGRAa9a7Yt9fbtWNnn8O1MC4a6JTSWn/fw+X/u22JW1ywbdY8E7pPunx2bM6gWtYfE5YndNsMoOAfkEiyZFHCslr2qvLuZrXe3SERzPw==' 
+  #     template:
+  #       metadata:
+  #         name: super-secret
+  #         namespace: test
+  #       type: Opaque
