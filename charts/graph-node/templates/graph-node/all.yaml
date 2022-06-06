@@ -2,7 +2,7 @@
        resources to be created for each group of Graph Nodes */}}
 
 {{- range $componentName, $componentValues := $.Values.graphNodes }}
-{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
+{{- $values := merge dict $.Values.graphNodeDefaults $componentValues }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
@@ -48,6 +48,10 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
       initContainers:
         - name: {{ $componentName }}-init
           image: busybox:stable
@@ -65,18 +69,30 @@ spec:
               drop:
                 - ALL
           command:
-            - erigon
-            - --datadir=/storage
-            - --private.api.addr=0.0.0.0:9090
-            - --http
-            - --http.addr=0.0.0.0
-            - --engine.addr=0.0.0.0
-            - --healthcheck
-            - --metrics
-            - --metrics.addr=0.0.0.0
+            - graph-node
+            - --config=/config/config.toml
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
+          {{- if (or $values.env $values.secretEnv) }}
+          env:
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- end }}
           ports:
             - name: http-query
               containerPort: 8000
@@ -93,6 +109,10 @@ spec:
             - name: http-metrics
               containerPort: 8040
               protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
           readinessProbe:
             # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
             # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
@@ -133,6 +153,20 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 {{/* END StatefulSet */}}
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  config.toml: |
+    {{ $values.config | nindent 4 }}
+
+{{/* END ConfigMap */}}
 {{/* START Services */}}
 ---
 apiVersion: v1
