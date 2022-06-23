@@ -44,9 +44,8 @@ grafana:
 statefulNode:
   # -- Additional CLI arguments to pass to `erigon`
   extraArgs:
-  - --torrent.download.rate=100mb
-  # - --chain=bsc
-  # - --prune=tc
+  - --torrent.download.rate=60mb # Download snapshot files faster
+  - --torrent.upload.rate=20mb # Support other nodes with more UL
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
@@ -121,7 +120,7 @@ rpcdaemons:
       - "--trace.maxtraces=10000" # optional
       - "--http.vhosts=*" # optional
       - "--http.corsdomain=*" # optional
-      - "--ws" # enable ws for dshackle
+      - "--ws" # enable ws
       - "--rpc.batch.concurrency=4" # default 2
       - "--state.cache=2000000" # default 1000000, only makes sense for rpcdaemon without --datadir
 

@@ -95,7 +95,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
 | statefulNode.affinity | object | `{}` |  |
 | statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| statefulNode.extraArgs | list | `["--torrent.download.rate=100mb"]` | Additional CLI arguments to pass to `erigon` |
+| statefulNode.extraArgs | list | `["--torrent.download.rate=60mb","--torrent.upload.rate=20mb"]` | Additional CLI arguments to pass to `erigon` |
 | statefulNode.nodeSelector | object | `{}` |  |
 | statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
