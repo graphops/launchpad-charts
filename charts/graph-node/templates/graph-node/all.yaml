@@ -1,8 +1,22 @@
 {{/* In order to keep the looping in one place, this file contains all
        resources to be created for each group of Graph Nodes */}}
 
+{{- $defaultIndexerNodeIds := list }}
 {{- range $componentName, $componentValues := $.Values.graphNodes }}
-{{- $values := merge dict $.Values.graphNodeDefaults $componentValues }}
+  {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
+  {{- if $values.includeInDefaultIndexerNodeIds }}
+    {{- range $replicaNumber := until (int $values.replicaCount) }}  
+      {{- $nodeId := print (include "graph-node.fullname" $) "-" $componentName "-" $replicaNumber }}
+      {{- $defaultIndexerNodeIds = append $defaultIndexerNodeIds $nodeId }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $generatedValues := dict "defaultIndexerNodeIds" $defaultIndexerNodeIds }}
+{{- $_ := set . "generated" $generatedValues }}
+
+{{- range $componentName, $componentValues := $.Values.graphNodes }}
+{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
@@ -19,7 +33,7 @@ metadata:
 spec:
   serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
-  strategy:
+  updateStrategy:
     type: RollingUpdate # Treat pods in the StatefulSet like those in a Deployment
   selector:
     matchLabels:
@@ -76,6 +90,10 @@ spec:
             {{- end }}
           {{- if (or $values.env $values.secretEnv) }}
           env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
@@ -164,7 +182,7 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 data:
   config.toml: |
-    {{ $values.config | nindent 4 }}
+    {{ print (tpl $values.config .) | nindent 4 }}
 
 {{/* END ConfigMap */}}
 {{/* START Services */}}

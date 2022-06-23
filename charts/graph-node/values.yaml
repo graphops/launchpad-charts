@@ -42,6 +42,10 @@ grafana:
   dashboardsConfigMapLabelValue: ""
 
 graphNodeDefaults:
+  replicaCount: 1
+
+  includeInDefaultIndexerNodeIds: true
+
   # -- Additional CLI arguments to pass to Graph Node
   extraArgs: []
 
@@ -113,26 +117,12 @@ graphNodeDefaults:
       key: password
 
   # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
-  config: |
-    [store]
-    [store.primary]
-    connection = "postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}"
-    weight = 0
-    pool_size = 10
-    [chains]
-    ingestor = "block-ingestor"
-    [chains.mainnet]
-    shard = "primary"
-    provider = [
-      { label = "eth-mainnet-lb", url = "http://${ETH_MAINNET_LB_URL}", features = [ "archive", "traces" ] }
-    ]
+  config: ""
 
 graphNodes:
-  block-ingestor:
-    replicaCount: 1
-  query-node:
-    replicaCount: 1
-  index-node-head:
-    replicaCount: 1
-  index-node-backfill:
-    replicaCount: 1
+  test:
+    replicaCount: 3
+  "no":
+    includeInDefaultIndexerNodeIds: false
+  another:
+    replicaCount: 2
