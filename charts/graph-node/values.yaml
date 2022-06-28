@@ -42,9 +42,11 @@ grafana:
   dashboardsConfigMapLabelValue: ""
 
 graphNodeDefaults:
+  enabled: true
+
   replicaCount: 1
 
-  includeInDefaultIndexerNodeIds: true
+  includeInIndexPools: []
 
   # -- Additional CLI arguments to pass to Graph Node
   extraArgs: []
@@ -104,9 +106,9 @@ graphNodeDefaults:
   affinity: {}
 
   env:
-    PG_PRIMARY_HOSTNAME: some-hostname
-    PG_PRIMARY_DATABASE: graph
-    ETH_MAINNET_LB_URL: eth-mainnet-lb
+    PG_PRIMARY_HOSTNAME:
+    PG_PRIMARY_DATABASE:
+    ETH_MAINNET_RPC_URL:
 
   secretEnv:
     PG_PRIMARY_USERNAME:
@@ -117,12 +119,29 @@ graphNodeDefaults:
       key: password
 
   # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
-  config: ""
+  config: |
+    [store]
+    [store.primary]
+    connection = "postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}"
+    # weight = 0
+    pool_size = 10
+    [chains]
+    ingestor = "block-ingestor"
+    [chains.mainnet]
+    shard = "primary"
+    provider = [
+      { label = "eth-mainnet", url = "${ETH_MAINNET_RPC_URL}", features = [ "archive", "traces" ] }
+    ]
+    [deployment]
+    [[deployment.rule]]
+    # There's no 'match', so any subgraph matches
+    shards = ["primary"]
+    indexers = {{ toJson .generated.indexPools.default }}
 
-graphNodes:
-  test:
-    replicaCount: 3
-  "no":
-    includeInDefaultIndexerNodeIds: false
-  another:
-    replicaCount: 2
+
+graphNodeGroups:
+  block-ingestor:
+    replicaCount: 1
+    includeInIndexPools: []
+    env:
+      NODE_ROLE: index-node
