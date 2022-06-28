@@ -1,23 +1,29 @@
 {{/* In order to keep the looping in one place, this file contains all
        resources to be created for each group of Graph Nodes */}}
 
-{{- $defaultIndexerNodeIds := list }}
-{{- range $componentName, $componentValues := $.Values.graphNodes }}
-  {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
-  {{- if $values.includeInDefaultIndexerNodeIds }}
-    {{- range $replicaNumber := until (int $values.replicaCount) }}  
-      {{- $nodeId := print (include "graph-node.fullname" $) "-" $componentName "-" $replicaNumber }}
-      {{- $defaultIndexerNodeIds = append $defaultIndexerNodeIds $nodeId }}
+{{- $indexPools := dict }}
+{{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
+  {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
+  {{- if $values.enabled }}
+    {{- range $indexPoolName := $values.includeInIndexPools }}
+      {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
+      {{- range $replicaNumber := until (int $values.replicaCount) }}
+        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber }}
+        {{- $indexPoolNodeIds = append $indexPoolNodeIds $nodeId }}
+      {{- end }}
+      {{- $_ := set $indexPools $indexPoolName $indexPoolNodeIds }}
     {{- end }}
   {{- end }}
 {{- end }}
 
-{{- $generatedValues := dict "defaultIndexerNodeIds" $defaultIndexerNodeIds }}
-{{- $_ := set . "generated" $generatedValues }}
+{{- $generated := dict "indexPools" $indexPools }}
+{{- $_ := set . "generated" $generated }}
 
-{{- range $componentName, $componentValues := $.Values.graphNodes }}
-{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $componentValues }}
-{{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
+{{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
+{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
+{{- if $values.enabled }}
+{{- $componentLabel := include "graph-node.componentLabelFor" $groupName }}
+{{- $graphNodeConfigToml := print (tpl $values.config $) }}
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
 {{- with $ }}
@@ -26,23 +32,25 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
+  serviceName: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
   updateStrategy:
-    type: RollingUpdate # Treat pods in the StatefulSet like those in a Deployment
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
   selector:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   template:
     metadata:
-      {{- with $values.podAnnotations }}
       annotations:
+        checksum/config.toml: {{ $graphNodeConfigToml | sha256sum }}
+      {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -65,16 +73,16 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+            name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
       initContainers:
-        - name: {{ $componentName }}-init
+        - name: {{ $groupName }}-init
           image: busybox:stable
           imagePullPolicy: IfNotPresent
           command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
           securityContext:
             privileged: true # required for ulimit change
       containers:
-        - name: {{ $componentName }}
+        - name: {{ $groupName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
@@ -162,7 +170,7 @@ spec:
                 - key: app.kubernetes.io/component
                   operator: In
                   values:
-                  - {{ $componentName }}
+                  - {{ $groupName }}
               topologyKey: "kubernetes.io/hostname"
       {{- end }}
       {{- end }}
@@ -176,13 +184,13 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 data:
   config.toml: |
-    {{ print (tpl $values.config .) | nindent 4 }}
+    {{ $graphNodeConfigToml | nindent 4 }}
 
 {{/* END ConfigMap */}}
 {{/* START Services */}}
@@ -190,7 +198,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
+  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -210,7 +218,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -233,7 +241,7 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -257,6 +265,10 @@ spec:
       {{- toYaml .Values.prometheus.serviceMonitors.relabelings | nindent 8 }}
       {{- end }}
 {{- end }}
+{{- end }}
 {{/* END ServiceMonitor */}}
+{{- else }}
+---
+# {{ $groupName }} group of graph-nodes is not enabled
 {{- end }}
 {{- end }}
