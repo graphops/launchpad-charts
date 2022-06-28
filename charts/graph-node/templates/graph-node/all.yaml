@@ -1,6 +1,9 @@
 {{/* In order to keep the looping in one place, this file contains all
-       resources to be created for each group of Graph Nodes */}}
+     resources to be created for each group of Graph Nodes */}}
 
+{{/* Here we build up generated template variables that can be interpolated
+     into the graph node config file. We also print out enabled graph-node groups
+     to make debugging easier */}}
 ### Enabled Graph Node Groups:
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
@@ -18,11 +21,14 @@
   {{- end }}
 {{- end }}
 
+{{/* Here we print out generated template variables that are available to help
+     with debugging */}}
 {{- $generated := dict "indexPools" $indexPools }}
 {{- $_ := set . "generated" $generated }}
 ### Generated Config Template Variables:
 #{{ toYaml $generated | indent 1 | replace "\n" "\n#" }}
 
+{{/* This loop is where we actually generate Kubernetes resource output */}}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
 {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
 {{- if $values.enabled }}
@@ -273,6 +279,6 @@ spec:
 {{/* END ServiceMonitor */}}
 {{- else }}
 ---
-# {{ $groupName }} group of graph-nodes is not enabled
+# {{ $groupName }} group is not enabled
 {{- end }}
 {{- end }}
