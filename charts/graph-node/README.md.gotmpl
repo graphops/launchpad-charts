@@ -7,11 +7,15 @@
 ## Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
-- Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## TODO
+# toolbox -> graphman, pgclient, indexer-agent (pod definition tty, stdin)
+# forced restart of pods when deps change (check dione)
+# docs for: graph node groups, default block ingestor, generated index pools, custom config templating, deployment rules configuration
 
 ## Quickstart
 
