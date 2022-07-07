@@ -42,9 +42,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
+| graphNodeConfigTemplate | string | `"[store]\n[store.primary]\nconnection = \"postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}\"\n# weight = 0\npool_size = 10\n[chains]\ningestor = \"block-ingestor\"\n[chains.mainnet]\nshard = \"primary\"\nprovider = [\n  { label = \"eth-mainnet\", url = \"${ETH_MAINNET_RPC_URL}\", features = [ \"archive\", \"traces\" ] }\n]\n[deployment]\n[[deployment.rule]]\n# There's no 'match', so any subgraph matches\nshards = [\"primary\"]\nindexers = {{ toJson .generated.indexPools.default }}\n"` | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |
 | graphNodeDefaults.affinity | object | `{}` |  |
 | graphNodeDefaults.affinityPresets.antiAffinityByHostname | bool | `true` |  |
-| graphNodeDefaults.config | string | `"[store]\n[store.primary]\nconnection = \"postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}\"\n# weight = 0\npool_size = 10\n[chains]\ningestor = \"block-ingestor\"\n[chains.mainnet]\nshard = \"primary\"\nprovider = [\n  { label = \"eth-mainnet\", url = \"${ETH_MAINNET_RPC_URL}\", features = [ \"archive\", \"traces\" ] }\n]\n[deployment]\n[[deployment.rule]]\n# There's no 'match', so any subgraph matches\nshards = [\"primary\"]\nindexers = {{ toJson .generated.indexPools.default }}\n"` | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |
 | graphNodeDefaults.enabled | bool | `true` |  |
 | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | string | `nil` |  |
 | graphNodeDefaults.env.PG_PRIMARY_DATABASE | string | `nil` |  |
@@ -84,6 +84,18 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| toolbox.affinity | object | `{}` |  |
+| toolbox.enabled | bool | `true` |  |
+| toolbox.env | object | `{}` |  |
+| toolbox.image.pullPolicy | string | `"IfNotPresent"` |  |
+| toolbox.image.repository | string | `"graphprotocol/graph-node"` |  |
+| toolbox.image.tag | string | `""` | Overrides the image tag |
+| toolbox.nodeSelector | object | `{}` |  |
+| toolbox.podAnnotations | object | `{}` |  |
+| toolbox.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
+| toolbox.resources | object | `{}` |  |
+| toolbox.secretEnv | object | `{}` |  |
+| toolbox.tolerations | list | `[]` |  |
 
 ## Contributing
 
