@@ -46,7 +46,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | graphNodeDefaults.affinity | object | `{}` |  |
 | graphNodeDefaults.affinityPresets.antiAffinityByHostname | bool | `true` |  |
 | graphNodeDefaults.enabled | bool | `true` |  |
-| graphNodeDefaults.env.DISABLE_BLOCK_INGESTOR | bool | `true` |  |
 | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | string | `nil` |  |
 | graphNodeDefaults.env.PGDATABASE | string | `nil` |  |
 | graphNodeDefaults.env.PGHOST | string | `nil` |  |
@@ -70,7 +69,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | graphNodeDefaults.service.type | string | `"ClusterIP"` |  |
 | graphNodeDefaults.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
 | graphNodeDefaults.tolerations | list | `[]` |  |
-| graphNodeGroups.block-ingestor.env.DISABLE_BLOCK_INGESTOR | bool | `false` |  |
 | graphNodeGroups.block-ingestor.env.NODE_ROLE | string | `"index-node"` |  |
 | graphNodeGroups.block-ingestor.includeInIndexPools | list | `[]` |  |
 | graphNodeGroups.block-ingestor.replicaCount | int | `1` |  |

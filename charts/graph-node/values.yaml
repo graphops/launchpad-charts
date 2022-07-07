@@ -162,7 +162,7 @@ graphNodeDefaults:
     PGPORT: 5432
     PGDATABASE:
     ETH_MAINNET_RPC_URL:
-    DISABLE_BLOCK_INGESTOR: true
+    # DISABLE_BLOCK_INGESTOR: true
 
   secretEnv:
     PGUSER:
@@ -178,4 +178,4 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
-      DISABLE_BLOCK_INGESTOR: false
+      # DISABLE_BLOCK_INGESTOR: ""
