@@ -49,7 +49,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | string | `nil` |  |
 | graphNodeDefaults.env.PGDATABASE | string | `nil` |  |
 | graphNodeDefaults.env.PGHOST | string | `nil` |  |
-| graphNodeDefaults.env.PGPORT | int | `5678` |  |
+| graphNodeDefaults.env.PGPORT | int | `5432` |  |
 | graphNodeDefaults.extraArgs | list | `[]` | Additional CLI arguments to pass to Graph Node |
 | graphNodeDefaults.includeInIndexPools[0] | string | `"default"` |  |
 | graphNodeDefaults.nodeSelector | object | `{}` |  |

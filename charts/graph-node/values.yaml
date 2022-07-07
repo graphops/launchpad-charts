@@ -70,9 +70,6 @@ toolbox:
   env: {}
 
   secretEnv: {}
-    # PG_PRIMARY_USERNAME:
-    #   secretName: postgres-config
-    #   key: username
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
 graphNodeConfigTemplate: |
@@ -163,7 +160,7 @@ graphNodeDefaults:
 
   env:
     PGHOST:
-    PGPORT: 5678
+    PGPORT: 5432
     PGDATABASE:
     ETH_MAINNET_RPC_URL:
 
