@@ -79,7 +79,7 @@ graphNodeConfigTemplate: |
     # weight = 0
     pool_size = 10
     [chains]
-    ingestor = "block-ingestor"
+    ingestor = "{{ .Release.Name }}-block-ingestor-0"
     [chains.mainnet]
     shard = "primary"
     provider = [
@@ -98,8 +98,7 @@ graphNodeDefaults:
 
   replicaCount: 1
 
-  includeInIndexPools:
-    - default
+  includeInIndexPools: []
 
   # -- Additional CLI arguments to pass to Graph Node
   extraArgs: []
@@ -163,6 +162,7 @@ graphNodeDefaults:
     PGPORT: 5432
     PGDATABASE:
     ETH_MAINNET_RPC_URL:
+    DISABLE_BLOCK_INGESTOR: true
 
   secretEnv:
     PGUSER:
@@ -178,3 +178,4 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
+      DISABLE_BLOCK_INGESTOR: false

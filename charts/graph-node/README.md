@@ -42,16 +42,17 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
 | grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| graphNodeConfigTemplate | string | `"[store]\n[store.primary]\nconnection = \"postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}\"\n# weight = 0\npool_size = 10\n[chains]\ningestor = \"block-ingestor\"\n[chains.mainnet]\nshard = \"primary\"\nprovider = [\n  { label = \"eth-mainnet\", url = \"${ETH_MAINNET_RPC_URL}\", features = [ \"archive\", \"traces\" ] }\n]\n[deployment]\n# Deployment rules match top to bottom\n[[deployment.rule]]\n# DEFAULT RULE\n# There's no 'match' field, so any subgraph that hasn't matched above, matches this rule\nshards = [\"primary\"]\nindexers = {{ toJson .generated.indexPools.default }}\n"` | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |
+| graphNodeConfigTemplate | string | `"[store]\n[store.primary]\nconnection = \"postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}\"\n# weight = 0\npool_size = 10\n[chains]\ningestor = \"{{ .Release.Name }}-block-ingestor-0\"\n[chains.mainnet]\nshard = \"primary\"\nprovider = [\n  { label = \"eth-mainnet\", url = \"${ETH_MAINNET_RPC_URL}\", features = [ \"archive\", \"traces\" ] }\n]\n[deployment]\n# Deployment rules match top to bottom\n[[deployment.rule]]\n# DEFAULT RULE\n# There's no 'match' field, so any subgraph that hasn't matched above, matches this rule\nshards = [\"primary\"]\nindexers = {{ toJson .generated.indexPools.default }}\n"` | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) |
 | graphNodeDefaults.affinity | object | `{}` |  |
 | graphNodeDefaults.affinityPresets.antiAffinityByHostname | bool | `true` |  |
 | graphNodeDefaults.enabled | bool | `true` |  |
+| graphNodeDefaults.env.DISABLE_BLOCK_INGESTOR | bool | `true` |  |
 | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | string | `nil` |  |
 | graphNodeDefaults.env.PGDATABASE | string | `nil` |  |
 | graphNodeDefaults.env.PGHOST | string | `nil` |  |
 | graphNodeDefaults.env.PGPORT | int | `5432` |  |
 | graphNodeDefaults.extraArgs | list | `[]` | Additional CLI arguments to pass to Graph Node |
-| graphNodeDefaults.includeInIndexPools[0] | string | `"default"` |  |
+| graphNodeDefaults.includeInIndexPools | list | `[]` |  |
 | graphNodeDefaults.nodeSelector | object | `{}` |  |
 | graphNodeDefaults.podAnnotations | object | `{}` | Annotations for the `Pod` |
 | graphNodeDefaults.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
@@ -69,6 +70,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | graphNodeDefaults.service.type | string | `"ClusterIP"` |  |
 | graphNodeDefaults.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
 | graphNodeDefaults.tolerations | list | `[]` |  |
+| graphNodeGroups.block-ingestor.env.DISABLE_BLOCK_INGESTOR | bool | `false` |  |
 | graphNodeGroups.block-ingestor.env.NODE_ROLE | string | `"index-node"` |  |
 | graphNodeGroups.block-ingestor.includeInIndexPools | list | `[]` |  |
 | graphNodeGroups.block-ingestor.replicaCount | int | `1` |  |
