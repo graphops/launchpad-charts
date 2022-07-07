@@ -151,7 +151,7 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
-          ports: {}
+          ports: []
           volumeMounts:
           - name: config
             mountPath: "/config"
@@ -200,9 +200,10 @@ spec:
   podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
   updateStrategy:
     type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
-    rollingUpdate:
-      maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
-      partition: 0
+    # Requires k8s 1.24+
+    # rollingUpdate:
+    #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+    #   partition: 0
   selector:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
