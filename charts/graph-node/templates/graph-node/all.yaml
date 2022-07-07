@@ -120,7 +120,10 @@ spec:
             - -c
             - |
               set -x
+              cat > $HOME/.profile<< EOF
               export ASD=ASD # construct env if we need to here
+              alias graphman='graphman --config=/config/config.toml' # set aliases, etc
+              EOF
               cat
             {{- with $toolboxValues.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
@@ -149,33 +152,13 @@ spec:
           {{- end }}
           {{- end }}
           ports: {}
-            # - name: http-query
-            #   containerPort: 8000
-            #   protocol: TCP
-            # - name: http-queryws
-            #   containerPort: 8001
-            #   protocol: TCP
-            # - name: http-admin
-            #   containerPort: 8020
-            #   protocol: TCP
-            # - name: http-status
-            #   containerPort: 8030
-            #   protocol: TCP
-            # - name: http-metrics
-            #   containerPort: 8040
-            #   protocol: TCP
           volumeMounts:
           - name: config
             mountPath: "/config"
             readOnly: true
           - name: scratchpad
             mountPath: "/scratchpad"
-          # readinessProbe:
-          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-          #   grpc:
-          #     port: 9090 # named ports not supported yet by grpc probes
+          readinessProbe: {}
           {{- with $toolboxValues.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

@@ -41,13 +41,14 @@ grafana:
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
-toolbox: # optionally with some persistent storage? warning non-declarative?
+toolbox:
+  # -- Enable deployment of a toolbox container containing preconfigured tools to interact with graph-node and the database
   enabled: true
   image:
-    repository: graphprotocol/graph-node
+    repository: graphprotocol/graph-node # replace with toolbox repo
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
-    tag: ""
+    tag: "" # replace with tag
     # -- Annotations for the `Pod`
   podAnnotations: {}
 
@@ -77,7 +78,7 @@ toolbox: # optionally with some persistent storage? warning non-declarative?
 graphNodeConfigTemplate: |
     [store]
     [store.primary]
-    connection = "postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}"
+    connection = "postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
     # weight = 0
     pool_size = 10
     [chains]
@@ -88,8 +89,10 @@ graphNodeConfigTemplate: |
       { label = "eth-mainnet", url = "${ETH_MAINNET_RPC_URL}", features = [ "archive", "traces" ] }
     ]
     [deployment]
+    # Deployment rules match top to bottom
     [[deployment.rule]]
-    # There's no 'match', so any subgraph matches
+    # DEFAULT RULE
+    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
     shards = ["primary"]
     indexers = {{ toJson .generated.indexPools.default }}
 
@@ -98,7 +101,8 @@ graphNodeDefaults:
 
   replicaCount: 1
 
-  includeInIndexPools: []
+  includeInIndexPools:
+    - default
 
   # -- Additional CLI arguments to pass to Graph Node
   extraArgs: []
@@ -158,15 +162,16 @@ graphNodeDefaults:
   affinity: {}
 
   env:
-    PG_PRIMARY_HOSTNAME:
-    PG_PRIMARY_DATABASE:
+    PGHOST:
+    PGPORT: 5678
+    PGDATABASE:
     ETH_MAINNET_RPC_URL:
 
   secretEnv:
-    PG_PRIMARY_USERNAME:
+    PGUSER:
       secretName: postgres-config
       key: username
-    PG_PRIMARY_PASSWORD:
+    PGPASSWORD:
       secretName: postgres-config
       key: password
 
