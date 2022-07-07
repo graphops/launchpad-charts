@@ -1,15 +1,13 @@
 {{/* In order to keep the looping in one place, this file contains all
      resources to be created for each group of Graph Nodes */}}
 
-{{/* Here we build up generated template variables that can be interpolated
-     into the graph node config file. We also print out enabled graph-node groups
-     to make debugging easier */}}
-### Enabled Graph Node Groups:
+{{/* First, let's generate create the configuration for all Graph node instances */}}
+{{/* Here we construct the generated template variables that can be interpolated
+     into the graph node config file */}}
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
   {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
   {{- if $values.enabled }}
-    {{- print "# - " $groupName " (" $values.replicaCount " replicas)" | nindent 0 }}
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
       {{- range $replicaNumber := until (int $values.replicaCount) }}
@@ -20,20 +18,187 @@
     {{- end }}
   {{- end }}
 {{- end }}
-
-{{/* Here we print out generated template variables that are available to help
-     with debugging */}}
+{{/* Here we inject the generated template variables into the context */}}
 {{- $generated := dict "indexPools" $indexPools }}
 {{- $_ := set . "generated" $generated }}
+{{/* Here we print out generated template variables that are available to help
+     with debugging */}}
 ### Generated Config Template Variables:
 #{{ toYaml $generated | indent 1 | replace "\n" "\n#" }}
+{{/* Finally, let's render the template and generate the ConfigMap resource */}}
+{{- $configTemplate := .Values.graphNodeConfigTemplate }}
+{{- $configToml := print (tpl $configTemplate $) }}
+{{/* We use a hash of the configuration to automate restarts of dependents */}}
+{{- $graphNodeConfigHash := $configToml | sha256sum }}
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "graph-node.fullname" . }}-config
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+data:
+  config.toml: |
+    {{ $configToml | nindent 4 }}
+{{/* END ConfigMap */}}
 
-{{/* This loop is where we actually generate Kubernetes resource output */}}
+{{/* Next up, we render the toolbox resources */}}
+{{/* The toolbox inherits graphNodeDefaults because graphman requires the same
+     configuration, which depends on graph node environment variable inputs */}}
+{{- $toolboxValues := mergeOverwrite dict $.Values.graphNodeDefaults $.Values.toolbox }}
+{{- $componentName := "toolbox" }}
+{{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
+{{/* START StatefulSet */}}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-node.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $toolboxValues.replicaCount | default 1 }}
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  updateStrategy:
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  selector:
+    matchLabels:
+      {{- include "graph-node.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: {{ $graphNodeConfigHash }}
+      {{- with $toolboxValues.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-node.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $toolboxValues.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
+      {{- with $toolboxValues.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $toolboxValues.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: scratchpad
+          emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "graph-node.fullname" . }}-config
+      initContainers:
+        - name: {{ $componentName }}-init
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          tty: true
+          stdin: true
+          workingDir: /scratchpad
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              export ASD=ASD # construct env if we need to here
+              cat
+            {{- with $toolboxValues.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          {{- if (or $toolboxValues.env $toolboxValues.secretEnv) }}
+          env:
+            # - name: NODE_ID
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.name
+          {{- with $toolboxValues.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $toolboxValues.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          ports: {}
+            # - name: http-query
+            #   containerPort: 8000
+            #   protocol: TCP
+            # - name: http-queryws
+            #   containerPort: 8001
+            #   protocol: TCP
+            # - name: http-admin
+            #   containerPort: 8020
+            #   protocol: TCP
+            # - name: http-status
+            #   containerPort: 8030
+            #   protocol: TCP
+            # - name: http-metrics
+            #   containerPort: 8040
+            #   protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+          - name: scratchpad
+            mountPath: "/scratchpad"
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
+          {{- with $toolboxValues.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $toolboxValues.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $toolboxValues.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $toolboxValues.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END StatefulSet */}}
+
+{{/* Finally, we render out the resources for our Graph Node groups */}}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
 {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
 {{- if $values.enabled }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $groupName }}
-{{- $graphNodeConfigToml := print (tpl $values.config $) }}
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
 {{- with $ }}
@@ -52,6 +217,9 @@ spec:
   podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
   updateStrategy:
     type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    rollingUpdate:
+      maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+      partition: 0
   selector:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
@@ -59,7 +227,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config.toml: {{ $graphNodeConfigToml | sha256sum }}
+        checksum/config.toml: {{ $graphNodeConfigHash }}
       {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -78,12 +246,10 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       volumes:
-        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
-          emptyDir: {}
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
+            name: {{ include "graph-node.fullname" . }}-config
       initContainers:
         - name: {{ $groupName }}-init
           image: busybox:stable
@@ -189,20 +355,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 {{/* END StatefulSet */}}
-{{/* START ConfigMap */}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
-  labels:
-    {{- include "graph-node.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
-data:
-  config.toml: |
-    {{ $graphNodeConfigToml | nindent 4 }}
-
-{{/* END ConfigMap */}}
 {{/* START Services */}}
 ---
 apiVersion: v1

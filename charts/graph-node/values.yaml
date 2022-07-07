@@ -41,6 +41,58 @@ grafana:
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
+toolbox: # optionally with some persistent storage? warning non-declarative?
+  enabled: true
+  image:
+    repository: graphprotocol/graph-node
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    tag: ""
+    # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  resources: {}
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  env: {}
+
+  secretEnv: {}
+    # PG_PRIMARY_USERNAME:
+    #   secretName: postgres-config
+    #   key: username
+
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+graphNodeConfigTemplate: |
+    [store]
+    [store.primary]
+    connection = "postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}"
+    # weight = 0
+    pool_size = 10
+    [chains]
+    ingestor = "block-ingestor"
+    [chains.mainnet]
+    shard = "primary"
+    provider = [
+      { label = "eth-mainnet", url = "${ETH_MAINNET_RPC_URL}", features = [ "archive", "traces" ] }
+    ]
+    [deployment]
+    [[deployment.rule]]
+    # There's no 'match', so any subgraph matches
+    shards = ["primary"]
+    indexers = {{ toJson .generated.indexPools.default }}
+
 graphNodeDefaults:
   enabled: true
 
@@ -117,27 +169,6 @@ graphNodeDefaults:
     PG_PRIMARY_PASSWORD:
       secretName: postgres-config
       key: password
-
-  # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
-  config: |
-    [store]
-    [store.primary]
-    connection = "postgresql://${PG_PRIMARY_USERNAME}:${PG_PRIMARY_PASSWORD}@${PG_PRIMARY_HOSTNAME}/${PG_PRIMARY_DATABASE}"
-    # weight = 0
-    pool_size = 10
-    [chains]
-    ingestor = "block-ingestor"
-    [chains.mainnet]
-    shard = "primary"
-    provider = [
-      { label = "eth-mainnet", url = "${ETH_MAINNET_RPC_URL}", features = [ "archive", "traces" ] }
-    ]
-    [deployment]
-    [[deployment.rule]]
-    # There's no 'match', so any subgraph matches
-    shards = ["primary"]
-    indexers = {{ toJson .generated.indexPools.default }}
-
 
 graphNodeGroups:
   block-ingestor:
