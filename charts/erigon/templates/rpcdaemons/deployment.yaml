@@ -59,6 +59,7 @@ spec:
             - --metrics
             - --metrics.addr=0.0.0.0
             - --metrics.port=6061
+            - --http.vhosts=*
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
