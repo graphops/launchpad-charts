@@ -94,10 +94,15 @@ proxyd:
 
 
 backends:
-  xyz:
-    enabled: true
-    rpcUrl: http://eth-mainnet-archive-0-erigon-rpcdaemons.ethereum:8545
+  # -- Sample backend configuration, disabled
+  sample-backend:
+    # -- Enable the backend
+    enabled: false
+    # -- Define the JSON-RPC URL for the backend
+    rpcUrl: http://your-node:8545
+    # -- Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47))
     extraConfig: {}
+    # -- Define which backend groups the backend is part of
     groups:
       - pruned
       - archive
@@ -111,6 +116,7 @@ rpcMethodMappings:
   trace_block: archive-trace
 
 # -- The configuration template that is rendered by Helm
+# @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
   [server]
   # Host for the proxyd RPC server to listen on.
