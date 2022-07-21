@@ -94,10 +94,10 @@ This diagram describes how this template is used to generate of the output confi
 graph LR
     a(Chart Values) -->|All Values| b{Context}
     a --> c[Helm]
-    c -->|Generated Values| b
+    c -->|Computed Values| b
     b --> d[Helm]
     a -->|Config Template| d
-    d -->|Render Template| e[Generated Config]
+    d -->|Render Template| e[Output Config]
 ```
 
 ### Computed Template Variables
