@@ -37,9 +37,9 @@ resources:
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| resources | list | `[]` | Resources in the release. Each entry should be YAML for a valid Kubernetes Resource. |
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | resources | Resources in the release. Each entry should be YAML for a valid Kubernetes Resource. | list | `[]` |
 
 ## Contributing
 

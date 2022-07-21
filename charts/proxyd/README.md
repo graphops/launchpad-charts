@@ -118,43 +118,43 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| backends.example-backend | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` | Example backend configuration, keep disabled |
-| backends.example-backend.enabled | bool | `false` | Enable the backend |
-| backends.example-backend.extraConfig | object | `{}` | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) |
-| backends.example-backend.groups | list | `["pruned","archive","archive-trace"]` | Define which backend groups the backend is part of |
-| backends.example-backend.rpcUrl | string | `"http://your-node:8545"` | Define the JSON-RPC URL for the backend |
-| configTemplate | string | See default template in [values.yaml](values.yaml) | The configuration template that is rendered by Helm |
-| fullnameOverride | string | `""` |  |
-| grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
-| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"ethereumoptimism/proxyd"` | Image for proxyd |
-| image.tag | string | Chart.appVersion | Overrides the image tag |
-| imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
-| nameOverride | string | `""` |  |
-| prometheus.serviceMonitors.enabled | bool | `false` | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
-| prometheus.serviceMonitors.interval | string | `nil` |  |
-| prometheus.serviceMonitors.labels | object | `{}` |  |
-| prometheus.serviceMonitors.relabelings | list | `[]` |  |
-| prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
-| proxyd.affinity | object | `{}` |  |
-| proxyd.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple instances on the same host |
-| proxyd.extraArgs | list | `[]` | Additional CLI arguments to pass to `proxyd` |
-| proxyd.nodeSelector | object | `{}` |  |
-| proxyd.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| proxyd.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| proxyd.resources | object | `{}` |  |
-| proxyd.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
-| proxyd.service.type | string | `"ClusterIP"` |  |
-| proxyd.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the proxyd process |
-| proxyd.tolerations | list | `[]` |  |
-| rpcMethodMappings | object | `{"eth_blockNumber":"archive","eth_call":"archive","eth_chainId":"pruned","trace_block":"archive-trace"}` | Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name) |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
-| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | backends.example-backend | Example backend configuration, keep disabled | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` |
+ | backends.example-backend.enabled | Enable the backend | bool | `false` |
+ | backends.example-backend.extraConfig | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) | object | `{}` |
+ | backends.example-backend.groups | Define which backend groups the backend is part of | list | `["pruned","archive","archive-trace"]` |
+ | backends.example-backend.rpcUrl | Define the JSON-RPC URL for the backend | string | `"http://your-node:8545"` |
+ | configTemplate | The configuration template that is rendered by Helm | string | See default template in [values.yaml](values.yaml) |
+ | fullnameOverride |  | string | `""` |
+ | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
+ | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | image.pullPolicy |  | string | `"IfNotPresent"` |
+ | image.repository | Image for proxyd | string | `"ethereumoptimism/proxyd"` |
+ | image.tag | Overrides the image tag | string | Chart.appVersion |
+ | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
+ | nameOverride |  | string | `""` |
+ | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
+ | prometheus.serviceMonitors.interval |  | string | `nil` |
+ | prometheus.serviceMonitors.labels |  | object | `{}` |
+ | prometheus.serviceMonitors.relabelings |  | list | `[]` |
+ | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | proxyd.affinity |  | object | `{}` |
+ | proxyd.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
+ | proxyd.extraArgs | Additional CLI arguments to pass to `proxyd` | list | `[]` |
+ | proxyd.nodeSelector |  | object | `{}` |
+ | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | proxyd.resources |  | object | `{}` |
+ | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
+ | proxyd.service.type |  | string | `"ClusterIP"` |
+ | proxyd.terminationGracePeriodSeconds | Amount of time to wait before force-killing the proxyd process | int | `60` |
+ | proxyd.tolerations |  | list | `[]` |
+ | rpcMethodMappings | Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name) | object | `{"eth_blockNumber":"archive","eth_call":"archive","eth_chainId":"pruned","trace_block":"archive-trace"}` |
+ | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
+ | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
+ | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
 
 ## Contributing
 
