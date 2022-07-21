@@ -1,0 +1,165 @@
+# Default values for proxyd.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for proxyd
+  repository: ethereumoptimism/proxyd
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: ""
+
+proxyd:
+  # -- Additional CLI arguments to pass to `proxyd`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the proxyd process
+  terminationGracePeriodSeconds: 60
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose JSON-RPC interface on
+      http-jsonrpc: 8545
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+
+backends:
+  xyz:
+    enabled: true
+    rpcUrl: http://eth-mainnet-archive-0-erigon-rpcdaemons.ethereum:8545
+    extraConfig: {}
+    groups:
+      - pruned
+      - archive
+      - archive-trace
+
+# -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
+rpcMethodMappings:
+  eth_call: archive
+  eth_chainId: pruned
+  eth_blockNumber: archive
+  trace_block: archive-trace
+
+# -- The configuration template that is rendered by Helm
+configTemplate: |
+  [server]
+  # Host for the proxyd RPC server to listen on.
+  rpc_host = "0.0.0.0"
+  # Port for the above.
+  rpc_port = 8545
+  # Maximum client body size, in bytes, that the server will accept.
+  max_body_size_bytes = 10485760
+  max_concurrent_rpcs = 1000
+
+  [metrics]
+  # Whether or not to enable Prometheus metrics.
+  enabled = true
+  # Host for the Prometheus metrics endpoint to listen on.
+  host = "0.0.0.0"
+  # Port for the above.
+  port = 9761
+
+  [backend]
+  # How long proxyd should wait for a backend response before timing out.
+  response_timeout_seconds = 5
+  # Maximum response size, in bytes, that proxyd will accept from a backend.
+  max_response_size_bytes = 5242880
+  # Maximum number of times proxyd will try a backend before giving up.
+  max_retries = 3
+  # Number of seconds to wait before trying an unhealthy backend again.
+  out_of_service_seconds = 300
+
+  [backends]
+  {{- range $backendName, $backendValues := .Values.backends }}
+  {{- if $backendValues.enabled }}
+  [backends.{{ $backendName }}]
+  rpc_url = {{ default "" $backendValues.rpcUrl | quote }}
+  ws_url = {{ default "ws://dummy-host-ws-disabled" $backendValues.wsUrl | quote }}
+  max_rps = {{ default 10 $backendValues.maxRps }}
+  {{- with $backendValues.extraConfig }}
+  {{ toToml . }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+
+  [backend_groups]
+  {{- range $groupName, $groupMembers := .generated.backendGroups }}
+  [backend_groups.{{ $groupName }}]
+  {{ toToml (dict "backends" $groupMembers) }}
+  {{- end }}
+  
+  # Mapping of methods to backend groups.
+  [rpc_method_mappings]
+  {{- range $method, $group := .Values.rpcMethodMappings }}
+  {{ $method }} = {{ $group | quote }}
+  {{- end }}
