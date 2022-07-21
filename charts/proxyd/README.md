@@ -11,6 +11,7 @@ Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/dev
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Preconfigured RPC method mappings for pruned, archive and archive trace nodes
 
 ## Quickstart
 
@@ -83,7 +84,7 @@ This Chart uses a template to allow customisation of the configuration passed in
 
 The template is defined under the `configTemplate` key in the [Values](#Values). You can override this value to specify your custom template.
 
-The Chart also generates additional values that are appended to the template context under the `generated` key. You can use these in your template too. See more below.
+The Chart also computes additional values that are appended to the template context. You can use these in your template too. See more below.
 
 This diagram describes how this template is used to generate of the output configuration.
 
@@ -97,11 +98,13 @@ graph LR
     d -->|Render Template| e[Generated Config]
 ```
 
-### Generated Template Variables
+### Computed Template Variables
 
-These can be used in the `configTemplate`.
+The following additional template variables are computed and injected into the template context under the `computed` key:
 
-- `.generated.backendGroups` - a `dict` of `group_name -> [backend1, backend2, backend3]`
+- `backendGroups` - a `dict` of `group_name -> [backend1_name, backend2_name, backend3_name]`
+
+You can use these keys in your custom configuration template (e.g. `{{ .computed.computedValue }}`).
 
 ## Upgrading
 
