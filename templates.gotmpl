@@ -21,3 +21,26 @@ This project uses [Semantic Versioning](https://semver.org/). Changes to the ver
 
 We do not recommend that you upgrade the application by overriding `image.tag`. Instead, use the version of the Chart that is built for your desired `appVersion`.
 {{- end -}}
+
+{{- define "graphops.configurationTemplateSection" -}}
+
+### Advanced Configuration
+
+This Chart uses a template to allow customisation of the configuration passed into {{ default "the application" .appName }}. The template is rendered by Helm, so you can use [Go templating](https://golangdocs.com/templates-in-golang) as well as [Helm context built-ins](https://helm.sh/docs/chart_template_guide/builtin_objects) to customise the configuration. This includes accessing and looping over any values that you pass into the Helm release.
+
+The template is defined under the `{{ default "configTemplate" .configTemplateKeyName }}` key in the [Values](#Values). You can override this value to specify your custom template.
+
+The Chart also generates additional values that are appended to the template context under the `{{ default "generated" .generatedKeyName }}` key. You can use these in your template too. See more below.
+
+This diagram describes how this template is used to generate of the output configuration.
+
+```mermaid
+graph LR
+    a(Chart Values) -->|All Values| b{Context}
+    a --> c[Helm]
+    c -->|Generated Values| b
+    b --> d[Helm]
+    a -->|Config Template| d
+    d -->|Render Template| e[Generated Config]
+```
+{{- end -}}

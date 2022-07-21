@@ -1,0 +1,158 @@
+{{/* This file contains the ConfigMap and Deployment for proxyd. They are colocated so
+     that a hash of the config easily can be used to automate restarts of Deployment Pods. */}}
+
+{{/* Here we construct the generated template variables that can be interpolated
+     into the proxyd config file */}}
+{{/* backendGroups keeps a map of groupName -> [backend1, backend2, backend3] */}}
+{{- $backendGroups := dict }}
+{{- range $backendName, $backendValues := $.Values.backends }}
+  {{- if $backendValues.enabled }}
+    {{- range $groupName := $backendValues.groups }}
+      {{- $backendNames := append (default list (get $backendGroups $groupName)) $backendName | uniq }}
+      {{- $_ := set $backendGroups $groupName $backendNames }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{/* Here we inject the generated template variables into the context */}}
+{{- $generated := dict "backendGroups" $backendGroups }}
+{{- $_ := set . "generated" $generated }}
+{{/* Here we print out generated template variables that are available to help
+     with debugging */}}
+### Generated Config Template Variables:
+#{{ toYaml $generated | indent 1 | replace "\n" "\n#" }}
+{{/* Finally, let's render the template and generate the ConfigMap resource */}}
+{{- $configTemplate := .Values.configTemplate }}
+{{- $configToml := print (tpl $configTemplate $) }}
+{{/* We use a hash of the configuration to automate restarts of dependents */}}
+{{- $configHash := $configToml | sha256sum }}
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "proxyd.fullname" . }}-config
+  labels:
+    {{- include "proxyd.labels" . | nindent 4 }}
+data:
+  config.toml: |
+    {{ $configToml | nindent 4 }}
+{{/* END ConfigMap */}}
+
+{{/* Now onto the actual Deployment for proxyd */}}
+{{- $values := $.Values.proxyd }}
+{{- $componentName := "proxyd" }}
+{{- $componentLabel := include "proxyd.componentLabelFor" $componentName }}
+{{/* START Deployment */}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxyd.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "proxyd.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "proxyd.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
+      {{- with $values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "proxyd.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "proxyd.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      initContainers:
+        - name: {{ $componentName }}-init # TODO remove when replaced with DaemonSet
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
+          securityContext:
+            privileged: true # required for ulimit change
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "proxyd.fullname" . }}-config
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - proxyd
+            - /config/config.toml
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+          ports:
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 9761
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - wget http://localhost:8545 2>&1 | grep '405 Method Not Allowed'
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END Deployment */}}
