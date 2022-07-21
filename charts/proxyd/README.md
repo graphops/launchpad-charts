@@ -115,13 +115,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backends.xyz.enabled | bool | `true` |  |
-| backends.xyz.extraConfig | object | `{}` |  |
-| backends.xyz.groups[0] | string | `"pruned"` |  |
-| backends.xyz.groups[1] | string | `"archive"` |  |
-| backends.xyz.groups[2] | string | `"archive-trace"` |  |
-| backends.xyz.rpcUrl | string | `"http://eth-mainnet-archive-0-erigon-rpcdaemons.ethereum:8545"` |  |
-| configTemplate | string | `"[server]\n# Host for the proxyd RPC server to listen on.\nrpc_host = \"0.0.0.0\"\n# Port for the above.\nrpc_port = 8545\n# Maximum client body size, in bytes, that the server will accept.\nmax_body_size_bytes = 10485760\nmax_concurrent_rpcs = 1000\n\n[metrics]\n# Whether or not to enable Prometheus metrics.\nenabled = true\n# Host for the Prometheus metrics endpoint to listen on.\nhost = \"0.0.0.0\"\n# Port for the above.\nport = 9761\n\n[backend]\n# How long proxyd should wait for a backend response before timing out.\nresponse_timeout_seconds = 5\n# Maximum response size, in bytes, that proxyd will accept from a backend.\nmax_response_size_bytes = 5242880\n# Maximum number of times proxyd will try a backend before giving up.\nmax_retries = 3\n# Number of seconds to wait before trying an unhealthy backend again.\nout_of_service_seconds = 300\n\n[backends]\n{{- range $backendName, $backendValues := .Values.backends }}\n{{- if $backendValues.enabled }}\n[backends.{{ $backendName }}]\nrpc_url = {{ default \"\" $backendValues.rpcUrl | quote }}\nws_url = {{ default \"ws://dummy-host-ws-disabled\" $backendValues.wsUrl | quote }}\nmax_rps = {{ default 10 $backendValues.maxRps }}\n{{- with $backendValues.extraConfig }}\n{{ toToml . }}\n{{- end }}\n{{- end }}\n{{- end }}\n\n[backend_groups]\n{{- range $groupName, $groupMembers := .generated.backendGroups }}\n[backend_groups.{{ $groupName }}]\n{{ toToml (dict \"backends\" $groupMembers) }}\n{{- end }}\n\n# Mapping of methods to backend groups.\n[rpc_method_mappings]\n{{- range $method, $group := .Values.rpcMethodMappings }}\n{{ $method }} = {{ $group | quote }}\n{{- end }}\n"` | The configuration template that is rendered by Helm |
+| backends.sample-backend | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` | Sample backend configuration, disabled |
+| backends.sample-backend.enabled | bool | `false` | Enable the backend |
+| backends.sample-backend.extraConfig | object | `{}` | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) |
+| backends.sample-backend.groups | list | `["pruned","archive","archive-trace"]` | Define which backend groups the backend is part of |
+| backends.sample-backend.rpcUrl | string | `"http://your-node:8545"` | Define the JSON-RPC URL for the backend |
+| configTemplate | string | See default template in [values.yaml](values.yaml) | The configuration template that is rendered by Helm |
 | fullnameOverride | string | `""` |  |
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
 | grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
