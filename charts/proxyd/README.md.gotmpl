@@ -1,0 +1,94 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+The load balanced JSON-RPC endpoint is available at `<release-name>-proxyd:8545` by default.
+
+## Configuring {{ template "chart.name" . }}
+
+### JSON-RPC Backends and Backend Groups
+
+Backends are the blockchain nodes that will sit behind proxyd and answer requests. When defining a backend, you will need to provide a URL, and assign it to a set of backend groups.
+
+The Chart configures 3 backend groups by default:
+- `pruned` - nodes that have pruned state
+- `archive` - nodes that have full archival state, but may not have trace data
+- `archive-trace` - nodes that have full archival state including trace data
+
+Example:
+```yaml
+backends:
+  erigon-pruned-0:
+    enabled: true
+    rpcUrl: http://eth-mainnet-pruned-0-erigon-rpcdaemons.ethereum:8545
+    extraConfig: {}
+    groups:
+      - pruned
+  erigon-pruned-1:
+    enabled: true
+    rpcUrl: http://eth-mainnet-pruned-1-erigon-rpcdaemons.ethereum:8545
+    extraConfig: {}
+    groups:
+      - pruned
+  erigon-archive-trace-0:
+    enabled: true
+    rpcUrl: http://eth-mainnet-archive-trace-0-erigon-rpcdaemons.ethereum:8545
+    extraConfig: {}
+    groups:
+      - pruned
+      - archive
+      - archive-trace
+  external-with-basic-auth:
+    enabled: true
+    rpcUrl: http://some-externa-service-that-requires-http-basic-auth
+    extraConfig:
+      username: your_username
+      password: your_password
+    groups:
+      - pruned
+      - archive
+```
+
+### JSON-RPC Method Mappings
+
+You can use your own groups by customising the mapping of RPC method name to backend group.
+
+The `rpcMethodMappings` key in [Values](#Values) is used to:
+
+- Define which JSON-RPC methods are allowed (anything not on the list will be rejected)
+- Define which backend group should be used to handle each method
+
+{{ template "graphops.configurationTemplateSection" }}
+
+### Generated Template Variables
+
+These can be used in the `configTemplate`.
+
+- `.generated.backendGroups` - a `dict` of `group_name -> [backend1, backend2, backend3]`
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

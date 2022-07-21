@@ -1,0 +1,12 @@
+{{- $values := $.Values.grafana }}
+{{- if $values.dashboards }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "proxyd.fullname" . }}-dashboards
+  labels:
+    {{- include "proxyd.labels" . | nindent 4 }}
+    {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
+data:
+{{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
+{{- end }}
