@@ -115,11 +115,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| backends.sample-backend | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` | Sample backend configuration, disabled |
-| backends.sample-backend.enabled | bool | `false` | Enable the backend |
-| backends.sample-backend.extraConfig | object | `{}` | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) |
-| backends.sample-backend.groups | list | `["pruned","archive","archive-trace"]` | Define which backend groups the backend is part of |
-| backends.sample-backend.rpcUrl | string | `"http://your-node:8545"` | Define the JSON-RPC URL for the backend |
+| backends.example-backend | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` | Example backend configuration, keep disabled |
+| backends.example-backend.enabled | bool | `false` | Enable the backend |
+| backends.example-backend.extraConfig | object | `{}` | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) |
+| backends.example-backend.groups | list | `["pruned","archive","archive-trace"]` | Define which backend groups the backend is part of |
+| backends.example-backend.rpcUrl | string | `"http://your-node:8545"` | Define the JSON-RPC URL for the backend |
 | configTemplate | string | See default template in [values.yaml](values.yaml) | The configuration template that is rendered by Helm |
 | fullnameOverride | string | `""` |  |
 | grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |

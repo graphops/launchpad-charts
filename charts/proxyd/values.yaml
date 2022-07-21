@@ -94,8 +94,8 @@ proxyd:
 
 
 backends:
-  # -- Sample backend configuration, disabled
-  sample-backend:
+  # -- Example backend configuration, keep disabled
+  example-backend:
     # -- Enable the backend
     enabled: false
     # -- Define the JSON-RPC URL for the backend
