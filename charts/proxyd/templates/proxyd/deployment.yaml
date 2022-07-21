@@ -1,7 +1,7 @@
 {{/* This file contains the ConfigMap and Deployment for proxyd. They are colocated so
      that a hash of the config easily can be used to automate restarts of Deployment Pods. */}}
 
-{{/* Here we construct the generated template variables that can be interpolated
+{{/* Here we construct the computed template variables that can be interpolated
      into the proxyd config file */}}
 {{/* backendGroups keeps a map of groupName -> [backend1, backend2, backend3] */}}
 {{- $backendGroups := dict }}
@@ -14,13 +14,13 @@
   {{- end }}
 {{- end }}
 
-{{/* Here we inject the generated template variables into the context */}}
-{{- $generated := dict "backendGroups" $backendGroups }}
-{{- $_ := set . "generated" $generated }}
-{{/* Here we print out generated template variables that are available to help
+{{/* Here we inject the computed template variables into the context */}}
+{{- $computed := dict "backendGroups" $backendGroups }}
+{{- $_ := set . "computed" $computed }}
+{{/* Here we print out computed template variables that are available to help
      with debugging */}}
-### Generated Config Template Variables:
-#{{ toYaml $generated | indent 1 | replace "\n" "\n#" }}
+### Computed Template Variables:
+#{{ toYaml $computed | indent 1 | replace "\n" "\n#" }}
 {{/* Finally, let's render the template and generate the ConfigMap resource */}}
 {{- $configTemplate := .Values.configTemplate }}
 {{- $configToml := print (tpl $configTemplate $) }}

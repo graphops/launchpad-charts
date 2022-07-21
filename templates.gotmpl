@@ -30,7 +30,7 @@ This Chart uses a template to allow customisation of the configuration passed in
 
 The template is defined under the `{{ default "configTemplate" .configTemplateKeyName }}` key in the [Values](#Values). You can override this value to specify your custom template.
 
-The Chart also generates additional values that are appended to the template context under the `{{ default "generated" .generatedKeyName }}` key. You can use these in your template too. See more below.
+The Chart also computes additional values that are appended to the template context. You can use these in your template too. See more below.
 
 This diagram describes how this template is used to generate of the output configuration.
 
