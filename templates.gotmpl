@@ -1,3 +1,10 @@
+{{ define "chart.valuesTable" }}
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+{{ range .Values }} | {{ .Key }} | {{ .Description | replace "|" "\\|" | default .AutoDescription }} | {{ .Type }} | {{ .Default | replace "|" "\\|" | default .AutoDefault }} |
+{{ end }}
+{{ end }}
+
 {{- define "graphops.title" -}}
 # {{ (cat .Name "Helm Chart") | title }}
 {{- end -}}

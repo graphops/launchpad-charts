@@ -56,59 +56,59 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| fullnameOverride | string | `""` |  |
-| grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
-| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"thorax/erigon"` | Image for Erigon |
-| image.tag | string | Chart.appVersion | Overrides the image tag |
-| imagePullSecrets | list | `[]` | Pull secrets required to fetch the Image |
-| nameOverride | string | `""` |  |
-| prometheus.serviceMonitors.enabled | bool | `false` | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
-| prometheus.serviceMonitors.interval | string | `nil` |  |
-| prometheus.serviceMonitors.labels | object | `{}` |  |
-| prometheus.serviceMonitors.relabelings | list | `[]` |  |
-| prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
-| rpcdaemons.affinity | object | `{}` |  |
-| rpcdaemons.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| rpcdaemons.autoscaling.enabled | bool | `false` | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. |
-| rpcdaemons.autoscaling.maxReplicas | int | `10` | Maximum number of replicas |
-| rpcdaemons.autoscaling.minReplicas | int | `2` | Minimum number of replicas |
-| rpcdaemons.autoscaling.targetCPUUtilizationPercentage | int | `75` |  |
-| rpcdaemons.autoscaling.targetMemoryUtilizationPercentage | string | `nil` |  |
-| rpcdaemons.enabled | bool | `true` | Enable a Deployment of rpcdaemons that can be scaled independently |
-| rpcdaemons.extraArgs | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` | Additional CLI arguments to pass to `rpcdaemon` |
-| rpcdaemons.nodeSelector | object | `{}` |  |
-| rpcdaemons.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| rpcdaemons.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| rpcdaemons.replicaCount | int | `2` | Number of rpcdaemons to run |
-| rpcdaemons.resources.limits | object | `{}` |  |
-| rpcdaemons.resources.requests | object | `{"cpu":"500m","memory":"4Gi"}` | Requests must be specified if you are using autoscaling |
-| rpcdaemons.service.ports.http-jsonrpc | int | `8545` | Service Port to expose rpcdaemons JSON-RPC interface on |
-| rpcdaemons.service.type | string | `"ClusterIP"` |  |
-| rpcdaemons.tolerations | list | `[]` |  |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
-| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| statefulNode.affinity | object | `{}` |  |
-| statefulNode.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Erigon instances on the same host |
-| statefulNode.extraArgs | list | `["--torrent.download.rate=60mb","--torrent.upload.rate=20mb"]` | Additional CLI arguments to pass to `erigon` |
-| statefulNode.nodeSelector | object | `{}` |  |
-| statefulNode.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| statefulNode.podSecurityContext | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` | Pod-wide security context |
-| statefulNode.resources | object | `{}` |  |
-| statefulNode.service.ports.grpc-erigon | int | `9090` | Service Port to expose Erigon GRPC interface on |
-| statefulNode.service.ports.http-engineapi | int | `8550` | Service Port to expose engineAPI interface on |
-| statefulNode.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
-| statefulNode.service.type | string | `"ClusterIP"` |  |
-| statefulNode.terminationGracePeriodSeconds | int | `60` | Amount of time to wait before force-killing the Erigon process |
-| statefulNode.tolerations | list | `[]` |  |
-| statefulNode.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage |
-| statefulNode.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for Erigon |
-| statefulNode.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for Erigon |
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | fullnameOverride |  | string | `""` |
+ | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
+ | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | image.pullPolicy |  | string | `"IfNotPresent"` |
+ | image.repository | Image for Erigon | string | `"thorax/erigon"` |
+ | image.tag | Overrides the image tag | string | Chart.appVersion |
+ | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
+ | nameOverride |  | string | `""` |
+ | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
+ | prometheus.serviceMonitors.interval |  | string | `nil` |
+ | prometheus.serviceMonitors.labels |  | object | `{}` |
+ | prometheus.serviceMonitors.relabelings |  | list | `[]` |
+ | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | rpcdaemons.affinity |  | object | `{}` |
+ | rpcdaemons.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | rpcdaemons.autoscaling.enabled | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. | bool | `false` |
+ | rpcdaemons.autoscaling.maxReplicas | Maximum number of replicas | int | `10` |
+ | rpcdaemons.autoscaling.minReplicas | Minimum number of replicas | int | `2` |
+ | rpcdaemons.autoscaling.targetCPUUtilizationPercentage |  | int | `75` |
+ | rpcdaemons.autoscaling.targetMemoryUtilizationPercentage |  | string | `nil` |
+ | rpcdaemons.enabled | Enable a Deployment of rpcdaemons that can be scaled independently | bool | `true` |
+ | rpcdaemons.extraArgs | Additional CLI arguments to pass to `rpcdaemon` | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` |
+ | rpcdaemons.nodeSelector |  | object | `{}` |
+ | rpcdaemons.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | rpcdaemons.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | rpcdaemons.replicaCount | Number of rpcdaemons to run | int | `2` |
+ | rpcdaemons.resources.limits |  | object | `{}` |
+ | rpcdaemons.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
+ | rpcdaemons.service.ports.http-jsonrpc | Service Port to expose rpcdaemons JSON-RPC interface on | int | `8545` |
+ | rpcdaemons.service.type |  | string | `"ClusterIP"` |
+ | rpcdaemons.tolerations |  | list | `[]` |
+ | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
+ | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
+ | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | statefulNode.affinity |  | object | `{}` |
+ | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `["--torrent.download.rate=60mb","--torrent.upload.rate=20mb"]` |
+ | statefulNode.nodeSelector |  | object | `{}` |
+ | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | statefulNode.resources |  | object | `{}` |
+ | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
+ | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8550` |
+ | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
+ | statefulNode.service.type |  | string | `"ClusterIP"` |
+ | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
+ | statefulNode.tolerations |  | list | `[]` |
+ | statefulNode.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
+ | statefulNode.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
+ | statefulNode.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for Erigon | string | `nil` |
 
 ## Contributing
 
