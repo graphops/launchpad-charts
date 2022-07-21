@@ -72,7 +72,7 @@ toolbox:
   secretEnv: {}
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
-graphNodeConfigTemplate: |
+configTemplate: |
     [store]
     [store.primary]
     connection = "postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
@@ -91,7 +91,7 @@ graphNodeConfigTemplate: |
     # DEFAULT RULE
     # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
     shards = ["primary"]
-    indexers = {{ toJson .generated.indexPools.default }}
+    indexers = {{ toJson .computed.indexPools.default }}
 
 graphNodeDefaults:
   enabled: true
@@ -162,7 +162,6 @@ graphNodeDefaults:
     PGPORT: 5432
     PGDATABASE:
     ETH_MAINNET_RPC_URL:
-    # DISABLE_BLOCK_INGESTOR: true
 
   secretEnv:
     PGUSER:
@@ -178,4 +177,3 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
-      # DISABLE_BLOCK_INGESTOR: ""

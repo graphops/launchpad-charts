@@ -2,7 +2,7 @@
      resources to be created for each group of Graph Nodes */}}
 
 {{/* First, let's generate create the configuration for all Graph node instances */}}
-{{/* Here we construct the generated template variables that can be interpolated
+{{/* Here we construct the computed template variables that can be interpolated
      into the graph node config file */}}
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
@@ -11,22 +11,22 @@
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
       {{- range $replicaNumber := until (int $values.replicaCount) }}
-        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber }}
+        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber | replace "-" "_" }}
         {{- $indexPoolNodeIds = append $indexPoolNodeIds $nodeId }}
       {{- end }}
       {{- $_ := set $indexPools $indexPoolName $indexPoolNodeIds }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{/* Here we inject the generated template variables into the context */}}
-{{- $generated := dict "indexPools" $indexPools }}
-{{- $_ := set . "generated" $generated }}
-{{/* Here we print out generated template variables that are available to help
+{{/* Here we inject the computed template variables into the context */}}
+{{- $computed := dict "indexPools" $indexPools }}
+{{- $_ := set . "computed" $computed }}
+{{/* Here we print out computed template variables that are available to help
      with debugging */}}
-### Generated Config Template Variables:
-#{{ toYaml $generated | indent 1 | replace "\n" "\n#" }}
+### Computed Template Variables:
+#{{ toYaml $computed | indent 1 | replace "\n" "\n#" }}
 {{/* Finally, let's render the template and generate the ConfigMap resource */}}
-{{- $configTemplate := .Values.graphNodeConfigTemplate }}
+{{- $configTemplate := .Values.configTemplate }}
 {{- $configToml := print (tpl $configTemplate $) }}
 {{/* We use a hash of the configuration to automate restarts of dependents */}}
 {{- $graphNodeConfigHash := $configToml | sha256sum }}
