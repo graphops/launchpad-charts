@@ -56,6 +56,18 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
     version: 0.1.0
+  proxyd:
+  - apiVersion: v2
+    appVersion: 3.8.9
+    created: "2022-07-22T21:23:06.082171058Z"
+    description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd)
+      inside Kubernetes with ease
+    digest: 2b8fcef8374d2aaca92a9a106d72f8500c6d56f6c89865e693d0b870f24e384e
+    name: proxyd
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/proxyd-0.1.0/proxyd-0.1.0.tgz
+    version: 0.1.0
   resource-injector:
   - apiVersion: v2
     created: "2022-06-01T20:36:53.123797178Z"
@@ -66,4 +78,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-07-08T12:01:14.993344767Z"
+generated: "2022-07-22T21:23:06.25856752Z"
