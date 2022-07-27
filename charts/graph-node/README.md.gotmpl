@@ -4,18 +4,17 @@
 
 {{ template "graphops.badges" . }}
 
-## Features
+## Introduction
+
+## Chart Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Configure multiple groups of Graph Nodes 
 
-## TODO
-# toolbox -> graphman, pgclient, indexer-agent (pod definition tty, stdin)
-# forced restart of pods when deps change (check dione)
-# docs for: graph node groups, default block ingestor, generated index pools, custom config templating, deployment rules configuration
 
 ## Quickstart
 
@@ -25,6 +24,58 @@ To install the chart with the release name `my-release`:
 $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/{{ template "chart.name" . }}
 ```
+
+## Configuring {{ template "chart.name" . }}
+
+### Graph Node Groups
+
+Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
+
+Groups are defined in values.yaml (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration, which will be applied to all groups, can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
+
+Example of configuration for single Graph Node instance that performs all tasks:
+
+```yaml
+
+```
+
+Example of a more advanced configuration:
+
+```yaml
+
+```
+
+#### Automatic Node IDs
+
+Graph Node instances are assigned an ID, allowing subgraphs to be assigned to a particular instance.
+
+This Chart deploys Graph Node using Kubernetes `StatefulSet`s, providing a consistent naming scheme for all `Pod`s. This is the basis for Node ID generation.
+
+The Node ID template follows the format: `<release-name>-<group-name>-<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`.
+
+### Configuring PostgreSQL backend
+
+...
+
+#### Sharding with multiple PostgreSQL backends
+
+...
+
+### Subgraph Deployment Rules
+
+...
+
+#### Index Pools
+
+{{ template "graphops.configurationTemplateSection" }}
+
+### Computed Template Variables
+
+The following additional template variables are computed and injected into the template context under the `computed` key:
+
+- `indexPools` - a `dict` of `index_pool_name -> [graph_node_id1, graph_node_id2, graph_node_id3]`
+
+You can use these keys in your custom configuration template (e.g. `{{`{{ .computed.computedValue }}`}}`).
 
 {{ template "graphops.upgradingSection" . }}
 
