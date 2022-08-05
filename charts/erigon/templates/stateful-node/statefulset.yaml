@@ -90,11 +90,19 @@ replicas: {{ include "erigon.replicas" $values }}
               SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
               # If enabled and snapshot URL has been provided, bootstrap snapshot
               if [ "${BOOTSTRAP_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                echo "Snapshot bootstrapping enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                  echo "Clearing existing chaindata..."
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
                   echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                else
+                  echo "Snapshot configuration already bootstrapped, continuing..."
                 fi
+              else
+                echo "Snapshot bootstrapping not enabled, skipping..."
               fi
           volumeMounts:
             - name: storage
