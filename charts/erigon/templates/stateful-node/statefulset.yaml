@@ -44,13 +44,40 @@ spec:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
       initContainers:
-        # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
         - name: {{ $componentName }}-init
           image: busybox:stable
           imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
-          securityContext:
-            privileged: true # required for ulimit change
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              STORAGE_PATH="/storage"
+              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              # If enabled and snapshot URL has been provided, bootstrap snapshot
+              if [ "${BOOTSTRAP_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                fi
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+          {{- if $values.fromSnapshot.enabled }}
+            - name: BOOTSTRAP_SNAPSHOT
+              value: "true"
+            - name: SNAPSHOT_URL
+              value: {{ $values.fromSnapshot.snapshotUrl }}
+          {{- end }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
