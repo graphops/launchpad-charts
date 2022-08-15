@@ -38,7 +38,7 @@ This chart uses [`config.toml` to configure Graph Node](https://github.com/graph
 
 Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
 
-Groups are defined in values.yaml (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
+Groups are defined in your `values.yaml` (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
 
 Example of configuration for single Graph Node instance that performs all tasks:
 
@@ -97,8 +97,6 @@ The following additional template variables are computed and injected into the t
 - `indexPools` - a `dict` of `index_pool_name -> [graph_node_id1, graph_node_id2, graph_node_id3]`
 
 You can use these keys in your custom configuration template (e.g. `{{ .computed.computedValue }}`).
-
-#### Index Pools
 
 ## Upgrading
 
@@ -175,3 +173,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 ## Contributing
 
 We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
+
+## See also
+
+Related Charts
+- [Erigon](charts/erigon)
+- [Proxyd](charts/proxyd)
