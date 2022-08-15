@@ -11,7 +11,7 @@
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
       {{- range $replicaNumber := until (int $values.replicaCount) }}
-        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber | replace "-" "_" }}
+        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber | replace "-" "_" }} # This replacement also happens in the default configTemplate in values.yaml
         {{- $indexPoolNodeIds = append $indexPoolNodeIds $nodeId }}
       {{- end }}
       {{- $_ := set $indexPools $indexPoolName $indexPoolNodeIds }}

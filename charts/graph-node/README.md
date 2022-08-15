@@ -144,6 +144,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.service.type |  | string | `"ClusterIP"` |
  | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | graphNodeDefaults.tolerations |  | list | `[]` |
+ | graphNodeGroups.block-ingestor.enabled |  | bool | `true` |
  | graphNodeGroups.block-ingestor.env.NODE_ROLE |  | string | `"index-node"` |
  | graphNodeGroups.block-ingestor.includeInIndexPools |  | list | `[]` |
  | graphNodeGroups.block-ingestor.replicaCount |  | int | `1` |
