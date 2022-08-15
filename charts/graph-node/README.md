@@ -31,8 +31,6 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/graph-node
 ```
 
-TODO specify basic `values.yaml` for quickstart
-
 ## Configuring graph-node
 
 This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
@@ -41,11 +39,13 @@ This chart uses [`config.toml` to configure Graph Node](https://github.com/graph
 
 By default, the chart defines three Graph Node Groups:
 
-1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the configuration template as the block ingestor node
+1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the [configuration template](#advanced-configuration) as the block ingestor node
 1. `index`, with a `replicaCount` of `1`, which is configured as an `index-node`, and included in the `default` [Index Pool for subgraph deployment purposes](#subgraph-deployment-rules)
 1. `query`, with a `replicaCount` of `1`, which is configured as a `query-node`
 
 See [Values](#Values) for how to scale these groups and apply other configuration. You can also disable these groups to define more advanced grouping configuration.
+
+Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
 
 ### Graph Node Groups
 
@@ -56,13 +56,84 @@ Groups are defined in your `values.yaml` (see [Values](#Values)) under the `grou
 Example of configuration for single Graph Node instance that performs all tasks:
 
 ```yaml
-TODO
+graphNodeDefaults:
+  env:
+    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+    PGDATABASE: graph
+    PGHOST: my-pg-host
+
+  secretEnv:   
+    PGUSER:
+      secretName: postgres-config
+      key: username
+    PGPASSWORD:
+      secretName: postgres-config
+      key: password
+
+graphNodeGroups:
+  combined:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: combined-mode
+blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
 ```
 
 Example of a more advanced configuration:
 
 ```yaml
-TODO
+graphNodeDefaults:
+  env:
+    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+    PGDATABASE: graph
+    PGHOST: my-pg-host
+
+  secretEnv:   
+    PGUSER:
+      secretName: postgres-config
+      key: username
+    PGPASSWORD:
+      secretName: postgres-config
+      key: password
+
+graphNodeGroups:
+  block-ingestor:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools: [] # do not index any subgraphs on the block ingestor
+    env:
+      NODE_ROLE: index-node
+  index:
+    enabled: true
+    replicaCount: 10
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: index-node
+  index-vip:
+    enabled: true
+    replicaCount: 2
+    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+    nodeSelector:
+      my_high_performance_node_label: "true"
+    env:
+      NODE_ROLE: index-node
+      ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
+  index-debug:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+    env:
+      NODE_ROLE: index-node
+      RUST_LOG: trace
+      GRAPH_LOG: trace
+  query:
+    enabled: true
+    replicaCount: 3
+    env:
+      NODE_ROLE: query-node
 ```
 
 ### Configuring PostgreSQL backend
@@ -131,48 +202,32 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
+ | blockIngestorGroupName | Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor. | string | `"block-ingestor"` |
  | configTemplate | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
- | graphNodeDefaults.affinity |  | object | `{}` |
- | graphNodeDefaults.affinityPresets.antiAffinityByHostname |  | bool | `true` |
- | graphNodeDefaults.enabled |  | bool | `true` |
- | graphNodeDefaults.env.ETH_MAINNET_RPC_URL |  | string | `nil` |
- | graphNodeDefaults.env.PGDATABASE |  | string | `nil` |
- | graphNodeDefaults.env.PGHOST |  | string | `nil` |
- | graphNodeDefaults.env.PGPORT |  | int | `5432` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"ETH_MAINNET_RPC_URL":null,"PGDATABASE":null,"PGHOST":null,"PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
+ | graphNodeDefaults.enabled | Enable the group | bool | `true` |
+ | graphNodeDefaults.env | Environment variables for Graph Node | object | `{"ETH_MAINNET_RPC_URL":null,"PGDATABASE":null,"PGHOST":null,"PGPORT":5432}` |
  | graphNodeDefaults.extraArgs | Additional CLI arguments to pass to Graph Node | list | `[]` |
- | graphNodeDefaults.includeInIndexPools |  | list | `[]` |
- | graphNodeDefaults.nodeSelector |  | object | `{}` |
+ | graphNodeDefaults.includeInIndexPools | List of Index Pools to include nodes in the group in | list | `[]` |
+ | graphNodeDefaults.nodeSelector | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) | object | `{}` |
  | graphNodeDefaults.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | graphNodeDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | graphNodeDefaults.replicaCount |  | int | `1` |
- | graphNodeDefaults.resources |  | object | `{}` |
- | graphNodeDefaults.secretEnv.PGPASSWORD.key |  | string | `"password"` |
- | graphNodeDefaults.secretEnv.PGPASSWORD.secretName |  | string | `"postgres-config"` |
- | graphNodeDefaults.secretEnv.PGUSER.key |  | string | `"username"` |
- | graphNodeDefaults.secretEnv.PGUSER.secretName |  | string | `"postgres-config"` |
+ | graphNodeDefaults.replicaCount | The number of nodes to run in the group | int | `1` |
+ | graphNodeDefaults.resources | Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits) for each node in the group | object | `{}` |
+ | graphNodeDefaults.secretEnv | Environment variables that come from `Secret`s | object | `{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}}` |
  | graphNodeDefaults.service.ports.http-admin | Service Port to expose Graph Node Admin endpoint on | int | `8020` |
  | graphNodeDefaults.service.ports.http-metrics | Service Port to expose Graph Node Metrics endpoint on | int | `8040` |
  | graphNodeDefaults.service.ports.http-query | Service Port to expose Graph Node Query endpoint on | int | `8000` |
  | graphNodeDefaults.service.ports.http-queryws | Service Port to expose Graph Node Websocket Query endpoint on | int | `8001` |
  | graphNodeDefaults.service.ports.http-status | Service Port to expose Graph Node Status endpoint on | int | `8030` |
- | graphNodeDefaults.service.type |  | string | `"ClusterIP"` |
  | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
- | graphNodeDefaults.tolerations |  | list | `[]` |
- | graphNodeGroups.block-ingestor.enabled |  | bool | `true` |
- | graphNodeGroups.block-ingestor.env.NODE_ROLE |  | string | `"index-node"` |
- | graphNodeGroups.block-ingestor.includeInIndexPools |  | list | `[]` |
- | graphNodeGroups.block-ingestor.replicaCount |  | int | `1` |
- | graphNodeGroups.index.enabled |  | bool | `true` |
- | graphNodeGroups.index.env.NODE_ROLE |  | string | `"index-node"` |
- | graphNodeGroups.index.includeInIndexPools[0] |  | string | `"default"` |
- | graphNodeGroups.index.replicaCount |  | int | `1` |
- | graphNodeGroups.query.enabled |  | bool | `true` |
- | graphNodeGroups.query.env.NODE_ROLE |  | string | `"query-node"` |
- | graphNodeGroups.query.replicaCount |  | int | `1` |
+ | graphNodeDefaults.tolerations | Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) | list | `[]` |
+ | graphNodeGroups | Groups of Graph Nodes to deploy | object | `{"block-ingestor":{"enabled":true,"env":{"NODE_ROLE":"index-node"},"includeInIndexPools":[],"replicaCount":1},"index":{"enabled":true,"env":{"NODE_ROLE":"index-node"},"includeInIndexPools":["default"],"replicaCount":1},"query":{"enabled":true,"env":{"NODE_ROLE":"query-node"},"replicaCount":1}}` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for Graph Node | string | `"graphprotocol/graph-node"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
