@@ -179,3 +179,15 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
+  index:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: index-node
+  query:
+    enabled: true
+    replicaCount: 1
+    env:
+      NODE_ROLE: query-node
