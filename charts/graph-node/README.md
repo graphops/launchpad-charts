@@ -6,8 +6,9 @@ Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) insid
 
 ## Introduction
 
+[Graph Node](https://github.com/graphprotocol/graph-node) is key component of [The Graph](https://thegraph.com), a decentralised blockchain data protocol. Graph Node supports executing [Subgraphs](https://thegraph.com/docs/en/developing/creating-a-subgraph/) to extract, process and index blockchain data. It also provides a rich GraphQL query interface to inspect and interrogate this data. [Learn more](https://github.com/graphprotocol/graph-node/blob/master/docs/getting-started.md).
+
 TODO
-- write brief intro to graph-node
 - finish initial docs
 - add dashboards to chart
 - move toolbox into separate chart
@@ -29,6 +30,8 @@ To install the chart with the release name `my-release`:
 $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/graph-node
 ```
+
+TODO specify basic `values.yaml` for quickstart
 
 ## Configuring graph-node
 
@@ -110,7 +113,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
- | configTemplate | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) | string | `"[store]\n[store.primary]\nconnection = \"postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}\"\n# weight = 0\npool_size = 10\n[chains]\ningestor = \"{{ .Release.Name }}-block-ingestor-0\"\n[chains.mainnet]\nshard = \"primary\"\nprovider = [\n  { label = \"eth-mainnet\", url = \"${ETH_MAINNET_RPC_URL}\", features = [ \"archive\", \"traces\" ] }\n]\n[deployment]\n# Deployment rules match top to bottom\n[[deployment.rule]]\n# DEFAULT RULE\n# There's no 'match' field, so any subgraph that hasn't matched above, matches this rule\nshards = [\"primary\"]\nindexers = {{ toJson .computed.indexPools.default }}\n"` |
+ | configTemplate | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |

@@ -72,6 +72,7 @@ toolbox:
   secretEnv: {}
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
     [store]
     [store.primary]
