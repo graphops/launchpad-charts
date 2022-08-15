@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.26.0](https://img.shields.io/badge/AppVersion-v0.26.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -37,6 +37,16 @@ TODO specify basic `values.yaml` for quickstart
 
 This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
 
+### Default Configuration
+
+By default, the chart defines three Graph Node Groups:
+
+1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the configuration template as the block ingestor node
+1. `index`, with a `replicaCount` of `1`, which is configured as an `index-node`, and included in the `default` [Index Pool for subgraph deployment purposes](#subgraph-deployment-rules)
+1. `query`, with a `replicaCount` of `1`, which is configured as a `query-node`
+
+See [Values](#Values) for how to scale these groups and apply other configuration. You can also disable these groups to define more advanced grouping configuration.
+
 ### Graph Node Groups
 
 Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
@@ -64,6 +74,14 @@ TODO
 TODO
 
 ### Subgraph Deployment Rules
+
+By default, the configuration template defines a single subgraph deployment rule that assigns all subgraphs to the set of nodes defined by the `default` index pool.
+
+#### Index Pools
+
+An Index Pool is a set of Graph Nodes (an array of [Node ID](#automatic-node-ids)s) that are grouped together for subgraph indexing purposes. You can include a Graph Node Group and its nodes in an Index Pool by specifying the pool name in that Group's `includeInIndexPools` configuration.
+
+The Chart automatically generates Index Pools basic on the Group configuration you specify in [Values](#Values).
 
 #### Automatic Node IDs
 
@@ -148,6 +166,13 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeGroups.block-ingestor.env.NODE_ROLE |  | string | `"index-node"` |
  | graphNodeGroups.block-ingestor.includeInIndexPools |  | list | `[]` |
  | graphNodeGroups.block-ingestor.replicaCount |  | int | `1` |
+ | graphNodeGroups.index.enabled |  | bool | `true` |
+ | graphNodeGroups.index.env.NODE_ROLE |  | string | `"index-node"` |
+ | graphNodeGroups.index.includeInIndexPools[0] |  | string | `"default"` |
+ | graphNodeGroups.index.replicaCount |  | int | `1` |
+ | graphNodeGroups.query.enabled |  | bool | `true` |
+ | graphNodeGroups.query.env.NODE_ROLE |  | string | `"query-node"` |
+ | graphNodeGroups.query.replicaCount |  | int | `1` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for Graph Node | string | `"graphprotocol/graph-node"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
