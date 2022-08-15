@@ -6,15 +6,20 @@
 
 ## Introduction
 
+TODO
+- write brief intro to graph-node
+- finish initial docs
+- add dashboards to chart
+- move toolbox into separate chart
+
 ## Chart Features
 
-- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
-- Configure multiple groups of Graph Nodes 
-
+- Easily define groups of Graph Nodes and split responsibilities across them
 
 ## Quickstart
 
@@ -27,23 +32,35 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 ## Configuring {{ template "chart.name" . }}
 
+This chart uses `config.toml` to configure Graph Node. The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
+
 ### Graph Node Groups
 
 Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
 
-Groups are defined in values.yaml (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration, which will be applied to all groups, can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
+Groups are defined in values.yaml (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
 
 Example of configuration for single Graph Node instance that performs all tasks:
 
 ```yaml
-
+TODO
 ```
 
 Example of a more advanced configuration:
 
 ```yaml
-
+TODO
 ```
+
+### Configuring PostgreSQL backend
+
+TODO
+
+#### Sharding with multiple PostgreSQL backends
+
+TODO
+
+### Subgraph Deployment Rules
 
 #### Automatic Node IDs
 
@@ -51,21 +68,7 @@ Graph Node instances are assigned an ID, allowing subgraphs to be assigned to a 
 
 This Chart deploys Graph Node using Kubernetes `StatefulSet`s, providing a consistent naming scheme for all `Pod`s. This is the basis for Node ID generation.
 
-The Node ID template follows the format: `<release-name>-<group-name>-<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`.
-
-### Configuring PostgreSQL backend
-
-...
-
-#### Sharding with multiple PostgreSQL backends
-
-...
-
-### Subgraph Deployment Rules
-
-...
-
-#### Index Pools
+The Node ID template follows the format: `<release-name>_<group-name>_<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`. All instances of `-` are replaced with `_` to conform with `graph-node` naming requirements. Note: This will change if/when `graph-node` allows `-` in Node IDs.
 
 {{ template "graphops.configurationTemplateSection" }}
 
@@ -76,6 +79,8 @@ The following additional template variables are computed and injected into the t
 - `indexPools` - a `dict` of `index_pool_name -> [graph_node_id1, graph_node_id2, graph_node_id3]`
 
 You can use these keys in your custom configuration template (e.g. `{{`{{ .computed.computedValue }}`}}`).
+
+#### Index Pools
 
 {{ template "graphops.upgradingSection" . }}
 
