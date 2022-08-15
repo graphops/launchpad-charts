@@ -176,6 +176,5 @@ We welcome and appreciate your contributions! Please see the [Contributor Guide]
 
 ## See also
 
-Related Charts
-- [Erigon](charts/erigon)
-- [Proxyd](charts/proxyd)
+- [Erigon](../erigon)
+- [Proxyd](../proxyd)
