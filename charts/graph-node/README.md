@@ -35,7 +35,13 @@ $ helm install my-release graphops/graph-node
 
 This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
 
-### Default Configuration
+### Graph Node Groups
+
+Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
+
+Groups are defined in your `values.yaml` (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
+
+#### Default Configuration
 
 By default, the chart defines three Graph Node Groups:
 
@@ -47,94 +53,90 @@ See [Values](#Values) for how to scale these groups and apply other configuratio
 
 Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
 
-### Graph Node Groups
-
-Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
-
-Groups are defined in your `values.yaml` (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
-
-Example of configuration for single Graph Node instance that performs all tasks:
-
-```yaml
-graphNodeDefaults:
-  env:
-    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
-    PGDATABASE: graph
-    PGHOST: my-pg-host
-
-  secretEnv:   
-    PGUSER:
-      secretName: postgres-config
-      key: username
-    PGPASSWORD:
-      secretName: postgres-config
-      key: password
-
-graphNodeGroups:
-  combined:
-    enabled: true
-    replicaCount: 1
-    includeInIndexPools:
-      - default
+<details>
+  <summary>Example of configuration for single Graph Node instance that performs all tasks:</summary>
+  ```yaml
+  graphNodeDefaults:
     env:
-      NODE_ROLE: combined-mode
-blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
-```
+      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+      PGDATABASE: graph
+      PGHOST: my-pg-host
 
-Example of a more advanced configuration:
+    secretEnv:   
+      PGUSER:
+        secretName: postgres-config
+        key: username
+      PGPASSWORD:
+        secretName: postgres-config
+        key: password
 
-```yaml
-graphNodeDefaults:
-  env:
-    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
-    PGDATABASE: graph
-    PGHOST: my-pg-host
+  graphNodeGroups:
+    combined:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools:
+        - default
+      env:
+        NODE_ROLE: combined-mode
+  blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
+  ```
+</details>
+<details>
+  <summary>Example of a more advanced configuration:</summary>
 
-  secretEnv:   
-    PGUSER:
-      secretName: postgres-config
-      key: username
-    PGPASSWORD:
-      secretName: postgres-config
-      key: password
+  ```yaml
+  graphNodeDefaults:
+    env:
+      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+      PGDATABASE: graph
+      PGHOST: my-pg-host
 
-graphNodeGroups:
-  block-ingestor:
-    enabled: true
-    replicaCount: 1
-    includeInIndexPools: [] # do not index any subgraphs on the block ingestor
-    env:
-      NODE_ROLE: index-node
-  index:
-    enabled: true
-    replicaCount: 10
-    includeInIndexPools:
-      - default
-    env:
-      NODE_ROLE: index-node
-  index-vip:
-    enabled: true
-    replicaCount: 2
-    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
-    nodeSelector:
-      my_high_performance_node_label: "true"
-    env:
-      NODE_ROLE: index-node
-      ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
-  index-debug:
-    enabled: true
-    replicaCount: 1
-    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
-    env:
-      NODE_ROLE: index-node
-      RUST_LOG: trace
-      GRAPH_LOG: trace
-  query:
-    enabled: true
-    replicaCount: 3
-    env:
-      NODE_ROLE: query-node
-```
+    secretEnv:   
+      PGUSER:
+        secretName: postgres-config
+        key: username
+      PGPASSWORD:
+        secretName: postgres-config
+        key: password
+
+  graphNodeGroups:
+    block-ingestor:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools: [] # do not index any subgraphs on the block ingestor
+      env:
+        NODE_ROLE: index-node
+    index:
+      enabled: true
+      replicaCount: 10
+      includeInIndexPools:
+        - default
+      env:
+        NODE_ROLE: index-node
+    index-vip:
+      enabled: true
+      replicaCount: 2
+      includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+      nodeSelector:
+        my_high_performance_node_label: "true"
+      env:
+        NODE_ROLE: index-node
+        ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
+    index-debug:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+      env:
+        NODE_ROLE: index-node
+        RUST_LOG: trace
+        GRAPH_LOG: trace
+    query:
+      enabled: true
+      replicaCount: 3
+      env:
+        NODE_ROLE: query-node
+  ```
+</details>
 
 ### Configuring PostgreSQL backend
 
