@@ -32,7 +32,7 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 ## Configuring {{ template "chart.name" . }}
 
-This chart uses `config.toml` to configure Graph Node. The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
+This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
 
 ### Graph Node Groups
 
