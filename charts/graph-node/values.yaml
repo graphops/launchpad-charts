@@ -80,7 +80,7 @@ configTemplate: |
     # weight = 0
     pool_size = 10
     [chains]
-    ingestor = "{{ print (include "graph-node.fullname" $) "-" "block-ingestor" "-" 0 | replace "-" "_" }}"
+    ingestor = "{{ print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0 | replace "-" "_" }}"
     [chains.mainnet]
     shard = "primary"
     provider = [
@@ -94,11 +94,15 @@ configTemplate: |
     shards = ["primary"]
     indexers = {{ toJson .computed.indexPools.default }}
 
+# -- Default values for all Group Node Groups
 graphNodeDefaults:
+  # -- Enable the group
   enabled: true
 
+  # -- The number of nodes to run in the group
   replicaCount: 1
 
+  # -- List of Index Pools to include nodes in the group in
   includeInIndexPools: []
 
   # -- Additional CLI arguments to pass to Graph Node
@@ -135,6 +139,7 @@ graphNodeDefaults:
       # -- Service Port to expose Graph Node Metrics endpoint on
       http-metrics: 8040
 
+  # -- Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits) for each node in the group
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -149,29 +154,38 @@ graphNodeDefaults:
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
 
+  # -- Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
   nodeSelector: {}
 
+  # -- Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
   tolerations: []
 
   affinityPresets:
+    # -- Create anti-affinity rule to deter scheduling replicas on the same host
     antiAffinityByHostname: true
 
   affinity: {}
 
+  # -- Environment variables for Graph Node
   env:
     PGHOST:
     PGPORT: 5432
     PGDATABASE:
     ETH_MAINNET_RPC_URL:
 
+  # -- Environment variables that come from `Secret`s
   secretEnv:
     PGUSER:
-      secretName: postgres-config
-      key: username
+      secretName:
+      key:
     PGPASSWORD:
-      secretName: postgres-config
-      key: password
+      secretName:
+      key:
 
+# -- Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor.
+blockIngestorGroupName: block-ingestor
+
+# -- Groups of Graph Nodes to deploy
 graphNodeGroups:
   block-ingestor:
     enabled: true

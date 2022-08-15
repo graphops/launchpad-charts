@@ -31,8 +31,6 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
-TODO specify basic `values.yaml` for quickstart
-
 ## Configuring {{ template "chart.name" . }}
 
 This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
@@ -41,11 +39,13 @@ This chart uses [`config.toml` to configure Graph Node](https://github.com/graph
 
 By default, the chart defines three Graph Node Groups:
 
-1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the configuration template as the block ingestor node
+1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the [configuration template](#advanced-configuration) as the block ingestor node
 1. `index`, with a `replicaCount` of `1`, which is configured as an `index-node`, and included in the `default` [Index Pool for subgraph deployment purposes](#subgraph-deployment-rules)
 1. `query`, with a `replicaCount` of `1`, which is configured as a `query-node`
 
 See [Values](#Values) for how to scale these groups and apply other configuration. You can also disable these groups to define more advanced grouping configuration.
+
+Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
 
 ### Graph Node Groups
 
@@ -56,13 +56,84 @@ Groups are defined in your `values.yaml` (see [Values](#Values)) under the `grou
 Example of configuration for single Graph Node instance that performs all tasks:
 
 ```yaml
-TODO
+graphNodeDefaults:
+  env:
+    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+    PGDATABASE: graph
+    PGHOST: my-pg-host
+
+  secretEnv:    
+    PGUSER:
+      secretName: postgres-config
+      key: username
+    PGPASSWORD:
+      secretName: postgres-config
+      key: password
+
+graphNodeGroups:
+  combined:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: combined-mode
+blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
 ```
 
 Example of a more advanced configuration:
 
 ```yaml
-TODO
+graphNodeDefaults:
+  env:
+    ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+    PGDATABASE: graph
+    PGHOST: my-pg-host
+
+  secretEnv:    
+    PGUSER:
+      secretName: postgres-config
+      key: username
+    PGPASSWORD:
+      secretName: postgres-config
+      key: password
+
+graphNodeGroups:
+  block-ingestor:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools: [] # do not index any subgraphs on the block ingestor
+    env:
+      NODE_ROLE: index-node
+  index:
+    enabled: true
+    replicaCount: 10
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: index-node
+  index-vip:
+    enabled: true
+    replicaCount: 2
+    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+    nodeSelector:
+      my_high_performance_node_label: "true"
+    env:
+      NODE_ROLE: index-node
+      ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
+  index-debug:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+    env:
+      NODE_ROLE: index-node
+      RUST_LOG: trace
+      GRAPH_LOG: trace
+  query:
+    enabled: true
+    replicaCount: 3
+    env:
+      NODE_ROLE: query-node
 ```
 
 ### Configuring PostgreSQL backend
