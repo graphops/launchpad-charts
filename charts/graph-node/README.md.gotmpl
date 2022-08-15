@@ -54,7 +54,7 @@ See [Values](#Values) for how to scale these groups and apply other configuratio
 Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
 
 <details>
-  <summary>Example of configuration for single Graph Node instance that performs all tasks:</summary>
+  <summary>**Groups Config Example**: Single combined Graph Node that performs all functions</summary>
 
   ```yaml
   graphNodeDefaults:
@@ -84,7 +84,7 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
 </details>
 
 <details>
-  <summary>Example of a more advanced configuration:</summary>
+  <summary>**Groups Config Example**: Separated block ingestor, index nodes, query nodes, with dedicated groups for debugging subgraph indexing and VIP subgraph deployments</summary>
 
   ```yaml
   graphNodeDefaults:
@@ -138,6 +138,8 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
       env:
         NODE_ROLE: query-node
   ```
+
+  In this example, subgraph deployments could be manually reassigned to a `index-debug` to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
 </details>
 
 ### Configuring PostgreSQL backend
