@@ -54,7 +54,7 @@ See [Values](#Values) for how to scale these groups and apply other configuratio
 Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
 
 <details>
-  <summary>**Groups Config Example**: Single combined Graph Node that performs all functions</summary>
+  <summary><strong>Groups Config Example</strong>: Single combined Graph Node that performs all functions</summary>
 
   ```yaml
   graphNodeDefaults:
@@ -84,7 +84,7 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
 </details>
 
 <details>
-  <summary>**Groups Config Example**: Separated block ingestor, index nodes, query nodes, with dedicated groups for debugging subgraph indexing and VIP subgraph deployments</summary>
+  <summary><strong>Groups Config Example</strong>: Separated block ingestor, index nodes, query nodes, with dedicated groups for debugging subgraph indexing and VIP subgraph deployments</summary>
 
   ```yaml
   graphNodeDefaults:
