@@ -55,6 +55,7 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
 
 <details>
   <summary>Example of configuration for single Graph Node instance that performs all tasks:</summary>
+
   ```yaml
   graphNodeDefaults:
     env:
@@ -81,6 +82,7 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
   blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
   ```
 </details>
+
 <details>
   <summary>Example of a more advanced configuration:</summary>
 
