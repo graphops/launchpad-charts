@@ -41,7 +41,7 @@ Graph Node supports being deployed in a wide variety of configurations. In the m
 
 Groups are defined in your `values.yaml` (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
 
-#### Default Configuration
+#### Default Group Configuration
 
 By default, the chart defines three Graph Node Groups:
 
@@ -52,6 +52,10 @@ By default, the chart defines three Graph Node Groups:
 See [Values](#Values) for how to scale these groups and apply other configuration. You can also disable these groups to define more advanced grouping configuration.
 
 Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
+
+#### Customising Groups
+
+You can disable default groups and define your own.
 
 <details>
   <summary><strong>Groups Config Example</strong>: Single combined Graph Node that performs all functions</summary>
@@ -139,7 +143,7 @@ Kubernetes `Service`s are provisioned for each group to allow load balancing and
         NODE_ROLE: query-node
   ```
 
-  In this example, subgraph deployments could be manually reassigned to a `index-debug` to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
+  In this example, subgraph deployments could be manually reassigned to a `index-debug` node to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
 </details>
 
 ### Configuring PostgreSQL backend
