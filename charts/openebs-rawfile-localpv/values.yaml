@@ -1,0 +1,31 @@
+provisionerName: "rawfile.csi.openebs.io"
+
+defaults: &defaults
+  image:
+    repository: docker.io/openebs/rawfile-localpv
+    tag: 0.7.0
+    pullPolicy: Always
+  resources:
+    limits:
+      cpu: 1
+      memory: 100Mi
+    requests:
+      cpu: 10m
+      memory: 100Mi
+
+controller:
+  <<: *defaults
+
+node:
+  <<: *defaults
+  metrics:
+    enabled: false
+  # for k0s use the kubelet location is /var/lib/k0s/kubelet
+  # k8s_mountpoint: /var/lib/k0s/kubelet
+  # driver_socket: /var/lib/k0s/kubelet/plugins/rawfile-csi/csi.sock
+  
+
+imagePullSecrets: []
+serviceMonitor:
+  enabled: true
+  interval: 1m
