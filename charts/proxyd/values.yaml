@@ -110,10 +110,46 @@ backends:
 
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
 rpcMethodMappings:
+  web3_clientVersion: pruned
+  web3_sha3: pruned
+  net_version: pruned
+  eth_protocolVersion: pruned
+  eth_coinbase: pruned
+  eth_gasPrice: pruned
+  eth_blockNumber: pruned
+  eth_getBalance: pruned
+  eth_getStorageAt: pruned
+  eth_getTransactionCount: pruned
+  eth_getBlockTransactionCountByHash: pruned
+  eth_getBlockTransactionCountByNumber: pruned
+  eth_getCode: pruned
+  eth_sign: pruned
+  eth_sendTransaction: pruned
+  eth_sendRawTransaction: pruned
+  eth_estimateGas: pruned
+  eth_getBlockByHash: pruned
+  eth_getBlockByNumber: pruned
+  eth_getTransactionByHash: archive
+  eth_getTransactionByBlockHashAndIndex: archive
+  eth_getTransactionByBlockNumberAndIndex: archive
+  eth_getTransactionReceipt: archive
+  eth_getUncleByBlockHashAndIndex: pruned
+  eth_getUncleByBlockNumberAndIndex: pruned
+  eth_newFilter: pruned
+  eth_newBlockFilter: pruned
+  eth_newPendingTransactionFilter: pruned
+  eth_uninstallFilter: pruned
+  eth_getFilterChanges: pruned
+  eth_getLogs: pruned
   eth_call: archive
-  eth_chainId: pruned
-  eth_blockNumber: archive
   trace_block: archive-trace
+  trace_filter: archive-trace
+  trace_transaction: archive-trace
+  trace_call: archive-trace
+  trace_callMany: archive-trace
+  trace_rawTransaction: archive-trace
+  trace_replayBlockTransactions: archive-trace
+  trace_replayTransaction: archive-trace
 
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
