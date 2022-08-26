@@ -66,7 +66,7 @@ spec:
             - --private.api.addr=0.0.0.0:9090
             - --http
             - --http.addr=0.0.0.0
-            - --authrc.addr=0.0.0.0
+            - --authrpc.addr=0.0.0.0
             - --healthcheck
             - --metrics
             - --metrics.addr=0.0.0.0
