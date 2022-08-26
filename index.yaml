@@ -3,6 +3,17 @@ entries:
   erigon:
   - apiVersion: v2
     appVersion: v2022.08.02
+    created: "2022-08-26T16:21:31.392491265Z"
+    description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
+      inside Kubernetes with ease
+    digest: 5730978bc2cd48a1a57e2a525c89c7c1dd6fe9d65431c066465fc5570203a19f
+    name: erigon
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.9/erigon-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: v2022.08.02
     created: "2022-08-22T20:08:59.72060015Z"
     description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
       inside Kubernetes with ease
@@ -133,4 +144,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-08-26T14:07:40.856909557Z"
+generated: "2022-08-26T16:21:31.392585566Z"
