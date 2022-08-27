@@ -67,6 +67,8 @@ proxyd:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 9761
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
