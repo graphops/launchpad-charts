@@ -49,17 +49,17 @@ Example:
 backends:
   erigon-pruned-0:
     enabled: true
-    rpcUrl: http://eth-mainnet-pruned-0-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-pruned-0-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
   erigon-pruned-1:
     enabled: true
-    rpcUrl: http://eth-mainnet-pruned-1-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-pruned-1-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
   erigon-archive-trace-0:
     enabled: true
-    rpcUrl: http://eth-mainnet-archive-trace-0-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-archive-trace-0-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
       - archive

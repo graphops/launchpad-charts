@@ -24,7 +24,7 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
-JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
+JSON-RPC is available at `<release-name>-erigon-rpcdaemon:8545` by default.
 
 ## JSON-RPC
 
@@ -38,13 +38,13 @@ Synchronous request performance is typically best when using the built-in JSON-R
 
 For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-A dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
+A dedicated `Service` (`<release-name>-erigon-rpcdaemon`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
 #### JSON-RPC Autoscaling
 
 You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
-If doing this, be sure to configure `rpcdaemons.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
+If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
 
 {{ template "graphops.upgradingSection" . }}
 

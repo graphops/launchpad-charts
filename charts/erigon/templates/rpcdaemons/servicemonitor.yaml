@@ -1,5 +1,5 @@
-{{- $values := $.Values.rpcdaemons }}
-{{- $componentName := "rpcdaemons" }}
+{{- $values := $.Values.rpcdaemon }}
+{{- $componentName := "rpcdaemon" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
@@ -18,7 +18,7 @@ spec:
       {{- include "erigon.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   endpoints:
-  - port: http-rpcmetrics
+  - port: http-metrics
     {{- with .Values.prometheus.serviceMonitors.interval }}
     interval: {{ . }}
     {{- end }}
