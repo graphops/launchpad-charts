@@ -1,4 +1,5 @@
-{{- range $resource := .Values.resources }}
+{{- range $name, $resource := .Values.resources }}
 ---
+# Resource key name: {{ $name }}
 {{ toYaml $resource }}
 {{- end }}
