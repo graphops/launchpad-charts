@@ -18,6 +18,7 @@ spec:
       {{- $componentLabel | nindent 6 }}
   endpoints:
     - port: http-metrics
+      path: /debug/metrics/prometheus
       {{- with .Values.prometheus.serviceMonitors.interval }}
       interval: {{ . }}
       {{- end }}
