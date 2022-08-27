@@ -1,5 +1,5 @@
-{{- $values := $.Values.rpcdaemons }}
-{{- $componentName := "rpcdaemons" }}
+{{- $values := $.Values.rpcdaemon }}
+{{- $componentName := "rpcdaemon" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 apiVersion: v1

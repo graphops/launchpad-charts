@@ -83,6 +83,8 @@ statefulNode:
       http-jsonrpc: 8545
       # -- Service Port to expose engineAPI interface on
       http-engineapi: 8550
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 6060
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -108,10 +110,10 @@ statefulNode:
 
   affinity: {}
 
-rpcdaemons:
-  # -- Enable a Deployment of rpcdaemons that can be scaled independently
+rpcdaemon:
+  # -- Enable a Deployment of rpcdaemon that can be scaled independently
   enabled: true
-  # -- Number of rpcdaemons to run
+  # -- Number of replicas to run
   replicaCount: 2
 
   # -- Additional CLI arguments to pass to `rpcdaemon`
@@ -137,9 +139,11 @@ rpcdaemons:
   service:
     type: ClusterIP
     ports:
-      # Valid keys are names of ports that are exposed by the Pod (see templates/rpcdaemons/deployment.yaml)
-      # -- Service Port to expose rpcdaemons JSON-RPC interface on
+      # Valid keys are names of ports that are exposed by the Pod (see templates/rpcdaemon/deployment.yaml)
+      # -- Service Port to expose rpcdaemon JSON-RPC interface on
       http-jsonrpc: 8545
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 6060
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -157,7 +161,7 @@ rpcdaemons:
       # ephemeral-storage: 100Mi
 
   autoscaling:
-    # -- Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons.
+    # -- Enable auto-scaling of the rpcdaemon Deployment. Be sure to set resources.requests for rpcdaemon.
     enabled: false
     # -- Minimum number of replicas
     minReplicas: 2
