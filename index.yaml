@@ -158,6 +158,15 @@ entries:
     version: 0.1.0
   resource-injector:
   - apiVersion: v2
+    created: "2022-08-27T13:17:29.607724691Z"
+    description: Manage Raw Kubernetes Resources using Helm
+    digest: b6f9f574636eda7ce263b6203ff98a1868480238d1471fb81eaa45a1ce8e7200
+    name: resource-injector
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.2.0/resource-injector-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     created: "2022-06-01T20:36:53.123797178Z"
     description: Manage Raw Kubernetes Resources using Helm
     digest: da64fdfeaa92a849b298c62169b5d480198b564f8c9a460219c05002edc401ff
@@ -166,4 +175,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-08-27T13:07:39.357083316Z"
+generated: "2022-08-27T13:17:29.607829693Z"
