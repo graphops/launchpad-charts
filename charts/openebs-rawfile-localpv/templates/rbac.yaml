@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-driver
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
 imagePullSecrets:
   {{- toYaml .Values.imagePullSecrets | nindent 2 }}
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-provisioner
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-provisioner
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -53,20 +53,20 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-provisioner
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-provisioner
 subjects:
   - kind: ServiceAccount
-    name: {{ include "rawfile-csi.fullname" . }}-driver
+    name: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "rawfile-csi.fullname" . }}-provisioner
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-provisioner
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-broker
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-broker
 rules:
   - apiGroups: [""]
     resources: ["persistentvolumes"]
@@ -78,20 +78,20 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-broker
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-broker
 subjects:
   - kind: ServiceAccount
-    name: {{ include "rawfile-csi.fullname" . }}-driver
+    name: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "rawfile-csi.fullname" . }}-broker
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-broker
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-resizer
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-resizer
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -115,12 +115,12 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-resizer
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-resizer
 subjects:
   - kind: ServiceAccount
-    name: {{ include "rawfile-csi.fullname" . }}-driver
+    name: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ include "rawfile-csi.fullname" . }}-resizer
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-resizer
   apiGroup: rbac.authorization.k8s.io

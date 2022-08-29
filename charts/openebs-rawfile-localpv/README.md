@@ -1,4 +1,4 @@
-# Rawfile-Csi Helm Chart
+# Openebs-Rawfile-Localpv Helm Chart
 
 RawFile Driver Container Storage Interface
 

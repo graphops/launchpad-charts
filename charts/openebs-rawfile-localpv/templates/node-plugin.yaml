@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-node
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-node
   labels:
-    {{- include "rawfile-csi.labels" . | nindent 4 }}
+    {{- include "openebs-rawfile-localpv.labels" . | nindent 4 }}
     component: node
 spec:
   type: ClusterIP
@@ -13,41 +13,41 @@ spec:
       targetPort: metrics
       protocol: TCP
   selector:
-    {{- include "rawfile-csi.selectorLabels" . | nindent 4 }}
+    {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 4 }}
     component: node
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-node
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-node
 spec:
   updateStrategy:
     rollingUpdate:
       maxUnavailable: "100%"
   selector:
     matchLabels: &selectorLabels
-      {{- include "rawfile-csi.selectorLabels" . | nindent 6 }}
+      {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 6 }}
       component: node
   template:
     metadata:
       labels: *selectorLabels
     spec:
-      serviceAccount: {{ include "rawfile-csi.fullname" . }}-driver
+      serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-node-critical
       tolerations:
         - operator: "Exists"
       volumes:
         - name: registration-dir
           hostPath:
-            path: /var/lib/kubelet/plugins_registry
+            path: {{ .Values.node.registration_dir | default /var/lib/kubelet/plugins_registry }}
             type: Directory
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/rawfile-csi
+            path: {{ .Values.node.socket_dir | default /var/lib/kubelet/plugins/rawfile-csi }}
             type: DirectoryOrCreate
         - name: mountpoint-dir
           hostPath:
-            path: /var/lib/kubelet
+            path: {{ .Values.node.k8s_mountpoint | default /var/lib/kubelet }}
             type: DirectoryOrCreate
         - name: data-dir
           hostPath:
@@ -84,11 +84,9 @@ spec:
             - name: socket-dir
               mountPath: /csi
             - name: mountpoint-dir
-              # mountPath: /var/lib/kubelet
               mountPath: {{ .Values.node.k8s_mountpoint | default /var/lib/kubelet }}
               mountPropagation: "Bidirectional"
             - name: data-dir
-              # mountPath: /data
               mountPath: {{ .Values.node.data_dir_path | default /data }}
           resources:
             {{- toYaml .Values.node.resources | nindent 12 }}
@@ -104,7 +102,6 @@ spec:
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
               value: {{ .Values.node.driver_socket | default /var/lib/kubelet/plugins/rawfile-csi/csi.sock }}
-              # value: /var/lib/kubelet/plugins/rawfile-csi/csi.sock
           ports:
             - containerPort: 9809
               name: healthz

@@ -1,33 +1,33 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-controller
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-controller
   labels:
-    {{- include "rawfile-csi.labels" . | nindent 4 }}
+    {{- include "openebs-rawfile-localpv.labels" . | nindent 4 }}
     component: controller
 spec:
   type: ClusterIP
   selector:
-    {{- include "rawfile-csi.selectorLabels" . | nindent 4 }}
+    {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 4 }}
     component: controller
   clusterIP: None
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "rawfile-csi.fullname" . }}-controller
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-controller
 spec:
   replicas: 1
-  serviceName: {{ include "rawfile-csi.fullname" . }}
+  serviceName: {{ include "openebs-rawfile-localpv.fullname" . }}
   selector:
     matchLabels: &selectorLabels
-      {{- include "rawfile-csi.selectorLabels" . | nindent 6 }}
+      {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 6 }}
       component: controller
   template:
     metadata:
       labels: *selectorLabels
     spec:
-      serviceAccount: {{ include "rawfile-csi.fullname" . }}-driver
+      serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-cluster-critical
       tolerations:
         - key: "node-role.kubernetes.io/master"
