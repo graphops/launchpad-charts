@@ -39,7 +39,7 @@ grafana:
   # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
-  dashboardsConfigMapLabelValue: ""
+  dashboardsConfigMapLabelValue: "1"
 
 proxyd:
   # -- Additional CLI arguments to pass to `proxyd`
