@@ -3,6 +3,17 @@ entries:
   erigon:
   - apiVersion: v2
     appVersion: v2022.08.03
+    created: "2022-08-29T18:54:43.823266267Z"
+    description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
+      inside Kubernetes with ease
+    digest: 888db598588ca2cd72ce683e47fb52e7dd5c160263847235364d1af50278fd73
+    name: erigon
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/erigon-0.2.3/erigon-0.2.3.tgz
+    version: 0.2.3
+  - apiVersion: v2
+    appVersion: v2022.08.03
     created: "2022-08-28T09:16:10.253390509Z"
     description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
       inside Kubernetes with ease
@@ -147,6 +158,17 @@ entries:
   proxyd:
   - apiVersion: v2
     appVersion: 3.9.1
+    created: "2022-08-29T18:54:44.096405445Z"
+    description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd)
+      inside Kubernetes with ease
+    digest: 7e3a77c94cc8c6b85fc32996deef5a02535bcacffd1fc903a561f3fd221ca4bf
+    name: proxyd
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/proxyd-0.1.4/proxyd-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 3.9.1
     created: "2022-08-27T13:24:55.456718226Z"
     description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd)
       inside Kubernetes with ease
@@ -208,4 +230,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-08-28T09:16:10.253503911Z"
+generated: "2022-08-29T18:54:44.096579243Z"
