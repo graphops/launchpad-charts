@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.08.02](https://img.shields.io/badge/AppVersion-v2022.08.02-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.08.03](https://img.shields.io/badge/AppVersion-v2022.08.03-informational?style=flat-square)
 
 ## Features
 
@@ -24,7 +24,7 @@ $ helm install my-release graphops/erigon
 
 Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
-JSON-RPC is available at `<release-name>-erigon-rpcdaemons:8545` by default.
+JSON-RPC is available at `<release-name>-erigon-rpcdaemon:8545` by default.
 
 ## JSON-RPC
 
@@ -38,13 +38,13 @@ Synchronous request performance is typically best when using the built-in JSON-R
 
 For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
 
-A dedicated `Service` (`<release-name>-erigon-rpcdaemons`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
+A dedicated `Service` (`<release-name>-erigon-rpcdaemon`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
 #### JSON-RPC Autoscaling
 
 You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
-If doing this, be sure to configure `rpcdaemons.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
+If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
 
 ## Upgrading
 
@@ -61,7 +61,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
- | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for Erigon | string | `"thorax/erigon"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
@@ -72,24 +72,25 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
- | rpcdaemons.affinity |  | object | `{}` |
- | rpcdaemons.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | rpcdaemons.autoscaling.enabled | Enable auto-scaling of the rpcdaemons Deployment. Be sure to set resources.requests for rpcdaemons. | bool | `false` |
- | rpcdaemons.autoscaling.maxReplicas | Maximum number of replicas | int | `10` |
- | rpcdaemons.autoscaling.minReplicas | Minimum number of replicas | int | `2` |
- | rpcdaemons.autoscaling.targetCPUUtilizationPercentage |  | int | `75` |
- | rpcdaemons.autoscaling.targetMemoryUtilizationPercentage |  | string | `nil` |
- | rpcdaemons.enabled | Enable a Deployment of rpcdaemons that can be scaled independently | bool | `true` |
- | rpcdaemons.extraArgs | Additional CLI arguments to pass to `rpcdaemon` | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` |
- | rpcdaemons.nodeSelector |  | object | `{}` |
- | rpcdaemons.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | rpcdaemons.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | rpcdaemons.replicaCount | Number of rpcdaemons to run | int | `2` |
- | rpcdaemons.resources.limits |  | object | `{}` |
- | rpcdaemons.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
- | rpcdaemons.service.ports.http-jsonrpc | Service Port to expose rpcdaemons JSON-RPC interface on | int | `8545` |
- | rpcdaemons.service.type |  | string | `"ClusterIP"` |
- | rpcdaemons.tolerations |  | list | `[]` |
+ | rpcdaemon.affinity |  | object | `{}` |
+ | rpcdaemon.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | rpcdaemon.autoscaling.enabled | Enable auto-scaling of the rpcdaemon Deployment. Be sure to set resources.requests for rpcdaemon. | bool | `false` |
+ | rpcdaemon.autoscaling.maxReplicas | Maximum number of replicas | int | `10` |
+ | rpcdaemon.autoscaling.minReplicas | Minimum number of replicas | int | `2` |
+ | rpcdaemon.autoscaling.targetCPUUtilizationPercentage |  | int | `75` |
+ | rpcdaemon.autoscaling.targetMemoryUtilizationPercentage |  | string | `nil` |
+ | rpcdaemon.enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
+ | rpcdaemon.extraArgs | Additional CLI arguments to pass to `rpcdaemon` | list | `["--http.api=eth,debug,net,trace","--trace.maxtraces=10000","--http.vhosts=*","--http.corsdomain=*","--ws","--rpc.batch.concurrency=4","--state.cache=2000000"]` |
+ | rpcdaemon.nodeSelector |  | object | `{}` |
+ | rpcdaemon.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | rpcdaemon.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | rpcdaemon.replicaCount | Number of replicas to run | int | `2` |
+ | rpcdaemon.resources.limits |  | object | `{}` |
+ | rpcdaemon.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
+ | rpcdaemon.service.ports.http-jsonrpc | Service Port to expose rpcdaemon JSON-RPC interface on | int | `8545` |
+ | rpcdaemon.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | rpcdaemon.service.type |  | string | `"ClusterIP"` |
+ | rpcdaemon.tolerations |  | list | `[]` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
@@ -103,6 +104,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8550` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
+ | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | statefulNode.tolerations |  | list | `[]` |

@@ -2,7 +2,7 @@
 
 Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.1](https://img.shields.io/badge/AppVersion-3.9.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.9.1](https://img.shields.io/badge/AppVersion-3.9.1-informational?style=flat-square)
 
 ## Introduction
 
@@ -49,17 +49,17 @@ Example:
 backends:
   erigon-pruned-0:
     enabled: true
-    rpcUrl: http://eth-mainnet-pruned-0-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-pruned-0-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
   erigon-pruned-1:
     enabled: true
-    rpcUrl: http://eth-mainnet-pruned-1-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-pruned-1-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
   erigon-archive-trace-0:
     enabled: true
-    rpcUrl: http://eth-mainnet-archive-trace-0-erigon-rpcdaemons.ethereum:8545
+    rpcUrl: http://eth-mainnet-archive-trace-0-erigon-rpcdaemon.ethereum:8545
     groups:
       - pruned
       - archive
@@ -135,7 +135,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
- | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for proxyd | string | `"ethereumoptimism/proxyd"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
@@ -154,6 +154,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | proxyd.resources |  | object | `{}` |
  | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
+ | proxyd.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `9761` |
  | proxyd.service.type |  | string | `"ClusterIP"` |
  | proxyd.terminationGracePeriodSeconds | Amount of time to wait before force-killing the proxyd process | int | `60` |
  | proxyd.tolerations |  | list | `[]` |
