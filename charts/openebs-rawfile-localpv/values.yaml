@@ -20,14 +20,13 @@ node:
   <<: *defaults
   metrics:
     enabled: false
-
-  # for k0s use the kubelet location is /var/lib/k0s/kubelet
-  # k8s_mountpoint: /var/lib/k0s/kubelet
-  # driver_socket: /var/lib/k0s/kubelet/plugins/rawfile-csi/csi.sock
-  # socker_dir: /var/lib/k0s/kubelet/plugins/rawfile-csi
-  # registration_dir: /var/lib/k0s/kubelet/plugins_registry
+  k8s_mountpoint: /var/lib/k0s/kubelet
+  driver_socket: /var/lib/k0s/kubelet/plugins/rawfile-csi/csi.sock
+  socket_dir: /var/lib/k0s/kubelet/plugins/rawfile-csi
+  registration_dir: /var/lib/k0s/kubelet/plugins_registry
+  data_dir_path: /data
 
 imagePullSecrets: []
 serviceMonitor:
-  enabled: true
+  enabled: false
   interval: 1m

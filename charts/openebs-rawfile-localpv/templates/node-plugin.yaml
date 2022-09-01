@@ -39,19 +39,19 @@ spec:
       volumes:
         - name: registration-dir
           hostPath:
-            path: {{ .Values.node.registration_dir | default /var/lib/kubelet/plugins_registry }}
+            path: {{ .Values.node.registration_dir | default "/var/lib/kubelet/plugins_registry"  }}
             type: Directory
         - name: socket-dir
           hostPath:
-            path: {{ .Values.node.socket_dir | default /var/lib/kubelet/plugins/rawfile-csi }}
+            path: {{ .Values.node.socket_dir | default "/var/lib/kubelet/plugins/rawfile-csi" }}
             type: DirectoryOrCreate
         - name: mountpoint-dir
           hostPath:
-            path: {{ .Values.node.k8s_mountpoint | default /var/lib/kubelet }}
+            path: {{ .Values.node.k8s_mountpoint | default "/var/lib/kubelet"  }}
             type: DirectoryOrCreate
         - name: data-dir
           hostPath:
-            path: /var/csi/rawfile
+            path: {{ .Values.node.data_dir_path | default "/var/csi/rawfile"}}
             type: DirectoryOrCreate
       containers:
         - name: csi-driver
@@ -84,10 +84,10 @@ spec:
             - name: socket-dir
               mountPath: /csi
             - name: mountpoint-dir
-              mountPath: {{ .Values.node.k8s_mountpoint | default /var/lib/kubelet }}
+              mountPath: /var/lib/kubelet
               mountPropagation: "Bidirectional"
             - name: data-dir
-              mountPath: {{ .Values.node.data_dir_path | default /data }}
+              mountPath: /data
           resources:
             {{- toYaml .Values.node.resources | nindent 12 }}
         - name: node-driver-registrar
@@ -101,7 +101,7 @@ spec:
             - name: ADDRESS
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
-              value: {{ .Values.node.driver_socket | default /var/lib/kubelet/plugins/rawfile-csi/csi.sock }}
+              value: /var/lib/kubelet/plugins/rawfile-csi/csi.sock
           ports:
             - containerPort: 9809
               name: healthz
