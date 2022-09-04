@@ -46,6 +46,19 @@ You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When 
 
 If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
 
+## Enabling inbound P2P dials
+
+By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+statefulNode:
+  p2pNodePort:
+    enabled: true
+    port: 31000 # Must be unique
+```
+
 {{ template "graphops.upgradingSection" . }}
 
 {{ template "chart.requirementsSection" . }}
