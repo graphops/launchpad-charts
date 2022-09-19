@@ -97,6 +97,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"fromLiteral":"xxxx","fromSecret":{"key":"jwt","name":"some-secret-name"}}` |
+ | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
+ | statefulNode.jwt.fromSecret | Load the JWT from a Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
