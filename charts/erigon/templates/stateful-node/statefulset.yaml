@@ -10,7 +10,7 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 spec:
   serviceName: {{ include "erigon.fullname" . }}-{{ $componentName }}-headless
-  replicas: {{ $values.replicaCount | default 1 }}
+replicas: {{ include "erigon.replicas" $values }}
   selector:
     matchLabels:
       {{- include "erigon.selectorLabels" . | nindent 6 }}
@@ -43,7 +43,40 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
       initContainers:
+      {{- if $values.p2pNodePort.enabled }}
+        - name: {{ $componentName }}-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
         # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
         - name: {{ $componentName }}-init
           image: busybox:stable
@@ -61,19 +94,32 @@ spec:
               drop:
                 - ALL
           command:
-            - erigon
-            - --datadir=/storage
-            - --private.api.addr=0.0.0.0:9090
-            - --http
-            - --http.addr=0.0.0.0
-            - --authrpc.addr=0.0.0.0
-            - --healthcheck
-            - --metrics
-            - --metrics.addr=0.0.0.0
-            - --http.vhosts=*
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
+            - sh
+            - -ac
+            - >
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
             {{- end }}
+              exec erigon
+                --private.api.addr=0.0.0.0:9090
+                --http
+                --http.addr=0.0.0.0
+                --authrpc.addr=0.0.0.0
+                --healthcheck
+                --metrics
+                --metrics.addr=0.0.0.0
+                --http.vhosts=*
+                --datadir=/storage
+              {{- if $values.p2pNodePort.enabled }}
+                --nat=extip:${EXTERNAL_IP}
+                --port=${EXTERNAL_PORT}
+              {{- else }}
+                --nat=extip:$(POD_IP)
+                --port={{ include "erigon.p2pPort" . }}
+              {{- end }}
+              {{- with $values.extraArgs }}
+                {{- . | nindent 16 }}
+              {{- end }}
           ports:
             - name: grpc-erigon
               containerPort: 9090
@@ -88,10 +134,10 @@ spec:
               containerPort: 8550
               protocol: TCP
             - name: udp-p2p
-              containerPort: 30303
+              containerPort: {{ include "erigon.p2pPort" $values }}
               protocol: UDP
             - name: tcp-p2p
-              containerPort: 30303
+              containerPort: {{ include "erigon.p2pPort" $values }}
               protocol: TCP
             - name: udp-torrent
               containerPort: 42069
@@ -100,6 +146,10 @@ spec:
               containerPort: 42069
               protocol: TCP
           volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
             - name: storage
               mountPath: /storage
             - name: tmp

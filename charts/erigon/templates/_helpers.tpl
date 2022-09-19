@@ -64,3 +64,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "erigon.p2pPort" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print .p2pNodePort.port }}
+{{- else }}
+{{- printf "30303" -}}
+{{- end }}
+{{- end -}}
+
+{{- define "erigon.replicas" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print 1 }}
+{{ else }}
+{{- print .replicaCount | default 1 }}
+{{- end}}
+{{- end -}}

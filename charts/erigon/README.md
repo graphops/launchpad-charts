@@ -2,7 +2,11 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
+<<<<<<< HEAD
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
+=======
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.08.03](https://img.shields.io/badge/AppVersion-v2022.08.03-informational?style=flat-square)
+>>>>>>> beb1aa2 (feat: added inbound p2p support)
 
 ## Features
 
@@ -12,6 +16,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for exposing a NodePort to enable inbound P2P dials for better peering
 
 ## Quickstart
 
@@ -45,6 +50,19 @@ A dedicated `Service` (`<release-name>-erigon-rpcdaemon`) will be created to loa
 You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
 If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
+
+## Enabling inbound P2P dials
+
+By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+statefulNode:
+  p2pNodePort:
+    enabled: true
+    port: 31000 # Must be unique
+```
 
 ## Upgrading
 
@@ -101,6 +119,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
  | statefulNode.jwt.fromSecret | Load the JWT from a Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.nodeSelector |  | object | `{}` |
+ | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
+ | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | statefulNode.resources |  | object | `{}` |
