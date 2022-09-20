@@ -27,6 +27,32 @@ Once the release is installed, Erigon will begin syncing. You can use `kubectl l
 
 JSON-RPC is available at `<release-name>-erigon-rpcdaemon:8545` by default.
 
+## Specifying the Engine API JWT
+
+To use Erigon on a network that requires a Consensus Client, you will need to configure a JWT that is used to by the Consensus Client to authenticate with the Erigon Engine API on port `8551`.
+
+You will need to pass the same JWT to your Consensus Client.
+
+You can specify the JWT either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Erigon Pod.
+
+Using a literal value:
+
+```yaml
+statefulNode:
+  jwt:
+    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+statefulNode:
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
+
 ## JSON-RPC
 
 ### Built-in JSON-RPC
@@ -57,7 +83,7 @@ By default, your Erigon node will not have an internet-accessible port for P2P t
 statefulNode:
   p2pNodePort:
     enabled: true
-    port: 31000 # Must be unique
+    port: 31000 # Must be globally unique and available on the host
 ```
 
 {{ template "graphops.upgradingSection" . }}

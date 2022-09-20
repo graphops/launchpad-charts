@@ -27,6 +27,32 @@ Once the release is installed, Erigon will begin syncing. You can use `kubectl l
 
 JSON-RPC is available at `<release-name>-erigon-rpcdaemon:8545` by default.
 
+## Specifying the Engine API JWT
+
+To use Erigon on a network that requires a Consensus Client, you will need to configure a JWT that is used to by the Consensus Client to authenticate with the Erigon Engine API on port `8551`.
+
+You will need to pass the same JWT to your Consensus Client.
+
+You can specify the JWT either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Erigon Pod.
+
+Using a literal value:
+
+```yaml
+statefulNode:
+  jwt:
+    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+statefulNode:
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
+
 ## JSON-RPC
 
 ### Built-in JSON-RPC
@@ -57,7 +83,7 @@ By default, your Erigon node will not have an internet-accessible port for P2P t
 statefulNode:
   p2pNodePort:
     enabled: true
-    port: 31000 # Must be unique
+    port: 31000 # Must be globally unique and available on the host
 ```
 
 ## Upgrading
@@ -111,11 +137,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
- | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
- | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
+ | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
  | statefulNode.nodeSelector |  | object | `{}` |
- | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
+ | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
