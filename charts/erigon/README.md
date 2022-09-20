@@ -133,7 +133,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
  | statefulNode.nodeSelector |  | object | `{}` |
- | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |

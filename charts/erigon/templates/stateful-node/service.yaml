@@ -41,8 +41,8 @@ spec:
   selector:
     {{- include "erigon.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-{{- if $values.p2pNodePort.enabled -}}
-{{- $port := $values.p2pNodePort.port -}}
+{{- if $values.p2pNodePort.enabled }}
+{{- $port := $values.p2pNodePort.port }}
 ---
 apiVersion: v1
 kind: Service
@@ -58,12 +58,12 @@ spec:
   externalTrafficPolicy: Local
   ports:
     - name: tcp-p2p
-      port: {{ include "erigon.p2pPort" . }}
+      port: {{ include "erigon.p2pPort" $values }}
       protocol: TCP
       targetPort: tcp-p2p
       nodePort: {{ $port }}
     - name: udp-p2p
-      port: {{ include "erigon.p2pPort" . }}
+      port: {{ include "erigon.p2pPort" $values }}
       protocol: UDP
       targetPort: udp-p2p
       nodePort: {{ $port }}
