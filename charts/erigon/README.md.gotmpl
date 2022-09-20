@@ -94,6 +94,8 @@ You can specify a snapshot URL that will be used to bootstrap Erigon's `chaindat
 
 Example:
 ```yaml
+# values.yaml
+
 statefulNode:
   fromSnapshot:
     enable: true
