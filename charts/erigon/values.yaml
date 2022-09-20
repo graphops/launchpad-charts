@@ -44,8 +44,8 @@ grafana:
 statefulNode:
   # -- JWT for clients to authenticate with the Engine API
   jwt:
-    # -- Load the JWT from a Kubernetes Secret
-    fromSecret:
+    # -- Load the JWT from an existing Kubernetes Secret
+    existingSecret:
       name: some-secret-name
       key: jwt
     # -- Use this literal value for the JWT

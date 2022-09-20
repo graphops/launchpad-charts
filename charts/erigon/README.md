@@ -2,11 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-<<<<<<< HEAD
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
-=======
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.08.03](https://img.shields.io/badge/AppVersion-v2022.08.03-informational?style=flat-square)
->>>>>>> beb1aa2 (feat: added inbound p2p support)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
 
 ## Features
 
@@ -115,9 +111,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
- | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"fromLiteral":"xxxx","fromSecret":{"key":"jwt","name":"some-secret-name"}}` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
+ | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
- | statefulNode.jwt.fromSecret | Load the JWT from a Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
