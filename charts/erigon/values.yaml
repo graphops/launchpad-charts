@@ -42,6 +42,15 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 statefulNode:
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret:
+      name: some-secret-name
+      key: jwt
+    # -- Use this literal value for the JWT
+    fromLiteral: xxxx
+
   # -- Additional CLI arguments to pass to `erigon`
   extraArgs: []
 
@@ -54,6 +63,12 @@ statefulNode:
       requests:
         # -- The amount of disk space to provision for Erigon
         storage: 3Ti
+
+  fromSnapshot:
+    # -- Enable initialising Erigon state from a remote Snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to bootstrap storage
+    snapshotUrl:
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -107,6 +122,20 @@ statefulNode:
     antiAffinityByHostname: true
 
   affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.21.3
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
 
 rpcdaemon:
   # -- Enable a Deployment of rpcdaemon that can be scaled independently

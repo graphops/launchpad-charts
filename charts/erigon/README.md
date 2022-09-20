@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.03](https://img.shields.io/badge/AppVersion-v2022.09.03-informational?style=flat-square)
 
 ## Features
 
@@ -12,6 +12,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for exposing a NodePort to enable inbound P2P dials for better peering
 
 ## Quickstart
 
@@ -25,6 +26,34 @@ $ helm install my-release graphops/erigon
 Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
 JSON-RPC is available at `<release-name>-erigon-rpcdaemon:8545` by default.
+
+## Specifying the Engine API JWT
+
+To use Erigon on a network that requires a Consensus Client, you will need to configure a JWT that is used by the Consensus Client to authenticate with the Engine API on port `8551`. You will need to pass the same JWT to your Consensus Client.
+
+You can specify the JWT for Erigon either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Erigon Pod.
+
+Using a literal value:
+
+```yaml
+# values.yaml
+
+statefulNode:
+  jwt:
+    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+# values.yaml
+
+statefulNode:
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
 
 ## JSON-RPC
 
@@ -45,6 +74,37 @@ A dedicated `Service` (`<release-name>-erigon-rpcdaemon`) will be created to loa
 You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
 
 If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
+
+## Enabling inbound P2P dials
+
+By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+statefulNode:
+  p2pNodePort:
+    enabled: true
+    port: 31000 # Must be globally unique and available on the host
+```
+
+## Restoring chaindata from a snapshot
+
+You can specify a snapshot URL that will be used to bootstrap Erigon's `chaindata` state. When enabled, an init container will perform a streaming extraction of the snapshot into storage. The snapshot should be a gzipped tarball of `chaindata`.
+
+Example:
+```yaml
+# values.yaml
+
+statefulNode:
+  fromSnapshot:
+    enable: true
+    snapshotUrl: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/erigon-archive-snapshot-2022-07-15.tar.gz
+```
+
+Once Erigon's state has been bootstrapped, the snapshot URL will be saved to storage at `/from_snapshot`. Any time the Erigon Pod starts, as long as the snapshot configuration has not changed, Erigon will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing chaindata and bootstrap state again.
+
+You can monitor progress by following the logs of the `stateful-node-init` container: `kubectl logs --since 1m -f release-name-stateful-node-0 -c stateful-node-init`
 
 ## Upgrading
 
@@ -97,7 +157,17 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | statefulNode.fromSnapshot.enabled | Enable initialising Erigon state from a remote Snapshot | bool | `false` |
+ | statefulNode.fromSnapshot.snapshotUrl | URL for snapshot to download and extract to bootstrap storage | string | `nil` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
+ | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"jwt","name":"some-secret-name"}` |
+ | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
  | statefulNode.nodeSelector |  | object | `{}` |
+ | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
+ | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | statefulNode.resources |  | object | `{}` |
