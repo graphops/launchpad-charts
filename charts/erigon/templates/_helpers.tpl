@@ -77,6 +77,6 @@ Create the name of the service account to use
 {{- if .p2pNodePort.enabled }}
 {{- print 1 }}
 {{ else }}
-{{- print .replicaCount | default 1 }}
+{{- default 1 .replicaCount  }}
 {{- end}}
 {{- end -}}

@@ -42,6 +42,15 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 statefulNode:
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret:
+      name: some-secret-name
+      key: jwt
+    # -- Use this literal value for the JWT
+    fromLiteral: xxxx
+
   # -- Additional CLI arguments to pass to `erigon`
   extraArgs: []
 
