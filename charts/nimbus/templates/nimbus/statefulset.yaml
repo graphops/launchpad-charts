@@ -1,5 +1,5 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
+{{- $values := $.Values.nimbus }}
+{{- $componentName := "nimbus" }}
 {{- $componentLabel := include "nimbus.componentLabelFor" $componentName }}
 
 {{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
@@ -92,6 +92,18 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command: ["chown", "-R", "{{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }}", "/storage"]
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -115,20 +127,20 @@ spec:
                 --web3-url={{ $values.executionClientUrl }} \
               {{- end }}
                 --enr-auto-update=false \
-              {{- if .Values.p2pNodePort.enabled }}
+              {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:$EXTERNAL_IP \
                 --udp-port=$EXTERNAL_PORT \
                 --tcp-port=$EXTERNAL_PORT \
               {{- else }}
-                --udp-port={{ include "nimbus.p2pPort" . }} \
-                --tcp-port={{ include "nimbus.p2pPort" . }} \
+                --udp-port={{ include "nimbus.p2pPort" $values }} \
+                --tcp-port={{ include "nimbus.p2pPort" $values }} \
               {{- end }}
                 --rest=true \
                 --rest-address=0.0.0.0 \
               {{- if $jwtEnabled }}
                 --jwt-secret=/jwt/jwt.hex \
               {{- end }}
-                --metrics=true
+                --metrics=true \
                 --metrics-address=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \

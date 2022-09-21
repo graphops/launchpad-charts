@@ -1,5 +1,5 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
+{{- $values := $.Values.nimbus }}
+{{- $componentName := "nimbus" }}
 {{- $componentLabel := include "nimbus.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
