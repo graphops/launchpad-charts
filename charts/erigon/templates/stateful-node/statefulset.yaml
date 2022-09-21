@@ -81,8 +81,10 @@ spec:
             - sh
             - -c
             - >
+              set -ex;
               export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
               echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;
@@ -145,32 +147,33 @@ spec:
           command:
             - sh
             - -ac
-            - >
+            - |
             {{- if $values.p2pNodePort.enabled }}
               . /env/init-nodeport;
             {{- end }}
-              exec erigon
-                --private.api.addr=0.0.0.0:9090
-                --http
-                --http.addr=0.0.0.0
-                --authrpc.addr=0.0.0.0
-            {{- if $jwtEnabled }}
-                --authrpc.jwtsecret=/jwt/jwt.hex
-            {{- end }}
-                --healthcheck
-                --metrics
-                --metrics.addr=0.0.0.0
-                --http.vhosts=*
-                --datadir=/storage
+              set -ex;
+              exec erigon \
+                --datadir=/storage \
               {{- if $values.p2pNodePort.enabled }}
-                --nat=extip:${EXTERNAL_IP}
-                --port=${EXTERNAL_PORT}
+                --nat=extip:${EXTERNAL_IP} \
+                --port=${EXTERNAL_PORT} \
               {{- else }}
-                --port={{ include "erigon.p2pPort" $values }}
+                --port={{ include "erigon.p2pPort" $values }} \
               {{- end }}
-              {{- with $values.extraArgs }}
-                {{- . | nindent 16 }}
+                --private.api.addr=0.0.0.0:9090 \
+                --http \
+                --http.addr=0.0.0.0 \
+                --http.vhosts=* \
+                --authrpc.addr=0.0.0.0 \
+              {{- if $jwtEnabled }}
+                --authrpc.jwtsecret=/jwt/jwt.hex \
               {{- end }}
+                --metrics \
+                --metrics.addr=0.0.0.0 \
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --healthcheck
           ports:
             - name: grpc-erigon
               containerPort: 9090
@@ -182,7 +185,7 @@ spec:
               containerPort: 8545
               protocol: TCP
             - name: http-engineapi
-              containerPort: 8550
+              containerPort: 8551
               protocol: TCP
             - name: udp-p2p
               containerPort: {{ include "erigon.p2pPort" $values }}
@@ -200,6 +203,10 @@ spec:
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
               mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
             {{- end }}
             - name: storage
               mountPath: /storage
