@@ -1,0 +1,200 @@
+{{- $values := $.Values.statefulNode }}
+{{- $componentName := "stateful-node" }}
+{{- $componentLabel := include "nimbus.componentLabelFor" $componentName }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "nimbus.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nimbus.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "nimbus.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "nimbus.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "nimbus.replicas" $values }}
+  selector:
+    matchLabels:
+      {{- include "nimbus.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nimbus.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nimbus.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+      initContainers:
+      {{- if $values.p2pNodePort.enabled }}
+        - name: {{ $componentName }}-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+            {{- end }}
+              set -ex;
+              exec /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                --data-dir=/storage \
+              {{- if $values.executionClientUrl }}
+                --web3-url={{ $values.executionClientUrl }} \
+              {{- end }}
+                --enr-auto-update=false \
+              {{- if .Values.p2pNodePort.enabled }}
+                --nat=extip:$EXTERNAL_IP \
+                --udp-port=$EXTERNAL_PORT \
+                --tcp-port=$EXTERNAL_PORT \
+              {{- else }}
+                --udp-port={{ include "nimbus.p2pPort" . }} \
+                --tcp-port={{ include "nimbus.p2pPort" . }} \
+              {{- end }}
+                --rest=true \
+                --rest-address=0.0.0.0 \
+              {{- if $jwtEnabled }}
+                --jwt-secret=/jwt/jwt.hex \
+              {{- end }}
+                --metrics=true
+                --metrics-address=0.0.0.0 \
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --non-interactive
+          ports:
+            - name: http-nimbus
+              containerPort: 5052
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8008
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: {{ include "nimbus.p2pPort" $values }}
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: {{ include "nimbus.p2pPort" $values }}
+              protocol: TCP
+          volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            tcpSocket:
+              port: http-api
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
