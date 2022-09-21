@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.03](https://img.shields.io/badge/AppVersion-v2022.09.03-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.03](https://img.shields.io/badge/AppVersion-v2022.09.03-informational?style=flat-square)
 
 ## Features
 
@@ -132,6 +132,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
+ | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
+ | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
  | rpcdaemon.affinity |  | object | `{}` |
  | rpcdaemon.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | rpcdaemon.autoscaling.enabled | Enable auto-scaling of the rpcdaemon Deployment. Be sure to set resources.requests for rpcdaemon. | bool | `false` |
@@ -156,12 +159,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `["--test"]` |
  | statefulNode.fromSnapshot.enabled | Enable initialising Erigon state from a remote Snapshot | bool | `false` |
  | statefulNode.fromSnapshot.snapshotUrl | URL for snapshot to download and extract to bootstrap storage | string | `nil` |
- | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
- | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"jwt","name":"some-secret-name"}` |
- | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
+ | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
+ | statefulNode.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
+ | statefulNode.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
+ | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -172,7 +177,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
- | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8550` |
+ | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |

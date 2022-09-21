@@ -24,6 +24,32 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+     # Required to obtain the nodes external IP
+    - apiGroups: [""]
+      resources:
+      - "nodes"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to get information about the serices nodePort.
+    - apiGroups: [""]
+      resources:
+      - "services"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+
 prometheus:
   serviceMonitors:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -46,13 +72,15 @@ statefulNode:
   jwt:
     # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
     existingSecret:
-      name: some-secret-name
-      key: jwt
+      # -- Name of the Secret resource in the same namespace
+      name: ""
+      # -- Data key for the JWT in the Secret
+      key: ""
     # -- Use this literal value for the JWT
-    fromLiteral: xxxx
+    fromLiteral: ""
 
   # -- Additional CLI arguments to pass to `erigon`
-  extraArgs: []
+  extraArgs: [--test]
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
@@ -95,7 +123,7 @@ statefulNode:
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
       # -- Service Port to expose engineAPI interface on
-      http-engineapi: 8550
+      http-engineapi: 8551
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6060
 
