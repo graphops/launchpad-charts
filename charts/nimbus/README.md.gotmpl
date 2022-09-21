@@ -25,16 +25,16 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 ## Specifying the Engine API JWT
 
-To use Erigon on a network that requires a Consensus Client, you will need to configure a JWT that is used by the Consensus Client to authenticate with the Engine API on port `8551`. You will need to pass the same JWT to your Consensus Client.
+To drive block progression of an Execution Client, you will need to configure a JWT that is used by Nimbus to authenticate with the Execution Client's Engine API on port `8551`. You will need to pass the same JWT to your Execution Client.
 
-You can specify the JWT for Erigon either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Erigon Pod.
+You can specify the JWT for Nimbus either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Nimbus Pod.
 
 Using a literal value:
 
 ```yaml
 # values.yaml
 
-statefulNode:
+nimbus:
   jwt:
     fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
 ```
@@ -44,41 +44,21 @@ Using an existing Kubernetes Secret:
 ```yaml
 # values.yaml
 
-statefulNode:
+nimbus:
   jwt:
     existingSecret:
       name: my-ethereum-mainnet-jwt-secret
       key: jwt
 ```
 
-## JSON-RPC
-
-### Built-in JSON-RPC
-
-You can access JSON-RPC via the stateful node `Service` (`<release-name>-erigon-stateful-node`) on port `8545` by default.
-
-Synchronous request performance is typically best when using the built-in JSON-RPC server, however for large throughput workloads you should use a scalable set of `rpcdaemon`s.
-
-### Scalable `Deployment` of `rpcdaemon`s
-
-For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
-
-A dedicated `Service` (`<release-name>-erigon-rpcdaemon`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
-
-#### JSON-RPC Autoscaling
-
-You can enable autoscaling for your scalable `Deployment` of `rpcdaemon`s. When enabled, the Chart will install a `HorizontalPodAutoscaler` into the cluster, which will manage the number of `rpcdaemon` replicas based on resource utilization.
-
-If doing this, be sure to configure `rpcdaemon.resources.requests` with appropriate values, as the CPU and Memory utilization targets set in the autoscaling config are relative to the requested resource values.
-
 ## Enabling inbound P2P dials
 
-By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your Nimbus node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `nimbus.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `nimbus.p2pNodePort.enabled`, the exposed IP address on your Nimbus ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `nimbus.replicaCount` will be locked to `1`.
 
 ```yaml
 # values.yaml
 
-statefulNode:
+nimbus:
   p2pNodePort:
     enabled: true
     port: 31000 # Must be globally unique and available on the host
