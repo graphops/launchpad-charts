@@ -92,11 +92,11 @@ statefulNode:
         # -- The amount of disk space to provision for Erigon
         storage: 3Ti
 
-  fromSnapshot:
-    # -- Enable initialising Erigon state from a remote Snapshot
+  restoreSnapshot:
+    # -- Enable initialising Erigon state from a remote snapshot
     enabled: false
-    # -- URL for snapshot to download and extract to bootstrap storage
-    snapshotUrl:
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: ""
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown

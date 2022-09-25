@@ -61,6 +61,48 @@ spec:
           emptyDir: {}
       {{- end }}
       initContainers:
+      {{- if $values.restoreSnapshot.enabled }}
+        - name: init-snapshot
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              STORAGE_PATH="/storage"
+              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              # If enabled and snapshot URL has been provided, restore snapshot
+              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                echo "Snapshot restoration enabled"
+                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                  echo "Clearing existing chaindata..."
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                else
+                  echo "Snapshot configuration already restored, continuing..."
+                fi
+              else
+                echo "Snapshot restoration not enabled, skipping..."
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: RESTORE_SNAPSHOT
+              value: "true"
+            - name: SNAPSHOT_URL
+              value: {{ $values.restoreSnapshot.snapshotUrl }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: {{ $componentName }}-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
@@ -92,49 +134,6 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
-        # TODO: Move this out of chart and into a separate DaemonSet that sets this on every host
-        - name: {{ $componentName }}-init
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - |
-              set -x
-              STORAGE_PATH="/storage"
-              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-              # If enabled and snapshot URL has been provided, bootstrap snapshot
-              if [ "${BOOTSTRAP_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-                echo "Snapshot bootstrapping enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
-                  echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-                else
-                  echo "Snapshot configuration already bootstrapped, continuing..."
-                fi
-              else
-                echo "Snapshot bootstrapping not enabled, skipping..."
-              fi
-          volumeMounts:
-            - name: storage
-              mountPath: /storage
-          env:
-          {{- if $values.fromSnapshot.enabled }}
-            - name: BOOTSTRAP_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_URL
-              value: {{ $values.fromSnapshot.snapshotUrl }}
-          {{- end }}
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
