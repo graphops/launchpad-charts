@@ -227,7 +227,7 @@ spec:
               mountPath: /tmp
           readinessProbe:
             tcpSocket:
-              port: http-api
+              port: http-nimbus
             initialDelaySeconds: 10
             periodSeconds: 10
           {{- with $values.resources }}
