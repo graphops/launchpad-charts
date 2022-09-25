@@ -165,6 +165,7 @@ spec:
                 --http.addr=0.0.0.0 \
                 --http.vhosts=* \
                 --authrpc.addr=0.0.0.0 \
+                --authrpc.vhosts=* \
               {{- if $jwtEnabled }}
                 --authrpc.jwtsecret=/jwt/jwt.hex \
               {{- end }}
