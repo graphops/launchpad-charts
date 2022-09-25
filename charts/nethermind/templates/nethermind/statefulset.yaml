@@ -103,7 +103,7 @@ spec:
           {{- end }}
       {{- end }}
       {{- if $values.p2pNodePort.enabled }}
-        - name: {{ $componentName }}-nodeport
+        - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
           imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
           securityContext:
