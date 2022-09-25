@@ -105,6 +105,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nethermind.podSecurityContext | Pod-wide security context | object | `{"fsGroup":0,"runAsGroup":0,"runAsNonRoot":false,"runAsUser":0}` |
  | nethermind.resources |  | object | `{}` |
+ | nethermind.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
+ | nethermind.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
  | nethermind.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | nethermind.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | nethermind.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
