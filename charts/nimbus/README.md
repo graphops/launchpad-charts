@@ -7,7 +7,6 @@ Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kuber
 ## Chart Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) and contributors
-- Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -93,7 +92,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.initChownData.image.repository | Container repository | string | `"busybox"` |
  | nimbus.initChownData.image.tag | Container tag | string | `"1.34.0"` |
- | nimbus.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
+ | nimbus.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | nimbus.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | nimbus.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
  | nimbus.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
@@ -112,6 +111,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.service.type |  | string | `"ClusterIP"` |
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |
+ | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
+ | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `["--reindex"]` |
+ | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL | string | `"https://sync.invis.tools"` |
  | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |

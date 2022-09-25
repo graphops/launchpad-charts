@@ -70,7 +70,7 @@ grafana:
 nimbus:
   # -- URL to the Execution Client Engine API. Will use configured JWT to authenticate.
   executionClientUrl: "" # e.g. http://erigon:8551
-  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  # -- JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`.
   jwt:
     # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
     existingSecret:
@@ -142,6 +142,15 @@ nimbus:
     antiAffinityByHostname: true
 
   affinity: {}
+
+  trustedNodeSync:
+    # -- Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful)
+    enabled: false
+    # -- URL to the Trusted Consensus Client Node URL
+    trustedNodeUrl: https://sync.invis.tools
+    # -- Additional CLI arguments
+    extraArgs:
+      - --reindex
 
   p2pNodePort:
     # -- Expose P2P port via NodePort

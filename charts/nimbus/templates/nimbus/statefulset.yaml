@@ -62,7 +62,7 @@ spec:
       {{- end }}
       initContainers:
       {{- if $values.p2pNodePort.enabled }}
-        - name: {{ $componentName }}-nodeport
+        - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
           imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
           securityContext:
@@ -99,10 +99,63 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
           command: ["chown", "-R", "{{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }}", "/storage"]
           volumeMounts:
             - name: storage
               mountPath: "/storage"
+      {{- end }}
+      {{- if $values.trustedNodeSync.enabled }}
+        - name: init-trusted-node-sync
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              exec /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                trustedNodeSync \
+                --data-dir=/storage \
+              {{- range $arg := $values.trustedNodeSync.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --trusted-node-url={{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}
+          volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
       {{- end }}
       containers:
         - name: {{ $componentName }}
