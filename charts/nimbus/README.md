@@ -112,8 +112,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
- | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `["--reindex"]` |
- | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL | string | `"https://sync.invis.tools"` |
+ | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `[]` |
+ | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/ | string | `""` |
  | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |

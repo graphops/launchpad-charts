@@ -146,11 +146,10 @@ nimbus:
   trustedNodeSync:
     # -- Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful)
     enabled: false
-    # -- URL to the Trusted Consensus Client Node URL
-    trustedNodeUrl: https://sync.invis.tools
+    # -- URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/
+    trustedNodeUrl: ""
     # -- Additional CLI arguments
-    extraArgs:
-      - --reindex
+    extraArgs: []
 
   p2pNodePort:
     # -- Expose P2P port via NodePort
