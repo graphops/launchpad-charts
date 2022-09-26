@@ -60,27 +60,45 @@ spec:
         - name: env-nodeport
           emptyDir: {}
       {{- end }}
-      initContainers:      {{- if $values.restoreSnapshot.enabled }}
+      initContainers:
+      {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/graphops/docker-builds/init-toolkit:main
+          # imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
             - |
               set -x
               STORAGE_PATH="/storage"
+              RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT-"true"}
               SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              SNAPSHOT_RESTORE_MODE=${SNAPSHOT_RESTORE_MODE:-"streaming"}
+              SNAPSHOT_URL="{{ $values.restoreSnapshot.snapshotUrl }}"
+              SNAPSHOT_CONFIG="${SNAPSHOT_URL}"
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "$SNAPSHOT_CONFIG" ]; then
                   echo "Clearing existing chaindata..."
                   rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                  if [ "$SNAPSHOT_RESTORE_MODE" = "streaming" ]; then
+                    echo "Performing streaming download and extraction of ${SNAPSHOT_URL}"
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                  elif [ "$SNAPSHOT_RESTORE_MODE" = "multipart" ]; then
+                    echo "Performing multipart download of ${SNAPSHOT_URL}, and then extracting..."
+                    /download-manager fetch -u "${SNAPSHOT_URL}" -o "$STORAGE_PATH" -f snapshot.tar.gz -c 10
+                    SNAPSHOT_MULTIPART_DOWNLOAD_PATH="$STORAGE_PATH/snapshot.tar.gz"
+                    tar -xz -C "$SNAPSHOT_RESTORE_PATH" $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                    rm -rf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                  else
+                    echo "Error: unknown snapshot restoration mode, $SNAPSHOT_RESTORE_MODE."
+                    exit 1
+                  fi
+                  echo "${SNAPSHOT_CONFIG}" > ${STORAGE_PATH}/from_snapshot
                 else
                   echo "Snapshot configuration already restored, continuing..."
                 fi
@@ -90,12 +108,8 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
-          env:
-            - name: RESTORE_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_URL
-              value: {{ $values.restoreSnapshot.snapshotUrl }}
           {{- with $values.env }}
+          env:
           {{- range $key, $val := .}}
             - name: {{ $key }}
               value: {{ $val | quote }}
