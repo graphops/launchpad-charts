@@ -105,19 +105,8 @@ spec:
             - |
               set -ex;
               chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              chmod -R 700 /storage; # Nimbus expects 700 permissions
               ls -lah /storage
-          volumeMounts:
-            - name: storage
-              mountPath: "/storage"
-      {{- end }}
-      {{- if $values.initChownData.enabled }}
-        - name: init-chown-data
-          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
-          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-          command: ["chown", "-R", "{{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }}", "/storage"]
           volumeMounts:
             - name: storage
               mountPath: "/storage"
@@ -135,14 +124,23 @@ spec:
             - sh
             - -ac
             - |
-              set -ex;
-              exec /home/user/nimbus-eth2/build/nimbus_beacon_node \
-                trustedNodeSync \
-                --data-dir=/storage \
-              {{- range $arg := $values.trustedNodeSync.extraArgs }}
-                {{- $arg | nindent 16 }} \
-              {{- end }}
-                --trusted-node-url={{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}
+              set -x;
+              TRUSTED_NODE_SYNC_STATE_FILE=/storage/.init-trusted-node-sync
+              TRUSTED_NODE_URL="{{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}"
+              if [ ! -f "$TRUSTED_NODE_SYNC_STATE_FILE" ]; then
+                /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                  trustedNodeSync \
+                  --data-dir=/storage \
+                {{- range $arg := $values.trustedNodeSync.extraArgs }}
+                  {{- $arg | nindent 18 }} \
+                {{- end }}
+                  --trusted-node-url=$TRUSTED_NODE_URL
+                echo $?
+                echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
+              else
+                cat $TRUSTED_NODE_SYNC_STATE_FILE
+                echo "Trusted node sync already run. Skipping..."
+              fi
           volumeMounts:
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
