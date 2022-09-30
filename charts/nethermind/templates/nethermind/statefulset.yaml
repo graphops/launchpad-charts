@@ -1,0 +1,296 @@
+{{- $values := $.Values.nethermind }}
+{{- $componentName := "nethermind"}}
+{{- $componentLabel := include "nethermind.componentLabelFor" $componentName }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "nethermind.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nethermind.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "nethermind.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "nethermind.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "nethermind.replicas" $values }}
+  selector:
+    matchLabels:
+      {{- include "nethermind.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nethermind.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nethermind.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+      initContainers:
+      {{- if $values.restoreSnapshot.enabled }}
+        - name: init-restore-snapshot
+          image: ghcr.io/graphops/docker-builds/init-toolkit:main
+          # imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              sleep 100000000000000
+              STORAGE_PATH="/storage"
+              RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT-"true"}
+              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nethermind_db"
+              SNAPSHOT_RESTORE_MODE="{{ default "streaming" $values.restoreSnapshot.mode }}"
+              SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY={{ default 3 $values.restoreSnapshot.multipartConcurrency }}
+              SNAPSHOT_URL="{{ $values.restoreSnapshot.snapshotUrl }}"
+              SNAPSHOT_RESTORE_NONCE="{{ default 1 $values.restoreSnapshot.nonce }}"
+              SNAPSHOT_CONFIG="${SNAPSHOT_RESTORE_NONCE}-${SNAPSHOT_URL}"
+              SNAPSHOT_STATE_FILE="$STORAGE_PATH/.init-restore-snapshot"
+              # If enabled and snapshot URL has been provided, restore snapshot
+              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                echo "Snapshot restoration enabled"
+                if [ ! -f "$SNAPSHOT_STATE_FILE" ] || [ "$(cat $SNAPSHOT_STATE_FILE)" != "$SNAPSHOT_CONFIG" ]; then
+                  echo "Clearing existing $SNAPSHOT_RESTORE_PATH..."
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                  if [ "$SNAPSHOT_RESTORE_MODE" = "streaming" ]; then
+                    echo "Performing streaming download and extraction of ${SNAPSHOT_URL}"
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  elif [ "$SNAPSHOT_RESTORE_MODE" = "multipart" ]; then
+                    echo "Performing multipart download of ${SNAPSHOT_URL}, and then extracting..."
+                    SNAPSHOT_MULTIPART_DOWNLOAD_PATH="$STORAGE_PATH/snapshot.tar.gz"
+                    echo "Removing any existing parts..."
+                    rm -rf "${SNAPSHOT_MULTIPART_DOWNLOAD_PATH}*"
+                    /download-manager fetch -u "${SNAPSHOT_URL}" -o "$STORAGE_PATH" -f snapshot.tar.gz -c $SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                    tar -C "$SNAPSHOT_RESTORE_PATH" -vxzf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                    [ "$?" != "0" ] && echo "Extraction failed" && exit 1
+                    rm -rf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                  else
+                    echo "Error: unknown snapshot restoration mode, $SNAPSHOT_RESTORE_MODE."
+                    exit 1
+                  fi
+                  echo "${SNAPSHOT_CONFIG}" > ${SNAPSHOT_STATE_FILE}
+                else
+                  echo "Snapshot configuration already restored, continuing..."
+                fi
+              else
+                echo "Snapshot restoration not enabled, skipping..."
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: init-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: false # Nethermind needs to write to /nethermind
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - sh
+            - -ac
+            - |
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+            {{- end }}
+              set -ex;
+              exec /nethermind/Nethermind.Runner \
+                --datadir=/storage \
+                --KeyStore.KeyStoreDirectory=/storage/keystore \
+                --KeyStore.EnodeKeyFile=/storage/enode \
+                --Network.LocalIp=$(POD_IP) \
+              {{- if $values.p2pNodePort.enabled }}
+                --Network.ExternalIp=$EXTERNAL_IP \
+                --Network.P2PPort=$EXTERNAL_PORT \
+                --Network.DiscoveryPort=$EXTERNAL_PORT \
+              {{- else }}
+                --Network.P2PPort={{ include "nethermind.p2pPort" $values }} \
+                --Network.DiscoveryPort={{ include "nethermind.p2pPort" $values }} \
+              {{- end }}
+                --JsonRpc.Enabled=true \
+                --JsonRpc.Host=0.0.0.0 \
+                --Init.WebSocketsEnabled=true \
+                --JsonRpc.EngineHost=0.0.0.0 \
+                --Metrics.Enabled=true \
+                --Metrics.NodeName=$(POD_NAME) \
+              {{- if $jwtEnabled }}
+                --JsonRpc.JwtSecretFile=/jwt/jwt.hex \
+              {{- end }}
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --HealthChecks.Enabled=true
+          ports:
+            - name: http-metrics
+              containerPort: 9545
+              protocol: TCP
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: http-engineapi
+              containerPort: 8551
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: {{ include "nethermind.p2pPort" $values }}
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: {{ include "nethermind.p2pPort" $values }}
+              protocol: TCP
+          volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            httpGet:
+              port: http-jsonrpc
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
