@@ -62,7 +62,7 @@ spec:
       {{- end }}
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
-        - name: init-snapshot
+        - name: init-restore-snapshot
           image: ghcr.io/graphops/docker-builds/init-toolkit:main
           # imagePullPolicy: IfNotPresent
           imagePullPolicy: Always
@@ -71,34 +71,43 @@ spec:
             - -c
             - |
               set -x
+              sleep 100000000000000
               STORAGE_PATH="/storage"
               RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT-"true"}
-              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-              SNAPSHOT_RESTORE_MODE=${SNAPSHOT_RESTORE_MODE:-"streaming"}
+              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nethermind_db"
+              SNAPSHOT_RESTORE_MODE="{{ default "streaming" $values.restoreSnapshot.mode }}"
+              SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY={{ default 3 $values.restoreSnapshot.multipartConcurrency }}
               SNAPSHOT_URL="{{ $values.restoreSnapshot.snapshotUrl }}"
-              SNAPSHOT_CONFIG="${SNAPSHOT_URL}"
+              SNAPSHOT_RESTORE_NONCE="{{ default 1 $values.restoreSnapshot.nonce }}"
+              SNAPSHOT_CONFIG="${SNAPSHOT_RESTORE_NONCE}-${SNAPSHOT_URL}"
+              SNAPSHOT_STATE_FILE="$STORAGE_PATH/.init-restore-snapshot"
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "$SNAPSHOT_CONFIG" ]; then
-                  echo "Clearing existing chaindata..."
+                if [ ! -f "$SNAPSHOT_STATE_FILE" ] || [ "$(cat $SNAPSHOT_STATE_FILE)" != "$SNAPSHOT_CONFIG" ]; then
+                  echo "Clearing existing $SNAPSHOT_RESTORE_PATH..."
                   rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   if [ "$SNAPSHOT_RESTORE_MODE" = "streaming" ]; then
                     echo "Performing streaming download and extraction of ${SNAPSHOT_URL}"
                     wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
                   elif [ "$SNAPSHOT_RESTORE_MODE" = "multipart" ]; then
                     echo "Performing multipart download of ${SNAPSHOT_URL}, and then extracting..."
-                    /download-manager fetch -u "${SNAPSHOT_URL}" -o "$STORAGE_PATH" -f snapshot.tar.gz -c 10
                     SNAPSHOT_MULTIPART_DOWNLOAD_PATH="$STORAGE_PATH/snapshot.tar.gz"
-                    tar -xz -C "$SNAPSHOT_RESTORE_PATH" $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                    echo "Removing any existing parts..."
+                    rm -rf "${SNAPSHOT_MULTIPART_DOWNLOAD_PATH}*"
+                    /download-manager fetch -u "${SNAPSHOT_URL}" -o "$STORAGE_PATH" -f snapshot.tar.gz -c $SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                    tar -C "$SNAPSHOT_RESTORE_PATH" -vxzf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                    [ "$?" != "0" ] && echo "Extraction failed" && exit 1
                     rm -rf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
                   else
                     echo "Error: unknown snapshot restoration mode, $SNAPSHOT_RESTORE_MODE."
                     exit 1
                   fi
-                  echo "${SNAPSHOT_CONFIG}" > ${STORAGE_PATH}/from_snapshot
+                  echo "${SNAPSHOT_CONFIG}" > ${SNAPSHOT_STATE_FILE}
                 else
                   echo "Snapshot configuration already restored, continuing..."
                 fi
