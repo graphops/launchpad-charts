@@ -50,6 +50,29 @@ nethermind:
       key: jwt
 ```
 
+## Restoring node database using an external snapshot archive
+
+You can specify a snapshot archive URL that will be used to restore Nethermind's `nethermind_db` state. The snapshot should be a gzipped tarball of the contents of `nethermind_db`.
+
+When enabled, an init container will perform a `streaming` download and extraction of the snapshot into storage. This requires roughly 1x the extracted archive contents worth of disk space.
+
+Instead of `streaming`, you can also configure a `multipart` download, which will download multiple chunks of the archive concurrently. This requires roughly 2.1x the extracted archive contents worth of disk space since the archive must be reconstructed on disk before it can be extracted.
+
+Example:
+```yaml
+# values.yaml
+
+statefulNode:
+  restoreSnapshot:
+    enable: true
+    snapshotUrl: https://a-link-to-your-snapshot-archive.tar.gz
+    mode: streaming # or multipart
+```
+
+Once the node state has been restored, the snapshot URL will be saved to storage at `/.init-restore-snapshot`. Any time the Pod restarts, as long as the snapshot configuration has not changed, the node will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing state and perform a snapshot download and extraction again.
+
+You can monitor progress by following the logs of the `init-restore-snapshot` container: `kubectl logs --since 1m -f release-name-nethermind-0 -c init-restore-snapshot`
+
 ## Enabling inbound P2P dials
 
 By default, your Nethermind node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `nethermind.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `nethermind.p2pNodePort.enabled`, the exposed IP address on your Nethermind ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `nethermind.replicaCount` will be locked to `1`.
