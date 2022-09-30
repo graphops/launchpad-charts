@@ -50,6 +50,23 @@ nimbus:
       key: jwt
 ```
 
+## Trusted node sync
+
+By default, your Nimbus node will sync from scratch and verify all transactions on the beacon chain from genesis. This process can take several days/weeks.
+
+[Trusted node sync](https://nimbus.guide/trusted-node-sync.html) allows you to get started more quickly by fetching a recent checkpoint from a trusted node, allowing you to get up and running in minutes. To use trusted node sync, you must have access to a node that you trust that exposes the Beacon API.
+
+```yaml
+# values.yaml
+
+nimbus:
+  trustedNodeSync:
+    enabled: true
+    trustedNodeUrl: http://a-trusted-nimbus-node:5052 # example
+```
+
+When enabled, trusted sync will happen in an init container named `init-trusted-node-sync` that runs before the normal Nimbus process starts.
+
 ## Enabling inbound P2P dials
 
 By default, your Nimbus node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `nimbus.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `nimbus.p2pNodePort.enabled`, the exposed IP address on your Nimbus ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `nimbus.replicaCount` will be locked to `1`.
