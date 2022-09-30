@@ -243,6 +243,18 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
     version: 0.1.0
+  nethermind:
+  - apiVersion: v2
+    appVersion: 1.14.2
+    created: "2022-09-30T23:20:26.449134337Z"
+    description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
+      inside Kubernetes with ease
+    digest: 38c780e372b348271f221bf85fafd8e94d43c4e06c9e1123ef24b64b05d94e41
+    name: nethermind
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
+    version: 0.1.0
   proxyd:
   - apiVersion: v2
     appVersion: 3.9.1
@@ -318,4 +330,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-09-25T19:35:13.523619881Z"
+generated: "2022-09-30T23:20:26.449403549Z"
