@@ -29,7 +29,7 @@ spec:
     spec:
       serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-cluster-critical
-      {{- with $values.controller.tolerations }}
+      {{- with .Values.controller.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

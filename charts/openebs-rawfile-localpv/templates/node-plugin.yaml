@@ -34,7 +34,7 @@ spec:
     spec:
       serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-node-critical
-      {{- with $values.node.tolerations }}
+      {{- with .Values.node.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
