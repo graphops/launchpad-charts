@@ -158,7 +158,6 @@ spec:
             readOnly: true
           - name: scratchpad
             mountPath: "/scratchpad"
-          readinessProbe: {}
           {{- with $toolboxValues.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
