@@ -29,11 +29,10 @@ spec:
     spec:
       serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-cluster-critical
+      {{- with $values.controller.tolerations }}
       tolerations:
-        - key: "node-role.kubernetes.io/master"
-          operator: Equal
-          value: "true"
-          effect: NoSchedule
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: socket-dir
           emptyDir: {}

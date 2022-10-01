@@ -34,8 +34,10 @@ spec:
     spec:
       serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
       priorityClassName: system-node-critical
+      {{- with $values.node.tolerations }}
       tolerations:
-        - operator: "Exists"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: registration-dir
           hostPath:
@@ -101,7 +103,7 @@ spec:
             - name: ADDRESS
               value: /csi/csi.sock
             - name: DRIVER_REG_SOCK_PATH
-              value: /var/lib/kubelet/plugins/rawfile-csi/csi.sock
+              value: {{ .Values.node.driver_socket | default "/var/lib/kubelet/plugins/rawfile-csi/csi.sock"}}
           ports:
             - containerPort: 9809
               name: healthz
