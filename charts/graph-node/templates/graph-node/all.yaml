@@ -257,10 +257,10 @@ spec:
             {{- end }}
           {{- if (or $values.env $values.secretEnv) }}
           env:
-            - name: NODE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+         #   - name: NODE_ID
+         #     valueFrom:
+         #       fieldRef:
+         #         fieldPath: metadata.name
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
