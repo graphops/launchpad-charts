@@ -56,9 +56,9 @@ spec:
             - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:{{ get $.Values.statefulNode.service.ports "grpc-erigon" }} # grpc interface of stateful process
             - --http.addr=0.0.0.0
             - --http.port=8545
+            - --http.vhosts=*
             - --metrics
             - --metrics.addr=0.0.0.0
-            - --http.vhosts=*
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}

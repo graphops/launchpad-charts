@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "erigon.name" -}}
+{{- define "nimbus.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "erigon.fullname" -}}
+{{- define "nimbus.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "erigon.chart" -}}
+{{- define "nimbus.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "erigon.labels" -}}
-helm.sh/chart: {{ include "erigon.chart" . }}
-{{ include "erigon.selectorLabels" . }}
+{{- define "nimbus.labels" -}}
+helm.sh/chart: {{ include "nimbus.chart" . }}
+{{ include "nimbus.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,27 +45,27 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "erigon.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "erigon.name" . }}
+{{- define "nimbus.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "nimbus.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "erigon.componentLabelFor" -}}
+{{- define "nimbus.componentLabelFor" -}}
 app.kubernetes.io/component: {{ . }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "erigon.serviceAccountName" -}}
+{{- define "nimbus.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "erigon.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "nimbus.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
 
-{{- define "erigon.p2pPort" -}}
+{{- define "nimbus.p2pPort" -}}
 {{- if .p2pNodePort.enabled }}
 {{- print .p2pNodePort.port }}
 {{- else }}
@@ -73,7 +73,7 @@ Create the name of the service account to use
 {{- end }}
 {{- end -}}
 
-{{- define "erigon.replicas" -}}
+{{- define "nimbus.replicas" -}}
 {{- if .p2pNodePort.enabled }}
 {{- print 1 }}
 {{ else }}

@@ -1,25 +1,25 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
-{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- $values := $.Values.nimbus }}
+{{- $componentName := "nimbus" }}
+{{- $componentLabel := include "nimbus.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  name: {{ include "nimbus.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "nimbus.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
   jobLabel: "{{ .Release.Name }}"
   selector:
     matchLabels:
-      {{- include "erigon.selectorLabels" . | nindent 6 }}
+      {{- include "nimbus.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
       serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:
     - port: http-metrics
-      path: /debug/metrics/prometheus
+      path: /metrics
       {{- with .Values.prometheus.serviceMonitors.interval }}
       interval: {{ . }}
       {{- end }}

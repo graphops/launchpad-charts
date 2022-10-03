@@ -1,24 +1,24 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
-{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- $values := $.Values.nethermind }}
+{{- $componentName := "nethermind"}}
+{{- $componentLabel := include "nethermind.componentLabelFor" $componentName }}
 
 {{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
-{{- $jwtSecretName := default (print (include "erigon.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretName := default (print (include "nethermind.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
 {{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  name: {{ include "nethermind.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "nethermind.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "erigon.fullname" . }}-{{ $componentName }}-headless
-  replicas: {{ include "erigon.replicas" $values }}
+  serviceName: {{ include "nethermind.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "nethermind.replicas" $values }}
   selector:
     matchLabels:
-      {{- include "erigon.selectorLabels" . | nindent 6 }}
+      {{- include "nethermind.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   volumeClaimTemplates:
     - metadata:
@@ -32,14 +32,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "erigon.selectorLabels" . | nindent 8 }}
+        {{- include "nethermind.selectorLabels" . | nindent 8 }}
         {{- $componentLabel | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "erigon.serviceAccountName" . }}
+      serviceAccountName: {{ include "nethermind.serviceAccountName" . }}
       {{- with $values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -62,26 +62,52 @@ spec:
       {{- end }}
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
-        - name: init-snapshot
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
+        - name: init-restore-snapshot
+          image: ghcr.io/graphops/docker-builds/init-toolkit:main
+          # imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - sh
             - -c
             - |
               set -x
+              sleep 100000000000000
               STORAGE_PATH="/storage"
-              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT-"true"}
+              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nethermind_db"
+              SNAPSHOT_RESTORE_MODE="{{ default "streaming" $values.restoreSnapshot.mode }}"
+              SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY={{ default 3 $values.restoreSnapshot.multipartConcurrency }}
+              SNAPSHOT_URL="{{ $values.restoreSnapshot.snapshotUrl }}"
+              SNAPSHOT_RESTORE_NONCE="{{ default 1 $values.restoreSnapshot.nonce }}"
+              SNAPSHOT_CONFIG="${SNAPSHOT_RESTORE_NONCE}-${SNAPSHOT_URL}"
+              SNAPSHOT_STATE_FILE="$STORAGE_PATH/.init-restore-snapshot"
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
+                if [ ! -f "$SNAPSHOT_STATE_FILE" ] || [ "$(cat $SNAPSHOT_STATE_FILE)" != "$SNAPSHOT_CONFIG" ]; then
+                  echo "Clearing existing $SNAPSHOT_RESTORE_PATH..."
                   rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                  if [ "$SNAPSHOT_RESTORE_MODE" = "streaming" ]; then
+                    echo "Performing streaming download and extraction of ${SNAPSHOT_URL}"
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  elif [ "$SNAPSHOT_RESTORE_MODE" = "multipart" ]; then
+                    echo "Performing multipart download of ${SNAPSHOT_URL}, and then extracting..."
+                    SNAPSHOT_MULTIPART_DOWNLOAD_PATH="$STORAGE_PATH/snapshot.tar.gz"
+                    echo "Removing any existing parts..."
+                    rm -rf "${SNAPSHOT_MULTIPART_DOWNLOAD_PATH}*"
+                    /download-manager fetch -u "${SNAPSHOT_URL}" -o "$STORAGE_PATH" -f snapshot.tar.gz -c $SNAPSHOT_RESTORE_MULTIPART_CONCURRENCY
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                    tar -C "$SNAPSHOT_RESTORE_PATH" -vxzf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                    [ "$?" != "0" ] && echo "Extraction failed" && exit 1
+                    rm -rf $SNAPSHOT_MULTIPART_DOWNLOAD_PATH
+                  else
+                    echo "Error: unknown snapshot restoration mode, $SNAPSHOT_RESTORE_MODE."
+                    exit 1
+                  fi
+                  echo "${SNAPSHOT_CONFIG}" > ${SNAPSHOT_STATE_FILE}
                 else
                   echo "Snapshot configuration already restored, continuing..."
                 fi
@@ -91,12 +117,8 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: /storage
-          env:
-            - name: RESTORE_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_URL
-              value: {{ $values.restoreSnapshot.snapshotUrl }}
           {{- with $values.env }}
+          env:
           {{- range $key, $val := .}}
             - name: {{ $key }}
               value: {{ $val | quote }}
@@ -134,15 +156,42 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false # Nethermind needs to write to /nethermind
             capabilities:
               drop:
                 - ALL
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           command:
             - sh
             - -ac
@@ -151,35 +200,35 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              exec erigon \
+              exec /nethermind/Nethermind.Runner \
                 --datadir=/storage \
+                --KeyStore.KeyStoreDirectory=/storage/keystore \
+                --KeyStore.EnodeKeyFile=/storage/enode \
+                --Network.LocalIp=$(POD_IP) \
               {{- if $values.p2pNodePort.enabled }}
-                --nat=extip:${EXTERNAL_IP} \
-                --port=${EXTERNAL_PORT} \
+                --Network.ExternalIp=$EXTERNAL_IP \
+                --Network.P2PPort=$EXTERNAL_PORT \
+                --Network.DiscoveryPort=$EXTERNAL_PORT \
               {{- else }}
-                --port={{ include "erigon.p2pPort" $values }} \
+                --Network.P2PPort={{ include "nethermind.p2pPort" $values }} \
+                --Network.DiscoveryPort={{ include "nethermind.p2pPort" $values }} \
               {{- end }}
-                --private.api.addr=0.0.0.0:9090 \
-                --http \
-                --http.addr=0.0.0.0 \
-                --http.vhosts=* \
-                --authrpc.addr=0.0.0.0 \
-                --authrpc.vhosts=* \
+                --JsonRpc.Enabled=true \
+                --JsonRpc.Host=0.0.0.0 \
+                --Init.WebSocketsEnabled=true \
+                --JsonRpc.EngineHost=0.0.0.0 \
+                --Metrics.Enabled=true \
+                --Metrics.NodeName=$(POD_NAME) \
               {{- if $jwtEnabled }}
-                --authrpc.jwtsecret=/jwt/jwt.hex \
+                --JsonRpc.JwtSecretFile=/jwt/jwt.hex \
               {{- end }}
-                --metrics \
-                --metrics.addr=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
-                --healthcheck
+                --HealthChecks.Enabled=true
           ports:
-            - name: grpc-erigon
-              containerPort: 9090
-              protocol: TCP
             - name: http-metrics
-              containerPort: 6060
+              containerPort: 9545
               protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
@@ -188,16 +237,10 @@ spec:
               containerPort: 8551
               protocol: TCP
             - name: udp-p2p
-              containerPort: {{ include "erigon.p2pPort" $values }}
+              containerPort: {{ include "nethermind.p2pPort" $values }}
               protocol: UDP
             - name: tcp-p2p
-              containerPort: {{ include "erigon.p2pPort" $values }}
-              protocol: TCP
-            - name: udp-torrent
-              containerPort: 42069
-              protocol: UDP
-            - name: tcp-torrent
-              containerPort: 42069
+              containerPort: {{ include "nethermind.p2pPort" $values }}
               protocol: TCP
           volumeMounts:
             {{- if $values.p2pNodePort.enabled }}
@@ -213,11 +256,11 @@ spec:
             - name: tmp
               mountPath: /tmp
           readinessProbe:
-            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-            grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+            httpGet:
+              port: http-jsonrpc
+              path: /health
+            initialDelaySeconds: 10
+            periodSeconds: 10
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

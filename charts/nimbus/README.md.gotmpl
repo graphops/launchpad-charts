@@ -1,0 +1,89 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for exposing a NodePort to enable inbound P2P dials for better peering
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+## Specifying the Engine API JWT
+
+To drive block progression of an Execution Client, you will need to configure a JWT that is used by Nimbus to authenticate with the Execution Client's Engine API on port `8551`. You will need to pass the same JWT to your Execution Client.
+
+You can specify the JWT for Nimbus either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Nimbus Pod.
+
+Using a literal value:
+
+```yaml
+# values.yaml
+
+nimbus:
+  jwt:
+    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+# values.yaml
+
+nimbus:
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
+
+## Trusted node sync
+
+By default, your Nimbus node will sync from scratch and verify all transactions on the beacon chain from genesis. This process can take several days/weeks.
+
+[Trusted node sync](https://nimbus.guide/trusted-node-sync.html) allows you to get started more quickly by fetching a recent checkpoint from a trusted node, allowing you to get up and running in minutes. To use trusted node sync, you must have access to a node that you trust that exposes the Beacon API.
+
+```yaml
+# values.yaml
+
+nimbus:
+  trustedNodeSync:
+    enabled: true
+    trustedNodeUrl: http://a-trusted-nimbus-node:5052 # example
+```
+
+When enabled, trusted sync will happen in an init container named `init-trusted-node-sync` that runs before the normal Nimbus process starts.
+
+## Enabling inbound P2P dials
+
+By default, your Nimbus node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `nimbus.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `nimbus.p2pNodePort.enabled`, the exposed IP address on your Nimbus ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `nimbus.replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+nimbus:
+  p2pNodePort:
+    enabled: true
+    port: 31000 # Must be globally unique and available on the host
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

@@ -1,24 +1,24 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "stateful-node" }}
-{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+{{- $values := $.Values.nimbus }}
+{{- $componentName := "nimbus" }}
+{{- $componentLabel := include "nimbus.componentLabelFor" $componentName }}
 
 {{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
-{{- $jwtSecretName := default (print (include "erigon.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretName := default (print (include "nimbus.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
 {{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  name: {{ include "nimbus.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "nimbus.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "erigon.fullname" . }}-{{ $componentName }}-headless
-  replicas: {{ include "erigon.replicas" $values }}
+  serviceName: {{ include "nimbus.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "nimbus.replicas" $values }}
   selector:
     matchLabels:
-      {{- include "erigon.selectorLabels" . | nindent 6 }}
+      {{- include "nimbus.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   volumeClaimTemplates:
     - metadata:
@@ -32,14 +32,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "erigon.selectorLabels" . | nindent 8 }}
+        {{- include "nimbus.selectorLabels" . | nindent 8 }}
         {{- $componentLabel | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "erigon.serviceAccountName" . }}
+      serviceAccountName: {{ include "nimbus.serviceAccountName" . }}
       {{- with $values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -61,48 +61,6 @@ spec:
           emptyDir: {}
       {{- end }}
       initContainers:
-      {{- if $values.restoreSnapshot.enabled }}
-        - name: init-snapshot
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - |
-              set -x
-              STORAGE_PATH="/storage"
-              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-              # If enabled and snapshot URL has been provided, restore snapshot
-              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-                echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
-                  echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-                else
-                  echo "Snapshot configuration already restored, continuing..."
-                fi
-              else
-                echo "Snapshot restoration not enabled, skipping..."
-              fi
-          volumeMounts:
-            - name: storage
-              mountPath: /storage
-          env:
-            - name: RESTORE_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_URL
-              value: {{ $values.restoreSnapshot.snapshotUrl }}
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
-      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
@@ -134,6 +92,69 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              chmod -R 700 /storage; # Nimbus expects 700 permissions
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
+      {{- if $values.trustedNodeSync.enabled }}
+        - name: init-trusted-node-sync
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -x;
+              TRUSTED_NODE_SYNC_STATE_FILE=/storage/.init-trusted-node-sync
+              TRUSTED_NODE_URL="{{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}"
+              if [ ! -f "$TRUSTED_NODE_SYNC_STATE_FILE" ]; then
+                /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                  trustedNodeSync \
+                  --data-dir=/storage \
+                {{- range $arg := $values.trustedNodeSync.extraArgs }}
+                  {{- $arg | nindent 18 }} \
+                {{- end }}
+                  --trusted-node-url=$TRUSTED_NODE_URL
+                echo $?
+                echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
+              else
+                cat $TRUSTED_NODE_SYNC_STATE_FILE
+                echo "Trusted node sync already run. Skipping..."
+              fi
+          volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -151,53 +172,43 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              exec erigon \
-                --datadir=/storage \
+              exec /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                --data-dir=/storage \
+              {{- if $values.executionClientUrl }}
+                --web3-url={{ $values.executionClientUrl }} \
+              {{- end }}
+                --enr-auto-update=false \
               {{- if $values.p2pNodePort.enabled }}
-                --nat=extip:${EXTERNAL_IP} \
-                --port=${EXTERNAL_PORT} \
+                --nat=extip:$EXTERNAL_IP \
+                --udp-port=$EXTERNAL_PORT \
+                --tcp-port=$EXTERNAL_PORT \
               {{- else }}
-                --port={{ include "erigon.p2pPort" $values }} \
+                --udp-port={{ include "nimbus.p2pPort" $values }} \
+                --tcp-port={{ include "nimbus.p2pPort" $values }} \
               {{- end }}
-                --private.api.addr=0.0.0.0:9090 \
-                --http \
-                --http.addr=0.0.0.0 \
-                --http.vhosts=* \
-                --authrpc.addr=0.0.0.0 \
-                --authrpc.vhosts=* \
+                --rest=true \
+                --rest-address=0.0.0.0 \
               {{- if $jwtEnabled }}
-                --authrpc.jwtsecret=/jwt/jwt.hex \
+                --jwt-secret=/jwt/jwt.hex \
               {{- end }}
-                --metrics \
-                --metrics.addr=0.0.0.0 \
+                --metrics=true \
+                --metrics-address=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
-                --healthcheck
+                --non-interactive
           ports:
-            - name: grpc-erigon
-              containerPort: 9090
+            - name: http-nimbus
+              containerPort: 5052
               protocol: TCP
             - name: http-metrics
-              containerPort: 6060
-              protocol: TCP
-            - name: http-jsonrpc
-              containerPort: 8545
-              protocol: TCP
-            - name: http-engineapi
-              containerPort: 8551
+              containerPort: 8008
               protocol: TCP
             - name: udp-p2p
-              containerPort: {{ include "erigon.p2pPort" $values }}
+              containerPort: {{ include "nimbus.p2pPort" $values }}
               protocol: UDP
             - name: tcp-p2p
-              containerPort: {{ include "erigon.p2pPort" $values }}
-              protocol: TCP
-            - name: udp-torrent
-              containerPort: 42069
-              protocol: UDP
-            - name: tcp-torrent
-              containerPort: 42069
+              containerPort: {{ include "nimbus.p2pPort" $values }}
               protocol: TCP
           volumeMounts:
             {{- if $values.p2pNodePort.enabled }}
@@ -213,11 +224,10 @@ spec:
             - name: tmp
               mountPath: /tmp
           readinessProbe:
-            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-            grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+            tcpSocket:
+              port: http-nimbus
+            initialDelaySeconds: 10
+            periodSeconds: 10
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
