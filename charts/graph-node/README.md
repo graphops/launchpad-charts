@@ -58,7 +58,6 @@ You can disable default groups and define your own.
   ```yaml
   graphNodeDefaults:
     env:
-      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
       IPFS: "https://ipfs.network.thegraph.com"
       PGDATABASE: graph
       PGHOST: my-pg-host
@@ -89,7 +88,6 @@ You can disable default groups and define your own.
   ```yaml
   graphNodeDefaults:
     env:
-      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
       PGDATABASE: graph
       PGHOST: my-pg-host
 
@@ -123,7 +121,6 @@ You can disable default groups and define your own.
         my_high_performance_node_label: "true"
       env:
         NODE_ROLE: index-node
-        ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
     index-debug:
       enabled: true
       replicaCount: 1
@@ -141,6 +138,35 @@ You can disable default groups and define your own.
 
   In this example, subgraph deployments could be manually reassigned to a `index-debug` node to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
 </details>
+
+### Configuring Blockchain JSON-RPC Nodes
+
+You need to pass JSON-RPC node configuration for as many blockchains as you want to index.
+
+Example:
+
+```yaml
+# values.yaml
+
+chains:
+  mainnet:
+    shard: primary # The database shard to use for this chain
+    provider:
+      - label: ethereum-mainnet-archival-trace-node
+        url: "http://ethereum-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+      - label: ethereum-mainnet-pruned-node
+        url: "http://ethereum-mainnet-pruned-node:8545"
+        features: []
+  gnosis:
+    shard: primary
+    provider:
+      - label: gnosis-mainnet-archival-trace-node
+        url: "http://gnosis-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+```
+
+This configuration will be used to generate the appropriate TOML config for Graph Node. To customise this behaviour, see [advanced configuration](#advanced-configuration).
 
 ### Subgraph Deployment Rules
 
@@ -201,16 +227,21 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | blockIngestorGroupName | Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor. | string | `"block-ingestor"` |
+ | chains | Blockchain configuration for Graph Node | object | `{"mainnet":{"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}}` |
+ | chains.mainnet | Ethereum Mainnet | object | `{"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}` |
+ | chains.mainnet.provider[0].features | Data capabilities this node has | list | `["archive","traces"]` |
+ | chains.mainnet.provider[0].label | Label for the RPC endpoint | string | `"eth-mainnet"` |
+ | chains.mainnet.provider[0].url | URL for JSON-RPC endpoint | string | `""` |
+ | chains.mainnet.shard | The database shard to use for this chain | string | `"primary"` |
  | configTemplate | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
- | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"ETH_MAINNET_RPC_URL":"","IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
- | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"ETH_MAINNET_RPC_URL":"","IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
- | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | The URL for your Ethereum Mainnet Archive Node | string | `""` |
+ | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
  | graphNodeDefaults.env.IPFS | The URL for your IPFS node | string | `""` |
  | graphNodeDefaults.env.PGDATABASE | Name of the database to use | string | `""` |
  | graphNodeDefaults.env.PGHOST | Hostname of your PostgreSQL server | string | `""` |

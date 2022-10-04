@@ -58,7 +58,6 @@ You can disable default groups and define your own.
   ```yaml
   graphNodeDefaults:
     env:
-      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
       IPFS: "https://ipfs.network.thegraph.com"
       PGDATABASE: graph
       PGHOST: my-pg-host
@@ -89,7 +88,6 @@ You can disable default groups and define your own.
   ```yaml
   graphNodeDefaults:
     env:
-      ETH_MAINNET_RPC_URL: https://my_eth_node:8545
       PGDATABASE: graph
       PGHOST: my-pg-host
 
@@ -123,7 +121,6 @@ You can disable default groups and define your own.
         my_high_performance_node_label: "true"
       env:
         NODE_ROLE: index-node
-        ETH_MAINNET_RPC_URL: https://high_performance_rpc_provider:8545
     index-debug:
       enabled: true
       replicaCount: 1
@@ -141,6 +138,35 @@ You can disable default groups and define your own.
 
   In this example, subgraph deployments could be manually reassigned to a `index-debug` node to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
 </details>
+
+### Configuring Blockchain JSON-RPC Nodes
+
+You need to pass JSON-RPC node configuration for as many blockchains as you want to index.
+
+Example:
+
+```yaml
+# values.yaml
+
+chains:
+  mainnet:
+    shard: primary # The database shard to use for this chain
+    provider:
+      - label: ethereum-mainnet-archival-trace-node
+        url: "http://ethereum-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+      - label: ethereum-mainnet-pruned-node
+        url: "http://ethereum-mainnet-pruned-node:8545"
+        features: []
+  gnosis:
+    shard: primary
+    provider:
+      - label: gnosis-mainnet-archival-trace-node
+        url: "http://gnosis-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+```
+
+This configuration will be used to generate the appropriate TOML config for Graph Node. To customise this behaviour, see [advanced configuration](#advanced-configuration).
 
 ### Subgraph Deployment Rules
 
