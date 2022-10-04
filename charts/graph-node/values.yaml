@@ -138,8 +138,6 @@ graphNodeDefaults:
 
   # -- Environment variable defaults for all Graph Node groups
   env:
-    # By default, we don't want nodes to perform the block ingestion function
-    DISABLE_BLOCK_INGESTOR: "true"
     # -- Hostname of your PostgreSQL server
     PGHOST: ""
     # -- Port for your PostgreSQL server
@@ -175,7 +173,6 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
-      DISABLE_BLOCK_INGESTOR: "false"
   index:
     enabled: true
     replicaCount: 1

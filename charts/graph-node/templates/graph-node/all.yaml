@@ -128,6 +128,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+          {{- if ne $groupName $.Values.blockIngestorGroupName }}
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+          {{- end }}
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
