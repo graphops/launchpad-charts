@@ -170,7 +170,7 @@ Graph Node instances are assigned an ID, allowing subgraphs to be assigned to a 
 
 This Chart deploys Graph Node using Kubernetes `StatefulSet`s, providing a consistent naming scheme for all `Pod`s. This is the basis for Node ID generation.
 
-The Node ID template follows the format: `<release-name>_<group-name>_<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`. All instances of `-` are replaced with `_` to conform with `graph-node` naming requirements. Note: This will change if/when `graph-node` allows `-` in Node IDs.
+The Node ID template follows the format: `<release-name>-<group-name>-<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`.
 
 ### Advanced Configuration
 
