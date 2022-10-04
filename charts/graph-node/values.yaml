@@ -136,23 +136,32 @@ graphNodeDefaults:
 
   affinity: {}
 
-  # -- Environment variables for Graph Node
+  # -- Environment variable defaults for all Graph Node groups
   env:
-    PGHOST: ""
-    PGPORT: 5432
-    PGDATABASE: ""
-    ETH_MAINNET_RPC_URL: ""
-    IPFS: ""
-    # -- By default, we don't want nodes to perform the block ingestion function
+    # By default, we don't want nodes to perform the block ingestion function
     DISABLE_BLOCK_INGESTOR: "true"
+    # -- Hostname of your PostgreSQL server
+    PGHOST: ""
+    # -- Port for your PostgreSQL server
+    PGPORT: 5432
+    # -- Name of the database to use
+    PGDATABASE: ""
+    # -- The URL for your IPFS node
+    IPFS: ""
+    # -- The URL for your Ethereum Mainnet Archive Node
+    ETH_MAINNET_RPC_URL: ""
 
-  # -- Environment variables that come from `Secret`s
+  # -- Environment variable defaults that come from `Secret`s for all Graph Node groups
   secretEnv:
     PGUSER:
+      # -- Name of the secret that contains your PG username
       secretName:
+      # -- Name of the data key in the secret that contains your PG username
       key:
     PGPASSWORD:
+      # -- Name of the secret that contains your PG password
       secretName:
+      # -- Name of the data key in the secret that contains your PG password
       key:
 
 # -- Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor.

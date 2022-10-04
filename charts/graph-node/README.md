@@ -221,8 +221,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"DISABLE_BLOCK_INGESTOR":"true","ETH_MAINNET_RPC_URL":"","IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
- | graphNodeDefaults.env | Environment variables for Graph Node | object | `{"DISABLE_BLOCK_INGESTOR":"true","ETH_MAINNET_RPC_URL":"","IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
- | graphNodeDefaults.env.DISABLE_BLOCK_INGESTOR | By default, we don't want nodes to perform the block ingestion function | string | `"true"` |
+ | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"DISABLE_BLOCK_INGESTOR":"true","ETH_MAINNET_RPC_URL":"","IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
+ | graphNodeDefaults.env.ETH_MAINNET_RPC_URL | The URL for your Ethereum Mainnet Archive Node | string | `""` |
+ | graphNodeDefaults.env.IPFS | The URL for your IPFS node | string | `""` |
+ | graphNodeDefaults.env.PGDATABASE | Name of the database to use | string | `""` |
+ | graphNodeDefaults.env.PGHOST | Hostname of your PostgreSQL server | string | `""` |
+ | graphNodeDefaults.env.PGPORT | Port for your PostgreSQL server | int | `5432` |
  | graphNodeDefaults.extraArgs | Additional CLI arguments to pass to Graph Node | list | `[]` |
  | graphNodeDefaults.includeInIndexPools | List of Index Pools to include nodes in the group in | list | `[]` |
  | graphNodeDefaults.nodeSelector | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) | object | `{}` |
@@ -230,7 +234,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | graphNodeDefaults.replicaCount | The number of nodes to run in the group | int | `1` |
  | graphNodeDefaults.resources | Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits) for each node in the group | object | `{}` |
- | graphNodeDefaults.secretEnv | Environment variables that come from `Secret`s | object | `{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}}` |
+ | graphNodeDefaults.secretEnv | Environment variable defaults that come from `Secret`s for all Graph Node groups | object | `{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}}` |
+ | graphNodeDefaults.secretEnv.PGPASSWORD.key | Name of the data key in the secret that contains your PG password | string | `nil` |
+ | graphNodeDefaults.secretEnv.PGPASSWORD.secretName | Name of the secret that contains your PG password | string | `nil` |
+ | graphNodeDefaults.secretEnv.PGUSER.key | Name of the data key in the secret that contains your PG username | string | `nil` |
+ | graphNodeDefaults.secretEnv.PGUSER.secretName | Name of the secret that contains your PG username | string | `nil` |
  | graphNodeDefaults.service.ports.http-admin | Service Port to expose Graph Node Admin endpoint on | int | `8020` |
  | graphNodeDefaults.service.ports.http-metrics | Service Port to expose Graph Node Metrics endpoint on | int | `8040` |
  | graphNodeDefaults.service.ports.http-query | Service Port to expose Graph Node Query endpoint on | int | `8000` |
