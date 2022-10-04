@@ -8,11 +8,6 @@ Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) insid
 
 [Graph Node](https://github.com/graphprotocol/graph-node) is key component of [The Graph](https://thegraph.com), a decentralised blockchain data protocol. Graph Node supports executing [Subgraphs](https://thegraph.com/docs/en/developing/creating-a-subgraph/) to extract, process and index blockchain data. It also provides a rich GraphQL query interface to inspect and interrogate this data. [Learn more](https://github.com/graphprotocol/graph-node/blob/master/docs/getting-started.md).
 
-TODO
-- finish initial docs
-- add dashboards to chart
-- move toolbox into separate chart
-
 ## Chart Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
@@ -64,6 +59,7 @@ You can disable default groups and define your own.
   graphNodeDefaults:
     env:
       ETH_MAINNET_RPC_URL: https://my_eth_node:8545
+      IPFS: "https://ipfs.network.thegraph.com"
       PGDATABASE: graph
       PGHOST: my-pg-host
 
@@ -145,14 +141,6 @@ You can disable default groups and define your own.
 
   In this example, subgraph deployments could be manually reassigned to a `index-debug` node to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
 </details>
-
-### Configuring PostgreSQL backend
-
-TODO
-
-#### Sharding with multiple PostgreSQL backends
-
-TODO
 
 ### Subgraph Deployment Rules
 
