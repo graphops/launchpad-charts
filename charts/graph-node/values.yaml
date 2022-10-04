@@ -142,6 +142,7 @@ graphNodeDefaults:
     PGPORT: 5432
     PGDATABASE: ""
     ETH_MAINNET_RPC_URL: ""
+    IPFS: ""
 
   # -- Environment variables that come from `Secret`s
   secretEnv:
