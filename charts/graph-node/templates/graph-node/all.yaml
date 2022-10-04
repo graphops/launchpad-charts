@@ -167,7 +167,7 @@ spec:
             readOnly: true
           readinessProbe:
             httpGet:
-              port: 8000
+              port: http-query
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
