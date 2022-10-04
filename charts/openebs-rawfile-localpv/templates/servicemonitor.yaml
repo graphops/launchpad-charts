@@ -1,0 +1,21 @@
+{{- if .Values.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-node
+  labels:
+    {{- include "openebs-rawfile-localpv.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: {{ .Values.serviceMonitor.interval }}
+  jobLabel: "helm.sh/chart"
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 6 }}
+      component: node
+{{- end }}

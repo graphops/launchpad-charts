@@ -1,0 +1,157 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-node
+  labels:
+    {{- include "openebs-rawfile-localpv.labels" . | nindent 4 }}
+    component: node
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: 9100
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 4 }}
+    component: node
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "openebs-rawfile-localpv.fullname" . }}-node
+spec:
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: "100%"
+  selector:
+    matchLabels: &selectorLabels
+      {{- include "openebs-rawfile-localpv.selectorLabels" . | nindent 6 }}
+      component: node
+  template:
+    metadata:
+      labels: *selectorLabels
+    spec:
+      serviceAccount: {{ include "openebs-rawfile-localpv.fullname" . }}-driver
+      priorityClassName: system-node-critical
+      {{- with .Values.node.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: registration-dir
+          hostPath:
+            path: {{ .Values.node.registration_dir | default "/var/lib/kubelet/plugins_registry"  }}
+            type: Directory
+        - name: socket-dir
+          hostPath:
+            path: {{ .Values.node.socket_dir | default "/var/lib/kubelet/plugins/rawfile-csi" }}
+            type: DirectoryOrCreate
+        - name: mountpoint-dir
+          hostPath:
+            path: {{ .Values.node.k8s_mountpoint | default "/var/lib/kubelet"  }}
+            type: DirectoryOrCreate
+        - name: data-dir
+          hostPath:
+            path: {{ .Values.node.data_dir_path | default "/var/csi/rawfile"}}
+            type: DirectoryOrCreate
+      containers:
+        - name: csi-driver
+          image: "{{ .Values.node.image.repository }}:{{ .Values.node.image.tag }}"
+          imagePullPolicy: {{ .Values.node.image.pullPolicy }}
+          securityContext:
+            privileged: true
+          env:
+            - name: PROVISIONER_NAME
+              value: "{{ .Values.provisionerName }}"
+            - name: CSI_ENDPOINT
+              value: unix:///csi/csi.sock
+            - name: IMAGE_REPOSITORY
+              value: "{{ .Values.node.image.repository }}"
+          {{- if regexMatch "^.*-ci$" .Values.node.image.tag }}
+            - name: IMAGE_TAG
+              value: "{{ .Values.node.image.tag }}"
+          {{- end }}
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+          ports:
+            - name: metrics
+              containerPort: 9100
+            - name: csi-probe
+              containerPort: 9808
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: mountpoint-dir
+              mountPath: /var/lib/kubelet
+              mountPropagation: "Bidirectional"
+            - name: data-dir
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.node.resources | nindent 12 }}
+        - name: node-driver-registrar
+          image: k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.2.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - --csi-address=$(ADDRESS)
+            - --kubelet-registration-path=$(DRIVER_REG_SOCK_PATH)
+            - --health-port=9809
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: DRIVER_REG_SOCK_PATH
+              value: {{ .Values.node.driver_socket | default "/var/lib/kubelet/plugins/rawfile-csi/csi.sock"}}
+          ports:
+            - containerPort: 9809
+              name: healthz
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: healthz
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
+          resources:
+            limits:
+              cpu: 500m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
+        - name: external-provisioner
+          image: k8s.gcr.io/sig-storage/csi-provisioner:v2.2.2
+          imagePullPolicy: IfNotPresent
+          args:
+            - "--csi-address=$(ADDRESS)"
+            - "--feature-gates=Topology=true"
+            - "--strict-topology"
+            - "--immediate-topology=false"
+            - "--timeout=120s"
+            - "--enable-capacity=true"
+            - "--capacity-ownerref-level=1" # DaemonSet
+            - "--node-deployment=true"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
