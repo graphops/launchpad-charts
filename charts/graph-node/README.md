@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.27.0](https://img.shields.io/badge/AppVersion-v0.27.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.28.0-rc.0](https://img.shields.io/badge/AppVersion-v0.28.0--rc.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -218,10 +218,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
- | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"ETH_MAINNET_RPC_URL":null,"PGDATABASE":null,"PGHOST":null,"PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"ETH_MAINNET_RPC_URL":"","PGDATABASE":"","PGHOST":"","PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
- | graphNodeDefaults.env | Environment variables for Graph Node | object | `{"ETH_MAINNET_RPC_URL":null,"PGDATABASE":null,"PGHOST":null,"PGPORT":5432}` |
+ | graphNodeDefaults.env | Environment variables for Graph Node | object | `{"ETH_MAINNET_RPC_URL":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
  | graphNodeDefaults.extraArgs | Additional CLI arguments to pass to Graph Node | list | `[]` |
  | graphNodeDefaults.includeInIndexPools | List of Index Pools to include nodes in the group in | list | `[]` |
  | graphNodeDefaults.nodeSelector | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) | object | `{}` |
@@ -251,18 +251,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
- | toolbox.affinity |  | object | `{}` |
- | toolbox.enabled | Enable deployment of a toolbox container containing preconfigured tools to interact with graph-node and the database | bool | `true` |
- | toolbox.env |  | object | `{}` |
- | toolbox.image.pullPolicy |  | string | `"IfNotPresent"` |
- | toolbox.image.repository |  | string | `"graphprotocol/graph-node"` |
- | toolbox.image.tag | Overrides the image tag | string | `""` |
- | toolbox.nodeSelector |  | object | `{}` |
- | toolbox.podAnnotations |  | object | `{}` |
- | toolbox.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | toolbox.resources |  | object | `{}` |
- | toolbox.secretEnv |  | object | `{}` |
- | toolbox.tolerations |  | list | `[]` |
 
 ## Contributing
 

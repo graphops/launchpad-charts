@@ -6,12 +6,12 @@
      into the graph node config file */}}
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-  {{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
+  {{- $values := deepCopy $.Values.graphNodeDefaults | mustMerge $groupValues }}
   {{- if $values.enabled }}
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
       {{- range $replicaNumber := until (int $values.replicaCount) }}
-        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber | replace "-" "_" }} # This replacement also happens in the default configTemplate in values.yaml
+        {{- $nodeId := print (include "graph-node.fullname" $) "-" $groupName "-" $replicaNumber }} # This replacement also happens in the default configTemplate in values.yaml
         {{- $indexPoolNodeIds = append $indexPoolNodeIds $nodeId }}
       {{- end }}
       {{- $_ := set $indexPools $indexPoolName $indexPoolNodeIds }}
@@ -43,143 +43,9 @@ data:
     {{ $configToml | nindent 4 }}
 {{/* END ConfigMap */}}
 
-{{/* Next up, we render the toolbox resources */}}
-{{/* The toolbox inherits graphNodeDefaults because graphman requires the same
-     configuration, which depends on graph node environment variable inputs */}}
-{{- $toolboxValues := mergeOverwrite dict $.Values.graphNodeDefaults $.Values.toolbox }}
-{{- $componentName := "toolbox" }}
-{{- $componentLabel := include "graph-node.componentLabelFor" $componentName }}
-{{/* START StatefulSet */}}
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: {{ include "graph-node.fullname" . }}-{{ $componentName }}
-  labels:
-    {{- include "graph-node.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
-spec:
-  serviceName: {{ include "graph-node.fullname" . }}-{{ $componentName }}-headless
-  replicas: {{ $toolboxValues.replicaCount | default 1 }}
-  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
-  updateStrategy:
-    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
-  selector:
-    matchLabels:
-      {{- include "graph-node.selectorLabels" . | nindent 6 }}
-      {{- $componentLabel | nindent 6 }}
-  template:
-    metadata:
-      annotations:
-        checksum/config.toml: {{ $graphNodeConfigHash }}
-      {{- with $toolboxValues.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "graph-node.selectorLabels" . | nindent 8 }}
-        {{- $componentLabel | nindent 8 }}
-    spec:
-      {{- with $toolboxValues.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "graph-node.serviceAccountName" . }}
-      {{- with $toolboxValues.podSecurityContext }}
-      securityContext:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      terminationGracePeriodSeconds: {{ $toolboxValues.terminationGracePeriodSeconds | default "60" }}
-      volumes:
-        - name: scratchpad
-          emptyDir: {}
-        - name: config
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "graph-node.fullname" . }}-config
-      initContainers:
-        - name: {{ $componentName }}-init
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
-          securityContext:
-            privileged: true # required for ulimit change
-      containers:
-        - name: {{ $componentName }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          tty: true
-          stdin: true
-          workingDir: /scratchpad
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
-          command:
-            - sh
-            - -c
-            - |
-              set -x
-              cat > $HOME/.profile<< EOF
-              export ASD=ASD # construct env if we need to here
-              alias graphman='graphman --config=/config/config.toml' # set aliases, etc
-              EOF
-              cat
-            {{- with $toolboxValues.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
-          {{- if (or $toolboxValues.env $toolboxValues.secretEnv) }}
-          env:
-            # - name: NODE_ID
-            #   valueFrom:
-            #     fieldRef:
-            #       fieldPath: metadata.name
-          {{- with $toolboxValues.env }}
-          {{- range $key, $val := .}}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
-          {{- with $toolboxValues.secretEnv }}
-          {{- range $key, $val := .}}
-            - name: {{ $key | quote }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $val.secretName | quote }}
-                  key: {{ $val.key | quote }}
-                  optional: false
-          {{- end }}
-          {{- end }}
-          {{- end }}
-          ports: []
-          volumeMounts:
-          - name: config
-            mountPath: "/config"
-            readOnly: true
-          - name: scratchpad
-            mountPath: "/scratchpad"
-          readinessProbe: {}
-          {{- with $toolboxValues.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with $toolboxValues.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with $toolboxValues.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with $toolboxValues.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-{{/* END StatefulSet */}}
-
 {{/* Finally, we render out the resources for our Graph Node groups */}}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-{{- $values := mergeOverwrite dict $.Values.graphNodeDefaults $groupValues }}
+{{- $values := deepCopy $.Values.graphNodeDefaults | mustMerge $groupValues }}
 {{- if $values.enabled }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $groupName }}
 {{/* The outer range seems to mess with the inner context and break helpers.

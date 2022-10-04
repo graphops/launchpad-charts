@@ -41,36 +41,6 @@ grafana:
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
-toolbox:
-  # -- Enable deployment of a toolbox container containing preconfigured tools to interact with graph-node and the database
-  enabled: true
-  image:
-    repository: graphprotocol/graph-node # replace with toolbox repo
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    tag: "" # replace with tag
-    # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- Pod-wide security context
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
-
-  resources: {}
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  env: {}
-
-  secretEnv: {}
-
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
@@ -80,7 +50,7 @@ configTemplate: |
     # weight = 0
     pool_size = 10
     [chains]
-    ingestor = "{{ print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0 | replace "-" "_" }}"
+    ingestor = "{{ print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0 }}"
     [chains.mainnet]
     shard = "primary"
     provider = [
@@ -168,10 +138,10 @@ graphNodeDefaults:
 
   # -- Environment variables for Graph Node
   env:
-    PGHOST:
+    PGHOST: ""
     PGPORT: 5432
-    PGDATABASE:
-    ETH_MAINNET_RPC_URL:
+    PGDATABASE: ""
+    ETH_MAINNET_RPC_URL: ""
 
   # -- Environment variables that come from `Secret`s
   secretEnv:
