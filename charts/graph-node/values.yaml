@@ -143,6 +143,8 @@ graphNodeDefaults:
     PGDATABASE: ""
     ETH_MAINNET_RPC_URL: ""
     IPFS: ""
+    # -- By default, we don't want nodes to perform the block ingestion function
+    DISABLE_BLOCK_INGESTOR: "true"
 
   # -- Environment variables that come from `Secret`s
   secretEnv:
@@ -164,6 +166,7 @@ graphNodeGroups:
     includeInIndexPools: []
     env:
       NODE_ROLE: index-node
+      DISABLE_BLOCK_INGESTOR: "false"
   index:
     enabled: true
     replicaCount: 1
