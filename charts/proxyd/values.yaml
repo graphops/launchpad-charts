@@ -189,7 +189,7 @@ configTemplate: |
   [backends.{{ $backendName }}]
   rpc_url = {{ default "" $backendValues.rpcUrl | quote }}
   ws_url = {{ default "ws://dummy-host-ws-disabled" $backendValues.wsUrl | quote }}
-  max_rps = {{ default 10 $backendValues.maxRps }}
+  max_rps = {{ default 0 $backendValues.maxRps }}
   {{- with $backendValues.extraConfig }}
   {{ toToml . }}
   {{- end }}
