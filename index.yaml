@@ -267,6 +267,17 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/nimbus-0.1.0/nimbus-0.1.0.tgz
     version: 0.1.0
+  openebs-rawfile-localpv:
+  - apiVersion: v2
+    appVersion: 0.7.0
+    created: "2022-10-04T13:03:05.062689802Z"
+    description: RawFile Driver Container Storage Interface
+    digest: 4d7df8ddcdd6258d015851f905f3b0c14ecf6acb3a1edd67951d6343a14010f6
+    name: openebs-rawfile-localpv
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
+    version: 0.7.0
   proxyd:
   - apiVersion: v2
     appVersion: 3.10.2
@@ -353,4 +364,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-04T12:48:20.646042915Z"
+generated: "2022-10-04T13:03:05.062837806Z"
