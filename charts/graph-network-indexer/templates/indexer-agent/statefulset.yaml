@@ -4,13 +4,14 @@
 {{/* START Deployment */}}
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance of the agent. We never want more than one agent active at a time.
 metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
+  serviceName: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-headless
   replicas: 1 # Should only ever be one instance of indexer-agent
   selector:
     matchLabels:
