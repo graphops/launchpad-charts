@@ -1,0 +1,22 @@
+{{- $values := $.Values.indexerService }}
+{{- $componentName := "indexer-service" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}

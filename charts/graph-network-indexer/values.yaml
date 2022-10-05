@@ -1,0 +1,209 @@
+# Default values for graph-network-indexer.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: "1"
+
+# -- Value defaults that apply to both indexer-agent and indexer-service
+indexerDefaults:
+  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
+  config:
+    # -- (required) URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli)
+    ethereum: null
+    # -- Name of the network that you have specified a node URL for in `ethereum`
+    ethereum-network: "mainnet"
+    # -- (required) Ethereum address of your Indexer
+    indexer-address: null
+    # -- (required) URL for your graph node query endpoint (probably a load balancer address)
+    graph-node-query-endpoint: null
+    # -- (required) URL for your graph node status endpoint (probably a load balancer address)
+    graph-node-status-endpoint: null
+    # -- (required) Hostname for your Postgres indexer metadata database
+    postgres-host: null
+    # -- Name of the Postgres database to use for indexer metadata
+    postgres-database: indexer
+    # -- Specify a plain text username to authenticate with Postgres
+    postgres-username: null
+    # -- (not recommended) Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
+    postgres-password: null
+    # -- Port that Postgres is available on
+    postgres-port: 5432
+    # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
+    mnemonic: null
+
+  env: {}
+
+  secretEnv: {}
+    # mnemonic
+    # postgres auth
+
+indexerAgent:
+  # -- Image for indexer-agent
+  image:
+    repository: ghcr.io/graphprotocol/indexer-agent
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+  
+  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
+  config:
+    # -- (required) URL for your graph-node admin API endpoint
+    graph-node-admin-endpoint: null
+    # -- (required) Public HTTPS URL of your indexer-service query endpoint
+    public-indexer-url: null
+    # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
+    index-node-ids: null
+
+  env: {}
+
+  secretEnv: {}
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Indexer Management API on
+      http-mgmtapi: 8000
+      # -- Service Port to expose Metrics on
+      http-metrics: 7300
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+indexerService:
+  # -- Image for indexer-service
+  image:
+    repository: ghcr.io/graphprotocol/indexer-service
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
+  config:
+    # -- (required) An endpoint to query the network subgraph
+    network-subgraph-endpoint: null
+
+  env: {}
+
+  secretEnv: {}
+
+  # -- Additional CLI arguments to pass to `indexer-service`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Query API on
+      http-queryapi: 7600
+      # -- Service Port to expose Metrics on
+      http-metrics: 7300
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
