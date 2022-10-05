@@ -1,5 +1,5 @@
 {{- $values := $.Values.indexerAgent }}
-{{- $componentName := "indexer-agent" }}
+{{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service

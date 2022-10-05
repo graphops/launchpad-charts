@@ -1,5 +1,5 @@
 {{- $values := $.Values.indexerService }}
-{{- $componentName := "indexer-service" }}
+{{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{/* START Deployment */}}
 ---

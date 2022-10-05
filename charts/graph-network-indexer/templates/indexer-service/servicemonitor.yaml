@@ -1,5 +1,5 @@
 {{- $values := $.Values.indexerService }}
-{{- $componentName := "indexer-service" }}
+{{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
