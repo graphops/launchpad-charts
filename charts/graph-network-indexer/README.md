@@ -48,9 +48,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | indexerAgent.affinity |  | object | `{}` |
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"graph-node-admin-endpoint":null,"index-node-ids":null,"public-indexer-url":null}` |
+ | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"collect-receipts-endpoint":null,"graph-node-admin-endpoint":null,"index-node-ids":null,"network-subgraph-deployment":null,"public-indexer-url":null}` |
+ | indexerAgent.config.collect-receipts-endpoint | The gateway collect-receipts endpoint for getting vouchers | required | `nil` |
  | indexerAgent.config.graph-node-admin-endpoint | URL for your graph-node admin API endpoint | required | `nil` |
  | indexerAgent.config.index-node-ids | A command separated list of graph-node Node IDs to assign subgraphs to | required | `nil` |
+ | indexerAgent.config.network-subgraph-deployment | Base58 deployment hash (Qm...) for the Graph Network Subgraph | required | `nil` |
  | indexerAgent.config.public-indexer-url | Public HTTPS URL of your indexer-service query endpoint | required | `nil` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
@@ -66,14 +68,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
- | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null},"env":{},"secretEnv":{}}` |
- | indexerDefaults.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null}` |
+ | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"network-subgraph-endpoint":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null},"env":{},"secretEnv":{}}` |
+ | indexerDefaults.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"network-subgraph-endpoint":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null}` |
  | indexerDefaults.config.ethereum | URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli) | required | `nil` |
  | indexerDefaults.config.ethereum-network | Name of the network that you have specified a node URL for in `ethereum` | string | `"mainnet"` |
  | indexerDefaults.config.graph-node-query-endpoint | URL for your graph node query endpoint (probably a load balancer address) | required | `nil` |
  | indexerDefaults.config.graph-node-status-endpoint | URL for your graph node status endpoint (probably a load balancer address) | required | `nil` |
  | indexerDefaults.config.indexer-address | Ethereum address of your Indexer | required | `nil` |
  | indexerDefaults.config.mnemonic | Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable. | not recommended | `nil` |
+ | indexerDefaults.config.network-subgraph-endpoint | An endpoint to query the network subgraph | required | `nil` |
  | indexerDefaults.config.postgres-database | Name of the Postgres database to use for indexer metadata | string | `"indexer"` |
  | indexerDefaults.config.postgres-host | Hostname for your Postgres indexer metadata database | required | `nil` |
  | indexerDefaults.config.postgres-password | Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable. | not recommended | `nil` |
@@ -81,8 +84,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerDefaults.config.postgres-username | Specify a plain text username to authenticate with Postgres | string | `nil` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerService.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"network-subgraph-endpoint":null}` |
- | indexerService.config.network-subgraph-endpoint | An endpoint to query the network subgraph | required | `nil` |
+ | indexerService.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service","tag":""}` |

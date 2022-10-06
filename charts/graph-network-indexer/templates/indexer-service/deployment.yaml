@@ -80,15 +80,15 @@ spec:
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
           ports:
-            - name: http-mgmtapi
-              containerPort: 8000
+            - name: http-queryapi
+              containerPort: 7600
               protocol: TCP
             - name: http-metrics
               containerPort: 7300
               protocol: TCP
           readinessProbe:
             httpGet:
-              port: http-mgmtapi
+              port: http-queryapi
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

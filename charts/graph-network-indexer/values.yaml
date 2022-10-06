@@ -59,6 +59,8 @@ indexerDefaults:
     postgres-port: 5432
     # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
     mnemonic: null
+    # -- (required) An endpoint to query the network subgraph
+    network-subgraph-endpoint: null
 
   env: {}
 
@@ -83,6 +85,10 @@ indexerAgent:
     public-indexer-url: null
     # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
     index-node-ids: null
+    # -- (required) The gateway collect-receipts endpoint for getting vouchers
+    collect-receipts-endpoint: null
+    # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
+    network-subgraph-deployment: null
 
   env: {}
 
@@ -149,9 +155,7 @@ indexerService:
     tag: ""
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config:
-    # -- (required) An endpoint to query the network subgraph
-    network-subgraph-endpoint: null
+  config: {}
 
   env: {}
 
