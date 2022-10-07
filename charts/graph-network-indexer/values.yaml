@@ -155,7 +155,9 @@ indexerService:
     tag: ""
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config: {}
+  config:
+    # -- (required) The address of the signer for vouchers (see https://github.com/graphprotocol/indexer/blob/main/docs/networks.md)
+    client-signer-address: null
 
   env: {}
 

@@ -84,7 +84,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerDefaults.config.postgres-username | Specify a plain text username to authenticate with Postgres | string | `nil` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerService.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{}` |
+ | indexerService.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"client-signer-address":null}` |
+ | indexerService.config.client-signer-address | The address of the signer for vouchers (see https://github.com/graphprotocol/indexer/blob/main/docs/networks.md) | required | `nil` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service","tag":""}` |
