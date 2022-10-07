@@ -115,6 +115,7 @@ rpcMethodMappings:
   web3_clientVersion: pruned
   web3_sha3: pruned
   net_version: pruned
+  eth_chainId: pruned
   eth_protocolVersion: pruned
   eth_coinbase: pruned
   eth_gasPrice: pruned
