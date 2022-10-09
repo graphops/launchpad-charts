@@ -118,13 +118,14 @@ spec:
                 - ALL
           command:
             - graph-node
+            - --node-id=$(NODE_ID)
             - --config=/config/config.toml
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
           {{- if (or $values.env $values.secretEnv) }}
           env:
-            - name: node_id
+            - name: NODE_ID
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
