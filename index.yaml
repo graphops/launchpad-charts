@@ -335,6 +335,17 @@ entries:
   proxyd:
   - apiVersion: v2
     appVersion: 3.10.2
+    created: "2022-10-09T21:29:27.813110958Z"
+    description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd)
+      inside Kubernetes with ease
+    digest: 7a055a0e7af0e4f1067a4d8bfbb519acb4a6321737ba3a28b6b4164b41efd233
+    name: proxyd
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/proxyd-0.1.7/proxyd-0.1.7.tgz
+    version: 0.1.7
+  - apiVersion: v2
+    appVersion: 3.10.2
     created: "2022-10-07T14:38:24.226244828Z"
     description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd)
       inside Kubernetes with ease
@@ -429,4 +440,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-09T13:56:34.664902983Z"
+generated: "2022-10-09T21:29:27.813414958Z"
