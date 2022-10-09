@@ -89,6 +89,8 @@ indexerAgent:
     collect-receipts-endpoint: null
     # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
     network-subgraph-deployment: null
+    # -- (required) Contract address of ERC20 used for DAI variable in cost models
+    dai-contract: null
 
   env: {}
 
