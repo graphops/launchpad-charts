@@ -63,7 +63,7 @@ spec:
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-restore-snapshot
-          image: ghcr.io/graphops/docker-builds/init-toolkit:main
+          image: ghcr.io/graphops/docker-builds/init-toolbox:main
           # imagePullPolicy: IfNotPresent
           imagePullPolicy: Always
           command:
@@ -71,7 +71,6 @@ spec:
             - -c
             - |
               set -x
-              sleep 100000000000000
               STORAGE_PATH="/storage"
               RESTORE_SNAPSHOT=${RESTORE_SNAPSHOT-"true"}
               SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nethermind_db"
