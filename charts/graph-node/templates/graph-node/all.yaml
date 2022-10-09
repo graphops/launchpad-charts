@@ -124,7 +124,7 @@ spec:
             {{- end }}
           {{- if (or $values.env $values.secretEnv) }}
           env:
-            - name: NODE_ID
+            - name: node_id
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
