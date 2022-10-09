@@ -16,7 +16,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# -- Configuration for Toolbox to connect to dependencies
+# -- (required) Configuration for Toolbox to connect to dependencies
 config:
   graphNode:
     # -- URL to Graph Node Admin API
@@ -26,27 +26,16 @@ config:
       configMapName: null
       # -- The name of the data key in the ConfigMap that contains your config.toml
       configFileKey: null
-    # -- A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db"
-    databaseConnectionString: null
-    databaseAuthSecret:
-      # -- The name of the Secret that contains your PostgreSQL authentication details for the Graph Node database
-      secretName: null
-      # -- The name of the data key that contains your username
-      usernameKey: null
-      # -- The name of the data key that contains your password
-      passwordKey: null
+
   indexer:
     # -- URL to Indexer Agent Management Server
     indexerAgentManagementUrl: null
-    # -- A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db"
-    databaseConnectionString: null
-    databaseAuthSecret:
-      # -- The name of the Secret that contains your PostgreSQL authentication details for the Indexer metdata database
-      secretName: null
-      # -- The name of the data key that contains your username
-      usernameKey: null
-      # -- The name of the data key that contains your password
-      passwordKey: null
+
+# -- Set custom aliases for preconfigured commands in your environment
+aliases: {}
+
+# -- (advanced) Inject custom bash to run when the container starts up. You can customise the environment.
+startupScript: null
 
 # -- Image for indexer-agent
 image:

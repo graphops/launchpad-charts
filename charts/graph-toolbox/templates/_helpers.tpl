@@ -50,10 +50,6 @@ app.kubernetes.io/name: {{ include "graph-toolbox.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "graph-toolbox.componentLabelFor" -}}
-app.kubernetes.io/component: {{ . }}
-{{- end }}
-
 {{/*
 Create the name of the service account to use
 */}}

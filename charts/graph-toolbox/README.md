@@ -42,18 +42,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
- | config | Configuration for Toolbox to connect to dependencies | object | `{"graphNode":{"adminApiUrl":null,"databaseAuthSecret":{"passwordKey":null,"secretName":null,"usernameKey":null},"databaseConnectionString":null,"existingConfigMap":{"configFileKey":null,"configMapName":null}},"indexer":{"databaseAuthSecret":{"passwordKey":null,"secretName":null,"usernameKey":null},"databaseConnectionString":null,"indexerAgentManagementUrl":null}}` |
+ | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
+ | config | (required) Configuration for Toolbox to connect to dependencies | object | `{"graphNode":{"adminApiUrl":null,"existingConfigMap":{"configFileKey":null,"configMapName":null}},"indexer":{"indexerAgentManagementUrl":null}}` |
  | config.graphNode.adminApiUrl | URL to Graph Node Admin API | string | `nil` |
- | config.graphNode.databaseAuthSecret.passwordKey | The name of the data key that contains your password | string | `nil` |
- | config.graphNode.databaseAuthSecret.secretName | The name of the Secret that contains your PostgreSQL authentication details for the Graph Node database | string | `nil` |
- | config.graphNode.databaseAuthSecret.usernameKey | The name of the data key that contains your username | string | `nil` |
- | config.graphNode.databaseConnectionString | A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db" | string | `nil` |
  | config.graphNode.existingConfigMap.configFileKey | The name of the data key in the ConfigMap that contains your config.toml | string | `nil` |
  | config.graphNode.existingConfigMap.configMapName | The name of the ConfigMap that contains your Graph Node config.toml | string | `nil` |
- | config.indexer.databaseAuthSecret.passwordKey | The name of the data key that contains your password | string | `nil` |
- | config.indexer.databaseAuthSecret.secretName | The name of the Secret that contains your PostgreSQL authentication details for the Indexer metdata database | string | `nil` |
- | config.indexer.databaseAuthSecret.usernameKey | The name of the data key that contains your username | string | `nil` |
- | config.indexer.databaseConnectionString | A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db" | string | `nil` |
  | config.indexer.indexerAgentManagementUrl | URL to Indexer Agent Management Server | string | `nil` |
  | env |  | object | `{}` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
@@ -70,6 +63,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | startupScript | Inject custom bash to run when the container starts up. You can customise the environment. | advanced | `nil` |
  | terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | tolerations |  | list | `[]` |
 

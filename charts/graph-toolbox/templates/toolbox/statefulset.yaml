@@ -2,7 +2,7 @@
 {{/* START StatefulSet */}}
 ---
 apiVersion: apps/v1
-kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance of the agent. We never want more than one agent active at a time.
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
 metadata:
   name: {{ include "graph-toolbox.fullname" . }}
   labels:
@@ -13,7 +13,6 @@ spec:
   selector:
     matchLabels:
       {{- include "graph-toolbox.selectorLabels" . | nindent 6 }}
-      {{- $componentLabel | nindent 6 }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -22,7 +21,6 @@ spec:
       {{- end }}
       labels:
         {{- include "graph-toolbox.selectorLabels" . | nindent 8 }}
-        {{- $componentLabel | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
@@ -37,63 +35,41 @@ spec:
       volumes:
         - name: graphman-config
           configMap:
-            # Provide the name of the ConfigMap you want to mount.
             name: {{ required "Missing configuration" $values.config.graphNode.existingConfigMap.configMapName }}
             items:
-              - key: {{ required "Missing configuration" $values.config.graphNode.existingConfigMap.configFileKey }}  # Name of the item we had used inside our ConfigMap (under data:)
+              - key: {{ required "Missing configuration" $values.config.graphNode.existingConfigMap.configFileKey }} # Name of the item we had used inside our ConfigMap (under data:)
                 path: config.toml # Name of the file to be placed inside /etc
       containers:
         - name: toolbox
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
+          securityContext: {}
           volumeMounts:
-          - name: graphman-config
-            mountPath: "/graphman-config"
-            readOnly: true
+            - name: graphman-config
+              mountPath: "/graphman-config"
+              readOnly: true
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex
+              {{- range $alias, $command := $values.aliases }}
+              echo "alias {{ $alias }}=\"{{ $command | trim }}\"" >> ~/.bashrc
+              {{- end }}
+              mkdir -p ~/.config/graph-cli
+              echo "api = '{{ required "Missing configuration" $values.config.indexer.indexerAgentManagementUrl }}'" > ~/.config/graph-cli/indexing.toml
+              {{- with $values.startupScript }}
+              # Custom startup script
+              {{- . | nindent 14 }}
+              {{- end }}
+              exec sleep infinity
           env:
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-            - name: GRAPH_NODE_ADMIN_API_URL
+            - name: UTILS_GRAPH_NODE_ADMIN_API_URL
               value: {{ required "Missing configuration" $values.config.graphNode.adminApiUrl }}
-            - name: GRAPH_NODE_CONNECTION_STRING
-              value: {{ required "Missing configuration" $values.config.graphNode.databaseConnectionString }}
-            - name: GRAPH_NODE_PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "Missing configuration" $values.config.graphNode.databaseAuthSecret.secretName }}
-                  key: {{ required "Missing configuration" $values.config.graphNode.databaseAuthSecret.usernameKey }}
-                  optional: false
-            - name: GRAPH_NODE_PGPASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "Missing configuration" $values.config.graphNode.databaseAuthSecret.secretName }}
-                  key: {{ required "Missing configuration" $values.config.graphNode.databaseAuthSecret.passwordKey }}
-                  optional: false
-
-            - name: INDEXER_AGENT_MGMT_URL
-              value: {{ required "Missing configuration" $values.config.indexer.indexerAgentManagementUrl }}
-            - name: INDEXER_CONNECTION_STRING
-              value: {{ required "Missing configuration" $values.config.indexer.databaseConnectionString }}
-            - name: INDEXER_PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "Missing configuration" $values.config.indexer.databaseAuthSecret.secretName }}
-                  key: {{ required "Missing configuration" $values.config.indexer.databaseAuthSecret.usernameKey }}
-                  optional: false
-            - name: INDEXER_PGPASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "Missing configuration" $values.config.indexer.databaseAuthSecret.secretName }}
-                  key: {{ required "Missing configuration" $values.config.indexer.databaseAuthSecret.passwordKey }}
-                  optional: false
-
           {{- with $values.env }}
           {{- range $key, $val := .}}
           {{- if not (kindIs "invalid" $val) }}
