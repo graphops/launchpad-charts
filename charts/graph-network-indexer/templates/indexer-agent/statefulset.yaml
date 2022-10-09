@@ -1,7 +1,7 @@
 {{- $values := $.Values.indexerAgent }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
-{{/* START Deployment */}}
+{{/* START StatefulSet */}}
 ---
 apiVersion: apps/v1
 kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance of the agent. We never want more than one agent active at a time.
@@ -123,4 +123,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{/* END Deployment */}}
+{{/* END StatefulSet */}}

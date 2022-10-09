@@ -1,0 +1,96 @@
+# Default values for graph-toolbox.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Configuration for Toolbox to connect to dependencies
+config:
+  graphNode:
+    # -- URL to Graph Node Admin API
+    adminApiUrl: null
+    existingConfigMap:
+      # -- The name of the ConfigMap that contains your Graph Node config.toml
+      configMapName: null
+      # -- The name of the data key in the ConfigMap that contains your config.toml
+      configFileKey: null
+    # -- A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db"
+    databaseConnectionString: null
+    databaseAuthSecret:
+      # -- The name of the Secret that contains your PostgreSQL authentication details for the Graph Node database
+      secretName: null
+      # -- The name of the data key that contains your username
+      usernameKey: null
+      # -- The name of the data key that contains your password
+      passwordKey: null
+  indexer:
+    # -- URL to Indexer Agent Management Server
+    indexerAgentManagementUrl: null
+    # -- A connection string for psql that specifies the host, port and database. e.g. "host=my-server port=5432 dbname=db"
+    databaseConnectionString: null
+    databaseAuthSecret:
+      # -- The name of the Secret that contains your PostgreSQL authentication details for the Indexer metdata database
+      secretName: null
+      # -- The name of the data key that contains your username
+      usernameKey: null
+      # -- The name of the data key that contains your password
+      passwordKey: null
+
+# -- Image for indexer-agent
+image:
+  repository: ghcr.io/graphops/docker-builds/graph-toolbox
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+env: {}
+
+secretEnv: {}
+
+# -- Additional CLI arguments to pass to `indexer-agent`
+extraArgs: []
+
+# Increasing the grace termination period prevents Kubernetes
+# from killing the node process prematurely. Premature shutdown
+# can lead to data integrity issues
+# -- Amount of time to wait before force-killing the process
+terminationGracePeriodSeconds: 10
+
+# -- Annotations for the `Pod`
+podAnnotations: {}
+
+# -- Pod-wide security context
+podSecurityContext: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
