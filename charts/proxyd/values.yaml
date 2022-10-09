@@ -118,6 +118,7 @@ rpcMethodMappings:
   eth_chainId: pruned
   eth_protocolVersion: pruned
   eth_coinbase: pruned
+  eth_feeHistory: pruned
   eth_gasPrice: pruned
   eth_blockNumber: pruned
   eth_getBalance: pruned
@@ -176,13 +177,13 @@ configTemplate: |
 
   [backend]
   # How long proxyd should wait for a backend response before timing out.
-  response_timeout_seconds = 5
+  response_timeout_seconds = 30
   # Maximum response size, in bytes, that proxyd will accept from a backend.
-  max_response_size_bytes = 5242880
+  max_response_size_bytes = 104857600 # 100 MiB
   # Maximum number of times proxyd will try a backend before giving up.
   max_retries = 3
   # Number of seconds to wait before trying an unhealthy backend again.
-  out_of_service_seconds = 300
+  out_of_service_seconds = 30
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
