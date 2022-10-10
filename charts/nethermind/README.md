@@ -142,11 +142,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nethermind.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nethermind.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
- | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
- | prometheus.serviceMonitors.interval |  | string | `nil` |
- | prometheus.serviceMonitors.labels |  | object | `{}` |
- | prometheus.serviceMonitors.relabelings |  | list | `[]` |
- | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | prometheus.pushGateway.enabled | Enable pushing metrics into Prometheus via PushGateway | bool | `false` |
+ | prometheus.pushGateway.pushGatewayUrl | URL to your Prometheus PushGateway server | string | `nil` |
  | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
  | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
  | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |

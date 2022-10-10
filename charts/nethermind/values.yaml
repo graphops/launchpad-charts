@@ -51,13 +51,11 @@ rbac:
       - "watch"
 
 prometheus:
-  serviceMonitors:
-    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+  pushGateway:
+    # -- Enable pushing metrics into Prometheus via PushGateway
     enabled: false
-    labels: {}
-    interval:
-    scrapeTimeout:
-    relabelings: []
+    # -- URL to your Prometheus PushGateway server
+    pushGatewayUrl: null
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
