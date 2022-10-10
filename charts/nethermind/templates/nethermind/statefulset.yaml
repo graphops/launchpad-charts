@@ -2,7 +2,7 @@
 {{- $componentName := "nethermind"}}
 {{- $componentLabel := include "nethermind.componentLabelFor" $componentName }}
 
-{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
 {{- $jwtSecretName := default (print (include "nethermind.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
 {{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 
@@ -216,7 +216,7 @@ spec:
                 --JsonRpc.Host=0.0.0.0 \
                 --Init.WebSocketsEnabled=true \
                 --JsonRpc.EngineHost=0.0.0.0 \
-              {{- if $values.prometheus.pushGateway.enabled }}
+              {{- if $.Values.prometheus.pushGateway.enabled }}
                 --Metrics.Enabled=true \
                 --Metrics.PushGatewayUrl={{ $values.prometheus.pushGateway.pushGatewayUrl }} \ # TODO FIX ME
                 --Metrics.NodeName=$(POD_NAME) \

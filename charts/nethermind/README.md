@@ -2,7 +2,7 @@
 
 Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.3](https://img.shields.io/badge/AppVersion-1.14.3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.3](https://img.shields.io/badge/AppVersion-1.14.3-informational?style=flat-square)
 
 ## Chart Features
 
@@ -114,11 +114,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nethermind.initChownData.image.repository | Container repository | string | `"busybox"` |
  | nethermind.initChownData.image.tag | Container tag | string | `"1.34.0"` |
- | nethermind.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
- | nethermind.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
- | nethermind.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
- | nethermind.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
- | nethermind.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
+ | nethermind.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
+ | nethermind.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
+ | nethermind.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
+ | nethermind.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
+ | nethermind.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | nethermind.nodeSelector |  | object | `{}` |
  | nethermind.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nethermind.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
