@@ -73,11 +73,11 @@ statefulNode:
     # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
     existingSecret:
       # -- Name of the Secret resource in the same namespace
-      name: ""
+      name: null
       # -- Data key for the JWT in the Secret
-      key: ""
+      key: null
     # -- Use this literal value for the JWT
-    fromLiteral: ""
+    fromLiteral: null
 
   # -- Additional CLI arguments to pass to `erigon`
   extraArgs: []

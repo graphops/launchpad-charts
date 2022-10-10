@@ -2,7 +2,7 @@
 {{- $componentName := "stateful-node" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 
-{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
 {{- $jwtSecretName := default (print (include "erigon.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
 {{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 
