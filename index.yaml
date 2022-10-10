@@ -257,6 +257,17 @@ entries:
   nethermind:
   - apiVersion: v2
     appVersion: 1.14.3
+    created: "2022-10-10T11:05:29.313820927Z"
+    description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
+      inside Kubernetes with ease
+    digest: 9aae22b24c07e6411a4f83a4d21da142a0e4a583ef1952d19ac184ba63beeb70
+    name: nethermind
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.3/nethermind-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.14.3
     created: "2022-10-09T13:56:34.664143076Z"
     description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
       inside Kubernetes with ease
@@ -440,4 +451,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-09T21:29:27.813414958Z"
+generated: "2022-10-10T11:05:29.314014027Z"
