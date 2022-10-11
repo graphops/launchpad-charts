@@ -1,0 +1,212 @@
+# Default values for graph-node.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for Graph Node
+  repository: graphprotocol/graph-node
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: ""
+
+# -- Default values for all Group Node Groups
+graphNodeDefaults:
+  # -- Enable the group
+  enabled: true
+
+  # -- The number of nodes to run in the group
+  replicaCount: 1
+
+  # -- List of Index Pools to include nodes in the group in
+  includeInIndexPools: []
+
+  # -- Additional CLI arguments to pass to Graph Node
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the Erigon process
+  terminationGracePeriodSeconds: 60
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Graph Node Query endpoint on
+      http-query: 8000
+      # -- Service Port to expose Graph Node Websocket Query endpoint on
+      http-queryws: 8001
+      # -- Service Port to expose Graph Node Admin endpoint on
+      http-admin: 8020
+      # -- Service Port to expose Graph Node Status endpoint on
+      http-status: 8030
+      # -- Service Port to expose Graph Node Metrics endpoint on
+      http-metrics: 8040
+
+  # -- Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits) for each node in the group
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  # -- Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
+  nodeSelector: {}
+
+  # -- Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/)
+  tolerations: []
+
+  affinityPresets:
+    # -- Create anti-affinity rule to deter scheduling replicas on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  # -- Environment variable defaults for all Graph Node groups
+  env:
+    # -- Hostname of the primary shard PostgreSQL server
+    PRIMARY_SUBGRAPH_DATA_PGHOST: ""
+    # -- Port for the primary shard PostgreSQL server
+    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+    # -- Name of the primary shard database to use
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: ""
+    # -- The URL for your IPFS node
+    IPFS: ""
+
+  # -- Environment variable defaults that come from `Secret`s for all Graph Node groups
+  secretEnv:
+    PRIMARY_SUBGRAPH_DATA_PGUSER:
+      # -- Name of the secret that contains your PG username
+      secretName:
+      # -- Name of the data key in the secret that contains your PG username
+      key:
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+      # -- Name of the secret that contains your PG password
+      secretName:
+      # -- Name of the data key in the secret that contains your PG password
+      key:
+
+# -- Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor.
+blockIngestorGroupName: block-ingestor
+
+# -- Groups of Graph Nodes to deploy
+graphNodeGroups:
+  block-ingestor:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools: []
+    env:
+      node_role: index-node # this key must be lowercase
+  index:
+    enabled: true
+    replicaCount: 1
+    includeInIndexPools:
+      - default
+    env:
+      node_role: index-node # this key must be lowercase
+  query:
+    enabled: true
+    replicaCount: 1
+    env:
+      node_role: query-node # this key must be lowercase
+
+# -- Blockchain configuration for Graph Node
+chains:
+  # -- Ethereum Mainnet
+  mainnet:
+    # -- The database shard to use for this chain
+    shard: primary
+    ## -- A list of JSON-RPC endpoints for this node
+    provider:
+      - 
+        # -- Label for the RPC endpoint
+        label: eth-mainnet
+        # -- URL for JSON-RPC endpoint
+        url: ""
+        # -- Data capabilities this node has
+        features: [archive, traces]
+
+# -- Store configuration for Graph Node
+store:
+  primary:
+    # -- Enable this store for Graph Node
+    enabled: true
+    # -- PostgreSQL connection string for primary shard
+    connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
+
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+    # Store configuration
+    [store]
+    {{- range $storeName, $storeValues := $.Values.store }}
+    {{- if $storeValues.enabled }}
+      [store.{{ $storeName }}]
+      connection = {{ required "You must specify a store connection string" $storeValues.connection | quote }}
+      pool_size = {{ default 10 $storeValues.poolSize }}
+      weight = {{ default 1 $storeValues.weight }}
+    {{- end }}
+    {{- end }}
+
+    # Chain configuration
+    {{ toToml (dict "chains" (deepCopy $.Values.chains | merge (dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0)))) }}
+
+    # Deployment rule configuration
+    [deployment]
+    # Deployment rules match top to bottom
+    [[deployment.rule]]
+    # DEFAULT RULE
+    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
+    shards = ["primary"]
+    indexers = {{ toJson .computed.indexPools.default }}

@@ -1,0 +1,210 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Introduction
+
+[Graph Node](https://github.com/graphprotocol/graph-node) is key component of [The Graph](https://thegraph.com), a decentralised blockchain data protocol. Graph Node supports executing [Subgraphs](https://thegraph.com/docs/en/developing/creating-a-subgraph/) to extract, process and index blockchain data. It also provides a rich GraphQL query interface to inspect and interrogate this data. [Learn more](https://github.com/graphprotocol/graph-node/blob/master/docs/getting-started.md).
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Easily define groups of Graph Nodes and split responsibilities across them
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+## Configuring {{ template "chart.name" . }}
+
+This chart uses [`config.toml` to configure Graph Node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md). The Chart uses your [Values](#Values), as well as a [configuration template](#advanced-configuration), to render a `config.toml`. This approach provides a great out of the box experience, while providing flexibility for power users to generate customised configuration for highly advanced configurations of Graph Node.
+
+### Graph Node Groups
+
+Graph Node supports being deployed in a wide variety of configurations. In the most simple case, you can have a single instance of Graph Node that is responsible for all tasks, including block ingestion, indexing subgraphs and serving queries. More advanced users might separate out each task into a dedicated group of Graph Nodes. Operators indexing many blockchains can even deploy a dedicated group of indexing Graph Nodes for each blockchain.
+
+Groups are defined in your `values.yaml` (see [Values](#Values)) under the `groupNodeGroups` key. Default configuration which will be applied to all groups can be set under the `graphNodeDefaults` key. Values in group-specific configuration will take precedence over those present in the default configuration.
+
+#### Default Group Configuration
+
+By default, the chart defines three Graph Node Groups:
+
+1. `block-ingestor`, with a `replicaCount` of `1`, which is also configured in the [configuration template](#advanced-configuration) as the block ingestor node
+1. `index`, with a `replicaCount` of `1`, which is configured as an `index-node`, and included in the `default` [Index Pool for subgraph deployment purposes](#subgraph-deployment-rules)
+1. `query`, with a `replicaCount` of `1`, which is configured as a `query-node`
+
+See [Values](#Values) for how to scale these groups and apply other configuration. You can also disable these groups to define more advanced grouping configuration.
+
+Kubernetes `Service`s are provisioned for each group to allow load balancing and failover for nodes in that group.
+
+#### Customising Groups
+
+You can disable default groups and define your own.
+
+<details>
+  <summary><strong>Groups Config Example</strong>: Single combined Graph Node that performs all functions</summary>
+
+  ```yaml
+  graphNodeDefaults:
+    env:
+      IPFS: "https://ipfs.network.thegraph.com"
+      PGDATABASE: graph
+      PGHOST: my-pg-host
+
+    secretEnv:    
+      PGUSER:
+        secretName: postgres-config
+        key: username
+      PGPASSWORD:
+        secretName: postgres-config
+        key: password
+
+  graphNodeGroups:
+    combined:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools:
+        - default
+      env:
+        NODE_ROLE: combined-mode
+  blockIngestorGroupName: combined # we must override this because the default value assumes a dedicated block-ingestor group
+  ```
+</details>
+
+<details>
+  <summary><strong>Groups Config Example</strong>: Separated block ingestor, index nodes, query nodes, with dedicated groups for debugging subgraph indexing and VIP subgraph deployments</summary>
+
+  ```yaml
+  graphNodeDefaults:
+    env:
+      PGDATABASE: graph
+      PGHOST: my-pg-host
+
+    secretEnv:    
+      PGUSER:
+        secretName: postgres-config
+        key: username
+      PGPASSWORD:
+        secretName: postgres-config
+        key: password
+
+  graphNodeGroups:
+    block-ingestor:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools: [] # do not index any subgraphs on the block ingestor
+      env:
+        NODE_ROLE: index-node
+    index:
+      enabled: true
+      replicaCount: 10
+      includeInIndexPools:
+        - default
+      env:
+        NODE_ROLE: index-node
+    index-vip:
+      enabled: true
+      replicaCount: 2
+      includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+      nodeSelector:
+        my_high_performance_node_label: "true"
+      env:
+        NODE_ROLE: index-node
+    index-debug:
+      enabled: true
+      replicaCount: 1
+      includeInIndexPools: [] # don't deploy here by default, rely on manual assignment
+      env:
+        NODE_ROLE: index-node
+        RUST_LOG: trace
+        GRAPH_LOG: trace
+    query:
+      enabled: true
+      replicaCount: 3
+      env:
+        NODE_ROLE: query-node
+  ```
+
+  In this example, subgraph deployments could be manually reassigned to a `index-debug` node to extract trace index logs, or to a `index-vip` node to run on a VIP node pointing at a higher performance JSON-RPC endpoint.
+</details>
+
+### Configuring Blockchain JSON-RPC Nodes
+
+You need to pass JSON-RPC node configuration for as many blockchains as you want to index.
+
+Example:
+
+```yaml
+# values.yaml
+
+chains:
+  mainnet:
+    shard: primary # The database shard to use for this chain
+    provider:
+      - label: ethereum-mainnet-archival-trace-node
+        url: "http://ethereum-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+      - label: ethereum-mainnet-pruned-node
+        url: "http://ethereum-mainnet-pruned-node:8545"
+        features: []
+  gnosis:
+    shard: primary
+    provider:
+      - label: gnosis-mainnet-archival-trace-node
+        url: "http://gnosis-mainnet-archival-trace-node:8545"
+        features: [archive, traces]
+```
+
+This configuration will be used to generate the appropriate TOML config for Graph Node. To customise this behaviour, see [advanced configuration](#advanced-configuration).
+
+### Subgraph Deployment Rules
+
+By default, the configuration template defines a single subgraph deployment rule that assigns all subgraphs to the set of nodes defined by the `default` index pool.
+
+#### Index Pools
+
+An Index Pool is a set of Graph Nodes (an array of [Node ID](#automatic-node-ids)s) that are grouped together for subgraph indexing purposes. You can include a Graph Node Group and its nodes in an Index Pool by specifying the pool name in that Group's `includeInIndexPools` configuration.
+
+The Chart automatically generates Index Pools basic on the Group configuration you specify in [Values](#Values).
+
+#### Automatic Node IDs
+
+Graph Node instances are assigned an ID, allowing subgraphs to be assigned to a particular instance.
+
+This Chart deploys Graph Node using Kubernetes `StatefulSet`s, providing a consistent naming scheme for all `Pod`s. This is the basis for Node ID generation.
+
+The Node ID template follows the format: `<release-name>-<group-name>-<index>`, where index is an integer indicating the node number in that group, with the first node having the index of `0`.
+
+{{ template "graphops.configurationTemplateSection" }}
+
+### Computed Template Variables
+
+The following additional template variables are computed and injected into the template context under the `computed` key:
+
+- `indexPools` - a `dict` of `index_pool_name -> [graph_node_id1, graph_node_id2, graph_node_id3]`
+
+You can use these keys in your custom configuration template (e.g. `{{`{{ .computed.computedValue }}`}}`).
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}
+
+## See also
+
+- [Erigon](../erigon)
+- [Proxyd](../proxyd)
