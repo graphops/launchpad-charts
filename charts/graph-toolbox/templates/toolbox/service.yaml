@@ -1,0 +1,12 @@
+{{- $values := $.Values }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-toolbox.fullname" . }}-headless
+  labels:
+    {{- include "graph-toolbox.labels" . | nindent 4 }}
+spec:
+  clusterIP: None # Headless service
+  ports: []
+  selector:
+    {{- include "graph-toolbox.selectorLabels" . | nindent 4 }}
