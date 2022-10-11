@@ -265,6 +265,18 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
     version: 0.1.0
+  graph-network-indexer:
+  - apiVersion: v2
+    appVersion: v0.20.3
+    created: "2022-10-11T16:49:41.447320676Z"
+    description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer)
+      components inside Kubernetes with ease
+    digest: 9bd27cfc497235cf89f11a5534c0c335459420d1ba258962a59b6aed5bd041a6
+    name: graph-network-indexer
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
+    version: 0.1.0
   graph-node:
   - apiVersion: v2
     appVersion: v0.28.2
@@ -276,6 +288,18 @@ entries:
     type: application
     urls:
     - https://github.com/graphops/helm-charts/releases/download/graph-node-0.1.0/graph-node-0.1.0.tgz
+    version: 0.1.0
+  graph-toolbox:
+  - apiVersion: v2
+    appVersion: main
+    created: "2022-10-11T16:49:41.726593241Z"
+    description: Deploy a preconfigured toolbox container for to be used alongside
+      the
+    digest: 1ced6a53af2575d9420354f5e53f89d43ff551f2bb445fdfa7df6e0db559479c
+    name: graph-toolbox
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/graph-toolbox-0.1.0/graph-toolbox-0.1.0.tgz
     version: 0.1.0
   nethermind:
   - apiVersion: v2
@@ -485,4 +509,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-11T16:48:08.525424306Z"
+generated: "2022-10-11T16:49:41.726929044Z"
