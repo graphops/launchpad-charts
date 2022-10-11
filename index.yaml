@@ -265,6 +265,18 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
     version: 0.1.0
+  graph-node:
+  - apiVersion: v2
+    appVersion: v0.28.2
+    created: "2022-10-11T16:48:08.249712086Z"
+    description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node)
+      inside Kubernetes with ease
+    digest: 5a471b393ceda10801d6c19c8e8ebfc383e5ab4ece96431352a6891a83bdc823
+    name: graph-node
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/graph-node-0.1.0/graph-node-0.1.0.tgz
+    version: 0.1.0
   nethermind:
   - apiVersion: v2
     appVersion: 1.14.3
@@ -473,4 +485,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-10T22:27:47.521577679Z"
+generated: "2022-10-11T16:48:08.525424306Z"
