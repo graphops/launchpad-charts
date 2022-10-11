@@ -183,7 +183,7 @@ store:
     # -- PostgreSQL connection string for primary shard
     connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
     # -- Number of PostgreSQL connections in pool
-    pool_size: 10
+    pool_size: "10"
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
 # @default -- See default template in [values.yaml](values.yaml)
