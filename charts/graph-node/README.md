@@ -279,8 +279,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
- | store | Store configuration for Graph Node | object | `{"primary":{"connection":"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"}}` |
+ | store | Store configuration for Graph Node | object | `{"primary":{"connection":"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}","pool_size":10}}` |
  | store.primary.connection | PostgreSQL connection string for primary shard | string | `"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"` |
+ | store.primary.pool_size | Number of PostgreSQL connections in pool | int | `10` |
 
 ## Contributing
 
