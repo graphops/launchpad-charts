@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.28.0](https://img.shields.io/badge/AppVersion-v0.28.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.28.2](https://img.shields.io/badge/AppVersion-v0.28.2-informational?style=flat-square)
 
 ## Introduction
 
@@ -238,14 +238,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
- | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
- | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"IPFS":"","PGDATABASE":"","PGHOST":"","PGPORT":5432}` |
+ | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432}` |
  | graphNodeDefaults.env.IPFS | The URL for your IPFS node | string | `""` |
- | graphNodeDefaults.env.PGDATABASE | Name of the database to use | string | `""` |
- | graphNodeDefaults.env.PGHOST | Hostname of your PostgreSQL server | string | `""` |
- | graphNodeDefaults.env.PGPORT | Port for your PostgreSQL server | int | `5432` |
+ | graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGDATABASE | Name of the primary shard database to use | string | `""` |
+ | graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGHOST | Hostname of the primary shard PostgreSQL server | string | `""` |
+ | graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGPORT | Port for the primary shard PostgreSQL server | int | `5432` |
  | graphNodeDefaults.extraArgs | Additional CLI arguments to pass to Graph Node | list | `[]` |
  | graphNodeDefaults.includeInIndexPools | List of Index Pools to include nodes in the group in | list | `[]` |
  | graphNodeDefaults.nodeSelector | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) | object | `{}` |
@@ -253,11 +253,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | graphNodeDefaults.replicaCount | The number of nodes to run in the group | int | `1` |
  | graphNodeDefaults.resources | Specify [resource requests and limits](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits) for each node in the group | object | `{}` |
- | graphNodeDefaults.secretEnv | Environment variable defaults that come from `Secret`s for all Graph Node groups | object | `{"PGPASSWORD":{"key":null,"secretName":null},"PGUSER":{"key":null,"secretName":null}}` |
- | graphNodeDefaults.secretEnv.PGPASSWORD.key | Name of the data key in the secret that contains your PG password | string | `nil` |
- | graphNodeDefaults.secretEnv.PGPASSWORD.secretName | Name of the secret that contains your PG password | string | `nil` |
- | graphNodeDefaults.secretEnv.PGUSER.key | Name of the data key in the secret that contains your PG username | string | `nil` |
- | graphNodeDefaults.secretEnv.PGUSER.secretName | Name of the secret that contains your PG username | string | `nil` |
+ | graphNodeDefaults.secretEnv | Environment variable defaults that come from `Secret`s for all Graph Node groups | object | `{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}}` |
+ | graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key | Name of the data key in the secret that contains your PG password | string | `nil` |
+ | graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.secretName | Name of the secret that contains your PG password | string | `nil` |
+ | graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.key | Name of the data key in the secret that contains your PG username | string | `nil` |
+ | graphNodeDefaults.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.secretName | Name of the secret that contains your PG username | string | `nil` |
  | graphNodeDefaults.service.ports.http-admin | Service Port to expose Graph Node Admin endpoint on | int | `8020` |
  | graphNodeDefaults.service.ports.http-metrics | Service Port to expose Graph Node Metrics endpoint on | int | `8040` |
  | graphNodeDefaults.service.ports.http-query | Service Port to expose Graph Node Query endpoint on | int | `8000` |
@@ -279,6 +279,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | store | Store configuration for Graph Node | object | `{"primary":{"connection":"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"}}` |
+ | store.primary.connection | PostgreSQL connection string for primary shard | string | `"postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"` |
 
 ## Contributing
 
