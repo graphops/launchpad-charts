@@ -180,16 +180,24 @@ chains:
 # -- Store configuration for Graph Node
 store:
   primary:
+    # -- Enable this store for Graph Node
+    enabled: true
     # -- PostgreSQL connection string for primary shard
     connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
-    # -- Number of PostgreSQL connections in pool
-    pool_size: "10"
 
 # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
     # Store configuration
-    {{ toToml (dict "store" (deepCopy $.Values.store)) }}
+    [store]
+    {{- range $storeName, $storeValues := $.Values.store }}
+    {{- if $storeValues.enabled }}
+      [store.{{ $storeName }}]
+      connection = {{ required "You must specify a store connection string" $storeValues.connection | quote }}
+      pool_size = {{ default 10 $storeValues.poolSize }}
+      weight = {{ default 1 $storeValues.weight }}
+    {{- end }}
+    {{- end }}
 
     # Chain configuration
     {{ toToml (dict "chains" (deepCopy $.Values.chains | merge (dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0)))) }}
