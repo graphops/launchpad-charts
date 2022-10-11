@@ -1,0 +1,125 @@
+{{- $values := $.Values.indexerService }}
+{{- $componentName := "service" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+{{/* START Deployment */}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  replicas: 1 # Should only ever be one instance of indexer-agent
+  selector:
+    matchLabels:
+      {{- include "graph-network-indexer.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-network-indexer.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-network-indexer.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          args:
+          {{- with (deepCopy $.Values.indexerDefaults.config | mustMerge $values.config) }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - --{{ $key }}={{ $val }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.extraArgs }}
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http-queryapi
+              containerPort: 7600
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 7300
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              port: http-queryapi
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END Deployment */}}

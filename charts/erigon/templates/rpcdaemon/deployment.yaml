@@ -1,5 +1,5 @@
-{{- $values := $.Values.rpcdaemons }}
-{{- $componentName := "rpcdaemons" }}
+{{- $values := $.Values.rpcdaemon }}
+{{- $componentName := "rpcdaemon" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 apiVersion: apps/v1
@@ -56,10 +56,9 @@ spec:
             - --private.api.addr={{ include "erigon.fullname" . }}-stateful-node:{{ get $.Values.statefulNode.service.ports "grpc-erigon" }} # grpc interface of stateful process
             - --http.addr=0.0.0.0
             - --http.port=8545
+            - --http.vhosts=*
             - --metrics
             - --metrics.addr=0.0.0.0
-            - --metrics.port=6061
-            - --http.vhosts=*
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
@@ -67,8 +66,8 @@ spec:
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
-            - name: http-rpcmetrics
-              containerPort: 6061
+            - name: http-metrics
+              containerPort: 6060
               protocol: TCP
           readinessProbe:
             httpGet:

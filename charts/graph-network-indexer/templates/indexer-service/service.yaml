@@ -1,13 +1,12 @@
-{{- $values := $.Values.rpcdaemons }}
-{{- $componentName := "rpcdaemons" }}
-{{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
-{{- if $values.enabled }}
+{{- $values := $.Values.indexerService }}
+{{- $componentName := "service" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "erigon.fullname" . }}-{{ $componentName }}
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
   type: {{ $values.service.type }}
@@ -19,6 +18,5 @@ spec:
       name: {{ $portName }}
   {{- end }}
   selector:
-    {{- include "erigon.selectorLabels" . | nindent 4 }}
+    {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-{{- end }}

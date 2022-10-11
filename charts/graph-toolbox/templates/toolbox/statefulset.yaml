@@ -1,0 +1,112 @@
+{{- $values := $.Values }}
+{{/* START StatefulSet */}}
+---
+apiVersion: apps/v1
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
+metadata:
+  name: {{ include "graph-toolbox.fullname" . }}
+  labels:
+    {{- include "graph-toolbox.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "graph-toolbox.fullname" . }}-headless
+  replicas: 1 # Should only ever be one instance
+  selector:
+    matchLabels:
+      {{- include "graph-toolbox.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-toolbox.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-toolbox.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: graphman-config
+          configMap:
+            name: {{ required "Missing configuration" $values.config.graphNode.existingConfigMap.configMapName }}
+            items:
+              - key: {{ required "Missing configuration" $values.config.graphNode.existingConfigMap.configFileKey }} # Name of the item we had used inside our ConfigMap (under data:)
+                path: config.toml # Name of the file to be placed inside /etc
+      containers:
+        - name: toolbox
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext: {}
+          volumeMounts:
+            - name: graphman-config
+              mountPath: "/graphman-config"
+              readOnly: true
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex
+              {{- range $alias, $command := $values.aliases }}
+              echo "alias {{ $alias }}=\"{{ $command | trim }}\"" >> ~/.bashrc
+              {{- end }}
+              mkdir -p ~/.config/graph-cli
+              echo "api = '{{ required "Missing configuration" $values.config.indexer.indexerAgentManagementUrl }}'" > ~/.config/graph-cli/indexing.toml
+              {{- with $values.startupScript }}
+              # Custom startup script
+              {{- . | nindent 14 }}
+              {{- end }}
+              exec sleep infinity
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: UTILS_GRAPH_NODE_ADMIN_API_URL
+              value: {{ required "Missing configuration" $values.config.graphNode.adminApiUrl }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- with $values.extraArgs }}
+          args:
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports: []
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END StatefulSet */}}

@@ -41,59 +41,6 @@ grafana:
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
 
-toolbox:
-  # -- Enable deployment of a toolbox container containing preconfigured tools to interact with graph-node and the database
-  enabled: true
-  image:
-    repository: graphprotocol/graph-node # replace with toolbox repo
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    tag: "" # replace with tag
-    # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- Pod-wide security context
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
-
-  resources: {}
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  env: {}
-
-  secretEnv: {}
-
-# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
-# @default -- See default template in [values.yaml](values.yaml)
-configTemplate: |
-    [store]
-    [store.primary]
-    connection = "postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}"
-    # weight = 0
-    pool_size = 10
-    [chains]
-    ingestor = "{{ print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0 | replace "-" "_" }}"
-    [chains.mainnet]
-    shard = "primary"
-    provider = [
-      { label = "eth-mainnet", url = "${ETH_MAINNET_RPC_URL}", features = [ "archive", "traces" ] }
-    ]
-    [deployment]
-    # Deployment rules match top to bottom
-    [[deployment.rule]]
-    # DEFAULT RULE
-    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
-    shards = ["primary"]
-    indexers = {{ toJson .computed.indexPools.default }}
-
 # -- Default values for all Group Node Groups
 graphNodeDefaults:
   # -- Enable the group
@@ -166,20 +113,28 @@ graphNodeDefaults:
 
   affinity: {}
 
-  # -- Environment variables for Graph Node
+  # -- Environment variable defaults for all Graph Node groups
   env:
-    PGHOST:
-    PGPORT: 5432
-    PGDATABASE:
-    ETH_MAINNET_RPC_URL:
+    # -- Hostname of the primary shard PostgreSQL server
+    PRIMARY_SUBGRAPH_DATA_PGHOST: ""
+    # -- Port for the primary shard PostgreSQL server
+    PRIMARY_SUBGRAPH_DATA_PGPORT: 5432
+    # -- Name of the primary shard database to use
+    PRIMARY_SUBGRAPH_DATA_PGDATABASE: ""
+    # -- The URL for your IPFS node
+    IPFS: ""
 
-  # -- Environment variables that come from `Secret`s
+  # -- Environment variable defaults that come from `Secret`s for all Graph Node groups
   secretEnv:
-    PGUSER:
+    PRIMARY_SUBGRAPH_DATA_PGUSER:
+      # -- Name of the secret that contains your PG username
       secretName:
+      # -- Name of the data key in the secret that contains your PG username
       key:
-    PGPASSWORD:
+    PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+      # -- Name of the secret that contains your PG password
       secretName:
+      # -- Name of the data key in the secret that contains your PG password
       key:
 
 # -- Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor.
@@ -192,16 +147,66 @@ graphNodeGroups:
     replicaCount: 1
     includeInIndexPools: []
     env:
-      NODE_ROLE: index-node
+      node_role: index-node # this key must be lowercase
   index:
     enabled: true
     replicaCount: 1
     includeInIndexPools:
       - default
     env:
-      NODE_ROLE: index-node
+      node_role: index-node # this key must be lowercase
   query:
     enabled: true
     replicaCount: 1
     env:
-      NODE_ROLE: query-node
+      node_role: query-node # this key must be lowercase
+
+# -- Blockchain configuration for Graph Node
+chains:
+  # -- Ethereum Mainnet
+  mainnet:
+    # -- The database shard to use for this chain
+    shard: primary
+    ## -- A list of JSON-RPC endpoints for this node
+    provider:
+      - 
+        # -- Label for the RPC endpoint
+        label: eth-mainnet
+        # -- URL for JSON-RPC endpoint
+        url: ""
+        # -- Data capabilities this node has
+        features: [archive, traces]
+
+# -- Store configuration for Graph Node
+store:
+  primary:
+    # -- Enable this store for Graph Node
+    enabled: true
+    # -- PostgreSQL connection string for primary shard
+    connection: "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
+
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+    # Store configuration
+    [store]
+    {{- range $storeName, $storeValues := $.Values.store }}
+    {{- if $storeValues.enabled }}
+      [store.{{ $storeName }}]
+      connection = {{ required "You must specify a store connection string" $storeValues.connection | quote }}
+      pool_size = {{ default 10 $storeValues.poolSize }}
+      weight = {{ default 1 $storeValues.weight }}
+    {{- end }}
+    {{- end }}
+
+    # Chain configuration
+    {{ toToml (dict "chains" (deepCopy $.Values.chains | merge (dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0)))) }}
+
+    # Deployment rule configuration
+    [deployment]
+    # Deployment rules match top to bottom
+    [[deployment.rule]]
+    # DEFAULT RULE
+    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
+    shards = ["primary"]
+    indexers = {{ toJson .computed.indexPools.default }}

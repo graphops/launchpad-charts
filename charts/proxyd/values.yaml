@@ -39,7 +39,7 @@ grafana:
   # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
-  dashboardsConfigMapLabelValue: ""
+  dashboardsConfigMapLabelValue: "1"
 
 proxyd:
   # -- Additional CLI arguments to pass to `proxyd`
@@ -67,6 +67,8 @@ proxyd:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 9761
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -110,10 +112,48 @@ backends:
 
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
 rpcMethodMappings:
-  eth_call: archive
+  web3_clientVersion: pruned
+  web3_sha3: pruned
+  net_version: pruned
   eth_chainId: pruned
-  eth_blockNumber: archive
+  eth_protocolVersion: pruned
+  eth_coinbase: pruned
+  eth_feeHistory: pruned
+  eth_gasPrice: pruned
+  eth_blockNumber: pruned
+  eth_getBalance: pruned
+  eth_getStorageAt: pruned
+  eth_getTransactionCount: pruned
+  eth_getBlockTransactionCountByHash: pruned
+  eth_getBlockTransactionCountByNumber: pruned
+  eth_getCode: pruned
+  eth_sign: pruned
+  eth_sendTransaction: pruned
+  eth_sendRawTransaction: pruned
+  eth_estimateGas: pruned
+  eth_getBlockByHash: pruned
+  eth_getBlockByNumber: pruned
+  eth_getTransactionByHash: archive
+  eth_getTransactionByBlockHashAndIndex: archive
+  eth_getTransactionByBlockNumberAndIndex: archive
+  eth_getTransactionReceipt: archive
+  eth_getUncleByBlockHashAndIndex: pruned
+  eth_getUncleByBlockNumberAndIndex: pruned
+  eth_newFilter: pruned
+  eth_newBlockFilter: pruned
+  eth_newPendingTransactionFilter: pruned
+  eth_uninstallFilter: pruned
+  eth_getFilterChanges: pruned
+  eth_getLogs: pruned
+  eth_call: archive
   trace_block: archive-trace
+  trace_filter: archive-trace
+  trace_transaction: archive-trace
+  trace_call: archive-trace
+  trace_callMany: archive-trace
+  trace_rawTransaction: archive-trace
+  trace_replayBlockTransactions: archive-trace
+  trace_replayTransaction: archive-trace
 
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
@@ -137,13 +177,13 @@ configTemplate: |
 
   [backend]
   # How long proxyd should wait for a backend response before timing out.
-  response_timeout_seconds = 5
+  response_timeout_seconds = 30
   # Maximum response size, in bytes, that proxyd will accept from a backend.
-  max_response_size_bytes = 5242880
+  max_response_size_bytes = 104857600 # 100 MiB
   # Maximum number of times proxyd will try a backend before giving up.
   max_retries = 3
   # Number of seconds to wait before trying an unhealthy backend again.
-  out_of_service_seconds = 300
+  out_of_service_seconds = 30
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
@@ -151,7 +191,7 @@ configTemplate: |
   [backends.{{ $backendName }}]
   rpc_url = {{ default "" $backendValues.rpcUrl | quote }}
   ws_url = {{ default "ws://dummy-host-ws-disabled" $backendValues.wsUrl | quote }}
-  max_rps = {{ default 10 $backendValues.maxRps }}
+  max_rps = {{ default 0 $backendValues.maxRps }}
   {{- with $backendValues.extraConfig }}
   {{ toToml . }}
   {{- end }}
