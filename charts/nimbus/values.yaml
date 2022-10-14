@@ -85,7 +85,7 @@ nimbus:
   extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
-  extraLabels: []
+  extraLabels: {}
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage
   volumeClaimSpec:

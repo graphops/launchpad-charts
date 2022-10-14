@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.8](https://img.shields.io/badge/Version-0.3.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.28.0](https://img.shields.io/badge/AppVersion-v2.28.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.9](https://img.shields.io/badge/Version-0.3.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.28.0](https://img.shields.io/badge/AppVersion-v2.28.0-informational?style=flat-square)
 
 ## Features
 
@@ -144,7 +144,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | rpcdaemon.autoscaling.targetMemoryUtilizationPercentage |  | string | `nil` |
  | rpcdaemon.enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
  | rpcdaemon.extraArgs | Additional CLI arguments to pass to `rpcdaemon` | list | `[]` |
- | rpcdaemon.extraLabels | Extra labels to attach to the Pod for matching against | list | `[]` |
+ | rpcdaemon.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | rpcdaemon.nodeSelector |  | object | `{}` |
  | rpcdaemon.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | rpcdaemon.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -161,7 +161,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
- | statefulNode.extraLabels | Extra labels to attach to the Pod for matching against | list | `[]` |
+ | statefulNode.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
  | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
  | statefulNode.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
