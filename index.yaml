@@ -3,6 +3,17 @@ entries:
   erigon:
   - apiVersion: v2
     appVersion: v2.28.0
+    created: "2022-10-14T16:09:32.454945797Z"
+    description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
+      inside Kubernetes with ease
+    digest: 73c5fc3abd589547be07acdb342ab2b466f5e86d99799c44ca90b853eff1548c
+    name: erigon
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/erigon-0.3.9/erigon-0.3.9.tgz
+    version: 0.3.9
+  - apiVersion: v2
+    appVersion: v2.28.0
     created: "2022-10-14T15:57:14.166171921Z"
     description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
       inside Kubernetes with ease
@@ -326,6 +337,17 @@ entries:
   nethermind:
   - apiVersion: v2
     appVersion: 1.14.3
+    created: "2022-10-14T16:09:32.63207048Z"
+    description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
+      inside Kubernetes with ease
+    digest: 6d6087cb600eede85e75b4c77b19c50e0f74872fe9163d96cf5b65ef39a046cb
+    name: nethermind
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.6/nethermind-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.14.3
     created: "2022-10-14T15:59:11.365975571Z"
     description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
       inside Kubernetes with ease
@@ -391,6 +413,17 @@ entries:
     - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
     version: 0.1.0
   nimbus:
+  - apiVersion: v2
+    appVersion: multiarch-v22.10.0
+    created: "2022-10-14T16:09:32.813811963Z"
+    description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2)
+      inside Kubernetes with ease
+    digest: c92ecb42eddc2951c53ec2798cf337f9c8924f6e8a3bf925f944d6f01a694acc
+    name: nimbus
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nimbus-0.1.3/nimbus-0.1.3.tgz
+    version: 0.1.3
   - apiVersion: v2
     appVersion: multiarch-v22.10.0
     created: "2022-10-14T15:58:19.055478334Z"
@@ -564,4 +597,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-14T15:59:11.366129871Z"
+generated: "2022-10-14T16:09:32.814520363Z"
