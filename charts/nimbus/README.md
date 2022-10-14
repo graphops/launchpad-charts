@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v22.10.0](https://img.shields.io/badge/AppVersion-multiarch--v22.10.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v22.10.0](https://img.shields.io/badge/AppVersion-multiarch--v22.10.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -105,6 +105,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | nimbus.executionClientUrl | URL to the Execution Client Engine API. Will use configured JWT to authenticate. | string | `""` |
  | nimbus.extraArgs | Additional CLI arguments | list | `[]` |
+ | nimbus.extraLabels | Extra labels to attach to the Pod for matching against | list | `[]` |
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.initChownData.image.repository | Container repository | string | `"busybox"` |
