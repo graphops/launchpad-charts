@@ -2,7 +2,7 @@
 
 Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.5](https://img.shields.io/badge/Version-0.1.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.3](https://img.shields.io/badge/AppVersion-1.14.3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.6](https://img.shields.io/badge/Version-0.1.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.14.3](https://img.shields.io/badge/AppVersion-1.14.3-informational?style=flat-square)
 
 ## Chart Features
 
@@ -110,7 +110,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.affinity |  | object | `{}` |
  | nethermind.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | nethermind.extraArgs | Additional CLI arguments | list | `[]` |
- | nethermind.extraLabels | Extra labels to attach to the Pod for matching against | list | `[]` |
+ | nethermind.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nethermind.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nethermind.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nethermind.initChownData.image.repository | Container repository | string | `"busybox"` |

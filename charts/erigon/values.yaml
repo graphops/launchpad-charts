@@ -83,7 +83,7 @@ statefulNode:
   extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
-  extraLabels: []
+  extraLabels: {}
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
@@ -178,7 +178,7 @@ rpcdaemon:
   extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
-  extraLabels: []
+  extraLabels: {}
 
   # -- Annotations for the `Pod`
   podAnnotations: {}
