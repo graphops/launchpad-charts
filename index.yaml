@@ -382,6 +382,17 @@ entries:
   nimbus:
   - apiVersion: v2
     appVersion: multiarch-v22.10.0
+    created: "2022-10-14T15:58:19.055478334Z"
+    description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2)
+      inside Kubernetes with ease
+    digest: 420bfbfe3427e1ba3afd3c33421154ad82b330bd5d171701701b416da94e2b65
+    name: nimbus
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nimbus-0.1.2/nimbus-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: multiarch-v22.10.0
     created: "2022-10-04T14:41:47.501913324Z"
     description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2)
       inside Kubernetes with ease
@@ -542,4 +553,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-14T15:57:14.166584522Z"
+generated: "2022-10-14T15:58:19.055645835Z"
