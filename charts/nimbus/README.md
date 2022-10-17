@@ -60,9 +60,13 @@ By default, your Nimbus node will sync from scratch and verify all transactions 
 # values.yaml
 
 nimbus:
+  extraArgs:
+    - --network=goerli
   trustedNodeSync:
     enabled: true
-    trustedNodeUrl: http://a-trusted-nimbus-node:5052 # example
+    extraArgs:
+      - --network=goerli
+    trustedNodeUrl: http://a-trusted-goerli-nimbus-node:5052 # example
 ```
 
 When enabled, trusted sync will happen in an init container named `init-trusted-node-sync` that runs before the normal Nimbus process starts.
