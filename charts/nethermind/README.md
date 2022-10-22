@@ -131,7 +131,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.resources |  | object | `{}` |
  | nethermind.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
  | nethermind.restoreSnapshot.mode | One of `streaming` or `multipart`. `streaming` will perform a streaming download and extraction of the archive. This minimises disk space requirements to roughly equal to the size of the archive. `multipart` will perform a chunked multi-part download of the archive first, maximising download speed, and will then extract the archive. The disk requirements are roughly 2.1x the archive size. | string | `"streaming"` |
- | nethermind.restoreSnapshot.multipartConcurrency | (mode=multipart only) Number of archive parts to download concurrently | int | `5` |
+ | nethermind.restoreSnapshot.multipartConcurrency | Number of archive parts to download concurrently | mode=multipart only | `5` |
  | nethermind.restoreSnapshot.nonce | Advanced. Nonce input used when checking existing restoration and whether to perform a new restoration. Change to force a new restoration with the existing configuration. | int | `1` |
  | nethermind.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
  | nethermind.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
