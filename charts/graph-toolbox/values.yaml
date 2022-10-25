@@ -16,7 +16,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-# -- required Configuration for Toolbox to connect to dependencies
+# -- [required] Configuration for Toolbox to connect to dependencies
 config:
   graphNode:
     # -- URL to Graph Node Admin API

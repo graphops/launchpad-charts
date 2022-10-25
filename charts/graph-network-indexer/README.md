@@ -51,7 +51,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"collect-receipts-endpoint":null,"dai-contract":null,"epoch-subgraph-endpoint":null,"graph-node-admin-endpoint":null,"index-node-ids":null,"network-subgraph-deployment":null,"public-indexer-url":null}` |
  | indexerAgent.config.collect-receipts-endpoint | The gateway collect-receipts endpoint for getting vouchers | required | `nil` |
  | indexerAgent.config.dai-contract | Contract address of ERC20 used for DAI variable in cost models | required | `nil` |
- | indexerAgent.config.epoch-subgraph-endpoint | Query endpoint for syncing status of EBO  and its contract state. | optional | `nil` |
+ | indexerAgent.config.epoch-subgraph-endpoint | Query endpoint for syncing status of EBO and its contract state. | optional | `nil` |
  | indexerAgent.config.graph-node-admin-endpoint | URL for your graph-node admin API endpoint | required | `nil` |
  | indexerAgent.config.index-node-ids | A command separated list of graph-node Node IDs to assign subgraphs to | required | `nil` |
  | indexerAgent.config.network-subgraph-deployment | Base58 deployment hash (Qm...) for the Graph Network Subgraph | required | `nil` |
