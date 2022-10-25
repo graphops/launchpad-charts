@@ -100,7 +100,7 @@ nethermind:
     snapshotUrl: ""
     # -- One of `streaming` or `multipart`. `streaming` will perform a streaming download and extraction of the archive. This minimises disk space requirements to roughly equal to the size of the archive. `multipart` will perform a chunked multi-part download of the archive first, maximising download speed, and will then extract the archive. The disk requirements are roughly 2.1x the archive size.
     mode: streaming
-    # -- (mode=multipart only) Number of archive parts to download concurrently
+    # -- [mode=multipart only] Number of archive parts to download concurrently
     multipartConcurrency: 5
     # -- Advanced. Nonce input used when checking existing restoration and whether to perform a new restoration. Change to force a new restoration with the existing configuration.
     nonce: 1
