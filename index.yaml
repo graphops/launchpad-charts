@@ -311,6 +311,17 @@ entries:
     version: 0.1.0
   graph-network-indexer:
   - apiVersion: v2
+    appVersion: v0.20.4
+    created: "2022-10-25T16:11:56.120482262Z"
+    description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer)
+      components inside Kubernetes with ease
+    digest: 03f79afad8496c9722c2222b7ff9105c3f8c604b5a2ae983899ad2fa14ecca7e
+    name: graph-network-indexer
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/graph-network-indexer-0.1.1/graph-network-indexer-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: v0.20.3
     created: "2022-10-11T16:49:41.447320676Z"
     description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer)
@@ -619,4 +630,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-18T10:11:58.413012461Z"
+generated: "2022-10-25T16:11:56.582446844Z"
