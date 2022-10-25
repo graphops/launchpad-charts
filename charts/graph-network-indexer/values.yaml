@@ -85,13 +85,13 @@ indexerAgent:
     public-indexer-url: null
     # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
     index-node-ids: null
-    # -- (required) The gateway collect-receipts endpoint for getting vouchers
+    # -- required The gateway collect-receipts endpoint for getting vouchers
     collect-receipts-endpoint: null
-    # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
+    # -- required Base58 deployment hash (Qm...) for the Graph Network Subgraph
     network-subgraph-deployment: null
-    # -- (required) Contract address of ERC20 used for DAI variable in cost models
+    # -- required Contract address of ERC20 used for DAI variable in cost models
     dai-contract: null
-    # -- (optional) Query endpoint for syncing status of EBO  and its contract state.
+    # -- optional Query endpoint for syncing status of EBO  and its contract state.
     epoch-subgraph-endpoint: null
 
   env: {}
