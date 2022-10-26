@@ -150,6 +150,7 @@ Example:
 
 chains:
   mainnet:
+    enabled: true
     shard: primary # The database shard to use for this chain
     provider:
       - label: ethereum-mainnet-archival-trace-node
@@ -159,6 +160,7 @@ chains:
         url: "http://ethereum-mainnet-pruned-node:8545"
         features: []
   gnosis:
+    enabled: true
     shard: primary
     provider:
       - label: gnosis-mainnet-archival-trace-node
