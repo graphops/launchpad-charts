@@ -206,7 +206,7 @@ configTemplate: |
       ingestor = {{ quote (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0) }}
       {{- range $chainName, $chainValues := $.Values.chains }}
       {{- if $chainValues.enabled }}
-      [store.{{ $chainName }}]
+      [chains.{{ $chainName }}]
         {{ toToml (omit $chainValues "enabled") | nindent 6 }}
       {{- end }}
       {{- end }}
