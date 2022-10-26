@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.28.2](https://img.shields.io/badge/AppVersion-v0.28.2-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.28.2](https://img.shields.io/badge/AppVersion-v0.28.2-informational?style=flat-square)
 
 ## Introduction
 
@@ -227,8 +227,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | blockIngestorGroupName | Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor. | string | `"block-ingestor"` |
- | chains | Blockchain configuration for Graph Node | object | `{"mainnet":{"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}}` |
- | chains.mainnet | Ethereum Mainnet | object | `{"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}` |
+ | chains | Blockchain configuration for Graph Node | object | `{"mainnet":{"enabled":true,"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}}` |
+ | chains.mainnet | Ethereum Mainnet | object | `{"enabled":true,"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}` |
+ | chains.mainnet.enabled | Enable this configuring graph-node with this chain | bool | `true` |
  | chains.mainnet.provider[0].features | Data capabilities this node has | list | `["archive","traces"]` |
  | chains.mainnet.provider[0].label | Label for the RPC endpoint | string | `"eth-mainnet"` |
  | chains.mainnet.provider[0].url | URL for JSON-RPC endpoint | string | `""` |
