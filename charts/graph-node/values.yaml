@@ -202,13 +202,13 @@ configTemplate: |
     {{- end }}
 
     # Chain configuration
-    [chains]
-    ingestor = {{ quote (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0) }}
+    {{- $patchedChains := dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0) }}
     {{- range $chainName, $chainValues := $.Values.chains }}
     {{- if $chainValues.enabled }}
-    {{ toToml (dict "chains" (dict $chainName (omit $chainValues "enabled") )) }}
+      {{- $_ := set $patchedChains $chainName (omit $chainValues "enabled") }}
     {{- end }}
     {{- end }}
+    {{ toToml (dict "chains" $patchedChains) }}
 
     # Deployment rule configuration
     [deployment]
