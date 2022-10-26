@@ -335,6 +335,17 @@ entries:
   graph-node:
   - apiVersion: v2
     appVersion: v0.28.2
+    created: "2022-10-26T20:37:34.38477876Z"
+    description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node)
+      inside Kubernetes with ease
+    digest: e141e8455bccff3a7dafea1a3b9a49e3c6d66e12040b784103113f6655b15e57
+    name: graph-node
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/graph-node-0.1.1/graph-node-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v0.28.2
     created: "2022-10-11T16:48:08.249712086Z"
     description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node)
       inside Kubernetes with ease
@@ -630,4 +641,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-10-25T16:11:56.582446844Z"
+generated: "2022-10-26T20:37:34.385041864Z"
