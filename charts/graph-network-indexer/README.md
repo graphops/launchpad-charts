@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.20.3](https://img.shields.io/badge/AppVersion-v0.20.3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.20.4](https://img.shields.io/badge/AppVersion-v0.20.4-informational?style=flat-square)
 
 ## Introduction
 
@@ -48,9 +48,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | indexerAgent.affinity |  | object | `{}` |
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"collect-receipts-endpoint":null,"dai-contract":null,"graph-node-admin-endpoint":null,"index-node-ids":null,"network-subgraph-deployment":null,"public-indexer-url":null}` |
+ | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"collect-receipts-endpoint":null,"dai-contract":null,"epoch-subgraph-endpoint":null,"graph-node-admin-endpoint":null,"index-node-ids":null,"network-subgraph-deployment":null,"public-indexer-url":null}` |
  | indexerAgent.config.collect-receipts-endpoint | The gateway collect-receipts endpoint for getting vouchers | required | `nil` |
  | indexerAgent.config.dai-contract | Contract address of ERC20 used for DAI variable in cost models | required | `nil` |
+ | indexerAgent.config.epoch-subgraph-endpoint | Query endpoint for syncing status of EBO and its contract state. | optional | `nil` |
  | indexerAgent.config.graph-node-admin-endpoint | URL for your graph-node admin API endpoint | required | `nil` |
  | indexerAgent.config.index-node-ids | A command separated list of graph-node Node IDs to assign subgraphs to | required | `nil` |
  | indexerAgent.config.network-subgraph-deployment | Base58 deployment hash (Qm...) for the Graph Network Subgraph | required | `nil` |

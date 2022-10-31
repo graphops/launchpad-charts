@@ -165,6 +165,8 @@ graphNodeGroups:
 chains:
   # -- Ethereum Mainnet
   mainnet:
+    # -- Enable this configuring graph-node with this chain
+    enabled: false
     # -- The database shard to use for this chain
     shard: primary
     ## -- A list of JSON-RPC endpoints for this node
@@ -200,7 +202,13 @@ configTemplate: |
     {{- end }}
 
     # Chain configuration
-    {{ toToml (dict "chains" (deepCopy $.Values.chains | merge (dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0)))) }}
+    {{- $patchedChains := dict "ingestor" (print (include "graph-node.fullname" $) "-" $.Values.blockIngestorGroupName "-" 0) }}
+    {{- range $chainName, $chainValues := $.Values.chains }}
+    {{- if $chainValues.enabled }}
+      {{- $_ := set $patchedChains $chainName (omit $chainValues "enabled") }}
+    {{- end }}
+    {{- end }}
+    {{ toToml (dict "chains" $patchedChains) }}
 
     # Deployment rule configuration
     [deployment]

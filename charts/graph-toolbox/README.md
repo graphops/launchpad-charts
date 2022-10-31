@@ -43,7 +43,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
  | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
- | config | (required) Configuration for Toolbox to connect to dependencies | object | `{"graphNode":{"adminApiUrl":null,"existingConfigMap":{"configFileKey":null,"configMapName":null}},"indexer":{"indexerAgentManagementUrl":null}}` |
+ | config | [required] Configuration for Toolbox to connect to dependencies | object | `{"graphNode":{"adminApiUrl":null,"existingConfigMap":{"configFileKey":null,"configMapName":null}},"indexer":{"indexerAgentManagementUrl":null}}` |
  | config.graphNode.adminApiUrl | URL to Graph Node Admin API | string | `nil` |
  | config.graphNode.existingConfigMap.configFileKey | The name of the data key in the ConfigMap that contains your config.toml | string | `nil` |
  | config.graphNode.existingConfigMap.configMapName | The name of the ConfigMap that contains your Graph Node config.toml | string | `nil` |

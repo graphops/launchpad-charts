@@ -91,6 +91,8 @@ indexerAgent:
     network-subgraph-deployment: null
     # -- (required) Contract address of ERC20 used for DAI variable in cost models
     dai-contract: null
+    # -- (optional) Query endpoint for syncing status of EBO and its contract state.
+    epoch-subgraph-endpoint: null
 
   env: {}
 
