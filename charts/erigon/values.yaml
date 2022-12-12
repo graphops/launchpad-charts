@@ -42,9 +42,9 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 statefulNode:
-  # -- JWT for clients to authenticate with the Engine API
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
   jwt:
-    # -- Load the JWT from an existing Kubernetes Secret
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
     existingSecret:
       name: some-secret-name
       key: jwt
@@ -125,7 +125,7 @@ statefulNode:
 
   p2pNodePort:
     # -- Expose P2P port via NodePort
-    enabled: true
+    enabled: false
     # -- NodePort to be used. Must be unique.
     port: 31000
     initContainer:
