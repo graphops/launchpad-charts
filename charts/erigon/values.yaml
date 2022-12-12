@@ -42,6 +42,15 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 statefulNode:
+  # -- JWT for clients to authenticate with the Engine API
+  jwt:
+    # -- Load the JWT from a Kubernetes Secret
+    fromSecret:
+      name: some-secret-name
+      key: jwt
+    # -- Use this literal value for the JWT
+    fromLiteral: xxxx
+
   # -- Additional CLI arguments to pass to `erigon`
   extraArgs: []
 
