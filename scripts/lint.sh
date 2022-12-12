@@ -23,8 +23,4 @@ echo "$TEMPLATE_OUTPUT"
 
 echo "$TEMPLATE_OUTPUT" | kubeval
 echo "$TEMPLATE_OUTPUT" | kube-score score -
-<<<<<<< HEAD
 echo "$TEMPLATE_OUTPUT" | docker run -i kubesec/kubesec scan /dev/stdin
-=======
-echo "$TEMPLATE_OUTPUT" | docker run -i kubesec/kubesec scan /dev/stdin
->>>>>>> 8780ea0 (feat(erigon): securityContext overhaul)
