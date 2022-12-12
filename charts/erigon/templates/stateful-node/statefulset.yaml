@@ -1,6 +1,11 @@
 {{- $values := $.Values.statefulNode }}
 {{- $componentName := "stateful-node" }}
 {{- $componentLabel := include "erigon.componentLabelFor" $componentName }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "erigon.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -10,12 +15,12 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 spec:
   serviceName: {{ include "erigon.fullname" . }}-{{ $componentName }}-headless
-replicas: {{ include "erigon.replicas" $values }}
+  replicas: {{ include "erigon.replicas" $values }}
   selector:
     matchLabels:
       {{- include "erigon.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
-  volumeClaimTemplates: # TODO support using an existing PV/PVC?
+  volumeClaimTemplates:
     - metadata:
         name: storage
       spec:
@@ -43,6 +48,14 @@ replicas: {{ include "erigon.replicas" $values }}
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: env-nodeport
           emptyDir: {}
@@ -141,6 +154,9 @@ replicas: {{ include "erigon.replicas" $values }}
                 --http
                 --http.addr=0.0.0.0
                 --authrpc.addr=0.0.0.0
+            {{- if $jwtEnabled }}
+                --authrpc.jwtsecret=/jwt/jwt.hex
+            {{- end }}
                 --healthcheck
                 --metrics
                 --metrics.addr=0.0.0.0
@@ -150,8 +166,7 @@ replicas: {{ include "erigon.replicas" $values }}
                 --nat=extip:${EXTERNAL_IP}
                 --port=${EXTERNAL_PORT}
               {{- else }}
-                --nat=extip:$(POD_IP)
-                --port={{ include "erigon.p2pPort" . }}
+                --port={{ include "erigon.p2pPort" $values }}
               {{- end }}
               {{- with $values.extraArgs }}
                 {{- . | nindent 16 }}

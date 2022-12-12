@@ -129,9 +129,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
  | statefulNode.fromSnapshot.enabled | Enable initialising Erigon state from a remote Snapshot | bool | `false` |
  | statefulNode.fromSnapshot.snapshotUrl | URL for snapshot to download and extract to bootstrap storage | string | `nil` |
- | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"fromLiteral":"xxxx","fromSecret":{"key":"jwt","name":"some-secret-name"}}` |
+ | statefulNode.jwt | JWT for clients to authenticate with the Engine API | object | `{"existingSecret":{"key":"jwt","name":"some-secret-name"},"fromLiteral":"xxxx"}` |
+ | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `"xxxx"` |
- | statefulNode.jwt.fromSecret | Load the JWT from a Kubernetes Secret | object | `{"key":"jwt","name":"some-secret-name"}` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
