@@ -2,11 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-<<<<<<< HEAD
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.6](https://img.shields.io/badge/Version-0.2.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
-=======
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.08.03](https://img.shields.io/badge/AppVersion-v2022.08.03-informational?style=flat-square)
->>>>>>> beb1aa2 (feat: added inbound p2p support)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2022.09.01](https://img.shields.io/badge/AppVersion-v2022.09.01-informational?style=flat-square)
 
 ## Features
 
@@ -64,6 +60,22 @@ statefulNode:
     port: 31000 # Must be unique
 ```
 
+## Restoring chaindata from a snapshot
+
+You can specify a snapshot URL that will be used to bootstrap Erigon's `chaindata` state. When enabled, an init container will perform a streaming extraction of the snapshot into storage. The snapshot should be a gzipped tarball of `chaindata`.
+
+Example:
+```yaml
+statefulNode:
+  fromSnapshot:
+    enable: true
+    snapshotUrl: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/erigon-archive-snapshot-2022-07-15.tar.gz
+```
+
+Once Erigon's state has been bootstrapped, the snapshot URL will be saved to storage at `/from_snapshot`. Any time the Erigon Pod starts, as long as the snapshot configuration has not changed, Erigon will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing chaindata and bootstrap state again.
+
+You can monitor progress by following the logs of the `stateful-node-init` container: `kubectl logs --since 1m -f release-name-stateful-node-0 -c stateful-node-init`
+
 ## Upgrading
 
 We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
@@ -115,6 +127,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | statefulNode.fromSnapshot.enabled | Enable initialising Erigon state from a remote Snapshot | bool | `false` |
+ | statefulNode.fromSnapshot.snapshotUrl | URL for snapshot to download and extract to bootstrap storage | string | `nil` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |

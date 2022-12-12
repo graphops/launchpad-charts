@@ -56,64 +56,64 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 ## Values
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| bor.affinity | object | `{}` |  |
-| bor.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
-| bor.enabled | bool | `true` | Enable creation of `StatefulSet` for Bor |
-| bor.env | object | `{}` | Environment variables to set in key/value format |
-| bor.extraArgs | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive","--snapshot=false"]` | Additional CLI arguments to pass to Bor |
-| bor.fromSnapshot.enabled | bool | `false` | Enable initialising Bor from a remote Snapshot |
-| bor.fromSnapshot.snapshotUrl | string | `nil` | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) |
-| bor.image.pullPolicy | string | `"IfNotPresent"` |  |
-| bor.image.repository | string | `"maticnetwork/bor"` | Image for Bor |
-| bor.image.tag | string | `"v0.2.16-beta2"` |  |
-| bor.initImage.pullPolicy | string | `"IfNotPresent"` |  |
-| bor.initImage.repository | string | `"apteno/alpine-jq"` |  |
-| bor.initImage.tag | string | `"2022-05-01"` |  |
-| bor.podSecurityContext.runAsNonRoot | bool | `false` |  |
-| bor.service.ports.http-jsonrpc | int | `8545` | Service Port to expose JSON-RPC interface on |
-| bor.service.type | string | `"ClusterIP"` |  |
-| bor.terminationGracePeriodSeconds | int | `300` | When terminating, number of seconds to wait before force-killing containers in Pod |
-| bor.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
-| bor.volumeClaimSpec.resources.requests.storage | string | `"3Ti"` | The amount of disk space to provision for polygon |
-| bor.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
-| fullnameOverride | string | `""` |  |
-| grafana.dashboards | bool | `false` | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` |
-| grafana.dashboardsConfigMapLabel | string | `"grafana_dashboard"` | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| grafana.dashboardsConfigMapLabelValue | string | `""` | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) |
-| heimdall.affinity | object | `{}` |  |
-| heimdall.affinityPresets.antiAffinityByHostname | bool | `true` | Configure anti-affinity rules to prevent multiple Polygon instances on the same host |
-| heimdall.enabled | bool | `true` | Enable creation of `StatefulSet` for Heimdall |
-| heimdall.env | object | `{"BOOTNODES":"","ETH1_RPC_URL":""}` | Environment variables to set in key/value format |
-| heimdall.extraArgs | list | `[]` | Additional CLI arguments to pass to Heimdall |
-| heimdall.fromSnapshot.enabled | bool | `false` | Enable initialising Heimdall from a remote Snapshot |
-| heimdall.fromSnapshot.snapshotUrl | string | `nil` | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) |
-| heimdall.image.pullPolicy | string | `"IfNotPresent"` |  |
-| heimdall.image.repository | string | `"maticnetwork/heimdall"` | Image for Heimdall |
-| heimdall.image.tag | string | `"v0.2.9"` |  |
-| heimdall.nodeSelector | object | `{}` |  |
-| heimdall.podAnnotations | object | `{}` | Annotations for the `Pod` |
-| heimdall.podSecurityContext | object | `{"runAsNonRoot":false}` | Pod-wide security context |
-| heimdall.resources | object | `{}` |  |
-| heimdall.restServer | object | `{"extraArgs":[],"resources":{}}` | Options for Heimdall rest-server sidecar |
-| heimdall.service.ports.http-rest | int | `1317` |  |
-| heimdall.service.ports.http-trpc | int | `26657` |  |
-| heimdall.service.type | string | `"ClusterIP"` |  |
-| heimdall.tolerations | list | `[]` |  |
-| heimdall.volumeClaimSpec | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"256Gi"}},"storageClassName":null}` | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage |
-| heimdall.volumeClaimSpec.resources.requests.storage | string | `"256Gi"` | The amount of disk space to provision for Heimdall |
-| heimdall.volumeClaimSpec.storageClassName | string | `nil` | The storage class to use when provisioning a persistent volume for polygon |
-| nameOverride | string | `""` |  |
-| network | string | `"mainnet"` | Specifies the Polygon network instance, one of: `mainnet`, `testnet` |
-| prometheus.serviceMonitors.enabled | bool | `false` | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) |
-| prometheus.serviceMonitors.interval | string | `nil` |  |
-| prometheus.serviceMonitors.labels | object | `{}` |  |
-| prometheus.serviceMonitors.relabelings | list | `[]` |  |
-| prometheus.serviceMonitors.scrapeTimeout | string | `nil` |  |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
-| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | bor.affinity |  | object | `{}` |
+ | bor.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Polygon instances on the same host | bool | `true` |
+ | bor.enabled | Enable creation of `StatefulSet` for Bor | bool | `true` |
+ | bor.env | Environment variables to set in key/value format | object | `{}` |
+ | bor.extraArgs | Additional CLI arguments to pass to Bor | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive","--snapshot=false"]` |
+ | bor.fromSnapshot.enabled | Enable initialising Bor from a remote Snapshot | bool | `false` |
+ | bor.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
+ | bor.image.pullPolicy |  | string | `"IfNotPresent"` |
+ | bor.image.repository | Image for Bor | string | `"maticnetwork/bor"` |
+ | bor.image.tag |  | string | `"v0.2.16-beta2"` |
+ | bor.initImage.pullPolicy |  | string | `"IfNotPresent"` |
+ | bor.initImage.repository |  | string | `"apteno/alpine-jq"` |
+ | bor.initImage.tag |  | string | `"2022-05-01"` |
+ | bor.podSecurityContext.runAsNonRoot |  | bool | `false` |
+ | bor.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
+ | bor.service.type |  | string | `"ClusterIP"` |
+ | bor.terminationGracePeriodSeconds | When terminating, number of seconds to wait before force-killing containers in Pod | int | `300` |
+ | bor.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
+ | bor.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for polygon | string | `"3Ti"` |
+ | bor.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for polygon | string | `nil` |
+ | fullnameOverride |  | string | `""` |
+ | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
+ | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | heimdall.affinity |  | object | `{}` |
+ | heimdall.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Polygon instances on the same host | bool | `true` |
+ | heimdall.enabled | Enable creation of `StatefulSet` for Heimdall | bool | `true` |
+ | heimdall.env | Environment variables to set in key/value format | object | `{"BOOTNODES":"","ETH1_RPC_URL":""}` |
+ | heimdall.extraArgs | Additional CLI arguments to pass to Heimdall | list | `[]` |
+ | heimdall.fromSnapshot.enabled | Enable initialising Heimdall from a remote Snapshot | bool | `false` |
+ | heimdall.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
+ | heimdall.image.pullPolicy |  | string | `"IfNotPresent"` |
+ | heimdall.image.repository | Image for Heimdall | string | `"maticnetwork/heimdall"` |
+ | heimdall.image.tag |  | string | `"v0.2.9"` |
+ | heimdall.nodeSelector |  | object | `{}` |
+ | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |
+ | heimdall.resources |  | object | `{}` |
+ | heimdall.restServer | Options for Heimdall rest-server sidecar | object | `{"extraArgs":[],"resources":{}}` |
+ | heimdall.service.ports.http-rest |  | int | `1317` |
+ | heimdall.service.ports.http-trpc |  | int | `26657` |
+ | heimdall.service.type |  | string | `"ClusterIP"` |
+ | heimdall.tolerations |  | list | `[]` |
+ | heimdall.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"256Gi"}},"storageClassName":null}` |
+ | heimdall.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Heimdall | string | `"256Gi"` |
+ | heimdall.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for polygon | string | `nil` |
+ | nameOverride |  | string | `""` |
+ | network | Specifies the Polygon network instance, one of: `mainnet`, `testnet` | string | `"mainnet"` |
+ | prometheus.serviceMonitors.enabled | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
+ | prometheus.serviceMonitors.interval |  | string | `nil` |
+ | prometheus.serviceMonitors.labels |  | object | `{}` |
+ | prometheus.serviceMonitors.relabelings |  | list | `[]` |
+ | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
+ | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
+ | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
 
 ## Contributing
 
