@@ -41,7 +41,7 @@ heimdall:
     # -- Image for Heimdall
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
-    tag: "v0.2.9" # Don't forget to update appVersion in Chart.yaml
+    tag: "v0.3.0" # Don't forget to update appVersion in Chart.yaml
 
   # -- Options for Heimdall rest-server sidecar
   restServer:
@@ -114,7 +114,7 @@ heimdall:
 
 bor:
   # -- Enable creation of `StatefulSet` for Bor
-  enabled: true
+  enabled: false
   image:
     # -- Image for Bor
     repository: maticnetwork/bor
