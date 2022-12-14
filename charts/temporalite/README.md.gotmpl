@@ -1,0 +1,38 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Introduction
+
+The [Graph Network Indexer](https://github.com/graphprotocol/indexer) components are required for participating in [The Graph's Decentralised Network](https://thegraph.com/explorer). `indexer-agent` performs interactions with the Graph Protocol contracts on-chain, and `indexer-service` intermediates requests and ensures query payment is valid.
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+## Configuring {{ template "chart.name" . }}
+
+...
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

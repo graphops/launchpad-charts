@@ -1,0 +1,12 @@
+{{- $values := $.Values }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "temporalite.fullname" . }}-headless
+  labels:
+    {{- include "temporalite.labels" . | nindent 4 }}
+spec:
+  clusterIP: None # Headless service
+  ports: []
+  selector:
+    {{- include "temporalite.selectorLabels" . | nindent 4 }}
