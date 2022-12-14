@@ -60,7 +60,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | bor.affinity |  | object | `{}` |
  | bor.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Polygon instances on the same host | bool | `true` |
- | bor.enabled | Enable creation of `StatefulSet` for Bor | bool | `true` |
+ | bor.enabled | Enable creation of `StatefulSet` for Bor | bool | `false` |
  | bor.env | Environment variables to set in key/value format | object | `{}` |
  | bor.extraArgs | Additional CLI arguments to pass to Bor | list | `["--http","--http.addr=0.0.0.0","--http.vhosts=*","--http.corsdomain=*","--http.port=8545","--http.api=eth,net,web3,txpool","--syncmode=full","--networkid=137","--miner.gasprice=30000000000","--miner.gaslimit=20000000","--miner.gastarget=20000000","--txpool.nolocals","--txpool.accountslots=16","--txpool.globalslots=32768","--txpool.accountqueue=16","--txpool.globalqueue=32768","--txpool.pricelimit=30000000000","--txpool.lifetime=1h30m0s","--maxpeers=200","--metrics","--pprof","--pprof.port=7071","--pprof.addr=0.0.0.0","--gcmode=archive","--snapshot=false"]` |
  | bor.fromSnapshot.enabled | Enable initialising Bor from a remote Snapshot | bool | `false` |
@@ -91,7 +91,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
  | heimdall.image.pullPolicy |  | string | `"IfNotPresent"` |
  | heimdall.image.repository | Image for Heimdall | string | `"maticnetwork/heimdall"` |
- | heimdall.image.tag |  | string | `"v0.2.9"` |
+ | heimdall.image.tag |  | string | `"v0.3.0"` |
  | heimdall.nodeSelector |  | object | `{}` |
  | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |
