@@ -444,6 +444,18 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/graph-toolbox-0.1.0/graph-toolbox-0.1.0.tgz
     version: 0.1.0
+  heimdall:
+  - apiVersion: v2
+    appVersion: v0.3.0
+    created: "2022-12-14T17:42:37.956730851Z"
+    description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall)
+      inside Kubernetes with ease
+    digest: eda3ecf5f680454bdfa60ebc3088c8968f64a001a377c3aed87772d6df4e0e4f
+    name: heimdall
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
+    version: 1.0.0
   nethermind:
   - apiVersion: v2
     appVersion: 1.14.3
@@ -718,4 +730,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-11-14T13:07:51.726562803Z"
+generated: "2022-12-14T17:42:37.95692275Z"
