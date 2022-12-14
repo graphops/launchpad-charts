@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "polygon.name" -}}
+{{- define "heimdall.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "polygon.fullname" -}}
+{{- define "heimdall.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "polygon.chart" -}}
+{{- define "heimdall.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "polygon.labels" -}}
-helm.sh/chart: {{ include "polygon.chart" . }}
-{{ include "polygon.selectorLabels" . }}
+{{- define "heimdall.labels" -}}
+helm.sh/chart: {{ include "heimdall.chart" . }}
+{{ include "heimdall.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,21 +45,21 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "polygon.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "polygon.name" . }}
+{{- define "heimdall.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "heimdall.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "polygon.componentLabelFor" -}}
+{{- define "heimdall.componentLabelFor" -}}
 app.kubernetes.io/component: {{ . }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "polygon.serviceAccountName" -}}
+{{- define "heimdall.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "polygon.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "heimdall.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}

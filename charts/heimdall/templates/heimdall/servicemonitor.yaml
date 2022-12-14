@@ -1,20 +1,20 @@
 {{- $values := $.Values.heimdall }}
 {{- $componentName := "heimdall" }}
-{{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "polygon.labels" . | nindent 4 }}
+    {{- include "heimdall.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
   jobLabel: "{{ .Release.Name }}"
   selector:
     matchLabels:
-      {{- include "polygon.selectorLabels" . | nindent 6 }}
+      {{- include "heimdall.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   endpoints:
     - port: http-metrics

@@ -1,10 +1,10 @@
-# Default values for polygon.
+# Default values for heimdall.
 # This is a YAML-formatted file.
 
 nameOverride: ""
 fullnameOverride: ""
 
-# -- Specifies the Polygon network instance, one of: `mainnet`, `testnet`
+# -- Specifies the heimdall network instance, one of: `mainnet`, `testnet`
 network: mainnet
 
 serviceAccount:
@@ -65,10 +65,10 @@ heimdall:
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
-  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume for polygon
+    # -- The storage class to use when provisioning a persistent volume for heimdall
     storageClassName: 
     resources:
       requests:
@@ -107,7 +107,7 @@ heimdall:
   tolerations: []
 
   affinityPresets:
-    # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host
+    # -- Configure anti-affinity rules to prevent multiple Heimdall instances on the same host
     antiAffinityByHostname: true
 
   affinity: {}
@@ -166,14 +166,14 @@ heimdall:
   # -- Environment variables to set in key/value format
   env: {}
 
-  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for polygon storage
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume for polygon
+    # -- The storage class to use when provisioning a persistent volume for heimdall
     storageClassName: 
     resources:
       requests:
-        # -- The amount of disk space to provision for polygon
+        # -- The amount of disk space to provision for heimdall
         storage: 3Ti # 12Ti for archival mode
 
   podSecurityContext:
@@ -191,7 +191,7 @@ heimdall:
   
 
   affinityPresets:
-    # -- Configure anti-affinity rules to prevent multiple Polygon instances on the same host
+    # -- Configure anti-affinity rules to prevent multiple heimdall instances on the same host
     antiAffinityByHostname: true
 
   affinity: {}

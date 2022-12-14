@@ -1,13 +1,13 @@
 {{- $values := $.Values.heimdall }}
 {{- $componentName := "heimdall" }}
-{{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
 
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "polygon.labels" . | nindent 4 }}
+    {{- include "heimdall.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 data:
   genesis.json: |

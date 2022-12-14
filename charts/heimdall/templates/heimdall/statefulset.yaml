@@ -1,19 +1,19 @@
 {{- $values := $.Values.heimdall }}
 {{- $componentName := "heimdall" }}
-{{- $componentLabel := include "polygon.componentLabelFor" $componentName }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "polygon.labels" . | nindent 4 }}
+    {{- include "heimdall.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "polygon.fullname" . }}-{{ $componentName }}-headless
+  serviceName: {{ include "heimdall.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      {{- include "polygon.selectorLabels" . | nindent 6 }}
+      {{- include "heimdall.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   volumeClaimTemplates: # TODO support using an existing PV/PVC?
     - metadata:
@@ -27,14 +27,14 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "polygon.selectorLabels" . | nindent 8 }}
+        {{- include "heimdall.selectorLabels" . | nindent 8 }}
         {{- $componentLabel | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "polygon.serviceAccountName" . }}
+      serviceAccountName: {{ include "heimdall.serviceAccountName" . }}
       {{- with $values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -45,7 +45,7 @@ spec:
           emptyDir: {}
         - name: genesis-config
           configMap:
-            name: {{ include "polygon.fullname" . }}-{{ $componentName }}
+            name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
       initContainers:
         - name: {{ $componentName }}-init
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
@@ -83,7 +83,7 @@ spec:
               # If ETH1_RPC_URL is set, patch in eth1 and bor config
               if [ "${ETH1_RPC_URL}" != "" ]; then
                 # Patch heimdall-config.toml
-                sed -i "s#^bor_rpc_url.*#bor_rpc_url = \"http://{{ include "polygon.fullname" . }}-bor:{{ get $.Values.bor.service.ports "http-jsonrpc" }}\"#" heimdall-config.toml
+                sed -i "s#^bor_rpc_url.*#bor_rpc_url = \"http://{{ include "heimdall.fullname" . }}-bor:{{ get $.Values.bor.service.ports "http-jsonrpc" }}\"#" heimdall-config.toml
                 sed -i "s#^eth_rpc_url.*#eth_rpc_url = \"${ETH1_RPC_URL}\"#" heimdall-config.toml
               fi
 
