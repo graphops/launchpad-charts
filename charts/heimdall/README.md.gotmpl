@@ -1,0 +1,40 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Deploys a scalable pool of `statefulset` instances, with auto-scaling support
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards for polygon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+Once the release is installed, heimdall will begin syncing from snapshot if the following was specified:
+```fromSnapshot:
+    # -- Enable initialising Heimdall from a remote Snapshot
+    enabled: true
+    # -- URL to snapshot to download and extract, see [here](https://snapshots.matic.today)
+    snapshotUrl:
+```
+You can use `kubectl logs` to monitor the download status. See the Values section to install Prometheus `PodMonitor`s and a Grafana dashboard.
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}
