@@ -111,8 +111,6 @@ heimdall:
     antiAffinityByHostname: true
 
   affinity: {}
-
-bor:
   # -- Enable creation of `StatefulSet` for Bor
   enabled: false
   image:
