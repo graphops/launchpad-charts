@@ -74,7 +74,11 @@ spec:
             - |
               set -x
               STORAGE_PATH="/storage"
-              SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
+                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
+              else
+                SNAPSHOT_RESTORE_PATH=${SNAPSHOT_RESTORE_PATH}"
+              fi
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
@@ -84,6 +88,7 @@ spec:
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
                   echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
                 else
                   echo "Snapshot configuration already restored, continuing..."
@@ -97,6 +102,8 @@ spec:
           env:
             - name: RESTORE_SNAPSHOT
               value: "true"
+            - name: SNAPSHOT_RESTORE_PATH
+              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
             - name: SNAPSHOT_URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
           {{- with $values.env }}
