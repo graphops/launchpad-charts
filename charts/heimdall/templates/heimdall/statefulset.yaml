@@ -183,7 +183,7 @@ spec:
           command: # TODO chain ID should be based on network selection
             - sh
             - -c
-            - |-
+            - |
               set -x;
 
               export HEIMDALL_DIR=/storage;
