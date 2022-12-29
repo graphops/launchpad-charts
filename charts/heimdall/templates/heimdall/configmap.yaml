@@ -1,0 +1,14 @@
+{{- $values := $.Values.heimdall }}
+{{- $componentName := "heimdall" }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  genesis.json: |
+    {{ (required "Invalid network specified" (.Files.Get (print "genesis/" $componentName "/" .Values.network ".json"))) | nindent 4 }}
