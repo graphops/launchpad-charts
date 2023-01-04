@@ -77,7 +77,7 @@ spec:
               if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
                 SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
               else
-                SNAPSHOT_RESTORE_PATH=${SNAPSHOT_RESTORE_PATH}"
+                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
               fi
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
