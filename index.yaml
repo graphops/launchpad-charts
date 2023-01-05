@@ -513,6 +513,17 @@ entries:
     version: 1.0.0
   nethermind:
   - apiVersion: v2
+    appVersion: 1.14.7
+    created: "2023-01-05T03:12:02.430313866Z"
+    description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
+      inside Kubernetes with ease
+    digest: 4f72014db559938338cf12f07257b8b0ac83860fa9736c8742d9bdd47bcb5296
+    name: nethermind
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.8/nethermind-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v2
     appVersion: 1.14.6
     created: "2023-01-05T02:51:29.013073095Z"
     description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
@@ -601,6 +612,17 @@ entries:
     - https://github.com/graphops/helm-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
     version: 0.1.0
   nimbus:
+  - apiVersion: v2
+    appVersion: multiarch-v22.11.1
+    created: "2023-01-05T03:12:02.607981331Z"
+    description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2)
+      inside Kubernetes with ease
+    digest: 2124d9b0b4148f743e8e2ec873bd1bfaf3c61ae3f6a998ba6f67b90a91a4c3fa
+    name: nimbus
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nimbus-0.2.1/nimbus-0.2.1.tgz
+    version: 0.2.1
   - apiVersion: v2
     appVersion: multiarch-v22.11.0
     created: "2023-01-05T02:51:29.152457342Z"
@@ -807,4 +829,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-05T02:51:29.153081555Z"
+generated: "2023-01-05T03:12:02.608408938Z"
