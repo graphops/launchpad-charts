@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   erigon:
   - apiVersion: v2
+    appVersion: v2.33.0
+    created: "2023-01-10T17:29:38.629049394Z"
+    description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
+      inside Kubernetes with ease
+    digest: 4965ffabd55a9ff0204187b7e06315b6ce6fb23888f89cb7a59e4718f1db8138
+    name: erigon
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/erigon-0.5.0/erigon-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
     appVersion: v2.32.0
     created: "2023-01-04T03:42:51.687261582Z"
     description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon)
@@ -513,6 +524,17 @@ entries:
     version: 1.0.0
   nethermind:
   - apiVersion: v2
+    appVersion: 1.16.0-unstable
+    created: "2023-01-10T17:29:38.75550889Z"
+    description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
+      inside Kubernetes with ease
+    digest: 75f59ac0ae46465d7ce7d077ab728a465a43fca973e903f624cba23e656b549b
+    name: nethermind
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/nethermind-0.3.0/nethermind-0.3.0.tgz
+    version: 0.3.0
+  - apiVersion: v2
     appVersion: 1.15.0
     created: "2023-01-05T03:25:52.20060928Z"
     description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind)
@@ -851,4 +873,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-05T03:25:52.20102648Z"
+generated: "2023-01-10T17:29:38.756340785Z"
