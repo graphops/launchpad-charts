@@ -73,7 +73,7 @@ heimdall:
     resources:
       requests:
         # -- The amount of disk space to provision for Heimdall
-        storage: 256Gi
+        storage: 300Gi
 
   # -- Pod-wide security context
   podSecurityContext:
