@@ -513,6 +513,17 @@ entries:
   heimdall:
   - apiVersion: v2
     appVersion: v0.3.0
+    created: "2023-01-11T18:48:57.096308047Z"
+    description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall)
+      inside Kubernetes with ease
+    digest: 090dbe52b0ed6f61b6eab59735488df7a8f702927b78a0269ba13ba1ab1c323d
+    name: heimdall
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/heimdall-1.1.1/heimdall-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v2
+    appVersion: v0.3.0
     created: "2022-12-16T03:33:35.592579928Z"
     description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall)
       inside Kubernetes with ease
@@ -884,4 +895,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-10T18:47:07.385486305Z"
+generated: "2023-01-11T18:48:57.096714647Z"
