@@ -131,13 +131,12 @@ spec:
               TRUSTED_NODE_SYNC_STATE_FILE=/storage/.init-trusted-node-sync
               TRUSTED_NODE_URL="{{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}"
               if [ ! -f "$TRUSTED_NODE_SYNC_STATE_FILE" ]; then
-                /home/user/lighthouse-eth2/build/lighthouse_beacon_node \
-                  trustedNodeSync \
-                  --data-dir=/storage \
+                lighthouse beacon_node \
+                  --checkpoint-sync-url=$TRUSTED_NODE_URL \
                 {{- range $arg := $values.trustedNodeSync.extraArgs }}
                   {{- $arg | nindent 18 }} \
                 {{- end }}
-                  --trusted-node-url=$TRUSTED_NODE_URL
+                 --datadir=/storage
                 echo $?
                 echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
               else
@@ -175,31 +174,29 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              exec lighthouse beacon \
-                --data-dir=/storage \
+              lighthouse beacon_node \
+                --datadir=/storage \
               {{- if $values.executionClientUrl }}
-                --web3-url={{ $values.executionClientUrl }} \
+                --execution-endpoint={{ $values.executionClientUrl }} \
               {{- end }}
-                --enr-auto-update=false \
+                --disable-enr-auto-update \
               {{- if $values.p2pNodePort.enabled }}
-                --nat=extip:$EXTERNAL_IP \
-                --udp-port=$EXTERNAL_PORT \
-                --tcp-port=$EXTERNAL_PORT \
+                --enr-address=$EXTERNAL_IP \
+                --enr-udp-port=$EXTERNAL_PORT \
+                --port=$EXTERNAL_PORT \
               {{- else }}
-                --udp-port={{ include "lighthouse.p2pPort" $values }} \
-                --tcp-port={{ include "lighthouse.p2pPort" $values }} \
+                --port={{ include "lighthouse.p2pPort" $values }} \
               {{- end }}
-                --rest=true \
-                --rest-address=0.0.0.0 \
+                --http \
+                --listen-address=0.0.0.0 \
               {{- if $jwtEnabled }}
-                --jwt-secret=/jwt/jwt.hex \
+                --execution-jwt=/jwt/jwt.hex \
               {{- end }}
                 --metrics=true \
                 --metrics-address=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
-                --non-interactive
           ports:
             - name: http-lighthouse
               containerPort: 5052
