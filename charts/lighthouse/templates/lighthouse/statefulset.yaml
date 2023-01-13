@@ -114,49 +114,6 @@ spec:
             - name: storage
               mountPath: "/storage"
       {{- end }}
-      {{- if $values.trustedNodeSync.enabled }}
-        - name: init-trusted-node-sync
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          securityContext:
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop:
-                - ALL
-          command:
-            - sh
-            - -ac
-            - |
-              set -x;
-              TRUSTED_NODE_SYNC_STATE_FILE=/storage/.init-trusted-node-sync
-              TRUSTED_NODE_URL="{{ required "If trusted node sync is enabled, you must specify a trustedNodeUrl." $values.trustedNodeSync.trustedNodeUrl }}"
-              if [ ! -f "$TRUSTED_NODE_SYNC_STATE_FILE" ]; then
-                lighthouse beacon_node \
-                  --checkpoint-sync-url=$TRUSTED_NODE_URL \
-                {{- range $arg := $values.trustedNodeSync.extraArgs }}
-                  {{- $arg | nindent 18 }} \
-                {{- end }}
-                 --datadir=/storage
-                echo $?
-                echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
-              else
-                cat $TRUSTED_NODE_SYNC_STATE_FILE
-                echo "Trusted node sync already run. Skipping..."
-              fi
-          volumeMounts:
-            {{- if $values.p2pNodePort.enabled }}
-            - name: env-nodeport
-              mountPath: /env
-            {{- end }}
-            {{- if $jwtEnabled }}
-            - name: jwt
-              mountPath: /jwt
-            {{- end }}
-            - name: storage
-              mountPath: /storage
-            - name: tmp
-              mountPath: /tmp
-      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
