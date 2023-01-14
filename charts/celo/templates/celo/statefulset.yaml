@@ -2,10 +2,6 @@
 {{- $componentName := "celo" }}
 {{- $componentLabel := include "celo.componentLabelFor" $componentName }}
 
-{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
-{{- $jwtSecretName := default (print (include "celo.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
-{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -51,68 +47,11 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
-      {{- if $jwtEnabled }}
-        - name: jwt
-          secret:
-            secretName: {{ $jwtSecretName }}
-            items:
-              - key: {{ $jwtSecretKey }}
-                path: jwt.hex
-      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: env-nodeport
           emptyDir: {}
       {{- end }}
       initContainers:
-      # {{- if $values.restoreSnapshot.enabled }}
-      #   - name: init-snapshot
-      #     image: busybox:stable
-      #     imagePullPolicy: IfNotPresent
-      #     command:
-      #       - sh
-      #       - -c
-      #       - |
-      #         set -x
-      #         STORAGE_PATH="/storage"
-      #         if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-      #           SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-      #         else
-      #           SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
-      #         fi
-      #         # If enabled and snapshot URL has been provided, restore snapshot
-      #         if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-      #           echo "Snapshot restoration enabled"
-      #           if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-      #             echo "Clearing existing chaindata..."
-      #             rm -rf "$SNAPSHOT_RESTORE_PATH"
-      #             echo "Downloading and extracting $SNAPSHOT_URL..."
-      #             mkdir -p "$SNAPSHOT_RESTORE_PATH"
-      #             wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-      #             [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
-      #             echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-      #           else
-      #             echo "Snapshot configuration already restored, continuing..."
-      #           fi
-      #         else
-      #           echo "Snapshot restoration not enabled, skipping..."
-      #         fi
-      #     volumeMounts:
-      #       - name: storage
-      #         mountPath: /storage
-      #     env:
-      #       - name: RESTORE_SNAPSHOT
-      #         value: "true"
-      #       - name: SNAPSHOT_RESTORE_PATH
-      #         value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
-      #       - name: SNAPSHOT_URL
-      #         value: {{ $values.restoreSnapshot.snapshotUrl }}
-      #     {{- with $values.env }}
-      #     {{- range $key, $val := .}}
-      #       - name: {{ $key }}
-      #         value: {{ $val | quote }}
-      #     {{- end }}
-      #     {{- end }}
-      # {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
@@ -208,10 +147,6 @@ spec:
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
               mountPath: /env
-            {{- end }}
-            {{- if $jwtEnabled }}
-            - name: jwt
-              mountPath: /jwt
             {{- end }}
             - name: storage
               mountPath: /storage

@@ -2,7 +2,7 @@
 
 Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.7.2](https://img.shields.io/badge/AppVersion-v1.7.2-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.2](https://img.shields.io/badge/AppVersion-1.7.2-informational?style=flat-square)
 
 ## Features
 
@@ -119,25 +119,13 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | celo.affinity |  | object | `{}` |
- | celo.affinity |  | object | `{}` |
- | celo.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | celo.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | celo.autoscaling.enabled | Enable auto-scaling of the rpcdaemon Deployment. Be sure to set resources.requests for rpcdaemon. | bool | `false` |
- | celo.autoscaling.maxReplicas | Maximum number of replicas | int | `10` |
- | celo.autoscaling.minReplicas | Minimum number of replicas | int | `2` |
- | celo.autoscaling.targetCPUUtilizationPercentage |  | int | `75` |
- | celo.autoscaling.targetMemoryUtilizationPercentage |  | string | `nil` |
- | celo.enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
- | celo.extraArgs | Additional CLI arguments to pass to `rpcdaemon` | list | `[]` |
- | celo.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | celo.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
+ | celo.extraArgs | Additional CLI arguments | list | `[]` |
  | celo.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
- | celo.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
- | celo.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
- | celo.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
- | celo.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
- | celo.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
- | celo.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
- | celo.nodeSelector |  | object | `{}` |
+ | celo.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
+ | celo.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | celo.initChownData.image.repository | Container repository | string | `"busybox"` |
+ | celo.initChownData.image.tag | Container tag | string | `"1.34.0"` |
  | celo.nodeSelector |  | object | `{}` |
  | celo.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | celo.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -145,35 +133,23 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
  | celo.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | celo.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | celo.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | celo.replicaCount | Number of replicas to run | int | `2` |
  | celo.resources |  | object | `{}` |
- | celo.resources.limits |  | object | `{}` |
- | celo.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
- | celo.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
- | celo.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
- | celo.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | celo.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | celo.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | celo.service.ports.http-jsonrpc | Service Port to expose rpcdaemon JSON-RPC interface on | int | `8545` |
- | celo.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | celo.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | celo.service.type |  | string | `"ClusterIP"` |
- | celo.service.type |  | string | `"ClusterIP"` |
- | celo.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
+ | celo.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | celo.tolerations |  | list | `[]` |
- | celo.tolerations |  | list | `[]` |
- | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
- | celo.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
- | celo.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for Erigon | string | `nil` |
+ | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1.5Gi"}},"storageClassName":null}` |
+ | celo.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"1.5Gi"` |
+ | celo.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
- | image.repository | Image for Erigon | string | `"us.gcr.io/celo-org/geth"` |
+ | image.repository | Image for Celo | string | `"us.gcr.io/celo-org/geth"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | nameOverride |  | string | `""` |
