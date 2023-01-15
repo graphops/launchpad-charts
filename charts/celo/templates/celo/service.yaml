@@ -1,5 +1,5 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "celo" }}
+{{- $values := $.Values.celo }}
+{{- $componentName := "celo"}}
 {{- $componentLabel := include "celo.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service

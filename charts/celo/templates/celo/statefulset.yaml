@@ -1,5 +1,5 @@
-{{- $values := $.Values.statefulNode }}
-{{- $componentName := "celo" }}
+{{- $values := $.Values.celo }}
+{{- $componentName := "celo"}}
 {{- $componentLabel := include "celo.componentLabelFor" $componentName }}
 
 apiVersion: apps/v1
@@ -108,7 +108,6 @@ spec:
               {{- else }}
                 --port={{ include "celo.p2pPort" $values }} \
               {{- end }}
-                # --private.api.addr=0.0.0.0:9090 \
                 --http \
                 --http.addr=0.0.0.0 \
                 --http.vhosts=* \
@@ -117,31 +116,21 @@ spec:
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
-                --healthcheck
           ports:
             - name: grpc-celo
-              containerPort: 9090
+              containerPort: 8545
               protocol: TCP
             - name: http-metrics
-              containerPort: 6060
+              containerPort: 8545
               protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
-              protocol: TCP
-            - name: http-engineapi
-              containerPort: 8551
               protocol: TCP
             - name: udp-p2p
               containerPort: {{ include "celo.p2pPort" $values }}
               protocol: UDP
             - name: tcp-p2p
               containerPort: {{ include "celo.p2pPort" $values }}
-              protocol: TCP
-            - name: udp-torrent
-              containerPort: 42069
-              protocol: UDP
-            - name: tcp-torrent
-              containerPort: 42069
               protocol: TCP
           volumeMounts:
             {{- if $values.p2pNodePort.enabled }}
@@ -153,11 +142,11 @@ spec:
             - name: tmp
               mountPath: /tmp
           readinessProbe:
-            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-            grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+            httpGet:
+              path: /
+              port: 8545
+            initialDelaySeconds: 10
+            periodSeconds: 10
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
