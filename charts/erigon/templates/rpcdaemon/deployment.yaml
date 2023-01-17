@@ -50,7 +50,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false # needs access for MDBX introduced in Erifgon v2.33.0
             capabilities:
               drop:
                 - ALL
