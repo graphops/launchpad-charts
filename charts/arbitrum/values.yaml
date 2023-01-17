@@ -1,0 +1,280 @@
+# Default values for arbitrum.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for arbitrum
+  repository: thorax/arbitrum
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+     # Required to obtain the nodes external IP
+    - apiGroups: [""]
+      resources:
+      - "nodes"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to get information about the serices nodePort.
+    - apiGroups: [""]
+      resources:
+      - "services"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: "1"
+
+classic:
+  image: 'offchainlabs/arb-node'
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret:
+      # -- Name of the Secret resource in the same namespace
+      name: null
+      # -- Data key for the JWT in the Secret
+      key: null
+    # -- Use this literal value for the JWT
+    fromLiteral: null
+
+  # -- Additional CLI arguments to pass to `arbitrum`
+  extraArgs: []
+
+  # -- Extra labels to attach to the Pod for matching against
+  extraLabels: {}
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume for arbitrum
+    storageClassName: 
+    resources:
+      requests:
+        # -- The amount of disk space to provision for arbitrum
+        storage: 3Ti
+
+  restoreSnapshot:
+    # -- Enable initialising arbitrum state from a remote snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: ""
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the arbitrum process
+  terminationGracePeriodSeconds: 60
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/nitro/statefulset.yaml)
+      # -- Service Port to expose arbitrum GRPC interface on
+      grpc-arbitrum: 9090
+      # -- Service Port to expose JSON-RPC interface on
+      http-jsonrpc: 8545
+      # -- Service Port to expose engineAPI interface on
+      http-engineapi: 8551
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 6060
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple arbitrum instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.21.3
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
+
+nitro:
+  image: 'offchainlabs/nitro-node'
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret:
+      # -- Name of the Secret resource in the same namespace
+      name: null
+      # -- Data key for the JWT in the Secret
+      key: null
+    # -- Use this literal value for the JWT
+    fromLiteral: null
+
+  # -- Additional CLI arguments to pass to `arbitrum`
+  extraArgs: []
+
+  # -- Extra labels to attach to the Pod for matching against
+  extraLabels: {}
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume for arbitrum
+    storageClassName: 
+    resources:
+      requests:
+        # -- The amount of disk space to provision for arbitrum
+        storage: 3Ti
+
+  restoreSnapshot:
+    # -- Enable initialising arbitrum state from a remote snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: ""
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the arbitrum process
+  terminationGracePeriodSeconds: 60
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/nitro/statefulset.yaml)
+      # -- Service Port to expose arbitrum GRPC interface on
+      grpc-arbitrum: 9090
+      # -- Service Port to expose JSON-RPC interface on
+      http-jsonrpc: 8545
+      # -- Service Port to expose engineAPI interface on
+      http-engineapi: 8551
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 6060
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple arbitrum instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.21.3
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
