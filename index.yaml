@@ -568,6 +568,17 @@ entries:
     version: 1.0.0
   lighthouse:
   - apiVersion: v2
+    appVersion: v3.4.0
+    created: "2023-01-17T17:26:22.727797382Z"
+    description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse)
+      inside Kubernetes with ease
+    digest: 6f5f569c2951f433e4683d9e5b1eb9ba3879d8dc2ba70af2f64a66759151a106
+    name: lighthouse
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/lighthouse-0.2.0/lighthouse-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: v3.3.0
     created: "2023-01-16T15:42:02.03919849Z"
     description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse)
@@ -929,4 +940,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-17T16:22:58.756367204Z"
+generated: "2023-01-17T17:26:22.728257579Z"
