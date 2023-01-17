@@ -22,57 +22,6 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/avalanche
 ```
 
-## Specifying the Engine API JWT
-
-To use avalanche on a network that requires a Consensus Client, you will need to configure a JWT that is used by the Consensus Client to authenticate with the Engine API on port `8551`. You will need to pass the same JWT to your Consensus Client.
-
-You can specify the JWT for avalanche either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the avalanche Pod.
-
-Using a literal value:
-
-```yaml
-# values.yaml
-
-avalanche:
-  jwt:
-    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
-```
-
-Using an existing Kubernetes Secret:
-
-```yaml
-# values.yaml
-
-avalanche:
-  jwt:
-    existingSecret:
-      name: my-ethereum-mainnet-jwt-secret
-      key: jwt
-```
-
-## Restoring node database using an external snapshot archive
-
-You can specify a snapshot archive URL that will be used to restore avalanche's `avalanche_db` state. The snapshot should be a gzipped tarball of the contents of `avalanche_db`.
-
-When enabled, an init container will perform a `streaming` download and extraction of the snapshot into storage. This requires roughly 1x the extracted archive contents worth of disk space.
-
-Instead of `streaming`, you can also configure a `multipart` download, which will download multiple chunks of the archive concurrently. This requires roughly 2.1x the extracted archive contents worth of disk space since the archive must be reconstructed on disk before it can be extracted.
-
-Example:
-```yaml
-# values.yaml
-
-statefulNode:
-  restoreSnapshot:
-    enable: true
-    snapshotUrl: https://a-link-to-your-snapshot-archive.tar.gz
-    mode: streaming # or multipart
-```
-
-Once the node state has been restored, the snapshot URL will be saved to storage at `/.init-restore-snapshot`. Any time the Pod restarts, as long as the snapshot configuration has not changed, the node will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing state and perform a snapshot download and extraction again.
-
-You can monitor progress by following the logs of the `init-restore-snapshot` container: `kubectl logs --since 1m -f release-name-avalanche-0 -c init-restore-snapshot`
-
 ## Enabling inbound P2P dials
 
 By default, your avalanche node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `avalanche.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `avalanche.p2pNodePort.enabled`, the exposed IP address on your avalanche ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `avalanche.replicaCount` will be locked to `1`.
@@ -115,11 +64,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | avalanche.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | avalanche.podSecurityContext | Pod-wide security context | object | `{"fsGroup":0,"runAsGroup":0,"runAsNonRoot":false,"runAsUser":0}` |
  | avalanche.resources |  | object | `{}` |
- | avalanche.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
- | avalanche.restoreSnapshot.mode | One of `streaming` or `multipart`. `streaming` will perform a streaming download and extraction of the archive. This minimises disk space requirements to roughly equal to the size of the archive. `multipart` will perform a chunked multi-part download of the archive first, maximising download speed, and will then extract the archive. The disk requirements are roughly 2.1x the archive size. | string | `"streaming"` |
- | avalanche.restoreSnapshot.multipartConcurrency | [mode=multipart only] Number of archive parts to download concurrently | int | `5` |
- | avalanche.restoreSnapshot.nonce | Advanced. Nonce input used when checking existing restoration and whether to perform a new restoration. Change to force a new restoration with the existing configuration. | int | `1` |
- | avalanche.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
  | avalanche.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `9650` |
  | avalanche.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `9651` |
  | avalanche.service.ports.http-p2p |  | int | `9655` |
@@ -130,7 +74,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | avalanche.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"4Ti"}},"storageClassName":null}` |
  | avalanche.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"4Ti"` |
  | avalanche.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
- | configTemplate |  | string | `"# Store configuration\n"` |
+ | configTemplate | [Configuration for avalanche](https://github.com/ava-labs/avalanche-faucet/blob/main/config.json) | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |

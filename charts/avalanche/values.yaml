@@ -82,18 +82,6 @@ avalanche:
         # -- The amount of disk space to provision
         storage: 4Ti
 
-  restoreSnapshot:
-    # -- Enable initialising Erigon state from a remote snapshot
-    enabled: false
-    # -- URL for snapshot to download and extract to restore state
-    snapshotUrl: ""
-    # -- One of `streaming` or `multipart`. `streaming` will perform a streaming download and extraction of the archive. This minimises disk space requirements to roughly equal to the size of the archive. `multipart` will perform a chunked multi-part download of the archive first, maximising download speed, and will then extract the archive. The disk requirements are roughly 2.1x the archive size.
-    mode: streaming
-    # -- [mode=multipart only] Number of archive parts to download concurrently
-    multipartConcurrency: 5
-    # -- Advanced. Nonce input used when checking existing restoration and whether to perform a new restoration. Change to force a new restoration with the existing configuration.
-    nonce: 1
-
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
   # can lead to data integrity issues
@@ -171,9 +159,24 @@ avalanche:
       # -- Container pull policy
       pullPolicy: IfNotPresent
 
-  # -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# -- [Configuration for avalanche](https://github.com/ava-labs/avalanche-faucet/blob/main/config.json)
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
-    # Store configuration
+    # Store configuration in toml format
+    snowman-api-enabled = "false"
+    eth-apis = [
+      "eth",
+      "eth-filter",
+      "net",
+      "web3",
+      "internal-eth",
+      "internal-blockchain",
+      "internal-transaction",
+      "internal-tx-pool",
+      "internal-account"
+    ]
+    metrics-enabled = "true"
+    pruning-enabled = "false"
+    state-sync-enabled = "false"
 
 

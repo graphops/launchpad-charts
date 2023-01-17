@@ -142,16 +142,14 @@ spec:
                 --api-metrics-enabled=true \
               {{- if $values.p2pNodePort.enabled }}
                 --public-ip=$EXTERNAL_IP \
-                --port=${EXTERNAL_PORT} \
+                --http-port=${EXTERNAL_PORT} \
               {{- else }}
-                --port={{ include "avalanche.p2pPort" $values }} \
+                --http-port={{ include "avalanche.p2pPort" $values }} \
               {{- end }}
-                --http \
-                --http-host=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
-                --HealthChecks.Enabled=true
+                --http-host=0.0.0.0
           ports:
             - name: http-metrics
               containerPort: 6060
