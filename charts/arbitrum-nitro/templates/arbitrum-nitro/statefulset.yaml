@@ -101,7 +101,8 @@ spec:
             {{- end }}
               set -ex;
               nitro \
-                --persistent.chain=/storage \
+                --persistent.chain=/storage/data \
+                --persistent.global-config=/storage \
                 --http.addr=0.0.0.0 \
                 --http.vhosts=* \
                 --metrics \
