@@ -83,7 +83,7 @@ celo:
     resources:
       requests:
         # -- The amount of disk space to provision
-        storage: 1.5Gi
+        storage: 1.5Ti
 
 
   # Increasing the grace termination period prevents Kubernetes
