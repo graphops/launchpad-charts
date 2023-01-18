@@ -12,6 +12,30 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/Avalanche-0.1.0/Avalanche-0.1.0.tgz
     version: 0.1.0
+  arbitrum-classic:
+  - apiVersion: v2
+    appVersion: v1.4.5-e97c1a4
+    created: "2023-01-18T21:32:08.769759713Z"
+    description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum)
+      inside Kubernetes with ease
+    digest: 580f98e90026c4eed6c0d3c58041782ac56dc7ea2830877d963d001c53963267
+    name: arbitrum-classic
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
+    version: 0.1.0
+  arbitrum-nitro:
+  - apiVersion: v2
+    appVersion: v2.0.10-73224e3
+    created: "2023-01-18T21:32:08.975069748Z"
+    description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/)
+      inside Kubernetes with ease
+    digest: 227ee956b18bb95ba7de7acaa5b7509362d8d19c0b70934b66e7180a892b2047
+    name: arbitrum-nitro
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/arbitrum-nitro-0.1.0/arbitrum-nitro-0.1.0.tgz
+    version: 0.1.0
   celo:
   - apiVersion: v2
     appVersion: 1.7.2
@@ -964,4 +988,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-18T20:20:57.167985124Z"
+generated: "2023-01-18T21:32:08.975426147Z"
