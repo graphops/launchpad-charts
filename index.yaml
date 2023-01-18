@@ -1,5 +1,17 @@
 apiVersion: v1
 entries:
+  Avalanche:
+  - apiVersion: v2
+    appVersion: v1.9.7
+    created: "2023-01-18T20:20:57.16752292Z"
+    description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche)
+      inside Kubernetes with ease
+    digest: d73568c129ce848a2be2e3e6e57a1043df20bffa327db7f47c9355f3e0ad2d3c
+    name: Avalanche
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/Avalanche-0.1.0/Avalanche-0.1.0.tgz
+    version: 0.1.0
   celo:
   - apiVersion: v2
     appVersion: 1.7.2
@@ -952,4 +964,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-18T20:12:22.747338953Z"
+generated: "2023-01-18T20:20:57.167985124Z"
