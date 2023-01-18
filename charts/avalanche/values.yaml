@@ -1,0 +1,182 @@
+# Default values for avalanche.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for avalanche
+  repository: avaplatform/avalanchego
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+     # Required to obtain the nodes external IP
+    - apiGroups: [""]
+      resources:
+      - "nodes"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to get information about the serices nodePort.
+    - apiGroups: [""]
+      resources:
+      - "services"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+
+prometheus:
+  pushGateway:
+    # -- Enable pushing metrics into Prometheus via PushGateway
+    enabled: false
+    # -- URL to your Prometheus PushGateway server
+    pushGatewayUrl: null
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: "1"
+
+avalanche:
+  # -- Additional CLI arguments
+  extraArgs: []
+
+  # -- Extra labels to attach to the Pod for matching against
+  extraLabels: {}
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: 
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 4Ti
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the container
+  terminationGracePeriodSeconds: 60
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: false # Sadly avalanche's container needs to run as root
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
+
+  service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/avalanche/statefulset.yaml)
+      # -- Service Port to expose JSON-RPC interface on
+      http-jsonrpc: 9650
+      # -- Service Port to expose Prometheus metrics on
+      http-metrics: 9651
+      http-p2p: 9655
+      http-port: 9656
+
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.21.3
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
+
+  initChownData:
+    # -- Init container to set the correct permissions to access data directories
+    enabled: true
+    image:
+      # -- Container repository
+      repository: busybox
+      # -- Container tag
+      tag: "1.34.0"
+      # -- Container pull policy
+      pullPolicy: IfNotPresent
+
+# -- [Configuration for avalanche](https://github.com/ava-labs/avalanche-faucet/blob/main/config.json)
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+    # Store configuration in toml format
+    snowman-api-enabled = "false"
+    eth-apis = [
+      "eth",
+      "eth-filter",
+      "net",
+      "web3",
+      "internal-eth",
+      "internal-blockchain",
+      "internal-transaction",
+      "internal-tx-pool",
+      "internal-account"
+    ]
+    metrics-enabled = "true"
+    pruning-enabled = "false"
+    state-sync-enabled = "false"
+
+
