@@ -1,8 +1,8 @@
-# Arbitrum Helm Chart
+# Arbitrum-Nitro Helm Chart
 
 Deploy and scale [arbitrum](https://github.com/ledgerwatch/arbitrum) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.33.1](https://img.shields.io/badge/AppVersion-v2.33.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.10-73224e3](https://img.shields.io/badge/AppVersion-v2.0.10--73224e3-informational?style=flat-square)
 
 ## Features
 
@@ -20,7 +20,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add graphops http://graphops.github.io/helm-charts
-$ helm install my-release graphops/arbitrum
+$ helm install my-release graphops/arbitrum-nitro
 ```
 
 Once the release is installed, arbitrum will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
@@ -118,58 +118,19 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
- | classic.affinity |  | object | `{}` |
- | classic.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | classic.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `[]` |
- | classic.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
- | classic.image |  | string | `"offchainlabs/arb-node"` |
- | classic.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
- | classic.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
- | classic.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
- | classic.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
- | classic.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
- | classic.nodeSelector |  | object | `{}` |
- | classic.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
- | classic.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | classic.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | classic.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
- | classic.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
- | classic.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | classic.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | classic.pullPolicy |  | string | `"IfNotPresent"` |
- | classic.resources |  | object | `{}` |
- | classic.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
- | classic.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
- | classic.service.ports.grpc-arbitrum | Service Port to expose arbitrum GRPC interface on | int | `9090` |
- | classic.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
- | classic.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | classic.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
- | classic.service.type |  | string | `"ClusterIP"` |
- | classic.tag | Overrides the image tag | string | Chart.appVersion |
- | classic.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
- | classic.tolerations |  | list | `[]` |
- | classic.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
- | classic.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"3Ti"` |
- | classic.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `nil` |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
- | image.repository | Image for arbitrum | string | `"thorax/arbitrum"` |
+ | image.repository | Image for arbitrum | string | `"offchainlabs/nitro-node"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `[]` |
+ | nitro.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `["--l2.chain-id=42161","--node.rpc.classic-redirect=http://arbitrum-classic-archive-trace-mainnet-0:8547/"]` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
- | nitro.image |  | string | `"offchainlabs/nitro-node"` |
- | nitro.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
- | nitro.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
- | nitro.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
- | nitro.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
- | nitro.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | nitro.nodeSelector |  | object | `{}` |
  | nitro.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nitro.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -178,16 +139,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nitro.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | nitro.pullPolicy |  | string | `"IfNotPresent"` |
  | nitro.resources |  | object | `{}` |
- | nitro.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
- | nitro.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
- | nitro.service.ports.grpc-arbitrum | Service Port to expose arbitrum GRPC interface on | int | `9090` |
- | nitro.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
- | nitro.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
+ | nitro.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
+ | nitro.service.ports.ws-rpc | Service Port to expose engineAPI interface on | int | `8548` |
  | nitro.service.type |  | string | `"ClusterIP"` |
- | nitro.tag | Overrides the image tag | string | Chart.appVersion |
  | nitro.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | nitro.tolerations |  | list | `[]` |
  | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
