@@ -1,6 +1,6 @@
 # Arbitrum-Nitro Helm Chart
 
-Deploy and scale [arbitrum](https://github.com/ledgerwatch/arbitrum) inside Kubernetes with ease
+Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.10-73224e3](https://img.shields.io/badge/AppVersion-v2.0.10--73224e3-informational?style=flat-square)
 
@@ -25,49 +25,15 @@ $ helm install my-release graphops/arbitrum-nitro
 
 Once the release is installed, arbitrum will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
-JSON-RPC is available at `<release-name>-arbitrum-rpcdaemon:8545` by default.
-
-## Specifying the Engine API JWT
-
-To use arbitrum on a network that requires a Consensus Client, you will need to configure a JWT that is used by the Consensus Client to authenticate with the Engine API on port `8551`. You will need to pass the same JWT to your Consensus Client.
-
-You can specify the JWT for arbitrum either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the arbitrum Pod.
-
-Using a literal value:
-
-```yaml
-# values.yaml
-
-statefulNode:
-  jwt:
-    fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
-```
-
-Using an existing Kubernetes Secret:
-
-```yaml
-# values.yaml
-
-statefulNode:
-  jwt:
-    existingSecret:
-      name: my-ethereum-mainnet-jwt-secret
-      key: jwt
-```
+JSON-RPC is available at `<release-name>:8545` by default.
 
 ## JSON-RPC
 
 ### Built-in JSON-RPC
 
-You can access JSON-RPC via the stateful node `Service` (`<release-name>-arbitrum-nitro`) on port `8545` by default.
+You can access JSON-RPC via the stateful node `Service` (`<release-name>`) on port `8545` by default.
 
 Synchronous request performance is typically best when using the built-in JSON-RPC server, however for large throughput workloads you should use a scalable set of `rpcdaemon`s.
-
-### Scalable `Deployment` of `rpcdaemon`s
-
-For workloads where synchronous performance is less important than the scalability of request throughput, you should use a scalable `Deployment` of `rpcdaemon`s. In this mode, the number of `rpcdaemon`s can be scaled up. Each one connects to the stateful node process via its gRPC API. You can also use node selectors and other placement configuration to customise where `rpcdaemon`s are deployed within your cluster.
-
-A dedicated `Service` (`<release-name>-arbitrum-rpcdaemon`) will be created to load balance JSON-RPC requests across `rpcdaemon` `Pod`s in the scalable `Deployment`. See the Values section to configure the `Deployment` and the number of replicas.
 
 #### JSON-RPC Autoscaling
 
@@ -82,7 +48,7 @@ By default, your arbitrum node will not have an internet-accessible port for P2P
 ```yaml
 # values.yaml
 
-statefulNode:
+nitro:
   p2pNodePort:
     enabled: true
     port: 31000 # Must be globally unique and available on the host
@@ -90,16 +56,15 @@ statefulNode:
 
 ## Restoring chaindata from a snapshot
 
-You can specify a snapshot URL that will be used to restore arbitrum's `chaindata` state. When enabled, an init container will perform a streaming extraction of the snapshot into storage. The snapshot should be a gzipped tarball of `chaindata`.
+You can specify a snapshot URL that will be used to restore nitro's `chaindata` state.
 
 Example:
 ```yaml
 # values.yaml
 
-statefulNode:
-  restoreSnapshot:
-    enable: true
-    snapshotUrl: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/arbitrum-archive-snapshot-2022-07-15.tar.gz
+nitro:
+  extraArgs:
+    - --initsnapshotUrl: https://snapshot.arbitrum.io/mainnet/nitro.tar
 ```
 
 Once arbitrum's state has been restored, the snapshot URL will be saved to storage at `/from_snapshot`. Any time the arbitrum Pod starts, as long as the snapshot configuration has not changed, arbitrum will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing chaindata and restore state again.

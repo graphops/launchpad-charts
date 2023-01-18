@@ -1,6 +1,6 @@
 apiVersion: v2
 name: arbitrum-nitro
-description: Deploy and scale [arbitrum](https://github.com/ledgerwatch/arbitrum) inside Kubernetes with ease
+description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
 
 # A chart can be either an 'application' or a 'library' chart.
 #
