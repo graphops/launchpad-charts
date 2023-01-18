@@ -1,5 +1,17 @@
 apiVersion: v1
 entries:
+  celo:
+  - apiVersion: v2
+    appVersion: 1.7.2
+    created: "2023-01-18T20:12:22.746859429Z"
+    description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain)
+      Nodes inside Kubernetes with ease
+    digest: 151372a9ff250591a2c2a746ae17a523a2f374650f3b2bf45798af5ca0965b1d
+    name: celo
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
+    version: 0.1.0
   erigon:
   - apiVersion: v2
     appVersion: v2.34.0
@@ -940,4 +952,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-17T17:26:22.728257579Z"
+generated: "2023-01-18T20:12:22.747338953Z"
