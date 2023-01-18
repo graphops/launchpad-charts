@@ -1,0 +1,12 @@
+{{- $values := $.Values.grafana }}
+{{- if $values.dashboards }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "celo.fullname" . }}-dashboards
+  labels:
+    {{- include "celo.labels" . | nindent 4 }}
+    {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
+data:
+{{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
+{{- end }}
