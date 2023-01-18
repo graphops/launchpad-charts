@@ -1,5 +1,5 @@
 apiVersion: v2
-name: avalanche
+name: Avalanche
 description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
 
 # A chart can be either an 'application' or a 'library' chart.

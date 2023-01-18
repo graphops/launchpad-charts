@@ -19,7 +19,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add graphops http://graphops.github.io/helm-charts
-$ helm install my-release graphops/avalanche
+$ helm install my-release graphops/Avalanche
 ```
 
 ## Enabling inbound P2P dials
