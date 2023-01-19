@@ -94,7 +94,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `["--l2.chain-id=42161","--node.rpc.classic-redirect=http://arbitrum-classic-archive-trace-mainnet-0:8547/"]` |
+ | nitro.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
  | nitro.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
