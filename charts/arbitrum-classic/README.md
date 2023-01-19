@@ -120,7 +120,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | arbitrum.affinity |  | object | `{}` |
  | arbitrum.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | arbitrum.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `[]` |
+ | arbitrum.extraArgs | Additional CLI arguments to pass to `arb-node` | list | `[]` |
  | arbitrum.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | arbitrum.nodeSelector |  | object | `{}` |
  | arbitrum.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |

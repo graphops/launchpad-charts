@@ -67,7 +67,7 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 arbitrum:
-  # -- Additional CLI arguments to pass to `arbitrum`
+  # -- Additional CLI arguments to pass to `arb-node`
   extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
