@@ -2,7 +2,7 @@
 
 Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.5-e97c1a4](https://img.shields.io/badge/AppVersion-v1.4.5--e97c1a4-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.5-e97c1a4](https://img.shields.io/badge/AppVersion-v1.4.5--e97c1a4-informational?style=flat-square)
 
 ## Features
 
@@ -120,7 +120,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | arbitrum.affinity |  | object | `{}` |
  | arbitrum.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | arbitrum.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `["--node.chain-id=42161","--l1.url=http://erigon-archive-trace-eth-mainnet-0-rpcdaemon.eth-mainnet:8545"]` |
+ | arbitrum.extraArgs | Additional CLI arguments to pass to `arbitrum` | list | `[]` |
  | arbitrum.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | arbitrum.nodeSelector |  | object | `{}` |
  | arbitrum.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |

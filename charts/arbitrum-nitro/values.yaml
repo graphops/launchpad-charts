@@ -69,10 +69,7 @@ grafana:
 
 nitro:
   # -- Additional CLI arguments to pass to `arbitrum`
-  extraArgs:
-    - --l2.chain-id=42161  # determines Arbitrum network - 42161 mainnet
-    - --node.rpc.classic-redirect=http://arbitrum-classic-archive-trace-mainnet-0:8547/
-
+  extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}

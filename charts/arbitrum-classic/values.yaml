@@ -68,9 +68,7 @@ grafana:
 
 arbitrum:
   # -- Additional CLI arguments to pass to `arbitrum`
-  extraArgs: 
-    - --node.chain-id=42161  # determines Arbitrum network - 42161 mainnet
-    - --l1.url=http://erigon-archive-trace-eth-mainnet-0-rpcdaemon.eth-mainnet:8545
+  extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
