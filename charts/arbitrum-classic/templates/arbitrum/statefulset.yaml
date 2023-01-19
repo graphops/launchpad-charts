@@ -77,7 +77,7 @@ spec:
                   rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c --no-check-certificate -O - "${SNAPSHOT_URL}" | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                  wget -c --no-check-certificate -O - "${SNAPSHOT_URL}" | tar -xv -C "$SNAPSHOT_RESTORE_PATH"
                   [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
                   echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
                 else
