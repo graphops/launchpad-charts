@@ -15,6 +15,17 @@ entries:
   arbitrum-classic:
   - apiVersion: v2
     appVersion: v1.4.5-e97c1a4
+    created: "2023-01-19T04:04:02.120294443Z"
+    description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum)
+      inside Kubernetes with ease
+    digest: 4f26d3c8b37fdf3302db70323874636d2518da7196ba1a2c3f944c1397c2280f
+    name: arbitrum-classic
+    type: application
+    urls:
+    - https://github.com/graphops/helm-charts/releases/download/arbitrum-classic-0.1.1/arbitrum-classic-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: v1.4.5-e97c1a4
     created: "2023-01-18T21:32:08.769759713Z"
     description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum)
       inside Kubernetes with ease
@@ -988,4 +999,4 @@ entries:
     urls:
     - https://github.com/graphops/helm-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-18T21:32:08.975426147Z"
+generated: "2023-01-19T04:04:02.334023518Z"
