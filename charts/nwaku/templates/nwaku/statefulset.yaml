@@ -1,0 +1,121 @@
+{{- $values := $.Values.nwaku }}
+{{- $componentName := "nwaku"}}
+{{- $componentLabel := include "nwaku.componentLabelFor" $componentName }}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "nwaku.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "nwaku.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "nwaku.replicas" $values }}
+  selector:
+    matchLabels:
+      {{- include "nwaku.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "nwaku.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+        {{- with $values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "nwaku.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              nwaku
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+          ports:
+            - name: grpc-nwaku
+              containerPort: 8545
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8545
+              protocol: TCP
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8545
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
