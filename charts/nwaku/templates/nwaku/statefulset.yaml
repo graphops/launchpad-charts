@@ -166,16 +166,9 @@ spec:
             - name: tmp
               mountPath: /tmp
           readinessProbe:
-            exec:
-              command:
-              - curl
-              - -X
-              - POST
-              - -H
-              - "Content-Type: application/json"
-              - -d
-              - '{"jsonrpc":"2.0","id":"id","method":"get_waku_v2_debug_v1_info","params":[]}'
-              - http://localhost:8545
+            httpGet:
+              port: http-jsonrpc
+              path: /health
             initialDelaySeconds: 10
             periodSeconds: 10
           {{- with $values.resources }}
