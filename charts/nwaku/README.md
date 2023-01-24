@@ -69,19 +69,25 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nwaku.affinity |  | object | `{}` |
  | nwaku.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | nwaku.extraArgs | Additional CLI arguments | list | `[]` |
+ | nwaku.extraArgs | Additional CLI arguments | list | `["--dns-discovery=true","--dns-discovery-url=enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im"]` |
  | nwaku.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nwaku.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nwaku.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nwaku.initChownData.image.repository | Container repository | string | `"busybox"` |
  | nwaku.initChownData.image.tag | Container tag | string | `"1.34.0"` |
  | nwaku.nodeSelector |  | object | `{}` |
+ | nwaku.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | nwaku.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | nwaku.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
+ | nwaku.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | nwaku.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nwaku.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nwaku.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nwaku.resources |  | object | `{}` |
- | nwaku.service.ports.grpc-nwaku | Service Port to expose gRPC interface on | int | `8545` |
  | nwaku.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | nwaku.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8545` |
+ | nwaku.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
+ | nwaku.service.ports.http-rest |  | int | `8645` |
+ | nwaku.service.ports.http-ws | Service Port to expose gRPC interface on | int | `8000` |
  | nwaku.service.type |  | string | `"ClusterIP"` |
  | nwaku.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nwaku.tolerations |  | list | `[]` |

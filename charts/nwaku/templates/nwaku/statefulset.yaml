@@ -47,12 +47,66 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+      initContainers:
+      {{- if $values.p2pNodePort.enabled }}
+        - name: init-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      {{- if $values.initChownData.enabled }}
+        - name: init-chown-data
+          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
+          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
             capabilities:
               drop:
                 - ALL
@@ -60,30 +114,68 @@ spec:
             - sh
             - -ac
             - |
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+            {{- end }}
               set -ex;
-              nwaku
+              wakunode2 \
+                --store=false \
+                --discv5-discovery=true \
+              {{- if $values.p2pNodePort.enabled }}
+                --nat=extip:${EXTERNAL_IP} \
+                --tcp-port=${EXTERNAL_PORT} \
+              {{- else }}
+                --tcp-port={{ include "nwaku.p2pPort" $values }} \
+              {{- end }}
+                --rest=true \
+                --rest-address=0.0.0.0 \
+                --rpc=true \
+                --rpc-address=0.0.0.0 \
+                --rpc-admin=true \
+                --metrics-server=true \
+                --metrics-server-address=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
           ports:
-            - name: grpc-nwaku
-              containerPort: 8545
+            - name: htpp-rest
+              containerPort: 8645
               protocol: TCP
             - name: http-metrics
-              containerPort: 8545
+              containerPort: 8008
               protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
+            - name: http-ws
+              containerPort: 8000
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: {{ include "nwaku.p2pPort" $values }}
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: {{ include "nwaku.p2pPort" $values }}
+              protocol: TCP
           volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
             - name: storage
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
           readinessProbe:
-            httpGet:
-              path: /
-              port: 8545
+            exec:
+              command:
+              - curl
+              - -X
+              - POST
+              - -H
+              - "Content-Type: application/json"
+              - -d
+              - '{"jsonrpc":"2.0","id":"id","method":"get_waku_v2_debug_v1_info","params":[]}'
+              - http://localhost:8545
             initialDelaySeconds: 10
             periodSeconds: 10
           {{- with $values.resources }}

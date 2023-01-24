@@ -70,7 +70,9 @@ grafana:
 
 nwaku:
   # -- Additional CLI arguments
-  extraArgs: []
+  extraArgs:
+   - --dns-discovery=true
+   - --dns-discovery-url=enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
@@ -109,9 +111,10 @@ nwaku:
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
       # -- Service Port to expose Prometheus metrics on
-      http-metrics: 8545
+      http-metrics: 8008
       # -- Service Port to expose gRPC interface on
-      grpc-nwaku: 8545
+      http-ws: 8000
+      http-rest: 8645
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -136,6 +139,20 @@ nwaku:
     antiAffinityByHostname: true
 
   affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.21.3
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
 
   initChownData:
     # -- Init container to set the correct permissions to access data directories
