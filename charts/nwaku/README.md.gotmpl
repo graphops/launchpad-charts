@@ -11,7 +11,7 @@
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards for celo ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for configuring Grafana dashboards for nwaku ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
 - Support for exposing a NodePort to enable inbound P2P dials for better peering
 
 ## Quickstart
@@ -23,17 +23,17 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
-Once the release is installed, celo will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
+Once the release is installed, nwaku will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
 ## JSON-RPC
 
 ### Built-in JSON-RPC
 
-You can access JSON-RPC via the stateful node `Service` (`<release-name>-celo-stateful-node`) on port `8545` by default.
+You can access JSON-RPC via the stateful node `Service` (`<release-name>-nwaku`) on port `8545` by default.
 
 ## Enabling inbound P2P dials
 
-By default, your celo node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your celo ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your nwaku node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your nwaku ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
 
 ```yaml
 # values.yaml

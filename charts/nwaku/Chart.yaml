@@ -1,6 +1,6 @@
 apiVersion: v2
 name: nwaku
-description: Deploy and scale [Nwaku](https://github.com/waku-org/nwaku) inside Kubernetes with ease
+description: Deploy and scale [Waku v2 Node](https://github.com/waku-org/nwaku) inside Kubernetes with ease
 
 # A chart can be either an 'application' or a 'library' chart.
 #

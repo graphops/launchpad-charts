@@ -1,6 +1,6 @@
 # Nwaku Helm Chart
 
-Deploy and scale [Nwaku](https://github.com/waku-org/nwaku) inside Kubernetes with ease
+Deploy and scale [Waku v2 Node](https://github.com/waku-org/nwaku) inside Kubernetes with ease
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.14.0](https://img.shields.io/badge/AppVersion-v0.14.0-informational?style=flat-square)
 
@@ -11,7 +11,7 @@ Deploy and scale [Nwaku](https://github.com/waku-org/nwaku) inside Kubernetes wi
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards for celo ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for configuring Grafana dashboards for nwaku ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
 - Support for exposing a NodePort to enable inbound P2P dials for better peering
 
 ## Quickstart
@@ -23,17 +23,17 @@ $ helm repo add graphops http://graphops.github.io/helm-charts
 $ helm install my-release graphops/nwaku
 ```
 
-Once the release is installed, celo will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
+Once the release is installed, nwaku will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
 ## JSON-RPC
 
 ### Built-in JSON-RPC
 
-You can access JSON-RPC via the stateful node `Service` (`<release-name>-celo-stateful-node`) on port `8545` by default.
+You can access JSON-RPC via the stateful node `Service` (`<release-name>-nwaku`) on port `8545` by default.
 
 ## Enabling inbound P2P dials
 
-By default, your celo node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your celo ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your nwaku node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your nwaku ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
 
 ```yaml
 # values.yaml
@@ -75,6 +75,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nwaku.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nwaku.initChownData.image.repository | Container repository | string | `"busybox"` |
  | nwaku.initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | nwaku.jwt | Key to use to maintain consistent addressing between restarts https://github.com/waku-org/nwaku/blob/master/docs/operators/how-to/configure-key.md#generate-and-configure-a-node-key | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
+ | nwaku.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
+ | nwaku.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
+ | nwaku.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
+ | nwaku.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | nwaku.nodeSelector |  | object | `{}` |
  | nwaku.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nwaku.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |

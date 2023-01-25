@@ -2,15 +2,19 @@
 {{- $componentName := "nwaku"}}
 {{- $componentLabel := include "nwaku.componentLabelFor" $componentName }}
 
+{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "nwaku.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}
+  name: {{ include "nwaku.fullname" . }}
   labels:
     {{- include "nwaku.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "nwaku.fullname" . }}-{{ $componentName }}-headless
+  serviceName: {{ include "nwaku.fullname" . }}-headless
   replicas: {{ include "nwaku.replicas" $values }}
   selector:
     matchLabels:
@@ -47,6 +51,14 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: env-nodeport
           emptyDir: {}
@@ -118,6 +130,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
+              export NODEKEY=$(cat /jwt/jwt.hex);
               wakunode2 \
                 --store=false \
                 --discv5-discovery=true \
@@ -127,16 +140,19 @@ spec:
               {{- else }}
                 --tcp-port={{ include "nwaku.p2pPort" $values }} \
               {{- end }}
+              {{- if $jwtEnabled }}
+                --nodekey=${NODEKEY} \
+              {{- end }}
                 --rest=true \
                 --rest-address=0.0.0.0 \
                 --rpc=true \
                 --rpc-address=0.0.0.0 \
                 --rpc-admin=true \
-                --metrics-server=true \
                 --metrics-server-address=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
+                --metrics-server=true 
           ports:
             - name: htpp-rest
               containerPort: 8645
@@ -157,6 +173,10 @@ spec:
               containerPort: {{ include "nwaku.p2pPort" $values }}
               protocol: TCP
           volumeMounts:
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
               mountPath: /env

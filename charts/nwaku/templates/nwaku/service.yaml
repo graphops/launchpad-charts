@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}-headless
+  name: {{ include "nwaku.fullname" . }}-headless
   labels:
     {{- include "nwaku.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -24,7 +24,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}
+  name: {{ include "nwaku.fullname" . }}
   labels:
     {{- include "nwaku.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -47,11 +47,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}-p2p-0
+  name: {{ include "nwaku.fullname" . }}-p2p-0
   labels:
     {{- include "nwaku.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-    pod: {{ include "nwaku.fullname" . }}-{{ $componentName }}-0
+    pod: {{ include "nwaku.fullname" . }}-0
     type: p2p # this label is used by the initContainer to select this service
 spec:
   type: NodePort

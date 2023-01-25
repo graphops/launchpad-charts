@@ -6,7 +6,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "nwaku.fullname" . }}-{{ $componentName }}
+  name: {{ include "nwaku.fullname" . }}
   labels:
     {{- include "nwaku.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
