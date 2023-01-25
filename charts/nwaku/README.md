@@ -33,18 +33,18 @@ You can access JSON-RPC via the stateful node `Service` (`<release-name>-nwaku`)
 
 ## Enabling inbound P2P dials
 
-By default, your nwaku node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your nwaku ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your nwaku node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `nwaku.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `nwaku.p2pNodePort.enabled`, the exposed IP address on your nwaku ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `nwaku.replicaCount` will be locked to `1`.
 
 ```yaml
 # values.yaml
 
-statefulNode:
+nwaku:
   p2pNodePort:
     enabled: true
     port: 31000 # Must be globally unique and available on the host
 ```
 
-You can monitor progress by following the logs of the `stateful-node-init` container: `kubectl logs --since 1m -f release-name-stateful-node-0 -c stateful-node-init`
+You can monitor progress by following the logs of the `nwaku` container: `kubectl logs --since 1m -f release-name-nwaku-0`
 
 ## Upgrading
 
@@ -69,7 +69,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nwaku.affinity |  | object | `{}` |
  | nwaku.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | nwaku.extraArgs | Additional CLI arguments | list | `["--dns-discovery=true","--dns-discovery-url=enrtree://AOGECG2SPND25EEFMAJ5WF3KSGJNSGV356DSTL2YVLLZWIV6SAYBM@prod.waku.nodes.status.im"]` |
+ | nwaku.extraArgs | Additional CLI arguments | list | `[]` |
  | nwaku.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nwaku.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nwaku.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
