@@ -2,9 +2,9 @@
 {{- $componentName := "nwaku"}}
 {{- $componentLabel := include "nwaku.componentLabelFor" $componentName }}
 
-{{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
-{{- $jwtSecretName := default (print (include "nwaku.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
-{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+{{- $nodekeyEnabled := or $values.nodekey.existingSecret $values.nodekey.fromLiteral }}
+{{- $nodekeySecretName := default (print (include "nwaku.fullname" .) "-" $componentName "-nodekey") $values.nodekey.existingSecret.name }}
+{{- $nodekeySecretKey := default "nodekey.hex" $values.nodekey.existingSecret.key }}
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -51,13 +51,13 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
-      {{- if $jwtEnabled }}
-        - name: jwt
+      {{- if $nodekeyEnabled }}
+        - name: nodekey
           secret:
-            secretName: {{ $jwtSecretName }}
+            secretName: {{ $nodekeySecretName }}
             items:
-              - key: {{ $jwtSecretKey }}
-                path: jwt.hex
+              - key: {{ $nodekeySecretKey }}
+                path: nodekey.hex
       {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: env-nodeport
@@ -130,7 +130,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              export NODEKEY=$(cat /jwt/jwt.hex);
+              export NODEKEY=$(cat /nodekey/nodekey.hex);
               wakunode2 \
                 --store=false \
                 --discv5-discovery=true \
@@ -140,7 +140,7 @@ spec:
               {{- else }}
                 --tcp-port={{ include "nwaku.p2pPort" $values }} \
               {{- end }}
-              {{- if $jwtEnabled }}
+              {{- if $nodekeyEnabled }}
                 --nodekey=${NODEKEY} \
               {{- end }}
                 --rest=true \
@@ -173,9 +173,9 @@ spec:
               containerPort: {{ include "nwaku.p2pPort" $values }}
               protocol: TCP
           volumeMounts:
-            {{- if $jwtEnabled }}
-            - name: jwt
-              mountPath: /jwt
+            {{- if $nodekeyEnabled }}
+            - name: nodekey
+              mountPath: /nodekey
             {{- end }}
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport

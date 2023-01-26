@@ -76,14 +76,14 @@ nwaku:
   extraLabels: {}
 
   # -- Key to use to maintain consistent addressing between restarts https://github.com/waku-org/nwaku/blob/master/docs/operators/how-to/configure-key.md#generate-and-configure-a-node-key
-  jwt:
-    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+  nodekey:
+    # -- Load the key from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
     existingSecret:
       # -- Name of the Secret resource in the same namespace
       name: ""
-      # -- Data key for the JWT in the Secret
+      # -- Data key for the NodeKey in the Secret
       key: ""
-    # -- Use this literal value for the JWT
+    # -- Use this literal value for the NodeKey
     fromLiteral: ""
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage

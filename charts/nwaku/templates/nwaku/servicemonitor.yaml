@@ -1,4 +1,4 @@
-{{- $values := $.Values.statefulNode }}
+{{- $values := $.Values.nwaku }}
 {{- $componentName := "nwaku" }}
 {{- $componentLabel := include "nwaku.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}

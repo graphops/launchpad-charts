@@ -7,7 +7,6 @@ Deploy and scale [Waku v2 Node](https://github.com/waku-org/nwaku) inside Kubern
 ## Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
-- Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -75,12 +74,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nwaku.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nwaku.initChownData.image.repository | Container repository | string | `"busybox"` |
  | nwaku.initChownData.image.tag | Container tag | string | `"1.34.0"` |
- | nwaku.jwt | Key to use to maintain consistent addressing between restarts https://github.com/waku-org/nwaku/blob/master/docs/operators/how-to/configure-key.md#generate-and-configure-a-node-key | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
- | nwaku.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
- | nwaku.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
- | nwaku.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
- | nwaku.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | nwaku.nodeSelector |  | object | `{}` |
+ | nwaku.nodekey | Key to use to maintain consistent addressing between restarts https://github.com/waku-org/nwaku/blob/master/docs/operators/how-to/configure-key.md#generate-and-configure-a-node-key | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
+ | nwaku.nodekey.existingSecret | Load the key from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
+ | nwaku.nodekey.existingSecret.key | Data key for the NodeKey in the Secret | string | `""` |
+ | nwaku.nodekey.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
+ | nwaku.nodekey.fromLiteral | Use this literal value for the NodeKey | string | `""` |
  | nwaku.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nwaku.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nwaku.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
