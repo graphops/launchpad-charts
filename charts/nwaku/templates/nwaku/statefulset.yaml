@@ -133,7 +133,6 @@ spec:
               export NODEKEY=$(cat /nodekey/nodekey.hex);
               wakunode2 \
                 --store=false \
-                --discv5-discovery=true \
               {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:${EXTERNAL_IP} \
                 --tcp-port=${EXTERNAL_PORT} \
