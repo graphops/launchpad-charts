@@ -18,7 +18,7 @@ Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kub
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
 $ helm install my-release graphops/heimdall
 ```
 
