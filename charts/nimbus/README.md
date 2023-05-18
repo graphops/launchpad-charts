@@ -18,7 +18,7 @@ Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kuber
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
 $ helm install my-release graphops/nimbus
 ```
 

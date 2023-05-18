@@ -10,7 +10,7 @@ The [Graph Network Indexer](https://github.com/graphprotocol/indexer) components
 
 ## Chart Features
 
-- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/helm-charts/graphs/contributors)
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -21,7 +21,7 @@ The [Graph Network Indexer](https://github.com/graphprotocol/indexer) components
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add graphops http://graphops.github.io/helm-charts
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
 $ helm install my-release graphops/graph-toolbox
 ```
 
