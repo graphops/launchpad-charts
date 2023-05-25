@@ -100,7 +100,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              geth \
+              exec geth \
                 --datadir=/storage \
               {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:${EXTERNAL_IP} \

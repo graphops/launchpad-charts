@@ -100,7 +100,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              nitro \
+              exec nitro \
                 --persistent.chain=/storage/data \
                 --persistent.global-config=/storage \
                 --http.addr=0.0.0.0 \

@@ -151,7 +151,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              arb-node \
+              exec arb-node \
                 --core.checkpoint-gas-frequency=156250000 \
                 --persistent.chain=/storage \
                 --persistent.global-config=/storage \
