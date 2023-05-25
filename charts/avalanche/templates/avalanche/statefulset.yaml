@@ -136,7 +136,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              /avalanchego/build/avalanchego \
+              exec /avalanchego/build/avalanchego \
                 --config-file=/config/config.toml \
                 --data-dir=/storage \
                 --api-metrics-enabled=true \

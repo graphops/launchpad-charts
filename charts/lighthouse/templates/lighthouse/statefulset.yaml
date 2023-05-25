@@ -131,7 +131,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              lighthouse beacon_node \
+              exec lighthouse beacon_node \
                 --datadir=/storage \
               {{- if $values.executionClientUrl }}
                 --execution-endpoint={{ $values.executionClientUrl }} \
