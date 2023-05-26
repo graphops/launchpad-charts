@@ -31,6 +31,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     container: quay.io/git-chglog/git-chglog:0.15.0
+    permissions:
+      contents: write # for creating releases
     steps:
       - name: Checkout
         uses: actions/checkout@v2
