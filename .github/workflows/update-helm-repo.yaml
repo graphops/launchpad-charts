@@ -48,11 +48,14 @@ jobs:
           path: ".nindex"
 
       - name: Update index when there's changes
+        shell: bash
         run: |
           if [[ "${{ inputs.repo }}" == "main" ]]; then
             path="."
           else
             path="${{ inputs.repo }}"
+            # create dir if it doesn't exist yet
+            [ ! -d "$path" ] && mkdir "$path"
           fi
 
           if ! diff -q .nindex/index.yaml "$path/index.yaml"; then
