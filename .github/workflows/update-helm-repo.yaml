@@ -1,0 +1,63 @@
+name: Update Helm Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo:
+        type: choice
+        required: true
+        description: "Which repo to build?"
+        default: "main"
+        options:
+          - "main"
+          - "canary"
+
+  workflow_call:
+    inputs:
+      repo:
+        type: string
+        required: true
+        description: "Build main or canary repo?"
+        default: "main"
+
+jobs:
+  call-make-index:
+    uses: ./.github/workflows/make-charts-index.yaml
+    with:
+      includePrereleases: ${{ inputs.repo == 'canary' }}
+      repoName: ${{ inputs.repo }}
+
+  update-page:
+    runs-on: ubuntu-latest
+    needs: call-make-index
+    permissions:
+      contents: write # for updating index.yaml
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "gh-pages"
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: "chart-index.${{ inputs.repo }}"
+          path: ".nindex"
+
+      - name: Update index when there's changes
+        run: |
+          if [[ "${{ inputs.repo }}" == "main" ]]; then
+            path="."
+          else
+            path="${{ inputs.repo }}"
+          fi
+
+          if ! diff -q .nindex/index.yaml "$path/index.yaml"; then
+            cp .nindex/index.yaml "$path/index.yaml"
+            git add "$path/index.yaml"
+            git commit -m "chore(pages): update index.yaml"
+            git push
+          fi
