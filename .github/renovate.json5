@@ -1,0 +1,87 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "github>graphops/renovate-config"
+    ],
+
+    "separateMajorMinor": false,
+
+    "ignorePaths": [
+    ],
+
+    "ignoreDeps": [
+    ],
+
+    "enabledManagers": ["helm-values", "helmv3"],
+
+    "pinDigests": true,
+
+    "packageRules": [
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/arbitrum*/**"],
+        "groupName": "Arbitrum dependencies",
+        "groupSlug": "arbitrum"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/avalanche/**"],
+        "groupName": "Avalanche dependencies",
+        "groupSlug": "avalanche"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/celo/**"],
+        "groupName": "Celo dependencies",
+        "groupSlug": "celo"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/erigon/**"],
+        "groupName": "Erigon dependencies",
+        "groupSlug": "erigon"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/graph-*/**"],
+        "groupName": "Graph dependencies",
+        "groupSlug": "graph"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/heimdall/**"],
+        "groupName": "Heimdall dependencies",
+        "groupSlug": "heimdall"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/lighthouse/**"],
+        "groupName": "Lighthouse dependencies",
+        "groupSlug": "lighthouse"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/nethermind/**"],
+        "groupName": "Nethermind dependencies",
+        "groupSlug": "nethermind"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/nimbus/**"],
+        "groupName": "Nimbus dependencies",
+        "groupSlug": "nimbus"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/openebs-*/**"],
+        "groupName": "OpenEBS dependencies",
+        "groupSlug": "openebs"
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/proxyd/**"],
+        "groupName": "Proxyd dependencies",
+        "groupSlug": "proxyd"
+      }
+    ]
+}
