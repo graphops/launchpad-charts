@@ -62,15 +62,22 @@ jobs:
           chart_tag="${chart_name}-${chart_version}"
           chart_path="charts/${chart_name}"
 
-          # prev_stable_tag=$(git tag | grep -Ex "${{ needs.init.outputs.name }}-[v]?[0-9]+\.[0-9]+\.[0-9]+" | sort -V -r | head -n 1)
           current_tag=${{ needs.init.outputs.tag }}
+
+          if [[ "${chart_tag}" =~ ^.*-[0-9]+\.[0-9]+\.[0-9]+-pre.* ]]; then
+            # on pre-releases we want the changelog to span all pre-releases from .1 to current
+            first_pre="$(echo ${current_tag} | sed -r 's/(.*-[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-pre\.).*/\11/g')"
+            query_tag="${first_pre}..${current_tag}"
+          else
+            query_tag="${current_tag}"
+          fi
 
           # Generate RELEASE-NOTES.md file (used for Github release notes).
           git-chglog                                    \
               --output "RELEASE-NOTES.md" \
               --tag-filter-pattern "${chart_name}"      \
               --path "${chart_path}"                    \
-              "..${current_tag}"
+              "${query_tag}"
 
       - uses: actions/upload-artifact@v3
         with:
