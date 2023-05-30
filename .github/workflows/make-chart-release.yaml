@@ -1,0 +1,146 @@
+name: Make Chart Release
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: "What tag to release"
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: "What tag to release"
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for creating releases
+    outputs:
+      name: ${{ steps.parse_tag.outputs.name }}
+      version: ${{ steps.parse_tag.outputs.version }}
+      prerelease: ${{ steps.parse_tag.outputs.prerelease }}
+      tag: ${{ steps.parse_tag.outputs.tag }}
+    steps:
+      - name: Parse tag
+        id: parse_tag
+        run: |
+          echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\1/g')
+          echo "name=$name" >> $GITHUB_OUTPUT
+          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\2/g')
+          echo "version=$version" >> $GITHUB_OUTPUT
+          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\4/g')
+          echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
+
+  changelog:
+    needs: init
+    runs-on: ubuntu-latest
+    container: quay.io/git-chglog/git-chglog:0.15.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install main dependencies
+        run: |
+          apk --upgrade add bash grep
+
+      - name: Generate chart changelog
+        id: gen_chglog
+        shell: bash
+        run: |
+          set -x
+          # TODO: Bundle all of that logic in a Github Action to make it easy to share.
+          chart_file="charts/${{ needs.init.outputs.name }}/Chart.yaml"
+          chart_name=$(grep -Po "(?<=^name: ).+" ${chart_file})
+          chart_version=$(grep -Po "(?<=^version: ).+" ${chart_file})
+          chart_tag="${chart_name}-${chart_version}"
+          chart_path="charts/${chart_name}"
+
+          # prev_stable_tag=$(git tag | grep -Ex "${{ needs.init.outputs.name }}-[v]?[0-9]+\.[0-9]+\.[0-9]+" | sort -V -r | head -n 1)
+          current_tag=${{ needs.init.outputs.tag }}
+
+          # Generate RELEASE-NOTES.md file (used for Github release notes).
+          git-chglog                                    \
+              --output "RELEASE-NOTES.md" \
+              --tag-filter-pattern "${chart_name}"      \
+              --path "${chart_path}"                    \
+              "..${current_tag}"
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: "${{ needs.init.outputs.tag }}.release-notes"
+          path: RELEASE-NOTES.md
+
+  release:
+    needs:
+      - init
+      - changelog
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for creating releases
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Generate Helm package
+        id: helm_package
+        run: |
+          helm package "charts/${{ needs.init.outputs.name }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "${{ needs.init.outputs.tag }}.helm-package"
+          path: "${{ needs.init.outputs.tag }}.tgz"
+
+      #TODO: finish logic in case release exists
+      - name: Check existing release
+        id: check_release
+        uses: octokit/graphql-action@v2.x
+        with:
+          owner: ${{ github.event.repository.owner.login }}
+          repo: ${{ github.event.repository.name }}
+          tag: ${{ needs.init.outputs.tag }}
+          query: |
+            query releases($owner:String!,$repo:String!,$tag:String!) {
+              repository(owner:$owner,name:$repo) {
+                release(tagName: $tag) {
+                  id
+                }
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: "${{ needs.init.outputs.tag }}.release-notes"
+          path: "."
+
+      - name: Create release
+        run: |
+          if [ -z "${{ needs.init.outputs.prerelease }}" ]; then
+            gh release create -t ${{ needs.init.outputs.tag }} --verify-tag -F RELEASE-NOTES.md ${{ needs.init.outputs.tag }} ${{ needs.init.outputs.tag }}.tgz
+          else
+            gh release create -t ${{ needs.init.outputs.tag }} --verify-tag --prerelease -F RELEASE-NOTES.md ${{ needs.init.outputs.tag }} ${{ needs.init.outputs.tag }}.tgz
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

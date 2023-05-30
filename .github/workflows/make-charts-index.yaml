@@ -1,0 +1,76 @@
+name: Make Charts Index
+
+on:
+  workflow_dispatch:
+    inputs:
+      repoName:
+        type: options
+        required: true
+        description: "Repository name?"
+        default: "stable"
+        options:
+          - "stable"
+          - "canary"
+
+  workflow_call:
+    inputs:
+      repoName:
+        type: string
+        required: true
+        description: "Repository name?"
+        default: "stable"
+
+jobs:
+  query:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.0
+
+      - name: Query Releases
+        uses: ./.github/actions/query-releases
+        id: query
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repo: ${{ github.event.repository.name }}
+          owner: ${{ github.event.repository.owner.login }}
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: releases
+
+      - name: Set correct URLs and date
+        run: |
+          mkdir .releases
+
+          for chart_url in $(cat releases.json| jq -r '.[].releaseAssets.nodes[].downloadUrl'); do
+            wget -P .releases/ "$chart_url";
+          done
+
+          helm repo index .releases/
+
+          if [[ '${{ inputs.repoName }}' == 'stable' ]]; then
+            filter=(jq '.[] | select(.isPrerelease == false)')
+          else
+            filter=(jq '.[]')
+          fi
+
+          for release in $(cat releases.json | "${filter[@]}" | jq -c '. | { name: .name, date: .createdAt, url: .releaseAssets.nodes[].downloadUrl }'); do
+            name=$(echo "$release" | jq -r '.name' | sed -r 's/(.*)-([0-9]+\.[0-9]+\.[0-9]+.*)/\1/g')
+            version=$(echo "$release" | jq -r '.name' | sed -r 's/(.*)-([0-9]+\.[0-9]+\.[0-9]+.*)/\2/g')
+            date=$(echo "$release" | jq -r '.date')
+            url=$(echo "$release" | jq -r '.url')
+
+            name="$name" version="$version" date="$date" url="$url" yq -i e \
+            '.entries.[strenv(name)] |= map(select(.version == strenv(version)).created=strenv(date)) |= map(select(.version == strenv(version)).urls=[strenv(url)])' \
+            .releases/index.yaml
+          done
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: "chart-index.${{ inputs.repoName }}"
+          path: .releases/index.yaml

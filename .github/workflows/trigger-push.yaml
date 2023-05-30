@@ -1,0 +1,95 @@
+
+name: Release on Commit
+
+on:
+  push:
+    branches:
+      - main
+      - 'renovate/*'
+    paths:
+      - 'charts/*/Chart.yaml'
+
+jobs:
+  find-tags-to-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for creating tags
+    outputs:
+      release-tags: ${{ steps.list-release-tags.outputs.release-tags }}
+      release-streams: ${{ steps.list-release-tags.outputs.release-streams }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+      - name: Get list of changed charts
+        id: list-changed-charts
+        uses: tj-actions/changed-files@v35.9.2
+        with:
+          files: charts/*/Chart.yaml
+
+      - name: List and create tags
+        id: list-release-tags
+        shell: bash
+        run: |
+          tags=()
+          declare -A release_streams=()
+          for chart_file in ${{ steps.list-changed-charts.outputs.all_modified_files }}; do
+            chart_name=$(grep -Po "(?<=^name: ).+" ${chart_file})
+            chart_version=$(grep -Po "(?<=^version: ).+" ${chart_file})
+            chart_tag="${chart_name}-${chart_version}"
+
+            if ! git rev-parse "$chart_tag" >/dev/null 2>&1; then
+              tags+=("$chart_tag")
+              git tag -a "$chart_tag" -m "Release $chart_tag"
+
+              if [[ "$chart_version" == *"pre"* ]]; then
+                release_streams["canary"]=1
+              else
+                release_streams["main"]=1
+              fi
+            fi
+          done
+
+          git push --tags
+
+          echo "release-tags<<EOF" >> $GITHUB_OUTPUT
+          echo "$(jq -Rc '. / " "' <<< ${tags[*]})" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          echo "release-streams<<EOF" >> $GITHUB_OUTPUT
+          echo "$(jq -Rc '. / " "' <<< ${!release_streams[@]})" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  call-release:
+    needs: find-tags-to-release
+    uses: ./.github/workflows/make-chart-release.yaml
+    permissions:
+      contents: write # for updating index.yaml
+    strategy:
+      matrix:
+        tag: ${{ fromJson(needs.find-tags-to-release.outputs.release-tags) }}
+      fail-fast: false
+    if: ${{ needs.find-tags-to-release.outputs.release-tags != '[]' }}
+    with:
+      tag: ${{ matrix.tag }}
+
+  call-update-helm-repo:
+    needs:
+      - call-release
+      - find-tags-to-release
+    uses: ./.github/workflows/update-helm-repo.yaml
+    permissions:
+      contents: write # for updating index.yaml
+    strategy:
+      matrix:
+        repo: ${{ fromJson(needs.find-tags-to-release.outputs.release-streams) }}
+    if: ${{ needs.find-tags-to-release.outputs.release-streams != '[]' }}
+    with:
+      repo: ${{ matrix.repo }}

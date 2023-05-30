@@ -1,0 +1,15 @@
+name: 'Query Repository Releases'
+description: 'Builds a JSON artifact with data of all repository releases'
+inputs:
+  token: # GitHub token
+    description: "GitHub token"
+    required: true
+  repo: # Repository name
+    description: "repository name"
+    required: true
+  owner: # Repository owner's login
+    description: "repository owner login"
+    required: true
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
