@@ -1,6 +1,7 @@
 {{/* This file contains the ConfigMap and Deployment for proxyd. They are colocated so
      that a hash of the config easily can be used to automate restarts of Deployment Pods. */}}
 
+{{- if .Values.proxyd.configTemplating.enabled }}
 {{/* Here we construct the computed template variables that can be interpolated
      into the proxyd config file */}}
 {{/* backendGroups keeps a map of groupName -> [backend1, backend2, backend3] */}}
@@ -38,6 +39,7 @@ data:
   config.toml: |
     {{ $configToml | nindent 4 }}
 {{/* END ConfigMap */}}
+{{- end }}
 
 {{/* Now onto the actual Deployment for proxyd */}}
 {{- $values := $.Values.proxyd }}
@@ -89,7 +91,11 @@ spec:
       volumes:
         - name: config
           configMap:
+            {{- if .Values.proxyd.configTemplating.enabled }}
             name: {{ include "proxyd.fullname" . }}-config
+            {{- else }}
+            name: {{ .Values.proxyd.existingConfigMap }}
+            {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
