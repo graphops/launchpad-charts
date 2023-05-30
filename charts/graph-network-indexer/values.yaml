@@ -75,7 +75,7 @@ indexerAgent:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion
-    tag: ""
+    tag: "v0.0.0"
   
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
@@ -156,7 +156,7 @@ indexerService:
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion
-    tag: ""
+    tag: "v0.0.0"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
