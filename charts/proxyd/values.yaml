@@ -94,8 +94,8 @@ proxyd:
 
   affinity: {}
 
-  # -- Enables config templating from the values. If set to false, must provide an existing ConfigMap
   configTemplating:
+    # -- Enables config templating from the values. If set to false, must provide an existing ConfigMap
     enabled: true
 
   # -- Name of an existing ConfigMap with proxyd configuration. proxyd.configTemplating.enable must be set to false
