@@ -7,9 +7,9 @@ on:
         type: choice
         required: true
         description: "Which repo to build?"
-        default: "main"
+        default: "stable"
         options:
-          - "main"
+          - "stable"
           - "canary"
 
   workflow_call:
@@ -17,14 +17,13 @@ on:
       repo:
         type: string
         required: true
-        description: "Build main or canary repo?"
-        default: "main"
+        description: "Build stable or canary repo?"
+        default: "stable"
 
 jobs:
   call-make-index:
     uses: ./.github/workflows/make-charts-index.yaml
     with:
-      includePrereleases: ${{ inputs.repo == 'canary' }}
       repoName: ${{ inputs.repo }}
 
   update-page:
@@ -50,7 +49,7 @@ jobs:
       - name: Update index when there's changes
         shell: bash
         run: |
-          if [[ "${{ inputs.repo }}" == "main" ]]; then
+          if [[ "${{ inputs.repo }}" == "stable" ]]; then
             path="."
           else
             path="${{ inputs.repo }}"
@@ -61,6 +60,6 @@ jobs:
           if ! diff -q .nindex/index.yaml "$path/index.yaml"; then
             cp .nindex/index.yaml "$path/index.yaml"
             git add "$path/index.yaml"
-            git commit -m "chore(pages): update index.yaml"
+            git commit -m "chore(helm-repo): update index.yaml"
             git push
           fi

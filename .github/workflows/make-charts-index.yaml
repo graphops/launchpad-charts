@@ -3,32 +3,22 @@ name: Make Charts Index
 on:
   workflow_dispatch:
     inputs:
-      includePrereleases:
-        type: boolean
-        required: true
-        description: "Include prereleases?"
-        default: false
       repoName:
         type: options
         required: true
         description: "Repository name?"
-        default: "main"
+        default: "stable"
         options:
-          - "main"
+          - "stable"
           - "canary"
 
   workflow_call:
     inputs:
-      includePrereleases:
-        type: boolean
-        required: true
-        description: "Include prereleases?"
-        default: false
       repoName:
         type: string
         required: true
         description: "Repository name?"
-        default: "main"
+        default: "stable"
 
 jobs:
   query:
@@ -63,7 +53,7 @@ jobs:
 
           helm repo index .releases/
 
-          if [[ '${{ inputs.includePrereleases }}' == 'false' ]]; then
+          if [[ '${{ inputs.repoName }}' == 'stable' ]]; then
             filter=(jq '.[] | select(.isPrerelease == false)')
           else
             filter=(jq '.[]')
