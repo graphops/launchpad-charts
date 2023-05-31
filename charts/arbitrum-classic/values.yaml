@@ -9,7 +9,7 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag
   # @default -- Chart.appVersion
-  tag: "v0.0.0"
+  tag: ""
 
 # -- Pull secrets required to fetch the Image
 imagePullSecrets: []
