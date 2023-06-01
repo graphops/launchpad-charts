@@ -12,9 +12,19 @@
     "ignoreDeps": [
     ],
 
-    "enabledManagers": ["helm-values", "helmv3"],
-
     "pinDigests": true,
+
+    "enabledManagers": ["helm-values", "helmv3", "regex"],
+
+    "regexManagers": [
+      {
+        "datasourceTemplate": "docker",
+        "fileMatch": ["^charts/.*/Chart\\.yaml$"],
+        "matchStrings": [
+          "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)\""
+        ]
+      }
+    ],
 
     "packageRules": [
       {
