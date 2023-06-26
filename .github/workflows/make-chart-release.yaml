@@ -8,11 +8,6 @@ on:
         required: true
         description: "What tag to release"
   workflow_dispatch:
-    inputs:
-      tag:
-        type: string
-        required: true
-        description: "What tag to release"
 
 jobs:
   init:
@@ -22,6 +17,7 @@ jobs:
     outputs:
       name: ${{ steps.parse_tag.outputs.name }}
       version: ${{ steps.parse_tag.outputs.version }}
+      fullversion: ${{ steps.parse_tag.outputs.fullversion }}
       prerelease: ${{ steps.parse_tag.outputs.prerelease }}
       tag: ${{ steps.parse_tag.outputs.tag }}
     steps:
@@ -29,55 +25,50 @@ jobs:
         id: parse_tag
         run: |
           echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\1/g')
+          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\1/g')
           echo "name=$name" >> $GITHUB_OUTPUT
-          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\2/g')
+          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\2/g')
+          fullversion=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-pre\.[[:digit:]]+)?)/\2/g')
+          echo "fullversion=$fullversion" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
-          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-pre\.)?([[:digit:]]+)?$/\4/g')
+          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\4/g')
           echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
 
-  changelog:
+  release-notes:
     needs: init
     runs-on: ubuntu-latest
-    container: quay.io/git-chglog/git-chglog:0.15.0
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Install main dependencies
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - name: Yarn install
         run: |
-          apk --upgrade add bash grep
+          set -x -e
 
-      - name: Generate chart changelog
-        id: gen_chglog
-        shell: bash
+          yarn install
+
+      - name: Get chart name
+        id: chart_name
         run: |
-          set -x
-          # TODO: Bundle all of that logic in a Github Action to make it easy to share.
-          chart_file="charts/${{ needs.init.outputs.name }}/Chart.yaml"
-          chart_name=$(grep -Po "(?<=^name: ).+" ${chart_file})
-          chart_version=$(grep -Po "(?<=^version: ).+" ${chart_file})
-          chart_tag="${chart_name}-${chart_version}"
-          chart_path="charts/${chart_name}"
+          name="$(echo ${{ inputs.tag }} | sed -E 's/(.*)-[[:digit:]]+.[[:digit:]]+.[[:digit:]]+.*/\1/g')"
+          echo "name=$name" >> $GITHUB_OUTPUT
 
-          current_tag=${{ needs.init.outputs.tag }}
+      - name: Generate release notes
+        id: release_notes
+        env:
+          CHART: ${{ steps.chart_name.outputs.name }}
+        run: |
+          set -x -e
 
-          if [[ "${chart_tag}" =~ ^.*-[0-9]+\.[0-9]+\.[0-9]+-pre.* ]]; then
-            # on pre-releases we want the changelog to span all pre-releases from .1 to current
-            first_pre="$(echo ${current_tag} | sed -r 's/(.*-[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+-pre\.).*/\11/g')"
-            query_tag="${first_pre}..${current_tag}"
-          else
-            query_tag="${current_tag}"
-          fi
+          export GIT_CLIFF__GIT__TAG_PATTERN="$CHART-*"
+          GIT_CLIFF__GIT__IGNORE_TAGS="$CHART-v?[0-9]+.[0-9]+.[0-9]+-.*"
 
-          # Generate RELEASE-NOTES.md file (used for Github release notes).
-          git-chglog                                    \
-              --output "RELEASE-NOTES.md" \
-              --tag-filter-pattern "${chart_name}"      \
-              --path "${chart_path}"                    \
-              "${query_tag}"
+          yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" --strip all -l -t "${{ needs.init.outputs.tag }}" -o "RELEASE-NOTES.md"
 
       - uses: actions/upload-artifact@v3
         with:
@@ -87,7 +78,7 @@ jobs:
   release:
     needs:
       - init
-      - changelog
+      - release-notes
     runs-on: ubuntu-latest
     permissions:
       contents: write # for creating releases
@@ -107,9 +98,25 @@ jobs:
         with:
           version: v3.12.0
 
+      - name: Update chart version
+        if: needs.init.outputs.prerelease != ''
+        run: |
+          set -x -e
+          chart_file="charts/${{ needs.init.outputs.name }}/Chart.yaml"
+          sed -E -i 's/^version: [[:digit:]]+.[[:digit:]]+.[[:digit:]]+.*/version: ${{ needs.init.outputs.fullversion }}/' "$chart_file"
+
       - name: Generate Helm package
         id: helm_package
         run: |
+          set -x -e
+
+          chart_file="charts/${{ needs.init.outputs.name }}/Chart.yaml"
+          chart_version="$(grep -Po '(?<=^version: ).+' "${chart_file}")"
+
+          if [[ ! "$chart_version" == ${{ needs.init.outputs.fullversion }} ]]; then
+            echo "Chart version doesn't match release tag, please update"
+          fi
+
           helm package "charts/${{ needs.init.outputs.name }}"
 
       - name: Upload artifact
