@@ -1,0 +1,946 @@
+apiVersion: v1
+entries:
+  Avalanche:
+    - apiVersion: v2
+      appVersion: v1.9.7
+      created: "2023-01-18T20:20:25Z"
+      description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
+      digest: d73568c129ce848a2be2e3e6e57a1043df20bffa327db7f47c9355f3e0ad2d3c
+      name: Avalanche
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/Avalanche-0.1.0/Avalanche-0.1.0.tgz
+      version: 0.1.0
+  arbitrum-classic:
+    - apiVersion: v2
+      appVersion: v1.4.5-e97c1a4
+      created: "2023-01-19T04:03:28Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: 4f26d3c8b37fdf3302db70323874636d2518da7196ba1a2c3f944c1397c2280f
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.1/arbitrum-classic-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: v1.4.5-e97c1a4
+      created: "2023-01-18T21:31:14Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: 580f98e90026c4eed6c0d3c58041782ac56dc7ea2830877d963d001c53963267
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
+      version: 0.1.0
+  arbitrum-nitro:
+    - apiVersion: v2
+      appVersion: v2.0.10-73224e3
+      created: "2023-01-19T04:10:06Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: b1efd87a23289ba0ef2bda5e93de6d4ecb63a0e6df9f91c988936a387a1bfda2
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.1/arbitrum-nitro-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: v2.0.10-73224e3
+      created: "2023-01-18T21:31:14Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 227ee956b18bb95ba7de7acaa5b7509362d8d19c0b70934b66e7180a892b2047
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.0/arbitrum-nitro-0.1.0.tgz
+      version: 0.1.0
+  celo:
+    - apiVersion: v2
+      appVersion: 1.7.2
+      created: "2023-01-18T20:11:57Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: 151372a9ff250591a2c2a746ae17a523a2f374650f3b2bf45798af5ca0965b1d
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
+      version: 0.1.0
+  erigon:
+    - apiVersion: v2
+      appVersion: v2.47.0
+      created: "2023-06-26T19:23:29Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: fdaa903c6549b62043743cbada2de6e3dd1cad04a3278f6e7b5c8082d11470a1
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.6.1-canary.1/erigon-0.6.1-canary.1.tgz
+      version: 0.6.1-canary.1
+    - apiVersion: v2
+      appVersion: v2.34.0
+      created: "2023-01-17T16:22:31Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 07094c1dfc776a72f7a890a50249eba35f3703c0e7b1e132c2b30d62af714157
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.6.0/erigon-0.6.0.tgz
+      version: 0.6.0
+    - apiVersion: v2
+      appVersion: v2.33.1
+      created: "2023-01-10T18:46:43Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: c9403f629f7f9c4a1c0c89e730afc79ff827bbbabfa96d566e484946ca7da19e
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.5.1/erigon-0.5.1.tgz
+      version: 0.5.1
+    - apiVersion: v2
+      appVersion: v2.33.0
+      created: "2023-01-10T17:29:12Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 4965ffabd55a9ff0204187b7e06315b6ce6fb23888f89cb7a59e4718f1db8138
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.5.0/erigon-0.5.0.tgz
+      version: 0.5.0
+    - apiVersion: v2
+      appVersion: v2.32.0
+      created: "2023-01-04T03:42:21Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: d587150c6528a77498a3a89083621b8b17b25eb4a8d6907de61991d50f1a17a2
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.4.1/erigon-0.4.1.tgz
+      version: 0.4.1
+    - apiVersion: v2
+      appVersion: v2.32.0
+      created: "2022-12-21T01:59:55Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: ed49a5a33a31f7a203bc2ffa9176eceb9a5cce79b4309435130e890e2d3b46ed
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.4.0/erigon-0.4.0.tgz
+      version: 0.4.0
+    - apiVersion: v2
+      appVersion: v2.31.0
+      created: "2022-12-21T01:46:01Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: c4340bd8e2a25e7641917ec446536d767a61a646ab2d0f7691ee96bfe2680cd5
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.14/erigon-0.3.14.tgz
+      version: 0.3.14
+    - apiVersion: v2
+      appVersion: v2.30.0
+      created: "2022-12-21T01:29:43Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: a192177da932e4539b8070c017157c0145d23c5823d9a0e541bd1f8626ad6158
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.13/erigon-0.3.13.tgz
+      version: 0.3.13
+    - apiVersion: v2
+      appVersion: v2.30.0
+      created: "2022-11-14T13:07:21Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: ee6e47436da59eb011bbdcfdc61793d02a987da698290fb6a427fb8f26ea1b55
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.12/erigon-0.3.12.tgz
+      version: 0.3.12
+    - apiVersion: v2
+      appVersion: v2.29.0
+      created: "2022-11-04T16:36:28Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 1f5029525c3d3633ab7d48ed42f649494907378409c1e03a981208cb39f6d790
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.11/erigon-0.3.11.tgz
+      version: 0.3.11
+    - apiVersion: v2
+      appVersion: v2.28.1
+      created: "2022-10-17T15:49:57Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: fd209f7aea936baf2cbe32ccebe20f6b17e6fef344b9af345edc5150b8f66771
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.10/erigon-0.3.10.tgz
+      version: 0.3.10
+    - apiVersion: v2
+      appVersion: v2.28.0
+      created: "2022-10-14T16:09:02Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 73c5fc3abd589547be07acdb342ab2b466f5e86d99799c44ca90b853eff1548c
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.9/erigon-0.3.9.tgz
+      version: 0.3.9
+    - apiVersion: v2
+      appVersion: v2.28.0
+      created: "2022-10-14T15:56:38Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 51504ba791a777e2897d1926049191f305854e8a4c7c7a03a1e8f36d3e2ecb7b
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.8/erigon-0.3.8.tgz
+      version: 0.3.8
+    - apiVersion: v2
+      appVersion: v2.28.0
+      created: "2022-10-12T12:26:19Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 9a39a61a45e1092a0d57a5476ed174dc2c79a0fe05aec0c6f64bfb638db0b4e5
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.7/erigon-0.3.7.tgz
+      version: 0.3.7
+    - apiVersion: v2
+      appVersion: v2.27.0
+      created: "2022-10-10T22:27:19Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: a20200da1d4b68be97db95ee62b052c2f9c7b97e8b3eefedbe6d414b116b728f
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.6/erigon-0.3.6.tgz
+      version: 0.3.6
+    - apiVersion: v2
+      appVersion: v2022.10.01
+      created: "2022-10-05T09:33:38Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: b4277be1f6915f851eadff74528753088d5c9a90a8518acb80c19e4916f2f247
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.5/erigon-0.3.5.tgz
+      version: 0.3.5
+    - apiVersion: v2
+      appVersion: v2022.09.03
+      created: "2022-09-25T19:34:44Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 1799e6a657bc4ace216a507ff716adfda32400a3dcae7c88752daf2902a0a3cf
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.4/erigon-0.3.4.tgz
+      version: 0.3.4
+    - apiVersion: v2
+      appVersion: v2022.09.03
+      created: "2022-09-25T18:03:04Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: e1c065fc5469449660e04d58d952d288ebe577082d1b58a30b4de9934fbd7918
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.3/erigon-0.3.3.tgz
+      version: 0.3.3
+    - apiVersion: v2
+      appVersion: v2022.09.03
+      created: "2022-09-21T01:00:14Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 8a18b9411a71aaf79088fa9fdba3809f1103a3b03f203dc787f2a85d22aa45c8
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.2/erigon-0.3.2.tgz
+      version: 0.3.2
+    - apiVersion: v2
+      appVersion: v2022.09.03
+      created: "2022-09-21T00:47:09Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: e317ac23150de860a6f0832dac760b154b60bc079edb02699496954361ed7799
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.1/erigon-0.3.1.tgz
+      version: 0.3.1
+    - apiVersion: v2
+      appVersion: v2022.09.03
+      created: "2022-09-20T23:31:10Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: aa24fe4bc9d8b7a5512f3f3ca6523afc258c6f25d773c6ec90c4af592f70ddfd
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.0/erigon-0.3.0.tgz
+      version: 0.3.0
+    - apiVersion: v2
+      appVersion: v2022.09.01
+      created: "2022-09-11T14:45:57Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: c407a30d26a93cceb0732fb22533112072764b0236812a89c5225170168eeb41
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.6/erigon-0.2.6.tgz
+      version: 0.2.6
+    - apiVersion: v2
+      appVersion: v2022.09.01
+      created: "2022-09-11T14:41:39Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: ee3cb620772a00eff31c57c604a402df3ab6af07108e2c3d0a2a4e4ba04e1a6d
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.5/erigon-0.2.5.tgz
+      version: 0.2.5
+    - apiVersion: v2
+      appVersion: v2022.09.01
+      created: "2022-09-11T14:40:28Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 475012127397029d3d0119c0849e2e1a96b277c2f7b7e807b8e2d691cb98f2bb
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.4/erigon-0.2.4.tgz
+      version: 0.2.4
+    - apiVersion: v2
+      appVersion: v2022.08.03
+      created: "2022-08-29T18:53:59Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 888db598588ca2cd72ce683e47fb52e7dd5c160263847235364d1af50278fd73
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.3/erigon-0.2.3.tgz
+      version: 0.2.3
+    - apiVersion: v2
+      appVersion: v2022.08.03
+      created: "2022-08-28T09:15:40Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: f3d02832f833311cc85a28d0533fdc02d49f871d5da6abc5f6c91f63850ba936
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.2/erigon-0.2.2.tgz
+      version: 0.2.2
+    - apiVersion: v2
+      appVersion: v2022.08.02
+      created: "2022-08-27T13:21:55Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 73b959aa6a7121ad3a610b43aa511b29752c0f1ebe0c8265458bf00f5272890c
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.1/erigon-0.2.1.tgz
+      version: 0.2.1
+    - apiVersion: v2
+      appVersion: v2022.08.02
+      created: "2022-08-27T13:06:55Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 04923ae3d357076649a0ead1118b95ab1ccfc7b093f779d1eb591a4c9b285a0e
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.0/erigon-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      appVersion: v2022.08.02
+      created: "2022-08-26T16:20:37Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 5730978bc2cd48a1a57e2a525c89c7c1dd6fe9d65431c066465fc5570203a19f
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.9/erigon-0.1.9.tgz
+      version: 0.1.9
+    - apiVersion: v2
+      appVersion: v2022.08.02
+      created: "2022-08-22T20:08:23Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 5f9cbb08adea478887325e346cf871a21c3d1df423fd1cc1ea435ec0b2bee90f
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.8/erigon-0.1.8.tgz
+      version: 0.1.8
+    - apiVersion: v2
+      appVersion: v2022.08.01
+      created: "2022-08-06T21:46:20Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: d46ef714ecade279aa671424d03d36ef973a2bfefb593f09caf3dae63832ee54
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.7/erigon-0.1.7.tgz
+      version: 0.1.7
+    - apiVersion: v2
+      appVersion: v2022.07.04
+      created: "2022-08-02T16:53:20Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 0cc2a76d14083ddb7df296ff2d1559053493210eca8ecdea23e5b988d5293115
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.6/erigon-0.1.6.tgz
+      version: 0.1.6
+    - apiVersion: v2
+      appVersion: v2022.07.03
+      created: "2022-07-27T15:25:42Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 5bda21534d299908afe16cd276fb6a30a34fcef7a79e4d93e575b4f426559124
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.5/erigon-0.1.5.tgz
+      version: 0.1.5
+    - apiVersion: v2
+      appVersion: v2022.07.02
+      created: "2022-07-08T12:00:38Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: e31a1ce82435dc9c2a54169939c4a2bdf148cbd163c96db032283f0e0ce79f0a
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.4/erigon-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: v2022.07.02
+      created: "2022-07-07T10:18:31Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: cc6a4b65325e92f0918f79a5a391e42ab01106c9df424da29ff7e6195040c988
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.3/erigon-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: v2022.07.01
+      created: "2022-07-01T22:40:00Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: cdaf24407dc24e4efb2e0f082ff363b509656e3ba57d245a6aa790837e2e4ef4
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.2/erigon-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: v2022.06.06
+      created: "2022-06-23T20:56:24Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 3afeecff564e8ddb35f06f0f298a62a639151d439e757b37a2a59b71bec0ab18
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.1/erigon-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: v2022.06.06
+      created: "2022-06-23T12:33:42Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 954a3821636f8fc648f8f6d1420157f6cc4f0f3e2948f2cd019dd603d82f3b12
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
+      version: 0.1.0
+  graph-network-indexer:
+    - apiVersion: v2
+      appVersion: v0.20.5-alpha.1
+      created: "2022-10-31T13:45:02Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 129b7ef18c80088b264f2716e0aa3da73a5f89dbceb2f760e27a93a739780066
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.2/graph-network-indexer-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: v0.20.4
+      created: "2022-10-25T16:11:25Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 03f79afad8496c9722c2222b7ff9105c3f8c604b5a2ae983899ad2fa14ecca7e
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.1/graph-network-indexer-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: v0.20.3
+      created: "2022-10-11T16:49:13Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 9bd27cfc497235cf89f11a5534c0c335459420d1ba258962a59b6aed5bd041a6
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
+      version: 0.1.0
+  graph-node:
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-26T21:50:23Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 861b0253e0c24f857ac6ffa24fa2546ee94cb0cd1ab56c8d38f66990a8746345
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.5/graph-node-0.1.5.tgz
+      version: 0.1.5
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-26T21:03:03Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 31370423aad7179203c089038282074d7462fdb0530e6307fc5ee6352ea9e118
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.4/graph-node-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-26T20:55:42Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 1fa58dbb316e678f6ac82815c9744846104b5ef98d62d3882a8fafcbba232728
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.3/graph-node-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-26T20:44:16Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 94347597eed394704427cffb083fbbef96e56441c6a7db5d61a60bf409833fac
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.2/graph-node-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-26T20:37:00Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: e141e8455bccff3a7dafea1a3b9a49e3c6d66e12040b784103113f6655b15e57
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.1/graph-node-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: v0.28.2
+      created: "2022-10-11T16:47:34Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 5a471b393ceda10801d6c19c8e8ebfc383e5ab4ece96431352a6891a83bdc823
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.0/graph-node-0.1.0.tgz
+      version: 0.1.0
+  graph-toolbox:
+    - apiVersion: v2
+      appVersion: main
+      created: "2022-10-11T16:49:13Z"
+      description: Deploy a preconfigured toolbox container for to be used alongside the
+      digest: 1ced6a53af2575d9420354f5e53f89d43ff551f2bb445fdfa7df6e0db559479c
+      name: graph-toolbox
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-toolbox-0.1.0/graph-toolbox-0.1.0.tgz
+      version: 0.1.0
+  heimdall:
+    - apiVersion: v2
+      appVersion: v0.3.0
+      created: "2023-01-16T14:45:11Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 7e3a8e8338cf2e798ce7fa1c9bab8b45d959204efe732a679a3cf86d8fd5ab5c
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.2/heimdall-1.1.2.tgz
+      version: 1.1.2
+    - apiVersion: v2
+      appVersion: v0.3.0
+      created: "2023-01-11T18:48:29Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 090dbe52b0ed6f61b6eab59735488df7a8f702927b78a0269ba13ba1ab1c323d
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.1/heimdall-1.1.1.tgz
+      version: 1.1.1
+    - apiVersion: v2
+      appVersion: v0.3.0
+      created: "2022-12-16T03:33:11Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 93ac2c6e1eabdc9f8884191b496391128b4aaef6c9875ca64a910cfed1dcb0e2
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.0/heimdall-1.1.0.tgz
+      version: 1.1.0
+    - apiVersion: v2
+      appVersion: v0.3.0
+      created: "2022-12-14T17:42:15Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: eda3ecf5f680454bdfa60ebc3088c8968f64a001a377c3aed87772d6df4e0e4f
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
+      version: 1.0.0
+  lighthouse:
+    - apiVersion: v2
+      appVersion: v3.4.0
+      created: "2023-01-17T17:25:51Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 6f5f569c2951f433e4683d9e5b1eb9ba3879d8dc2ba70af2f64a66759151a106
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.2.0/lighthouse-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      appVersion: v3.3.0
+      created: "2023-01-16T15:41:34Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 33312ed51dde54725afdc11f194cfec2eaf7c2173abfc812b944848ed4963cd6
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
+      version: 0.1.0
+  nethermind:
+    - apiVersion: v2
+      appVersion: 1.16.0-unstable
+      created: "2023-01-10T17:29:12Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 75f59ac0ae46465d7ce7d077ab728a465a43fca973e903f624cba23e656b549b
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.3.0/nethermind-0.3.0.tgz
+      version: 0.3.0
+    - apiVersion: v2
+      appVersion: 1.15.0
+      created: "2023-01-05T03:25:25Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 691424748cab4016ff9199af6293c6ce9c2428f2b33dc7694091402546cfa744
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.2.0/nethermind-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      appVersion: 1.14.7
+      created: "2023-01-05T03:11:34Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 4f72014db559938338cf12f07257b8b0ac83860fa9736c8742d9bdd47bcb5296
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.8/nethermind-0.1.8.tgz
+      version: 0.1.8
+    - apiVersion: v2
+      appVersion: 1.14.6
+      created: "2023-01-05T02:51:07Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 4c0111c0e485a48be3ddedc3f753092cf6b08b0f3d6898f93fae1264d07a443f
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.7/nethermind-0.1.7.tgz
+      version: 0.1.7
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-14T16:09:02Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 6d6087cb600eede85e75b4c77b19c50e0f74872fe9163d96cf5b65ef39a046cb
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.6/nethermind-0.1.6.tgz
+      version: 0.1.6
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-14T15:58:45Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 7fd96aeb6a616374e588d035b159ce4b62aa2529a79256915d6d2fc8c8080593
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.5/nethermind-0.1.5.tgz
+      version: 0.1.5
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-10T22:27:19Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 1bec99b66c64fbce5b191399796dc6a626aba422bf80823b1166534aa87191cd
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.4/nethermind-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-10T11:04:53Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 9aae22b24c07e6411a4f83a4d21da142a0e4a583ef1952d19ac184ba63beeb70
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.3/nethermind-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-09T13:56:07Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 0d34450c48a8637a21df1e7b80a2f6eb382de413c2dd5ab16f7b490b5bd7c620
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.2/nethermind-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: 1.14.3
+      created: "2022-10-04T14:41:12Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: ef8b72ef52810c377a36a6f2c9ecb322855b47f8c1c054b1c7fc3a77cdbe2ca8
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.1/nethermind-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: 1.14.2
+      created: "2022-09-30T23:20:00Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 38c780e372b348271f221bf85fafd8e94d43c4e06c9e1123ef24b64b05d94e41
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
+      version: 0.1.0
+  nimbus:
+    - apiVersion: v2
+      appVersion: multiarch-v22.12.0
+      created: "2023-01-05T03:18:02Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 0b7ece6deb1096f2edfcb2568e417f3e6440ca0a823783264e48fedd3d8baa9a
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.3.0/nimbus-0.3.0.tgz
+      version: 0.3.0
+    - apiVersion: v2
+      appVersion: multiarch-v22.11.1
+      created: "2023-01-05T03:11:34Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 2124d9b0b4148f743e8e2ec873bd1bfaf3c61ae3f6a998ba6f67b90a91a4c3fa
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.2.1/nimbus-0.2.1.tgz
+      version: 0.2.1
+    - apiVersion: v2
+      appVersion: multiarch-v22.11.0
+      created: "2023-01-05T02:51:07Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 50f03fab19e2cfd056ef25a41d615446d0423a26acea1be00eeecd6c50762854
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.2.0/nimbus-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      appVersion: multiarch-v22.10.1
+      created: "2022-10-18T10:11:22Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 536de65e888f07b3d8b687d813e309327e0be13c72cf8d766b9f6964c14da349
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.4/nimbus-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: multiarch-v22.10.0
+      created: "2022-10-14T16:09:02Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: c92ecb42eddc2951c53ec2798cf337f9c8924f6e8a3bf925f944d6f01a694acc
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.3/nimbus-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: multiarch-v22.10.0
+      created: "2022-10-14T15:57:53Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 420bfbfe3427e1ba3afd3c33421154ad82b330bd5d171701701b416da94e2b65
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.2/nimbus-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: multiarch-v22.10.0
+      created: "2022-10-04T14:41:12Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9c1cc8f167865bb038de567cb45f7d076d919f6d065507c6fbfc2ea0cb2f0941
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.1/nimbus-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: multiarch-v22.9.1
+      created: "2022-09-30T23:33:13Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: f0d4f1cfe9e676e5f4943cfc936f248f55521cb00834b2832d7b64d438fe3fc7
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.0/nimbus-0.1.0.tgz
+      version: 0.1.0
+  openebs-rawfile-localpv:
+    - apiVersion: v2
+      appVersion: 0.7.0
+      created: "2022-10-05T17:18:10Z"
+      description: RawFile Driver Container Storage Interface
+      digest: 5631f2473f938b3c29b19444085c9e4670c4dadaf27222ccae5538ff6c717acd
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.0/openebs-rawfile-localpv-0.8.0.tgz
+      version: 0.8.0
+    - apiVersion: v2
+      appVersion: 0.7.0
+      created: "2022-10-04T13:02:39Z"
+      description: RawFile Driver Container Storage Interface
+      digest: 4d7df8ddcdd6258d015851f905f3b0c14ecf6acb3a1edd67951d6343a14010f6
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
+      version: 0.7.0
+  proxyd:
+    - apiVersion: v2
+      appVersion: 3.11.0
+      created: "2023-06-01T15:29:53Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 226408a14e189d6a89e7bc5f030159ca0c6989ac6882207246cdd58ff2876b69
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.2.0/proxyd-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      appVersion: 3.11.0
+      created: "2022-10-14T13:23:09Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: b48946d1de38123344d43ba5d507ceeb6468780b1b3762ef0f74c2cb2582841b
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.8/proxyd-0.1.8.tgz
+      version: 0.1.8
+    - apiVersion: v2
+      appVersion: 3.10.2
+      created: "2022-10-09T21:29:05Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 7a055a0e7af0e4f1067a4d8bfbb519acb4a6321737ba3a28b6b4164b41efd233
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.7/proxyd-0.1.7.tgz
+      version: 0.1.7
+    - apiVersion: v2
+      appVersion: 3.10.2
+      created: "2022-10-07T14:37:52Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 9b9c7d9ba697da160f021589299f2057f0b757745182272a0c76db10da5679aa
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.6/proxyd-0.1.6.tgz
+      version: 0.1.6
+    - apiVersion: v2
+      appVersion: 3.10.2
+      created: "2022-10-04T12:47:49Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 0713b311ee5ce0c1882ba4fe412d56950933ee7007c900b7229f3ced7192e44d
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.5/proxyd-0.1.5.tgz
+      version: 0.1.5
+    - apiVersion: v2
+      appVersion: 3.9.1
+      created: "2022-08-29T18:53:59Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 7e3a77c94cc8c6b85fc32996deef5a02535bcacffd1fc903a561f3fd221ca4bf
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.4/proxyd-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
+      appVersion: 3.9.1
+      created: "2022-08-27T13:24:22Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 24e6b005fdfd636019d4ae39db191a7fc832b72e0806b20f45f26dbe0392f24e
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.3/proxyd-0.1.3.tgz
+      version: 0.1.3
+    - apiVersion: v2
+      appVersion: 3.9.1
+      created: "2022-08-26T19:20:08Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: fefedfd6dc03c2ca402264a6ca15429e34e5437d9942dbf9eaba864c9edb4dda
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.2/proxyd-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: 3.9.1
+      created: "2022-08-26T14:07:10Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 39a46e6ab2c973ad75851f0f6288833bedf68807523a4fef68757febd632a389
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.1/proxyd-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: 3.8.9
+      created: "2022-07-22T21:22:36Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 2b8fcef8374d2aaca92a9a106d72f8500c6d56f6c89865e693d0b870f24e384e
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.0/proxyd-0.1.0.tgz
+      version: 0.1.0
+  resource-injector:
+    - apiVersion: v2
+      created: "2022-08-27T13:16:58Z"
+      description: Manage Raw Kubernetes Resources using Helm
+      digest: b6f9f574636eda7ce263b6203ff98a1868480238d1471fb81eaa45a1ce8e7200
+      name: resource-injector
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.2.0/resource-injector-0.2.0.tgz
+      version: 0.2.0
+    - apiVersion: v2
+      created: "2022-06-01T20:36:23Z"
+      description: Manage Raw Kubernetes Resources using Helm
+      digest: da64fdfeaa92a849b298c62169b5d480198b564f8c9a460219c05002edc401ff
+      name: resource-injector
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
+      version: 0.1.0
+generated: "2023-06-26T19:24:55.368764899Z"
