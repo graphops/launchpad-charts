@@ -591,6 +591,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v4.2.0
+      created: "2023-06-26T20:02:44Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: aefd715770ae4a6143de8cfafe2e67b03df8eb5987e63d3dd7dcf90099bc4ef4
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.2.1-canary.1/lighthouse-0.2.1-canary.1.tgz
+      version: 0.2.1-canary.1
+    - apiVersion: v2
       appVersion: v3.4.0
       created: "2023-01-17T17:25:51Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -943,4 +953,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
       version: 0.1.0
-generated: "2023-06-26T19:24:55.368764899Z"
+generated: "2023-06-26T20:04:19.322232889Z"
