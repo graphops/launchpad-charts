@@ -43,6 +43,10 @@ split_commits = true
 commit_preprocessors = [
   # { pattern = '\((\w+\s)?#([0-9]+)\)', replace = "([#${2}](https://github.com/orhun/git-cliff/issues/${2}))"}, # replace issue numbers
   # Parse renovate's commit body table to descriminate updated images
+  # filter out table's header first
+  { pattern = '[\|]\s*datasource\s*[\|]\s*package\s*[\|]\s*from\s*[\|]\s*to\s*[\|]', replace = "" },
+  { pattern = '[\|]\s*---[-]*\s*[\|]\s*---[-]*\s*[\|]\s*---[-]*\s*[\|]\s*---[-]*\s*[\|]', replace = "" },
+  # Parse and extract from the remaining table lines
   { pattern = '[\|].*[\|]\s*(\S*)\s*[\|]\s*(\S*)\s*[\|]\s*(\S*)\s*[\|]', replace = "feat(deps): Update ${1} from ${2} to ${3}" },
 ]
 # regex for parsing and grouping commits
