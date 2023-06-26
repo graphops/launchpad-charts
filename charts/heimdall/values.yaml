@@ -41,7 +41,7 @@ heimdall:
     # -- Image for Heimdall
     repository: maticnetwork/heimdall
     pullPolicy: IfNotPresent
-    tag: "v0.3.0" # Don't forget to update appVersion in Chart.yaml
+    tag: "v0.3.4" # Don't forget to update appVersion in Chart.yaml
 
   # -- Options for Heimdall rest-server sidecar
   restServer:
