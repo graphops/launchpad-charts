@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       repoName:
-        type: options
+        type: choice
         required: true
         description: "Repository name?"
         default: "stable"

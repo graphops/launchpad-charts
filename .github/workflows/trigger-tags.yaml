@@ -5,14 +5,81 @@ on:
   push:
     tags:
       - '*-[v]?[0-9]+.[0-9]+.[0-9]+'
-      - '*-[v]?[0-9]+.[0-9]+.[0-9]+-pre.[0-9]+'
+      - '*-[v]?[0-9]+.[0-9]+.[0-9]+-canary.[0-9]+'
+
   # Allow to run the workflow from GitHub UI and other workflows.
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+        description: "Triggering tag"
   workflow_dispatch:
-    tags:
-      - '*-[v]?[0-9]+.[0-9]+.[0-9]+'
-      - '*-[v]?[0-9]+.[0-9]+.[0-9]+-pre.[0-9]+'
 
 jobs:
+  init:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for creating releases
+    outputs:
+      name: ${{ steps.parse_tag.outputs.name }}
+      version: ${{ steps.parse_tag.outputs.version }}
+      prerelease: ${{ steps.parse_tag.outputs.prerelease }}
+      tag: ${{ steps.parse_tag.outputs.tag }}
+    steps:
+      - name: Parse tag
+        id: parse_tag
+        run: |
+          echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\1/g')
+          echo "name=$name" >> $GITHUB_OUTPUT
+          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\2/g')
+          echo "version=$version" >> $GITHUB_OUTPUT
+          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\4/g')
+          echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
+
+  update-changelog:
+    runs-on: ubuntu-latest
+    needs:
+      - init
+    if: ${{ needs.init.outputs.prerelease != "" }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor}}@users.noreply.github.com"
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+
+      - name: Yarn install
+        run: |
+          yarn install
+
+      - name: Get chart name
+        id: chart_name
+        run: |
+          name="$(echo {{ inputs.tag }} | sed -E 's/(.*)-[[:digit:]]+.[[:digit:]]+.[[:digit:]]+/\1/g')"
+          echo "name=$name" >> $GITHUB_OUTPUT
+
+      - name: Generate changelog and commit
+        with:
+          CHART: ${{ steps.chart_name.name }}
+        run: |
+          export GIT_CLIFF__GIT__TAG_PATTERN="$CHART-*"
+          export GIT_CLIFF__GIT__IGNORE_TAGS="$CHART-v?[0-9]+.[0-9]+.[0-9]+-.*"
+
+          yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" > "$charts/$CHART/CHANGELOG.md"
+
+          git add "charts/$CHART/CHANGELOG.md"
+          git commit -m "chore(changelog): Update CHANGELOG for $CHART"
+          git push
+
   call-release:
     uses: ./.github/workflows/make-chart-release.yaml
     permissions:
@@ -28,7 +95,7 @@ jobs:
       - name: check-release-stream
         run: |
           version=$(echo "${{ github.ref_name }}" | sed -r 's/.*-([0-9]+\.[0-9]+\.[0-9]+.*)/\1/g')
-          if [[ "$version" == *"-pre"* ]]; then
+          if [[ "$version" == *"-canary"* ]]; then
             release_stream="canary"
           else
             release_stream="main"
