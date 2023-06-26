@@ -6,6 +6,10 @@
 
     "separateMajorMinor": false,
 
+    "commitBodyTable": true,
+
+    "semanticCommitType": "feat",
+
     "ignorePaths": [
     ],
 
@@ -27,71 +31,100 @@
     ],
 
     "packageRules": [
+      // thorax/erigon released a few versions following YYYY.MM.DD versioning pattern
+      // we want to exclude those
+      {
+        "matchPackageNames": ["thorax/erigon"],
+        "allowedVersions": "<2000"
+      },
+      // Group our dependencies
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/arbitrum*/**"],
         "groupName": "Arbitrum dependencies",
-        "groupSlug": "arbitrum"
+        "groupSlug": "arbitrum",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/avalanche/**"],
         "groupName": "Avalanche dependencies",
-        "groupSlug": "avalanche"
+        "groupSlug": "avalanche",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/celo/**"],
         "groupName": "Celo dependencies",
-        "groupSlug": "celo"
+        "groupSlug": "celo",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/erigon/**"],
         "groupName": "Erigon dependencies",
-        "groupSlug": "erigon"
+        "groupSlug": "erigon",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/graph-*/**"],
         "groupName": "Graph dependencies",
-        "groupSlug": "graph"
+        "groupSlug": "graph",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/heimdall/**"],
         "groupName": "Heimdall dependencies",
-        "groupSlug": "heimdall"
+        "groupSlug": "heimdall",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/lighthouse/**"],
         "groupName": "Lighthouse dependencies",
-        "groupSlug": "lighthouse"
+        "groupSlug": "lighthouse",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/nethermind/**"],
         "groupName": "Nethermind dependencies",
-        "groupSlug": "nethermind"
+        "groupSlug": "nethermind",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/nimbus/**"],
         "groupName": "Nimbus dependencies",
-        "groupSlug": "nimbus"
+        "groupSlug": "nimbus",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/openebs-*/**"],
         "groupName": "OpenEBS dependencies",
-        "groupSlug": "openebs"
+        "groupSlug": "openebs",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       },
       {
         "description": "Group dependencies",
         "matchPaths": ["charts/proxyd/**"],
         "groupName": "Proxyd dependencies",
-        "groupSlug": "proxyd"
+        "groupSlug": "proxyd",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       }
     ]
 }
