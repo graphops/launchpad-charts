@@ -8,17 +8,21 @@ All notable changes to this project will be documented in this file.
 
 - Rename helm-charts to launchpad-charts ([70cd3b](https://github.com/graphops/launchpad-charts/commit/70cd3b7aed214e314ec0534bf845d687efab41d8))
 
+### <!-- 3 -->📚 Documentation
+
+- Add changelogs ([8f9d8d](https://github.com/graphops/launchpad-charts/commit/8f9d8d3fd2d83bea0f401cb853e522c3d5cf1792))
+
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 
 - Renovate support for main image tags in chart's appVersion (#69) ([fde4b1](https://github.com/graphops/launchpad-charts/commit/fde4b18394a3ac891a3dd0f5e4fd621fc9ae6052))
 
-## [graph-network-indexer-0.1.2](https://github.com/graphops/launchpad-charts/compare/graph-network-indexer-0.1.1...graph-network-indexer-0.1.2) - 2022-10-31
+## graph-network-indexer-0.1.2 - 2022-10-31
 
 ### <!-- 0 -->✨ Features
 
 - Release appVersion v0.20.5-alpha.1 as 0.1.2 ([c13dd9](https://github.com/graphops/launchpad-charts/commit/c13dd916664851af46c6947f47e627cd8c992b34))
 
-## [graph-network-indexer-0.1.1](https://github.com/graphops/launchpad-charts/compare/graph-network-indexer-0.1.0...graph-network-indexer-0.1.1) - 2022-10-25
+## graph-network-indexer-0.1.1 - 2022-10-25
 
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 

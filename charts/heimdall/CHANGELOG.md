@@ -12,19 +12,23 @@ All notable changes to this project will be documented in this file.
 
 - Rename helm-charts to launchpad-charts ([70cd3b](https://github.com/graphops/launchpad-charts/commit/70cd3b7aed214e314ec0534bf845d687efab41d8))
 
-## [heimdall-1.1.2](https://github.com/graphops/launchpad-charts/compare/heimdall-1.1.1...heimdall-1.1.2) - 2023-01-16
+### <!-- 3 -->📚 Documentation
+
+- Add changelogs ([8f9d8d](https://github.com/graphops/launchpad-charts/commit/8f9d8d3fd2d83bea0f401cb853e522c3d5cf1792))
+
+## heimdall-1.1.2 - 2023-01-16
 
 ### <!-- 1 -->🐛 Bug Fixes
 
 - Extra line in post rendering with kustomize (#36) ([3451ed](https://github.com/graphops/launchpad-charts/commit/3451edb8cb1bce2a0f0b9a517b9e3262e8c77395))
 
-## [heimdall-1.1.1](https://github.com/graphops/launchpad-charts/compare/heimdall-1.1.0...heimdall-1.1.1) - 2023-01-11
+## heimdall-1.1.1 - 2023-01-11
 
 ### <!-- 0 -->✨ Features
 
 - Increased default pvc size for heimdall (#34) ([d79ccc](https://github.com/graphops/launchpad-charts/commit/d79ccc5ca3ed17e031859a95f86a92ad9435283f))
 
-## [heimdall-1.1.0](https://github.com/graphops/launchpad-charts/compare/heimdall-1.0.0...heimdall-1.1.0) - 2022-12-16
+## heimdall-1.1.0 - 2022-12-16
 
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 

@@ -2,7 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
-## [proxyd-0.2.0](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.8...proxyd-0.2.0) - 2023-06-01
+## unreleased
+
+### <!-- 3 -->📚 Documentation
+
+- Add changelogs ([8f9d8d](https://github.com/graphops/launchpad-charts/commit/8f9d8d3fd2d83bea0f401cb853e522c3d5cf1792))
+
+## proxyd-0.2.0 - 2023-06-01
 
 ### <!-- 0 -->✨ Features
 
@@ -16,38 +22,38 @@ All notable changes to this project will be documented in this file.
 
 - Renovate support for main image tags in chart's appVersion (#69) ([fde4b1](https://github.com/graphops/launchpad-charts/commit/fde4b18394a3ac891a3dd0f5e4fd621fc9ae6052))
 
-## [proxyd-0.1.8](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.7...proxyd-0.1.8) - 2022-10-14
+## proxyd-0.1.8 - 2022-10-14
 
 ### <!-- 0 -->✨ Features
 
 - More permissive defaults, upgrade to appVersion 3.11.0 ([fd3098](https://github.com/graphops/launchpad-charts/commit/fd3098e75ea7310ea599f4a896bdd86ab9b0cd3f))
 - Release (#14) ([e57b8c](https://github.com/graphops/launchpad-charts/commit/e57b8cefacee381173332eacb52c4ce496eb886a))
 
-## [proxyd-0.1.7](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.6...proxyd-0.1.7) - 2022-10-09
+## proxyd-0.1.7 - 2022-10-09
 
 ### <!-- 0 -->✨ Features
 
 - Better backend defaults ([1429f9](https://github.com/graphops/launchpad-charts/commit/1429f99ee9a5b7f724fa12b5c6b9915f42eddbaa))
 
-## [proxyd-0.1.6](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.5...proxyd-0.1.6) - 2022-10-07
+## proxyd-0.1.6 - 2022-10-07
 
 ### <!-- 0 -->✨ Features
 
 - Add eth_chainId to method mappings ([c6060e](https://github.com/graphops/launchpad-charts/commit/c6060ed723c382c541465bc20edfe2a1d444f013))
 
-## [proxyd-0.1.5](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.4...proxyd-0.1.5) - 2022-10-04
+## proxyd-0.1.5 - 2022-10-04
 
 ### <!-- 0 -->✨ Features
 
 - Upgrade to appVersion 3.10.2 and set default rpc to unlimited ([c1031a](https://github.com/graphops/launchpad-charts/commit/c1031ad1b9b643a0d584e1f2b0be0111da1297da))
 
-## [proxyd-0.1.4](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.3...proxyd-0.1.4) - 2022-08-29
+## proxyd-0.1.4 - 2022-08-29
 
 ### <!-- 1 -->🐛 Bug Fixes
 
 - Grafana dashboard provisioning ([aeac13](https://github.com/graphops/launchpad-charts/commit/aeac13e1cc1b0240155aed28c3db1150d37d8308))
 
-## [proxyd-0.1.3](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.2...proxyd-0.1.3) - 2022-08-27
+## proxyd-0.1.3 - 2022-08-27
 
 ### <!-- 0 -->✨ Features
 
@@ -57,7 +63,7 @@ All notable changes to this project will be documented in this file.
 
 - Service expose metrics for monitor ([4fdd3d](https://github.com/graphops/launchpad-charts/commit/4fdd3d0d0a5b12a8d93521425fda4d7c783b229e))
 
-## [proxyd-0.1.2](https://github.com/graphops/launchpad-charts/compare/proxyd-0.1.1...proxyd-0.1.2) - 2022-08-26
+## proxyd-0.1.2 - 2022-08-26
 
 ### <!-- 0 -->✨ Features
 

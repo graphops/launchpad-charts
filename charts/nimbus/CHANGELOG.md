@@ -8,29 +8,33 @@ All notable changes to this project will be documented in this file.
 
 - Rename helm-charts to launchpad-charts ([70cd3b](https://github.com/graphops/launchpad-charts/commit/70cd3b7aed214e314ec0534bf845d687efab41d8))
 
+### <!-- 3 -->📚 Documentation
+
+- Add changelogs ([8f9d8d](https://github.com/graphops/launchpad-charts/commit/8f9d8d3fd2d83bea0f401cb853e522c3d5cf1792))
+
 ### <!-- 7 -->⚙️ Miscellaneous Tasks
 
 - Renovate support for main image tags in chart's appVersion (#69) ([fde4b1](https://github.com/graphops/launchpad-charts/commit/fde4b18394a3ac891a3dd0f5e4fd621fc9ae6052))
 
-## [nimbus-0.3.0](https://github.com/graphops/launchpad-charts/compare/nimbus-0.2.1...nimbus-0.3.0) - 2023-01-05
+## nimbus-0.3.0 - 2023-01-05
 
 ### <!-- 0 -->✨ Features
 
 - New app releases (#28) ([6080d7](https://github.com/graphops/launchpad-charts/commit/6080d748630c2c9a3bab4cd4e6009bdb1bc2196a))
 
-## [nimbus-0.2.1](https://github.com/graphops/launchpad-charts/compare/nimbus-0.2.0...nimbus-0.2.1) - 2023-01-05
+## nimbus-0.2.1 - 2023-01-05
 
 ### <!-- 0 -->✨ Features
 
 - New app releases (#27) ([79d4ac](https://github.com/graphops/launchpad-charts/commit/79d4ac3c89ef368df608be26c417d36cbdeb63f4))
 
-## [nimbus-0.2.0](https://github.com/graphops/launchpad-charts/compare/nimbus-0.1.4...nimbus-0.2.0) - 2023-01-05
+## nimbus-0.2.0 - 2023-01-05
 
 ### <!-- 0 -->✨ Features
 
 - New app releases (#26) ([19a10a](https://github.com/graphops/launchpad-charts/commit/19a10a20c1ca6747a170808bf6e5d8615dae5eb6))
 
-## [nimbus-0.1.4](https://github.com/graphops/launchpad-charts/compare/nimbus-0.1.3...nimbus-0.1.4) - 2022-10-18
+## nimbus-0.1.4 - 2022-10-18
 
 ### <!-- 0 -->✨ Features
 
@@ -40,19 +44,19 @@ All notable changes to this project will be documented in this file.
 
 - Show trusted sync on goerli ([12b0a3](https://github.com/graphops/launchpad-charts/commit/12b0a3bfcc301987dcfaec93071e84de83630d43))
 
-## [nimbus-0.1.3](https://github.com/graphops/launchpad-charts/compare/nimbus-0.1.2...nimbus-0.1.3) - 2022-10-14
+## nimbus-0.1.3 - 2022-10-14
 
 ### <!-- 0 -->✨ Features
 
 - Fix default extraLabels type ([7f1a8e](https://github.com/graphops/launchpad-charts/commit/7f1a8e8503f91a4ddc6965ac1de0c5d067f28ed1))
 
-## [nimbus-0.1.2](https://github.com/graphops/launchpad-charts/compare/nimbus-0.1.1...nimbus-0.1.2) - 2022-10-14
+## nimbus-0.1.2 - 2022-10-14
 
 ### <!-- 0 -->✨ Features
 
 - Add extraLabels support ([dba4a0](https://github.com/graphops/launchpad-charts/commit/dba4a005d835132db40cbed0b82b30c47dec1b46))
 
-## [nimbus-0.1.1](https://github.com/graphops/launchpad-charts/compare/nimbus-0.1.0...nimbus-0.1.1) - 2022-10-04
+## nimbus-0.1.1 - 2022-10-04
 
 ### <!-- 0 -->✨ Features
 
