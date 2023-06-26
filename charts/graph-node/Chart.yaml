@@ -22,4 +22,4 @@ version: 0.1.5
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=graphprotocol/graph-node
-appVersion: "v0.28.2"
+appVersion: "v0.31.0"
