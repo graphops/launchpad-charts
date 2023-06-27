@@ -1,6 +1,9 @@
 {{/* This file contains the ConfigMap and Deployment for proxyd. They are colocated so
      that a hash of the config easily can be used to automate restarts of Deployment Pods. */}}
 
+{{/* Initialize variable in global scope */}}
+{{ $configHash := "" }}
+
 {{- if .Values.proxyd.configTemplating.enabled }}
 {{/* Here we construct the computed template variables that can be interpolated
      into the proxyd config file */}}
@@ -26,7 +29,7 @@
 {{- $configTemplate := .Values.configTemplate }}
 {{- $configToml := print (tpl $configTemplate $) }}
 {{/* We use a hash of the configuration to automate restarts of dependents */}}
-{{- $configHash := $configToml | sha256sum }}
+{{- $configHash = $configToml | sha256sum }}
 {{/* START ConfigMap */}}
 ---
 apiVersion: v1
@@ -63,7 +66,9 @@ spec:
   template:
     metadata:
       annotations:
+      {{- if not .Values.proxyd.configTemplating.enabled }}
         checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
+      {{- end }}
       {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
