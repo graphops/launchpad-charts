@@ -30,24 +30,32 @@ jobs:
       - name: Parse tag
         id: parse_tag
         run: |
-          echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\1/g')
+          if [ -n "${{ inputs.tag }}" ]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${{ github.ref_name }}"
+          fi
+          echo "tag=$tag" >> $GITHUB_OUTPUT
+          name=$(echo "$tag" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\1/g')
           echo "name=$name" >> $GITHUB_OUTPUT
-          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\2/g')
+          version=$(echo "$tag" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\2/g')
           echo "version=$version" >> $GITHUB_OUTPUT
-          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\4/g')
+          prerelease=$(echo "$tag" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\4/g')
           echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
 
   update-changelog:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # for updating changelog
     needs:
       - init
-    if: ${{ needs.init.outputs.prerelease != "" }}
+    if: ${{ needs.init.outputs.prerelease == '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          ref: "main"
 
       - name: Configure Git
         run: |
@@ -64,20 +72,20 @@ jobs:
       - name: Get chart name
         id: chart_name
         run: |
-          name="$(echo {{ inputs.tag }} | sed -E 's/(.*)-[[:digit:]]+.[[:digit:]]+.[[:digit:]]+/\1/g')"
+          name="$(echo ${{ needs.init.outputs.tag }} | sed -E 's/(.*)-[[:digit:]]+.[[:digit:]]+.[[:digit:]]+/\1/g')"
           echo "name=$name" >> $GITHUB_OUTPUT
 
       - name: Generate changelog and commit
-        with:
-          CHART: ${{ steps.chart_name.name }}
+        env:
+          CHART: ${{ steps.chart_name.outputs.name }}
         run: |
           export GIT_CLIFF__GIT__TAG_PATTERN="$CHART-*"
           export GIT_CLIFF__GIT__IGNORE_TAGS="$CHART-v?[0-9]+.[0-9]+.[0-9]+-.*"
 
-          yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" > "$charts/$CHART/CHANGELOG.md"
+          yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" -o "charts/$CHART/CHANGELOG.md"
 
           git add "charts/$CHART/CHANGELOG.md"
-          git commit -m "chore(changelog): Update CHANGELOG for $CHART"
+          git commit -m "ci(changelog): Update CHANGELOG for $CHART" --no-verify
           git push
 
   call-release:
@@ -93,15 +101,16 @@ jobs:
       repo: ${{ steps.check-release-stream.outputs.repo }}
     steps:
       - name: check-release-stream
+        id: check-release-stream
         run: |
-          version=$(echo "${{ github.ref_name }}" | sed -r 's/.*-([0-9]+\.[0-9]+\.[0-9]+.*)/\1/g')
+          version=$(echo "${{ needs.init.outputs.tag }}" | sed -r 's/.*-([0-9]+\.[0-9]+\.[0-9]+.*)/\1/g')
           if [[ "$version" == *"-canary"* ]]; then
             release_stream="canary"
           else
             release_stream="main"
           fi
 
-          echo "repo=${release_stream}" >> $GITHUB_OUTPUTS
+          echo "repo=${release_stream}" >> $GITHUB_OUTPUT
 
   call-update-helm-repo:
     needs:
