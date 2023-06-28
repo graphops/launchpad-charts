@@ -25,13 +25,13 @@ jobs:
         id: parse_tag
         run: |
           echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
-          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\1/g')
+          name=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary\.)?([[:digit:]]+)?$/\1/g')
           echo "name=$name" >> $GITHUB_OUTPUT
-          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\2/g')
-          fullversion=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-pre\.[[:digit:]]+)?)/\2/g')
+          version=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary\.)?([[:digit:]]+)?$/\2/g')
+          fullversion=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+(-canary\.[[:digit:]]+)?)/\2/g')
           echo "fullversion=$fullversion" >> $GITHUB_OUTPUT
           echo "version=$version" >> $GITHUB_OUTPUT
-          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary.)?([[:digit:]]+)?$/\4/g')
+          prerelease=$(echo "${{ inputs.tag }}" | sed -r 's/^(.*)-([v]?[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+)(-canary\.)?([[:digit:]]+)?$/\4/g')
           echo "prerelease=$prerelease" >> $GITHUB_OUTPUT
 
   release-notes:
