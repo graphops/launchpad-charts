@@ -81,7 +81,7 @@ jobs:
 
   call-update-helm-repo:
     needs:
-      - call-release
+      - call-trigger-tags
       - find-tags-to-release
     uses: ./.github/workflows/update-helm-repo.yaml
     permissions:
