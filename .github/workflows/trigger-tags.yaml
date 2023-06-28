@@ -68,7 +68,7 @@ jobs:
           echo "name=$name" >> $GITHUB_OUTPUT
 
       - name: Generate changelog and commit
-        with:
+        env:
           CHART: ${{ steps.chart_name.name }}
         run: |
           export GIT_CLIFF__GIT__TAG_PATTERN="$CHART-*"
