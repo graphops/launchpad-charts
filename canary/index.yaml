@@ -641,6 +641,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v4.2.990
+      created: "2023-06-29T02:29:07Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 0405f6deb9e4fb1bbd10166073d173f70c8324245f6e12a3f56097f418c5f3f0
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.2.1-canary.3/lighthouse-0.2.1-canary.3.tgz
+      version: 0.2.1-canary.3
+    - apiVersion: v2
       appVersion: v4.2.0
       created: "2023-06-26T20:04:52Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -925,6 +935,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: 3.11.0
+      created: "2023-06-28T21:57:52Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 55b76792dc1e04046fa497a5bdbd4f78001d816e2164f5ce4c2f9be80326a2f0
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.2.1/proxyd-0.2.1.tgz
+      version: 0.2.1
+    - apiVersion: v2
       appVersion: 3.16.0
       created: "2023-06-27T17:17:28Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
@@ -1063,4 +1083,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
       version: 0.1.0
-generated: "2023-06-27T17:19:33.726926805Z"
+generated: "2023-06-29T02:30:31.72741567Z"
