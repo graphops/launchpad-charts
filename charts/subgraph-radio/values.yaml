@@ -1,0 +1,112 @@
+# Default values for subgraph-radio.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+volumeClaimSpec:
+  accessModes: ["ReadWriteOnce"]
+  # -- The storage class to use when provisioning a persistent volume
+  storageClassName: openebs-zfs-localpv-compressed-128k 
+  resources:
+    requests:
+      # -- The amount of disk space to provision
+      storage: 50Gi
+
+service:
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/avalanche/statefulset.yaml)
+      # -- Service Port to expose JSON-RPC interface on
+      serverPort: 7700
+      # -- Service Port to expose Prometheus metrics on
+      httpMetrics: 2384
+      discv5Port: 9000
+      wakuPort: 60000
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Set custom aliases for preconfigured commands in your environment
+aliases: {}
+
+# -- Image for indexer-agent
+image:
+  repository: ghcr.io/graphops/subgraph-radio
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+env:
+  # -- Hostname of the primary shard PostgreSQL server
+  GRAPH_NODE_STATUS_ENDPOINT: ""
+  # -- Port for the primary shard PostgreSQL server
+  INDEXER_ADDRESS: ""
+  # -- Name of the primary shard database to use
+  REGISTRY_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/hopeyen/graphcast-registry-mainnet"
+  # -- The URL for your IPFS node
+  NETWORK_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/graphprotocol/graph-network-mainnet"
+  GRAPHCAST_NETWORK: "mainnet"
+  RUST_LOG: "info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"
+
+secretEnv: {}
+  # PRIVATE_KEY:
+  #   # -- Name of the secret that contains your PG password
+  #   secretName:
+  #   # -- Name of the data key in the secret that contains your PG password
+  #   key:
+  
+
+# -- Additional CLI arguments to pass to `indexer-agent`
+extraArgs: []
+
+# Increasing the grace termination period prevents Kubernetes
+# from killing the node process prematurely. Premature shutdown
+# can lead to data integrity issues
+# -- Amount of time to wait before force-killing the process
+terminationGracePeriodSeconds: 10
+
+# -- Annotations for the `Pod`
+podAnnotations: {}
+
+# -- Pod-wide security context
+podSecurityContext: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

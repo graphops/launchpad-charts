@@ -1,0 +1,28 @@
+{{- $values := $.Values }}
+{{- /* If serviceMonitors enabled in chart-wide values */ -}}
+{{- if $.Values.prometheus.serviceMonitors.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "subgraph-radio.fullname" . }}
+  labels:
+    {{- include "subgraph-radio.labels" . | nindent 4 }}
+spec:
+  jobLabel: "{{ .Release.Name }}"
+  selector:
+    matchLabels:
+      {{- include "subgraph-radio.selectorLabels" . | nindent 6 }}
+  endpoints:
+  - port: http-metrics
+    {{- with .Values.service.serviceMonitors.interval }}
+    interval: {{ . }}
+    {{- end }}
+    {{- with .Values.prometheus.serviceMonitors.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    honorLabels: true
+    {{- if .Values.prometheus.serviceMonitors.relabelings }}
+    relabelings:
+    {{- toYaml .Values.prometheus.serviceMonitors.relabelings | nindent 8 }}
+    {{- end }}
+{{- end }}

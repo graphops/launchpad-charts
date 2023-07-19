@@ -1,0 +1,104 @@
+{{- $values := $.Values }}
+{{/* START StatefulSet */}}
+---
+apiVersion: apps/v1
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
+metadata:
+  name: {{ include "subgraph-radio.fullname" . }}
+  labels:
+    {{- include "subgraph-radio.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "subgraph-radio.fullname" . }}-headless
+  replicas: 1 # Should only ever be one instance
+  selector:
+    matchLabels:
+      {{- include "subgraph-radio.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "subgraph-radio.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "subgraph-radio.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumeClaimTemplates:
+      - metadata:
+          name: subgraph-radio-data
+        spec:
+          {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+      containers:
+        - name: subgraph-radio
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext: {}
+          volumeMounts:
+            - name: subgraph-radio-data
+              mountPath: "/data"
+          env:
+            - name: PERSISTENCE_FILE_PATH
+              value: "/data/subgraph_radio_state.json"
+            - name: METRICS_PORT
+              value: "{{ $values.service.httpMetrics }}"
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- with $values.extraArgs }}
+          args:
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+          - name: http-metrics
+            containerPort: "{{ $values.service.httpMetrics }}" 
+            protocol: TCP
+          - name: server-port
+            containerPort: "{{ $values.service.serverPort }}" 
+            protocol: TCP
+          - name: waku-port
+            containerPort: "{{ $values.service.wakuPort }}" 
+            protocol: TCP
+          - name: discv5-port
+            containerPort: "{{ $values.service.discv5Port }}" 
+            protocol: UDP
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END StatefulSet */}}
