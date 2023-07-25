@@ -125,6 +125,14 @@
         "groupSlug": "proxyd",
         "commitMessageTopic": "{{groupSlug}} dependencies",
         "commitMessageExtra": ""
+      },
+      {
+        "description": "Group dependencies",
+        "matchPaths": ["charts/subgraph*/**"],
+        "groupName": "Subgraph-radio dependencies",
+        "groupSlug": "subgraphRadio",
+        "commitMessageTopic": "{{groupSlug}} dependencies",
+        "commitMessageExtra": ""
       }
     ]
 }
