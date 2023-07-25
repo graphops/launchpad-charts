@@ -16,6 +16,18 @@ The [Subgraph-Radio](https://github.com/graphops/subgraph-radio) a Graphcast Rad
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
 
+## Enabling inbound P2P dials
+
+By default, your subgraph-radio will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `p2pNodePort.enabled`, the exposed IP address on your arbitrum ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+p2pNodePort:
+  enabled: true
+  port: 31000 # Must be globally unique and available on the host
+```
+
 ## Quickstart
 
 To install the chart with the release name `my-release`:
