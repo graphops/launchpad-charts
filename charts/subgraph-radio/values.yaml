@@ -24,8 +24,6 @@ service:
       serverPort: 7700
       # -- Service Port to expose Prometheus metrics on
       httpMetrics: 2384
-      discv5Port: 9000
-      wakuPort: 60000
 
 prometheus:
   serviceMonitors:
@@ -57,14 +55,15 @@ image:
   tag: ""
 
 env:
-  # -- Hostname of the primary shard PostgreSQL server
+  # -- Graph Node endpoint for indexing statuses
   GRAPH_NODE_STATUS_ENDPOINT: ""
-  # -- Port for the primary shard PostgreSQL server
+  # -- Indexer address
   INDEXER_ADDRESS: ""
-  # -- Name of the primary shard database to use
+  # -- Subgraph endpoint to the Graphcast Registry
   REGISTRY_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/hopeyen/graphcast-registry-mainnet"
-  # -- The URL for your IPFS node
+  # -- Subgraph endpoint to The Graph network subgraph
   NETWORK_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/graphprotocol/graph-network-mainnet"
+  # -- Comma separated static list of content topics to subscribe to
   GRAPHCAST_NETWORK: "mainnet"
   RUST_LOG: "info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"
 
@@ -114,8 +113,10 @@ affinity: {}
 p2pNodePort:
   # -- Expose P2P port via NodePort
   enabled: false
-  # -- NodePort to be used. Must be unique.
-  port: 31000
+  # -- Waku NodePort to be used. Must be unique.
+  wakuPort: 60000
+  # -- Discv5 NodePort to be used. Must be unique.
+  discv5Port: 9000
   initContainer:
     image:
       # -- Container image to fetch nodeport information

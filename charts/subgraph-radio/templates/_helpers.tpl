@@ -61,11 +61,19 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "subgraph-radio.p2pPort" -}}
+{{- define "subgraph-radio.p2pPort.wakuPort" -}}
 {{- if .p2pNodePort.enabled }}
-{{- print .p2pNodePort.port }}
+{{- print .p2pNodePort.wakuPort }}
 {{- else }}
-{{- printf "30303" -}}
+{{- printf "60000" -}}
+{{- end }}
+{{- end -}}
+
+{{- define "subgraph-radio.p2pPort.discv5Port" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print .p2pNodePort.discv5Port }}
+{{- else }}
+{{- printf "9000" -}}
 {{- end }}
 {{- end -}}
 
