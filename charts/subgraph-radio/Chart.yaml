@@ -1,6 +1,6 @@
 apiVersion: v2
 name: subgraph-radio
-description: Deploy a preconfigured subgraph-radio container for to be used alongside the
+description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
 
 # A chart can be either an 'application' or a 'library' chart.
 #

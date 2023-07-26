@@ -128,7 +128,7 @@
       },
       {
         "description": "Group dependencies",
-        "matchPaths": ["charts/subgraph*/**"],
+        "matchPaths": ["charts/subgraph-radio/**"],
         "groupName": "Subgraph-radio dependencies",
         "groupSlug": "subgraphRadio",
         "commitMessageTopic": "{{groupSlug}} dependencies",
