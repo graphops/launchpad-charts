@@ -2,7 +2,7 @@
 
 Deploy a Graphcast Subgraph Radio into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1](https://img.shields.io/badge/AppVersion-0.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.2](https://img.shields.io/badge/AppVersion-0.1.2-informational?style=flat-square)
 
 ## Introduction
 
@@ -51,12 +51,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
  | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
- | env.GRAPHCAST_NETWORK | Comma separated static list of content topics to subscribe to | string | `"mainnet"` |
+ | env.GRAPHCAST_NETWORK | Supported Graphcast networks: mainnet, testnet | string | `"mainnet"` |
  | env.GRAPH_NODE_STATUS_ENDPOINT | Graph Node endpoint for indexing statuses | string | `""` |
  | env.INDEXER_ADDRESS | Indexer address | string | `""` |
  | env.NETWORK_SUBGRAPH | Subgraph endpoint to The Graph network subgraph | string | `"https://api.thegraph.com/subgraphs/name/graphprotocol/graph-network-mainnet"` |
  | env.REGISTRY_SUBGRAPH | Subgraph endpoint to the Graphcast Registry | string | `"https://api.thegraph.com/subgraphs/name/hopeyen/graphcast-registry-mainnet"` |
- | env.RUST_LOG |  | string | `"info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"` |
+ | env.RUST_LOG | Comma separated static list of content topics to subscribe to | string | `"info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | fullnameOverride |  | string | `""` |
  | image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphops/subgraph-radio","tag":""}` |
