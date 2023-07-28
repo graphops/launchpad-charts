@@ -1,0 +1,46 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Introduction
+
+The [Subgraph-Radio](https://docs.graphops.xyz/graphcast/radios/subgraph-radio) a Graphcast Radio focused on sending gossips about particular subgraphs on a P2P network.
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Enabling inbound P2P dials
+
+By default, your subgraph-radio release will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `p2pNodePort.enabled`, the exposed IP address on your arbitrum ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
+
+p2pNodePort:
+  enabled: true
+  port: 31000 # Must be globally unique and available on the host
+```
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

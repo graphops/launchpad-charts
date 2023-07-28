@@ -1,0 +1,162 @@
+{{- $values := $.Values }}
+{{/* START StatefulSet */}}
+---
+apiVersion: apps/v1
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
+metadata:
+  name: {{ include "subgraph-radio.fullname" . }}
+  labels:
+    {{- include "subgraph-radio.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "subgraph-radio.fullname" . }}-headless
+  replicas: 1 # Should only ever be one instance
+  selector:
+    matchLabels:
+      {{- include "subgraph-radio.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "subgraph-radio.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "subgraph-radio.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumeClaimTemplates:
+      - metadata:
+          name: subgraph-radio-data
+        spec:
+          {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+      initContainers:
+      {{- if $values.p2pNodePort.enabled }}
+        - name: init-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      containers:
+        - name: subgraph-radio
+          command:
+          - sh
+            - -ac
+            - |
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+            {{- end }}
+              set -ex;
+              exec /usr/local/bin/subgraph-radio
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --metrics-server.addr=0.0.0.0
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext: {}
+          volumeMounts:
+            - name: subgraph-radio-data
+              mountPath: "/data"
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            - name: tmp
+              mountPath: /tmp
+          env:
+            - name: PERSISTENCE_FILE_PATH
+              value: "/data/subgraph_radio_state.json"
+            - name: METRICS_PORT
+              value: "{{ $values.service.httpMetrics }}"
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- with $values.extraArgs }}
+          args:
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+          - name: http-metrics
+            containerPort: {{ $values.service.ports.httpMetrics }}
+            protocol: TCP
+          - name: server-port
+            containerPort: {{ $values.service.ports.serverPort }}
+            protocol: TCP
+          - name: waku-port
+            containerPort: {{ include "subgraph-radio.p2pPort.wakuPort" $values }}
+            protocol: TCP
+          - name: discv5-port
+            containerPort: {{ include "subgraph-radio.p2pPort.discv5Port" $values }}
+            protocol: UDP
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END StatefulSet */}}
