@@ -14,4 +14,4 @@ jobs:
           actions: 'add-labels'
           token: ${{ secrets.LABELS_TOKEN }}
           issue-number: ${{ github.event.issue.number }}
-          labels: 'awaiting-triage'
+          labels: 'meta:awaiting-triage'
