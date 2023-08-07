@@ -11,7 +11,7 @@ service:
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/avalanche/statefulset.yaml)
-      # -- Service Port to expose JSON-RPC interface on
+      # -- Service Port to expose HTTP server interface on
       serverPort: 7700
       # -- Service Port to expose Prometheus metrics on
       httpMetrics: 2384
@@ -37,7 +37,7 @@ serviceAccount:
 # -- Set custom aliases for preconfigured commands in your environment
 aliases: {}
 
-# -- Image for indexer-agent
+# -- Image for subgraph-radio
 image:
   repository: ghcr.io/graphops/subgraph-radio
   pullPolicy: IfNotPresent
