@@ -7,15 +7,6 @@ fullnameOverride: ""
 # -- Pull secrets required to fetch the Image
 imagePullSecrets: []
 
-volumeClaimSpec:
-  accessModes: ["ReadWriteOnce"]
-  # -- The storage class to use when provisioning a persistent volume
-  storageClassName: openebs-zfs-localpv-compressed-128k 
-  resources:
-    requests:
-      # -- The amount of disk space to provision
-      storage: 50Gi
-
 service:
     type: ClusterIP
     ports:
