@@ -13,6 +13,11 @@ spec:
   selector:
     matchLabels:
       {{- include "subgraph-radio.selectorLabels" . | nindent 6 }}
+  volumeClaimTemplates:
+  - metadata:
+      name: subgraph-radio-data
+    spec:
+      {{- toYaml $values.volumeClaimSpec | nindent 8 }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -32,11 +37,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      volumeClaimTemplates:
-      - metadata:
-          name: subgraph-radio-data
-        spec:
-          {{- toYaml $values.volumeClaimSpec | nindent 8 }}
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
@@ -79,7 +79,7 @@ spec:
       containers:
         - name: subgraph-radio
           command:
-          - sh
+            - sh
             - -ac
             - |
             {{- if $values.p2pNodePort.enabled }}
@@ -107,7 +107,7 @@ spec:
             - name: PERSISTENCE_FILE_PATH
               value: "/data/subgraph_radio_state.json"
             - name: METRICS_PORT
-              value: "{{ $values.service.httpMetrics }}"
+              value: "2384"
           {{- with $values.env }}
           {{- range $key, $val := .}}
           {{- if not (kindIs "invalid" $val) }}
@@ -132,10 +132,10 @@ spec:
           {{- end }}
           ports:
           - name: http-metrics
-            containerPort: {{ $values.service.ports.httpMetrics }}
+            containerPort: 2384
             protocol: TCP
-          - name: server-port
-            containerPort: {{ $values.service.ports.serverPort }}
+          - name: http-api
+            containerPort: 7700
             protocol: TCP
           - name: waku-port
             containerPort: {{ include "subgraph-radio.p2pPort.wakuPort" $values }}

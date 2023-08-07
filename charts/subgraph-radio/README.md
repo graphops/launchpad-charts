@@ -79,8 +79,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
  | resources |  | object | `{}` |
  | secretEnv |  | object | `{}` |
- | service.ports.httpMetrics | Service Port to expose Prometheus metrics on | int | `2384` |
- | service.ports.serverPort | Service Port to expose JSON-RPC interface on | int | `7700` |
+ | service.ports.http-api | Service Port to expose JSON-RPC interface on | int | `7700` |
+ | service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `2384` |
  | service.type |  | string | `"ClusterIP"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
