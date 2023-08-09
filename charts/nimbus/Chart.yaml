@@ -22,4 +22,4 @@ version: 0.3.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=statusim/nimbus-eth2
-appVersion: "multiarch-v22.12.0"
+appVersion: "multiarch-v23.7.0"
