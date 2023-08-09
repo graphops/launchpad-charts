@@ -49,7 +49,7 @@ spec:
       protocol: TCP
       targetPort: waku-p2p
       nodePort: {{ include "subgraph-radio.p2pPort.wakuPort" $values }}
-    - name: disv5-port
+    - name: discv5-port
       port: {{ include "subgraph-radio.p2pPort.discv5Port" $values }}
       protocol: UDP
       targetPort: discv5-p2p

@@ -37,6 +37,10 @@
         "matchPackageNames": ["thorax/erigon"],
         "allowedVersions": "<2000"
       },
+      {
+        "matchPackageNames": ["statusim/nimbus-eth2"],
+        "versioning": "regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
+      },
       // Group our dependencies
       {
         "description": "Group dependencies",
