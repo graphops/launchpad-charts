@@ -107,7 +107,7 @@ jobs:
           if [[ "$version" == *"-canary"* ]]; then
             release_stream="canary"
           else
-            release_stream="main"
+            release_stream="stable"
           fi
 
           echo "repo=${release_stream}" >> $GITHUB_OUTPUT
