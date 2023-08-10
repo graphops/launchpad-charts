@@ -4,20 +4,17 @@
 apiVersion: apps/v1
 kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
 metadata:
-  name: {{ include "subgraph-radio.fullname" . }}
+  name: {{ include "listener-radio.fullname" . }}
   labels:
-    {{- include "subgraph-radio.labels" . | nindent 4 }}
+    {{- include "listener-radio.labels" . | nindent 4 }}
 spec:
-  serviceName: {{ include "subgraph-radio.fullname" . }}-headless
+  serviceName: {{ include "listener-radio.fullname" . }}-headless
   replicas: 1 # Should only ever be one instance
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
-      {{- include "subgraph-radio.selectorLabels" . | nindent 6 }}
-  volumeClaimTemplates:
-  - metadata:
-      name: subgraph-radio-data
-    spec:
-      {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+      {{- include "listener-radio.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -25,13 +22,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "subgraph-radio.selectorLabels" . | nindent 8 }}
+        {{- include "listener-radio.selectorLabels" . | nindent 8 }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "subgraph-radio.serviceAccountName" . }}
+      serviceAccountName: {{ include "listener-radio.serviceAccountName" . }}
       {{- with $values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -77,16 +74,17 @@ spec:
               mountPath: /env
       {{- end }}
       containers:
-        - name: subgraph-radio
+        - name: listener-radio
           command:
-            - sh
+            - /bin/sh
             - -ac
             - |
             {{- if $values.p2pNodePort.enabled }}
               . /env/init-nodeport;
             {{- end }}
+              export DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME";
               set -ex;
-              exec /usr/local/bin/subgraph-radio
+              exec /usr/bin/dumb-init -- /usr/local/bin/listener-radio
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
@@ -96,8 +94,6 @@ spec:
           imagePullPolicy: {{ $values.image.pullPolicy }}
           securityContext: {}
           volumeMounts:
-            - name: subgraph-radio-data
-              mountPath: "/data"
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
               mountPath: /env
@@ -105,8 +101,6 @@ spec:
             - name: tmp
               mountPath: /tmp
           env:
-            - name: PERSISTENCE_FILE_PATH
-              value: "/data/subgraph_radio_state.json"
             - name: METRICS_PORT
               value: "2384"
             - name: SERVER_PORT
@@ -141,10 +135,10 @@ spec:
             containerPort: 7700
             protocol: TCP
           - name: waku-port
-            containerPort: {{ include "subgraph-radio.p2pPort.wakuPort" $values }}
+            containerPort: {{ include "listener-radio.p2pPort.wakuPort" $values }}
             protocol: TCP
           - name: discv5-port
-            containerPort: {{ include "subgraph-radio.p2pPort.discv5Port" $values }}
+            containerPort: {{ include "listener-radio.p2pPort.discv5Port" $values }}
             protocol: UDP
           {{- with $values.resources }}
           resources:
