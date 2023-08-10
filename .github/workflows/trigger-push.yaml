@@ -51,7 +51,7 @@ jobs:
               if [[ "$chart_version" == *"canary"* ]]; then
                 release_streams["canary"]=1
               else
-                release_streams["main"]=1
+                release_streams["stable"]=1
               fi
             fi
           done
