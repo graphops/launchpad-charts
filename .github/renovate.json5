@@ -41,6 +41,11 @@
         "matchPackageNames": ["statusim/nimbus-eth2"],
         "versioning": "regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
       },
+      {
+        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service"],
+        "allowedVersions": "!/\\-alpha.*$/",
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
+      },
       // Group our dependencies
       {
         "description": "Group dependencies",

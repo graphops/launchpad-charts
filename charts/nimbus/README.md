@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v22.12.0](https://img.shields.io/badge/AppVersion-multiarch--v22.12.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v23.7.0](https://img.shields.io/badge/AppVersion-multiarch--v23.7.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -113,7 +113,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.initChownData.image.repository | Container repository | string | `"busybox"` |
- | nimbus.initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | nimbus.initChownData.image.tag | Container tag | string | `"1.36.1"` |
  | nimbus.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | nimbus.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | nimbus.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
@@ -123,7 +123,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nimbus.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | nimbus.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | nimbus.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | nimbus.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |

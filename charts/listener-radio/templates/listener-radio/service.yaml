@@ -1,0 +1,60 @@
+{{- $values := $.Values }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "listener-radio.fullname" . }}-headless
+  labels:
+    {{- include "listener-radio.labels" . | nindent 4 }}
+spec:
+  clusterIP: None # Headless service
+  ports: []
+  selector:
+    {{- include "listener-radio.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "listener-radio.fullname" . }}
+  labels:
+    {{- include "listener-radio.labels" . | nindent 4 }}
+    serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "listener-radio.selectorLabels" . | nindent 4 }}
+{{- if $values.p2pNodePort.enabled }}
+{{- $port := $values.p2pNodePort.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "listener-radio.fullname" . }}-p2p-0
+  labels:
+    {{- include "listener-radio.labels" . | nindent 4 }}
+    pod: {{ include "listener-radio.fullname" . }}-0
+    type: p2p # this label is used by the initContainer to select this service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: waku-port
+      port: {{ include "listener-radio.p2pPort.wakuPort" $values }}
+      protocol: TCP
+      targetPort: waku-p2p
+      nodePort: {{ include "listener-radio.p2pPort.wakuPort" $values }}
+    - name: discv5-port
+      port: {{ include "listener-radio.p2pPort.discv5Port" $values }}
+      protocol: UDP
+      targetPort: discv5-p2p
+      nodePort: {{ include "listener-radio.p2pPort.discv5Port" $values }}
+  selector:
+    {{- include "$values.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "listener-radio.fullname" . }}-0"
+{{- end }}
