@@ -43,7 +43,8 @@
       },
       {
         "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service"],
-        "allowedVersions": "!/\\-alpha.*$/"
+        "allowedVersions": "!/\\-alpha.*$/",
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
       },
       // Group our dependencies
       {
