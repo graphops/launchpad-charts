@@ -46,7 +46,7 @@ serviceAccount:
 # -- Set custom aliases for preconfigured commands in your environment
 aliases: {}
 
-# -- Image for indexer-agent
+# -- Image for subgraph-radio
 image:
   repository: ghcr.io/graphops/subgraph-radio
   pullPolicy: IfNotPresent
