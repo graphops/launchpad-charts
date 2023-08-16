@@ -29,3 +29,58 @@ You can monitor volume usage by running df in O(1) since devices are mounted sep
 The size limit is enforced by the operating system, based on the backing file size.
 Since volumes are backed by different files, each file could be formatted using different filesystems, and/or customized with different filesystem options.
 
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/openebs-rawfile-localpv
+```
+
+## Upgrading
+
+We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
+
+This project uses [Semantic Versioning](https://semver.org/). Changes to the version of the application (the `appVersion`) that the Chart deploys will generally result in a patch version bump for the Chart. Breaking changes to the Chart or its `values.yaml` interface will be reflected with a major version bump.
+
+We do not recommend that you upgrade the application by overriding `image.tag`. Instead, use the version of the Chart that is built for your desired `appVersion`.
+
+## Values
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | controller.<<.image.pullPolicy |  | string | `"Always"` |
+ | controller.<<.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
+ | controller.<<.image.tag |  | string | `"0.8.0"` |
+ | controller.<<.resources.limits.cpu |  | int | `1` |
+ | controller.<<.resources.limits.memory |  | string | `"100Mi"` |
+ | controller.<<.resources.requests.cpu |  | string | `"10m"` |
+ | controller.<<.resources.requests.memory |  | string | `"100Mi"` |
+ | controller.<<.tolerations |  | list | `[]` |
+ | defaults.image.pullPolicy |  | string | `"Always"` |
+ | defaults.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
+ | defaults.image.tag |  | string | `"0.8.0"` |
+ | defaults.resources.limits.cpu |  | int | `1` |
+ | defaults.resources.limits.memory |  | string | `"100Mi"` |
+ | defaults.resources.requests.cpu |  | string | `"10m"` |
+ | defaults.resources.requests.memory |  | string | `"100Mi"` |
+ | defaults.tolerations |  | list | `[]` |
+ | imagePullSecrets |  | list | `[]` |
+ | node.<<.image.pullPolicy |  | string | `"Always"` |
+ | node.<<.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
+ | node.<<.image.tag |  | string | `"0.8.0"` |
+ | node.<<.resources.limits.cpu |  | int | `1` |
+ | node.<<.resources.limits.memory |  | string | `"100Mi"` |
+ | node.<<.resources.requests.cpu |  | string | `"10m"` |
+ | node.<<.resources.requests.memory |  | string | `"100Mi"` |
+ | node.<<.tolerations |  | list | `[]` |
+ | node.data_dir_path |  | string | `"/data"` |
+ | node.metrics.enabled |  | bool | `false` |
+ | provisionerName |  | string | `"rawfile.csi.openebs.io"` |
+ | serviceMonitor.enabled |  | bool | `false` |
+ | serviceMonitor.interval |  | string | `"1m"` |
+
+## Contributing
+
+We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.

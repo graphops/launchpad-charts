@@ -29,3 +29,19 @@ You can monitor volume usage by running df in O(1) since devices are mounted sep
 The size limit is enforced by the operating system, based on the backing file size.
 Since volumes are backed by different files, each file could be formatted using different filesystems, and/or customized with different filesystem options.
 
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

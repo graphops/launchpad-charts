@@ -21,10 +21,6 @@ node:
   <<: *defaults
   metrics:
     enabled: false
-  k8s_mountpoint: /var/lib/k0s/kubelet
-  driver_socket: /var/lib/k0s/kubelet/plugins/rawfile-csi/csi.sock
-  socket_dir: /var/lib/k0s/kubelet/plugins/rawfile-csi
-  registration_dir: /var/lib/k0s/kubelet/plugins_registry
   data_dir_path: /data
 
 imagePullSecrets: []

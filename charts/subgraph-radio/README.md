@@ -59,7 +59,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | env.RUST_LOG | Comma separated static list of content topics to subscribe to | string | `"info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | fullnameOverride |  | string | `""` |
- | image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphops/subgraph-radio","tag":""}` |
+ | image | Image for subgraph-radio | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphops/subgraph-radio","tag":""}` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | nameOverride |  | string | `""` |
