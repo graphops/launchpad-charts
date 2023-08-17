@@ -1,0 +1,16 @@
+{{- $labels := include "app.labels" . }}
+{{- range $lName, $dict := .Values.configMaps }}
+{{- $fullName := printf "%s-%s" (include "app.fullname" $) $lName }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+data: {{ toYaml $dict.data | nindent 2 }}
+{{- end }}
