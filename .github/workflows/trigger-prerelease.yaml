@@ -1,0 +1,12 @@
+name: Update Helm Repository
+
+on:
+  release:
+    types: [prereleased]
+
+  call-update-helm-repo-canary:
+    uses: ./.github/workflows/update-helm-repo.yaml
+    permissions:
+      contents: write # for updating index.yaml
+    with:
+      repo: canary

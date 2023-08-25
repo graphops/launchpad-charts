@@ -152,7 +152,7 @@ jobs:
       - name: Create release
         run: |
           if [ -z "${{ needs.init.outputs.prerelease }}" ]; then
-            gh release create -t ${{ needs.init.outputs.tag }} --verify-tag -F RELEASE-NOTES.md ${{ needs.init.outputs.tag }} ${{ needs.init.outputs.tag }}.tgz
+            gh release create -t ${{ needs.init.outputs.tag }} --verify-tag --draft --notes-file RELEASE-NOTES.md ${{ needs.init.outputs.tag }} ${{ needs.init.outputs.tag }}.tgz
           else
             gh release create -t ${{ needs.init.outputs.tag }} --verify-tag --prerelease -F RELEASE-NOTES.md ${{ needs.init.outputs.tag }} ${{ needs.init.outputs.tag }}.tgz
           fi

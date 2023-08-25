@@ -49,7 +49,7 @@ jobs:
       contents: write # for updating changelog
     needs:
       - init
-    if: ${{ needs.init.outputs.prerelease == '' }}
+    if: ${{ (needs.init.outputs.prerelease == '') && (false) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -92,8 +92,10 @@ jobs:
     uses: ./.github/workflows/make-chart-release.yaml
     permissions:
       contents: write # for updating index.yaml
+    needs:
+      - init
     with:
-      tag: ${{ github.ref_name }}
+      tag: ${{ needs.init.outputs.tag }}
 
   check-release-stream:
     runs-on: ubuntu-latest
@@ -119,5 +121,6 @@ jobs:
     uses: ./.github/workflows/update-helm-repo.yaml
     permissions:
       contents: write # for updating index.yaml
+    if: ${{ needs.check-release-stream.outputs.repo == 'canary' }}
     with:
-      repo: ${{ needs.check-release-stream.outputs.repo }}
+      repo: canary
