@@ -14,7 +14,7 @@ entries:
   arbitrum-classic:
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
-      created: "2023-08-16T08:47:25.112919152Z"
+      created: "2023-08-26T11:40:39.818711105Z"
       description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
       digest: a6c1864111e7a30d079fefef78c3867a537cac42af6176386cfc944b4baa8690
       name: arbitrum-classic
@@ -45,7 +45,7 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
-      created: "2023-08-16T08:47:25.11591374Z"
+      created: "2023-08-26T11:40:39.820838653Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 87bb9eac10cb5fe2286b72e58d9e749d848c98030e05181b240fc00436777a68
       name: arbitrum-nitro
@@ -76,7 +76,7 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.7.4
-      created: "2023-08-16T08:47:25.117598333Z"
+      created: "2023-08-26T11:40:39.82250669Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 8a65020d06927c52551bfb11eac49a78ac0b743d13b083e1faedb7cd55046c40
       name: celo
@@ -107,7 +107,7 @@ entries:
       version: 0.7.0
     - apiVersion: v2
       appVersion: v2.48.1
-      created: "2023-08-16T08:47:25.1756082Z"
+      created: "2023-08-26T11:40:39.879078867Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 40cf5b38fb3aa0c2c75d5039be31ae8240d5466b47a762d099e84cfbbf276302
       name: erigon
@@ -117,7 +117,7 @@ entries:
       version: 0.6.1-canary.3
     - apiVersion: v2
       appVersion: v2.48.0
-      created: "2023-08-16T08:47:25.174215905Z"
+      created: "2023-08-26T11:40:39.877734136Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 305f69d3df9184d3d06fa3ac4b3becc30b6e27a13bed82ec48020bc7dd527342
       name: erigon
@@ -127,7 +127,7 @@ entries:
       version: 0.6.1-canary.2
     - apiVersion: v2
       appVersion: v2.47.0
-      created: "2023-08-16T08:47:25.172830711Z"
+      created: "2023-08-26T11:40:39.875955996Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: fdaa903c6549b62043743cbada2de6e3dd1cad04a3278f6e7b5c8082d11470a1
       name: erigon
@@ -507,8 +507,58 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      appVersion: v0.20.21
+      created: "2023-08-26T11:37:34Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 04a9994c606859e79017e2d4ff5b787cd6bac2cd437ebe9c1d6cef6aff02990f
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.1/graph-network-indexer-0.2.1.tgz
+      version: 0.2.1
+    - apiVersion: v2
+      appVersion: v0.20.21
+      created: "2023-08-26T11:40:39.889349298Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 110dc6c84f5a90eb13485125c6a35fca917f3c7c35d9e5ecd481bd0802430691
+      name: graph-network-indexer
+      type: application
+      urls:
+        - graph-network-indexer-0.2.1-canary.5.tgz
+      version: 0.2.1-canary.5
+    - apiVersion: v2
+      appVersion: v0.20.20
+      created: "2023-08-26T11:40:39.88854258Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: f92620e207634a5bea305ca5aaf9de040e14f5821408a41e7834b4402dc46181
+      name: graph-network-indexer
+      type: application
+      urls:
+        - graph-network-indexer-0.2.1-canary.4.tgz
+      version: 0.2.1-canary.4
+    - apiVersion: v2
+      appVersion: v0.20.19
+      created: "2023-08-26T11:40:39.887730662Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: f69965747f042fdeca36e8e0f2df3e97267e3be3c1bf89d8e779634a05e65bca
+      name: graph-network-indexer
+      type: application
+      urls:
+        - graph-network-indexer-0.2.1-canary.3.tgz
+      version: 0.2.1-canary.3
+    - apiVersion: v2
+      appVersion: v0.20.19
+      created: "2023-08-26T11:40:39.886926244Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 911e6499df49e81f3a94f2addd94e38d8e2d1f2cad808d6161c06348c03e12fc
+      name: graph-network-indexer
+      type: application
+      urls:
+        - graph-network-indexer-0.2.1-canary.2.tgz
+      version: 0.2.1-canary.2
+    - apiVersion: v2
       appVersion: v0.20.18
-      created: "2023-08-16T08:47:25.18290077Z"
+      created: "2023-08-26T11:40:39.886117125Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 8331034e8a353d76717936f63bc12c43f565790a232d91bb282fc4aeb1285f78
       name: graph-network-indexer
@@ -528,7 +578,7 @@ entries:
       version: 0.2.0
     - apiVersion: v2
       appVersion: v0.20.17
-      created: "2023-08-16T08:47:25.181271077Z"
+      created: "2023-08-26T11:40:39.88410808Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 93aecf67741610d1753444ac8ae810260235619c140583b9d848f26fe27ea946
       name: graph-network-indexer
@@ -568,6 +618,36 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.32.0
+      created: "2023-08-26T11:40:39.900835757Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: c2f770da6b7b60a4fdf512809666f82956bc376a5c5816c02bb02dff650d3b8e
+      name: graph-node
+      type: application
+      urls:
+        - graph-node-0.2.1-canary.3.tgz
+      version: 0.2.1-canary.3
+    - apiVersion: v2
+      appVersion: v0.32.0
+      created: "2023-08-26T11:40:39.899944737Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 929f9138c6cc31e25066c015613b38891d343c535fdf94abeb0b843ec1745b7e
+      name: graph-node
+      type: application
+      urls:
+        - graph-node-0.2.1-canary.2.tgz
+      version: 0.2.1-canary.2
+    - apiVersion: v2
+      appVersion: v0.32.0
+      created: "2023-08-26T11:40:39.899043417Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: dc73eb672b00754f3db93afb80b66951d3f5dfa4a45bcd306cfe9f9fb121ff69
+      name: graph-node
+      type: application
+      urls:
+        - graph-node-0.2.1-canary.1.tgz
+      version: 0.2.1-canary.1
+    - apiVersion: v2
       appVersion: v0.31.0
       created: "2023-08-10T08:48:36Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -579,7 +659,7 @@ entries:
       version: 0.2.0
     - apiVersion: v2
       appVersion: v0.31.0
-      created: "2023-08-16T08:47:25.19048984Z"
+      created: "2023-08-26T11:40:39.897196975Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
       digest: d101156b87cef3f6d1673d0dedd7668952596791974dc964239323b9bd36adfa
       name: graph-node
@@ -661,7 +741,7 @@ entries:
   heimdall:
     - apiVersion: v2
       appVersion: v0.3.0
-      created: "2023-08-16T08:47:25.198993406Z"
+      created: "2023-08-26T11:40:39.909080943Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
       digest: 9112771c3907628538edf598121f6e2445c52e4db385ada529bac36f1c5dfa3e
       name: heimdall
@@ -712,7 +792,7 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v4.3.0
-      created: "2023-08-16T08:47:25.208757066Z"
+      created: "2023-08-26T11:40:39.917724138Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 0057157a1efdac48437c2f554723ebbb5a6fc026d7348db9c0666cb2cfd4fd04
       name: lighthouse
@@ -722,7 +802,7 @@ entries:
       version: 0.2.1-canary.4
     - apiVersion: v2
       appVersion: v4.2.990
-      created: "2023-08-16T08:47:25.206196477Z"
+      created: "2023-08-26T11:40:39.916550412Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 0405f6deb9e4fb1bbd10166073d173f70c8324245f6e12a3f56097f418c5f3f0
       name: lighthouse
@@ -732,7 +812,7 @@ entries:
       version: 0.2.1-canary.3
     - apiVersion: v2
       appVersion: v4.2.0
-      created: "2023-08-16T08:47:25.204979782Z"
+      created: "2023-08-26T11:40:39.915384686Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 97cb763d24e5be079c6997aca13d06063e6452db522a0c6e06bb0dc7b4435a6b
       name: lighthouse
@@ -742,7 +822,7 @@ entries:
       version: 0.2.1-canary.2
     - apiVersion: v2
       appVersion: v4.2.0
-      created: "2023-08-16T08:47:25.203749287Z"
+      created: "2023-08-26T11:40:39.912857429Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: aefd715770ae4a6143de8cfafe2e67b03df8eb5987e63d3dd7dcf90099bc4ef4
       name: lighthouse
@@ -773,7 +853,7 @@ entries:
   listener-radio:
     - apiVersion: v2
       appVersion: 0.0.1
-      created: "2023-08-16T08:47:25.209948262Z"
+      created: "2023-08-26T11:40:39.918838364Z"
       description: Deploy a Graphcast Listener Radio into your Kubernetes stack
       digest: 7b5f4946854c0deda65b020cc2f5121af6f43cbe3ab3491dc3502092297dc245
       name: listener-radio
@@ -794,7 +874,7 @@ entries:
   nethermind:
     - apiVersion: v2
       appVersion: 1.17.0-unstable
-      created: "2023-08-16T08:47:25.225757098Z"
+      created: "2023-08-26T11:40:39.935643143Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
       digest: 24e99c2eff0f52b21c99ca3380467cca64bb5326e696c7a61c96caf801a8d103
       name: nethermind
@@ -914,6 +994,26 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v23.8.0
+      created: "2023-08-26T10:53:23Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: ad5c7a3da99b6ae29392acbc08d88c72835f47a4286f6d370e63833b04591649
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.4.1/nimbus-0.4.1.tgz
+      version: 0.4.1
+    - apiVersion: v2
+      appVersion: multiarch-v23.8.0
+      created: "2023-08-26T11:40:39.951892009Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 96e11539cf43d5494b8cf911762f03307d6a0bdefa3317fc65d71ec2340414c7
+      name: nimbus
+      type: application
+      urls:
+        - nimbus-0.4.1-canary.1.tgz
+      version: 0.4.1-canary.1
+    - apiVersion: v2
       appVersion: multiarch-v23.7.0
       created: "2023-08-09T20:39:55Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -925,7 +1025,7 @@ entries:
       version: 0.4.0
     - apiVersion: v2
       appVersion: multiarch-v23.7.0
-      created: "2023-08-16T08:47:25.24021584Z"
+      created: "2023-08-26T11:40:39.949367752Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 0a6289bde83f221961a821fcc963c8d3ba65b53427bed31d8f7640b30e9f6f74
       name: nimbus
@@ -935,7 +1035,7 @@ entries:
       version: 0.3.1-canary.2
     - apiVersion: v2
       appVersion: multiarch-v22.12.0
-      created: "2023-08-16T08:47:25.238894445Z"
+      created: "2023-08-26T11:40:39.947982221Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: cd700221be8c2fb599e1d3360c1903a4e655de0229f7299797ae5702e227cd13
       name: nimbus
@@ -1046,7 +1146,7 @@ entries:
       version: 0.8.1
     - apiVersion: v2
       appVersion: 0.7.0
-      created: "2023-08-16T08:47:25.242856529Z"
+      created: "2023-08-26T11:40:39.955251185Z"
       description: RawFile Driver Container Storage Interface
       digest: 788a74d592cf109291495253ce501f53ef28bf99bf43370be4476cb033e455c7
       name: openebs-rawfile-localpv
@@ -1097,7 +1197,7 @@ entries:
       version: 0.3.0
     - apiVersion: v2
       appVersion: v4.2.5
-      created: "2023-08-16T08:47:25.258060268Z"
+      created: "2023-08-26T11:40:39.969815014Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 16e3fd33173e05509e91222fe3d1f175e7d685e4ca5372da5447b5505804f5e9
       name: proxyd
@@ -1107,7 +1207,7 @@ entries:
       version: 0.2.2-canary.2
     - apiVersion: v2
       appVersion: 3.16.0
-      created: "2023-08-16T08:47:25.257155872Z"
+      created: "2023-08-26T11:40:39.968896693Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: e0a8bcfce33749465220c711c1f15e3e3fab4135ae9446975016f22d88e63e59
       name: proxyd
@@ -1127,7 +1227,7 @@ entries:
       version: 0.2.1
     - apiVersion: v2
       appVersion: 3.16.0
-      created: "2023-08-16T08:47:25.25497798Z"
+      created: "2023-08-26T11:40:39.967112053Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 7134a7bf1ed8d4d6cf1a0a33cdefcd00a9563f30bddf0721c21d788dca0b695b
       name: proxyd
@@ -1137,7 +1237,7 @@ entries:
       version: 0.2.1-canary.2
     - apiVersion: v2
       appVersion: 3.16.0
-      created: "2023-08-16T08:47:25.253725286Z"
+      created: "2023-08-26T11:40:39.966200532Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: cf76d35a2bc5b7a9286a8595022e95ea4414e3a27fd19a518f22144c65adebb2
       name: proxyd
@@ -1267,7 +1367,17 @@ entries:
   subgraph-radio:
     - apiVersion: v2
       appVersion: 0.1.2
-      created: "2023-08-16T08:47:25.261460954Z"
+      created: "2023-08-26T11:40:39.973886105Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: 6f2fd4a2d619cc947e9e29816b249612d31c41d3d37cdcf10a8e61d0c9a1ea1b
+      name: subgraph-radio
+      type: application
+      urls:
+        - subgraph-radio-0.1.1-canary.3.tgz
+      version: 0.1.1-canary.3
+    - apiVersion: v2
+      appVersion: 0.1.2
+      created: "2023-08-26T11:40:39.973260191Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8161cad3c0265f6d48ba60eddd91f7de511d6cede656b88254220258d179fb80
       name: subgraph-radio
@@ -1277,7 +1387,7 @@ entries:
       version: 0.1.1-canary.2
     - apiVersion: v2
       appVersion: 0.1.2
-      created: "2023-08-16T08:47:25.260869657Z"
+      created: "2023-08-26T11:40:39.972655078Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: ee763cf2d5f20b2ec8e5d463a62f7ef7dd4916b8e58000713f9543ea2fb09f23
       name: subgraph-radio
@@ -1285,4 +1395,4 @@ entries:
       urls:
         - subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-08-16T08:47:25.108686269Z"
+generated: "2023-08-26T11:40:39.813818994Z"
