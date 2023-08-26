@@ -89,6 +89,9 @@ jobs:
     strategy:
       matrix:
         repo: ${{ fromJson(needs.find-tags-to-release.outputs.release-streams) }}
-    if: ${{ needs.find-tags-to-release.outputs.release-streams != '[]' }}
+    #if: ${{ needs.find-tags-to-release.outputs.release-streams != '[]' }}
+    #with:
+    #  repo: ${{ matrix.repo }}
+    # update only canary repo, as stable releases are being set as draft
     with:
-      repo: ${{ matrix.repo }}
+      repo: canary

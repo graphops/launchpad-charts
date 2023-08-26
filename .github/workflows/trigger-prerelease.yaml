@@ -4,6 +4,7 @@ on:
   release:
     types: [prereleased]
 
+jobs:
   call-update-helm-repo-canary:
     uses: ./.github/workflows/update-helm-repo.yaml
     permissions:
