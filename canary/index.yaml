@@ -508,6 +508,16 @@ entries:
   graph-network-indexer:
     - apiVersion: v2
       appVersion: v0.20.21
+      created: "2023-08-26T11:37:34Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 04a9994c606859e79017e2d4ff5b787cd6bac2cd437ebe9c1d6cef6aff02990f
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.1/graph-network-indexer-0.2.1.tgz
+      version: 0.2.1
+    - apiVersion: v2
+      appVersion: v0.20.21
       created: "2023-08-24T20:02:25Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 110dc6c84f5a90eb13485125c6a35fca917f3c7c35d9e5ecd481bd0802430691
@@ -985,6 +995,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v23.8.0
+      created: "2023-08-26T10:53:23Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: ad5c7a3da99b6ae29392acbc08d88c72835f47a4286f6d370e63833b04591649
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.4.1/nimbus-0.4.1.tgz
+      version: 0.4.1
+    - apiVersion: v2
+      appVersion: multiarch-v23.8.0
       created: "2023-08-24T00:03:31Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 96e11539cf43d5494b8cf911762f03307d6a0bdefa3317fc65d71ec2340414c7
@@ -1375,4 +1395,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-08-24T20:04:44.402714742Z"
+generated: "2023-08-26T11:41:25.937278451Z"
