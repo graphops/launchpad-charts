@@ -6,7 +6,7 @@ fullnameOverride: ""
 
 image:
   # -- Image for proxyd
-  repository: ethereumoptimism/proxyd
+  repository: us-docker.pkg.dev/oplabs-tools-artifacts/images/proxyd
   pullPolicy: IfNotPresent
   # -- Overrides the image tag
   # @default -- Chart.appVersion
@@ -210,6 +210,7 @@ configTemplate: |
   [backend_groups]
   {{- range $groupName, $groupMembers := .computed.backendGroups }}
   [backend_groups.{{ $groupName }}]
+  consensus_aware = true
   {{ toToml (dict "backends" $groupMembers) }}
   {{- end }}
   
