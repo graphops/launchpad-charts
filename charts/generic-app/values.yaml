@@ -1,0 +1,214 @@
+# Default values for app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- ConfigMaps to create
+configMaps: {}
+  # lnameHere:
+  #   data:
+  #     config.toml: |-
+  #      content
+# -- Secrets to create
+secrets: {}
+  # anotherlname:
+  #   data:
+  #     shhh.json: |
+  #       plaintext content
+
+# -- Applications to deploy
+apps: {}
+  # lnameOfApp:
+  #   enabled: true
+
+  #   kind: StatefulSet
+    
+  #   replicaCount: 1
+
+  #   annotations:
+  #     test: hekki
+
+
+  #   imagePullSecrets:
+  #     - name: secret-name
+
+  #   volumeClaims:
+  #     data:
+  #       accessModes: [ReadWriteOnce]
+  #       resources:
+  #         requests:
+  #           storage: 1Gi
+
+  #   initOperations:
+  #     enabled: true
+  #     passthroughMountPath: /init-passthrough
+      
+  #     steps:
+  #       exampleEnvsubstStep: 
+  #         enabled: true
+
+  #         image: bhgedigital/envsubst
+
+  #         command:
+  #           - sh
+  #           - -c
+  #           - set -ex &&
+  #             envsubst < /some/input/file.yaml > /init-passthrough/output.yaml &&
+  #             echo "Done!"
+
+  #         env:
+  #           LOG_LEVEL: debug
+  #           IPFS_LOGGING_FMT: nocolor
+  #           EXTERNAL_LB_IP: "123.123.123.123"
+
+
+  #         envRaw:
+  #           - name: POD_NAME
+  #             valueFrom:
+  #               fieldRef:
+  #                 fieldPath: metadata.name
+
+  #         secretEnv:
+  #           KEEP_ETHEREUM_PASSWORD:
+  #             lname: passphrase
+  #             key: passphrase
+
+  #         configMapMounts:
+  #           /mounts/config:
+  #             lname: config
+
+  #   containers:
+  #     app:
+  #       image:
+  #         repository: repo/image
+  #         tag: latest
+  #         pullPolicy: IfNotPresent
+
+  #       imagePullSecrets: []
+
+  #       ports:
+  #         tcp-3919: 3919
+
+  #       command:
+  #         - keep-client
+
+  #       args:
+  #         - -config
+  #         - /init-passthrough/config.toml
+  #         - start
+
+  #       env:
+  #         LOG_LEVEL: debug
+  #         IPFS_LOGGING_FMT: nocolor
+  #         EXTERNAL_LB_IP: "123.123.123.123"
+
+  #       envRaw:
+  #         - name: POD_NAME
+  #           valueFrom:
+  #             fieldRef:
+  #               fieldPath: metadata.name
+
+  #       secretEnv:
+  #         KEEP_ETHEREUM_PASSWORD:
+  #           lname: passphrase
+  #           key: passphrase
+
+  #       secretMounts:
+  #         /mounts/wallet:
+  #           lname: wallet
+
+  #       configMapMounts:
+  #         /mounts/config:
+  #           lname: config
+
+  #       volumeClaimMounts:
+  #         /mounts/data:
+  #           lname: data
+
+  #       securityContext: {}
+  #         # capabilities:
+  #         #   drop:
+  #         #   - ALL
+  #         # readOnlyRootFilesystem: true
+  #         # runAsNonRoot: true
+  #         # runAsUser: 1000
+
+  #       resources: {}
+  #         # We usually recommend not to specify default resources and to leave this as a conscious
+  #         # choice for the user. This also increases chances charts run on environments with little
+  #         # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  #         # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #         # limits:
+  #         #   cpu: 100m
+  #         #   memory: 128Mi
+  #         # requests:
+  #         #   cpu: 100m
+  #         #   memory: 128Mi
+  #       preInstallPod:
+  #         enabled: false
+  #         command: []
+
+  #       preUpgradePod:
+  #         enabled: false
+  #         command: []
+
+
+  #   service:
+  #     enabled: true
+  #     annotations: {}
+  #     type: ClusterIP
+  #     ports:
+  #       tcp-3919: 3919
+
+  #   # These are named services, additional to the default service above
+  #   # services:
+  #   #   external: # name
+  #   #     enabled: true
+  #   #     type: NodePort
+  #   #     ports:
+  #   #       tcp-3003: 3003
+
+
+  #   serviceAccount:
+  #     # Specifies whether a service account should be created
+  #     create: true
+  #     # Annotations to add to the service account
+  #     annotations: {}
+  #     # Optionally create an attach role:
+  #     # role:
+  #     #   rules:
+  #     #     - apiGroups: [""] # "" indicates the core API group
+  #     #       resources: ["services"]
+  #     #       verbs: ["get", "list"]
+  #     # The name of the service account to use.
+  #     # If not set and create is true, a name is generated using the fullname template
+  #     name:
+
+  #   podSecurityContext: {}
+  #     # fsGroup: 2000
+
+  #   nodeSelector: {}
+
+  #   tolerations: []
+
+  #   affinity: {}
+
+  #   # Inject YAML into pod definition
+  #   # injectPodYaml: {}
+
+# -- Ingress
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+

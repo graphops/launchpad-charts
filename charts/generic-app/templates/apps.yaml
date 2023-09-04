@@ -1,0 +1,480 @@
+{{- $labels := include "app.labels" . }}
+{{- range $lName, $lContext := $.Values.apps }}
+{{- $fullName := include "app.fullname" $ }}
+{{- $fullComponentName := printf "%s-%s" (include "app.fullname" $) $lName }}
+{{- $appKind := .kind }}
+{{- $appIsStatefulSet := eq $appKind "StatefulSet" }}
+{{- $appIsDeployment := eq $appKind "Deployment" }}
+
+{{- with $lContext }}
+{{- $initOperations := .initOperations }}
+{{- if .enabled }}
+{{- $serviceAccountBlock := or .serviceAccount dict }}
+{{- $serviceAccountName := default $fullComponentName $serviceAccountBlock.name }}
+
+{{- $imagePullSecrets := .imagePullSecrets }}
+
+{{- if $serviceAccountBlock.create }}
+---
+### Service Account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $serviceAccountName }}
+  labels: {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  {{- with $serviceAccountBlock.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- with $serviceAccountBlock.role }}
+---
+### Role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ $serviceAccountName }}-role
+  labels: {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+{{- with .rules }}
+rules: {{ toYaml . | nindent 2 }}
+{{- end }}
+---
+### Role Binding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ $serviceAccountName }}-role
+  labels: {{- $labels | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $serviceAccountName }}
+  namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ $serviceAccountName }}-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- end }}
+
+{{- range $containerName, $containerContext := .containers }}
+{{- if .preInstallPod.enabled }}
+---
+### Release Lifecycle Pod - Pre-Install
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $fullComponentName }}-{{ $containerName }}-pre-install-pod"
+  labels:
+    {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+    {{- with $imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ $serviceAccountName }}
+      securityContext:
+        {{- toYaml .podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if $initOperations.enabled }}
+        {{- range $name, $step := $initOperations.steps }}
+        - name: init-{{ $name }}
+          image: {{ $step.image }}
+          command: {{ toYaml $step.command | nindent 12 }}
+          env:
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := $step.secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- range $mountPath, $val := $step.configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := $step.secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+      restartPolicy: Never
+      containers:
+      {{- with $containerContext }}
+        - name: {{ $containerName }}-pre-install
+          command:
+            - /bin/sh
+            - -c 
+            - {{ .preInstallPod.command | quote }}
+          {{- with .args }}
+          args: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := .secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+          {{- if $initOperations.enabled }}
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- end }}
+          {{- range $mountPath, $val := .configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := .secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          securityContext: {{- toYaml .securityContext | nindent 12 }}
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          {{- with .ports }}
+          ports:
+          {{- range $portName, $port := . }}
+            - name: {{ $portName }}
+              containerPort: {{ $port }}
+              protocol: TCP
+          {{- end }}
+          {{- end }}
+      {{- end }}
+{{- end }}
+{{- if .preUpgradePod.enabled }}
+---
+### Release Lifecycle Pod - Pre-Upgrade
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $fullComponentName }}-{{ $containerName }}-pre-upgrade-pod"
+  labels: {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+    {{- with $imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ $serviceAccountName }}
+      securityContext: {{- toYaml .podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if $initOperations.enabled }}
+        {{- range $name, $step := $initOperations.steps }}
+        - name: init-{{ $name }}
+          image: {{ $step.image }}
+          command: {{ toYaml $step.command | nindent 12 }}
+          env:
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := $step.secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- range $mountPath, $val := $step.configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := $step.secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+      restartPolicy: Never
+      containers:
+      {{- with $containerContext }}
+        - name: {{ $containerName }}-pre-upgrade
+          command:
+            - /bin/sh
+            - -c 
+            - {{ .preUpgradePod.command | quote }}
+          {{- with .args }}
+          args: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := .secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+          {{- if $initOperations.enabled }}
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- end }}
+          {{- range $mountPath, $val := .configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := .secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          securityContext: {{- toYaml .securityContext | nindent 12 }}
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          {{- with .ports }}
+          ports:
+          {{- range $portName, $port := . }}
+            - name: {{ $portName }}
+              containerPort: {{ $port }}
+              protocol: TCP
+          {{- end }}
+          {{- end }}
+      {{- end }}
+{{- end }}
+{{- end }}
+
+{{ $services := or .services dict }}
+{{ $services := set $services "" .service }}
+{{- range $serviceName, $service := $services }}
+{{- if $service.enabled }}
+---
+### Service {{ $serviceName }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullComponentName }}{{ if not (empty $serviceName) }}-{{ $serviceName }}{{ end }}
+  labels: {{- $labels | nindent 4 }}
+  {{- with $service.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ $service.type }}
+  ports:
+  {{- range $portName, $port := $service.ports }}
+    - name: {{ $portName }}
+      port: {{ $port }}
+      targetPort: {{ $portName }}
+      protocol: TCP
+      {{- if eq $service.type "NodePort" }}
+      {{- with (get $service.nodePorts $portName) }}
+      nodePort: {{ . }}
+      {{- end }}
+      {{- end }}
+  {{- end }}
+  selector: {{- include "app.selectorLabels" $ | nindent 4 }}
+    lname: {{ $lName }}
+{{- end }}
+{{- end }}
+---
+### StatefulSet/Deployment
+apiVersion: apps/v1
+kind: {{ $appKind }}
+metadata:
+  name: {{ $fullComponentName }}
+  labels: {{- $labels | nindent 4 }}
+spec:
+  replicas: {{ .replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "app.selectorLabels" $ | nindent 6 }}
+      lname: {{ $lName }}
+  {{- if $appIsStatefulSet }}
+  serviceName: {{ $fullComponentName }}
+  volumeClaimTemplates:
+  {{- range $lname, $spec := .volumeClaims }}
+    - metadata:
+        name: {{ $lname }}
+      spec: {{ toYaml $spec | nindent 8 }}
+  {{- end }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selectorLabels" $ | nindent 8 }}
+        lname: {{ $lName }}
+      {{- with .annotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+    {{- with .imagePullSecrets }}
+      imagePullSecrets: {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ $serviceAccountName }}
+      securityContext: {{- toYaml .podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if $initOperations.enabled }}
+        {{- range $name, $step := $initOperations.steps }}
+        - name: init-{{ $name }}
+          image: {{ $step.image }}
+          command: {{ toYaml $step.command | nindent 12 }}
+          env:
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := $step.secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- range $mountPath, $val := $step.configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := $step.secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := $step.volumeClaimMounts }}
+            - name: {{ or $val.fullname $val.lname | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+      containers:
+      {{- range $containerName, $containerContext := .containers }}
+      {{- with $containerContext }}
+        - name: {{ $containerName }}
+          {{- with .command }}
+          command: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .args }}
+          args: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- range $key, $val := .secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          volumeMounts:
+          {{- if $initOperations.enabled }}
+            - name: init-passthrough
+              mountPath: {{ $initOperations.passthroughMountPath }}
+          {{- end }}
+          {{- range $mountPath, $val := .configMapMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- range $mountPath, $val := .secretMounts }}
+            - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- if $appIsStatefulSet }}
+          {{- range $mountPath, $val := .volumeClaimMounts }}
+            - name: {{ or $val.fullname $val.lname | quote }}
+              mountPath: {{ $mountPath | quote }}
+          {{- end }}
+          {{- end }}
+          securityContext: {{- toYaml .securityContext | nindent 12 }}
+          image: "{{ .image.repository }}:{{ .image.tag }}"
+          imagePullPolicy: {{ .image.pullPolicy }}
+          {{- with .ports }}
+          ports:
+          {{- range $portName, $port := . }}
+            - name: {{ $portName }}
+              containerPort: {{ $port }}
+              protocol: TCP
+          {{- end }}
+          {{- end }}
+          {{- with .livenessProbe }}
+          livenessProbe: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .readinessProbe }}
+          readinessProbe: {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .resources }}
+          resources: {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- with .nodeSelector }}
+      nodeSelector: {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .injectPodYaml }}
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .affinity }}
+      affinity: {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .tolerations }}
+      tolerations: {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: init-passthrough
+          emptyDir: {}
+      {{- range $cName, $container := .containers}}
+      {{- range $mountPath, $val := $container.configMapMounts }}
+        - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+          configMap:
+            name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+      {{- end }}
+      {{- range $mountPath, $val := $container.secretMounts }}
+        - name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+          secret:
+            secretName: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
+      {{- end }}
+      {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
