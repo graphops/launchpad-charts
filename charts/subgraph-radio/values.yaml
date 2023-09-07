@@ -114,11 +114,11 @@ affinity: {}
 
 p2pNodePort:
   # -- Expose P2P port via NodePort
-  enabled: false
+  enabled: true
   # -- Waku NodePort to be used. Must be unique.
-  wakuPort: 60000
+  wakuPort: 32767
   # -- Discv5 NodePort to be used. Must be unique.
-  discv5Port: 9000
+  discv5Port: 32766
   initContainer:
     image:
       # -- Container image to fetch nodeport information
