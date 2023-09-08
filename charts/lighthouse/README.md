@@ -2,7 +2,7 @@
 
 Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.4.0](https://img.shields.io/badge/AppVersion-v3.4.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.4.1](https://img.shields.io/badge/AppVersion-v4.4.1-informational?style=flat-square)
 
 ## Chart Features
 
@@ -90,7 +90,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | lighthouse.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.initChownData.image.repository | Container repository | string | `"busybox"` |
- | lighthouse.initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | lighthouse.initChownData.image.tag | Container tag | string | `"1.36.1"` |
  | lighthouse.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | lighthouse.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | lighthouse.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
@@ -100,7 +100,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | lighthouse.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | lighthouse.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
