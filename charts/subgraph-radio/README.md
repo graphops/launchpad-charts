@@ -77,6 +77,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
+ | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
+ | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
  | resources |  | object | `{}` |
  | secretEnv |  | object | `{}` |
  | service.ports.http-api | Service Port to expose JSON-RPC interface on | int | `7700` |
