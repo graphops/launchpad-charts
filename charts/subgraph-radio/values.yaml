@@ -140,7 +140,7 @@ affinity: {}
 
 p2pNodePort:
   # -- Expose P2P port via NodePort
-  enabled: true
+  enabled: false
   # -- Waku NodePort to be used. Must be unique.
   wakuPort: 32767
   # -- Discv5 NodePort to be used. Must be unique.

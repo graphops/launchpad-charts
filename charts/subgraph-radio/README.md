@@ -65,10 +65,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nodeSelector |  | object | `{}` |
  | p2pNodePort.discv5Port | Discv5 NodePort to be used. Must be unique. | int | `32766` |
- | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
+ | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | p2pNodePort.wakuPort | Waku NodePort to be used. Must be unique. | int | `32767` |
  | podAnnotations | Annotations for the `Pod` | object | `{}` |
  | podSecurityContext | Pod-wide security context | object | `{}` |
