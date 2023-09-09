@@ -94,8 +94,8 @@ spec:
               {{- end }}
               {{- if $values.p2pNodePort.enabled }}
                 --waku-addr=$EXTERNAL_IP \
-                --waku-port=$EXTERNAL_PORT \
-                --discv5-port=$EXTERNAL_PORT \
+                --waku-port=$EXTERNAL_PORT_WAKU \
+                --discv5-port=$EXTERNAL_PORT_DISCV5 \
               {{- else }}
                 --waku-port={{ include "subgraph-radio.p2pPort.wakuPort" $values }} \
                 --discv5-port={{ include "subgraph-radio.p2pPort.discv5Port" $values }} \
