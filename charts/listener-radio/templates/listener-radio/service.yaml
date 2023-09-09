@@ -55,6 +55,6 @@ spec:
       targetPort: discv5-p2p
       nodePort: {{ include "listener-radio.p2pPort.discv5Port" $values }}
   selector:
-    {{- include "$values.selectorLabels" . | nindent 4 }}
+    {{- include "listener-radio.selectorLabels" . | nindent 4 }}
     statefulset.kubernetes.io/pod-name: "{{ include "listener-radio.fullname" . }}-0"
 {{- end }}
