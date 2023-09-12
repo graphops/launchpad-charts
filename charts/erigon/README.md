@@ -133,7 +133,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
  | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
- | rbac.create | Specifies whether RBAC resources are to be created | bool | `false` |
+ | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
  | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
  | rpcdaemon.affinity |  | object | `{}` |
  | rpcdaemon.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
@@ -168,7 +168,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | statefulNode.nodeSelector |  | object | `{}` |
- | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
+ | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
