@@ -2,7 +2,7 @@
 
 Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0-unstable](https://img.shields.io/badge/AppVersion-1.16.0--unstable-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.17.0-unstable](https://img.shields.io/badge/AppVersion-1.17.0--unstable-informational?style=flat-square)
 
 ## Chart Features
 
@@ -114,7 +114,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nethermind.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nethermind.initChownData.image.repository | Container repository | string | `"busybox"` |
- | nethermind.initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | nethermind.initChownData.image.tag | Container tag | string | `"1.36.1"` |
  | nethermind.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
  | nethermind.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
  | nethermind.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
@@ -124,7 +124,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nethermind.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nethermind.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | nethermind.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | nethermind.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | nethermind.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nethermind.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nethermind.podSecurityContext | Pod-wide security context | object | `{"fsGroup":0,"runAsGroup":0,"runAsNonRoot":false,"runAsUser":0}` |

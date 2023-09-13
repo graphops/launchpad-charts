@@ -68,7 +68,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | p2pNodePort.wakuPort | Waku NodePort to be used. Must be unique. | int | `60000` |
  | podAnnotations | Annotations for the `Pod` | object | `{}` |
  | podSecurityContext | Pod-wide security context | object | `{}` |
