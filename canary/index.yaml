@@ -14,6 +14,16 @@ entries:
   arbitrum-classic:
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: d7fad12a19cf606b059b95521e5380e234c25f40cc86ab884e3823a2ee59c63a
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.2-canary.2/arbitrum-classic-0.1.2-canary.2.tgz
+      version: 0.1.2-canary.2
+    - apiVersion: v2
+      appVersion: v1.4.5-e97c1a4
       created: "2023-06-26T20:20:10Z"
       description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
       digest: a6c1864111e7a30d079fefef78c3867a537cac42af6176386cfc944b4baa8690
@@ -43,6 +53,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
       version: 0.1.0
   arbitrum-nitro:
+    - apiVersion: v2
+      appVersion: v2.0.10-73224e3
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 463785e9dff2a4b165c9e2c0ea47256387757b60268aea1b53f7d4f7542dfe70
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.2-canary.2/arbitrum-nitro-0.1.2-canary.2.tgz
+      version: 0.1.2-canary.2
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
       created: "2023-06-26T20:20:10Z"
@@ -105,6 +125,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.49.1
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 2bacf5983cdbe1c2c2db9704ec87a1983f0e75315de4a5e9030df4211000c062
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.2-canary.1/erigon-0.8.2-canary.1.tgz
+      version: 0.8.2-canary.1
     - apiVersion: v2
       appVersion: v2.49.1
       created: "2023-09-12T03:45:03Z"
@@ -589,6 +619,16 @@ entries:
   graph-network-indexer:
     - apiVersion: v2
       appVersion: v0.20.22
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 370d290eac9afd79bce836a50fd839bf5e392811ada70a88bf2705a6a68dcf9a
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.2-canary.3/graph-network-indexer-0.2.2-canary.3.tgz
+      version: 0.2.2-canary.3
+    - apiVersion: v2
+      appVersion: v0.20.22
       created: "2023-09-08T04:57:09Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 526bf448b1be90ec3fade7b10ff595d6bdfd7f426c17faae800566ee0d40a40f
@@ -718,6 +758,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.32.0
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: bd06e56a2f05ae29f9c6120a2e9f4476d6b37dbfd8c7c1accd0b060bcf300a2d
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.2.2-canary.2/graph-node-0.2.2-canary.2.tgz
+      version: 0.2.2-canary.2
     - apiVersion: v2
       appVersion: v0.32.0
       created: "2023-09-08T04:57:09Z"
@@ -923,6 +973,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v4.4.1
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: acb9dcebd0ebb60ecb98399e20563c30af6cfccd79a52d1423c371ddaddcb280
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.1-canary.1/lighthouse-0.3.1-canary.1.tgz
+      version: 0.3.1-canary.1
+    - apiVersion: v2
+      appVersion: v4.4.1
       created: "2023-09-09T00:31:28Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: c1e2c12463834bbe7e5b53208875e85f320a8d8b9cde627dfdba9dc74389788a
@@ -1024,6 +1084,16 @@ entries:
   listener-radio:
     - apiVersion: v2
       appVersion: 0.0.1
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy a Graphcast Listener Radio into your Kubernetes stack
+      digest: e15bf8fe01c0e3f88ca3917183d13928f19c64e894f348bebd5659b4b92f07e7
+      name: listener-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.1-canary.2/listener-radio-0.1.1-canary.2.tgz
+      version: 0.1.1-canary.2
+    - apiVersion: v2
+      appVersion: 0.0.1
       created: "2023-08-10T18:02:15Z"
       description: Deploy a Graphcast Listener Radio into your Kubernetes stack
       digest: 7b5f4946854c0deda65b020cc2f5121af6f43cbe3ab3491dc3502092297dc245
@@ -1043,6 +1113,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.0/listener-radio-0.1.0.tgz
       version: 0.1.0
   nethermind:
+    - apiVersion: v2
+      appVersion: 1.17.0-unstable
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 5efc28df0ae39cb68a7b052d5da3887e4a47ed043df38f89cfb0e77e70c401db
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.1-canary.1/nethermind-0.4.1-canary.1.tgz
+      version: 0.4.1-canary.1
     - apiVersion: v2
       appVersion: 1.17.0-unstable
       created: "2023-09-09T00:37:54Z"
@@ -1184,6 +1264,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
+    - apiVersion: v2
+      appVersion: multiarch-v23.9.0
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: e6e4e3dd86a75ad2e78fbc04eba43edebff9c00490614bbf592402270cb62053
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.2-canary.1/nimbus-0.5.2-canary.1.tgz
+      version: 0.5.2-canary.1
     - apiVersion: v2
       appVersion: multiarch-v23.9.0
       created: "2023-09-12T03:50:53Z"
@@ -1608,6 +1698,16 @@ entries:
   subgraph-radio:
     - apiVersion: v2
       appVersion: 0.1.2
+      created: "2023-09-13T16:52:25Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: 53ef00fb50446d30f17c72c76563347de263171eda7646d938edf0391265b9da
+      name: subgraph-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.4/subgraph-radio-0.1.1-canary.4.tgz
+      version: 0.1.1-canary.4
+    - apiVersion: v2
+      appVersion: 0.1.2
       created: "2023-08-16T18:55:53Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 6f2fd4a2d619cc947e9e29816b249612d31c41d3d37cdcf10a8e61d0c9a1ea1b
@@ -1636,4 +1736,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-09-12T20:04:24.469368402Z"
+generated: "2023-09-13T16:54:19.973479562Z"
