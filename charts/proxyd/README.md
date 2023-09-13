@@ -2,7 +2,7 @@
 
 Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 3.16.0](https://img.shields.io/badge/AppVersion-3.16.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.2.5](https://img.shields.io/badge/AppVersion-v4.2.5-informational?style=flat-square)
 
 ## Introduction
 
@@ -137,7 +137,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
- | image.repository | Image for proxyd | string | `"ethereumoptimism/proxyd"` |
+ | image.repository | Image for proxyd | string | `"us-docker.pkg.dev/oplabs-tools-artifacts/images/proxyd"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | nameOverride |  | string | `""` |
