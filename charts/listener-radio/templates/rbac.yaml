@@ -3,47 +3,47 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "listener-radio.labels" . | nindent 4 }}
 rules:
 {{- toYaml .Values.rbac.rules | nindent 0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "listener-radio.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "erigon.serviceAccountName" . }}
+    name: {{ include "listener-radio.serviceAccountName" . }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "listener-radio.labels" . | nindent 4 }}
 rules:
 {{- toYaml .Values.rbac.clusterRules | nindent 0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
   labels:
-    {{- include "erigon.labels" . | nindent 4 }}
+    {{- include "listener-radio.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "listener-radio.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "erigon.serviceAccountName" . }}
+    name: {{ include "listener-radio.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 {{- end }}

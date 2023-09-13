@@ -2,7 +2,7 @@
 
 Deploy a Graphcast Listener Radio into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.0.1](https://img.shields.io/badge/AppVersion-0.0.1-informational?style=flat-square)
 
 ## Introduction
 
@@ -66,7 +66,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | p2pNodePort.wakuPort | Waku NodePort to be used. Must be unique. | int | `60000` |
  | podAnnotations | Annotations for the `Pod` | object | `{}` |
  | podSecurityContext | Pod-wide security context | object | `{}` |
