@@ -66,10 +66,12 @@ spec:
             - -c
             - >
               set -ex;
-              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_PORT_WAKU=$(kubectl get services {{ include "subgraph-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="waku-port")].nodePort}');
+              export EXTERNAL_PORT_DISCV5=$(kubectl get services {{ include "subgraph-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="discv5-port")].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
               export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
-              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_PORT_WAKU=$EXTERNAL_PORT_WAKU" >  /env/init-nodeport;
+              echo "EXTERNAL_PORT_DISCV5=$EXTERNAL_PORT_DISCV5" >>  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;
           volumeMounts:
@@ -79,7 +81,7 @@ spec:
       containers:
         - name: subgraph-radio
           command:
-            - sh
+            - /bin/sh
             - -ac
             - |
             {{- if $values.p2pNodePort.enabled }}
@@ -89,6 +91,14 @@ spec:
               exec /usr/local/bin/subgraph-radio
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
+              {{- end }}
+              {{- if $values.p2pNodePort.enabled }}
+                --waku-addr=$EXTERNAL_IP \
+                --waku-port=$EXTERNAL_PORT_WAKU \
+                --discv5-port=$EXTERNAL_PORT_DISCV5 \
+              {{- else }}
+                --waku-port={{ include "subgraph-radio.p2pPort.wakuPort" $values }} \
+                --discv5-port={{ include "subgraph-radio.p2pPort.discv5Port" $values }} \
               {{- end }}
                 --metrics-host=0.0.0.0 \
                 --server-host=0.0.0.0
