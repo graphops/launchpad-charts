@@ -56,7 +56,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
  | heimdall.image.pullPolicy |  | string | `"IfNotPresent"` |
  | heimdall.image.repository | Image for Heimdall | string | `"maticnetwork/heimdall"` |
- | heimdall.image.tag |  | string | `"v0.3.0"` |
+ | heimdall.image.tag |  | string | `"v0.3.5"` |
  | heimdall.nodeSelector |  | object | `{}` |
  | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |

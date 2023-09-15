@@ -2,7 +2,7 @@
 
 Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.9.7](https://img.shields.io/badge/AppVersion-v1.9.7-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.9](https://img.shields.io/badge/AppVersion-v1.10.9-informational?style=flat-square)
 
 ## Chart Features
 
@@ -54,12 +54,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | avalanche.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | avalanche.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | avalanche.initChownData.image.repository | Container repository | string | `"busybox"` |
- | avalanche.initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | avalanche.initChownData.image.tag | Container tag | string | `"1.36.1"` |
  | avalanche.nodeSelector |  | object | `{}` |
  | avalanche.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | avalanche.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | avalanche.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | avalanche.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | avalanche.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | avalanche.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | avalanche.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | avalanche.podSecurityContext | Pod-wide security context | object | `{"fsGroup":0,"runAsGroup":0,"runAsNonRoot":false,"runAsUser":0}` |
