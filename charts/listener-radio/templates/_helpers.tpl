@@ -55,7 +55,7 @@ Create the name of the service account to use
 */}}
 {{- define "listener-radio.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "listener-radio.fullname" .) .Values.serviceAccount.name }}
+{{- default (printf "%s-%s" (include "listener-radio.fullname" .) .Release.Namespace) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
