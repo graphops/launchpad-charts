@@ -59,7 +59,7 @@ Create the name of the service account to use
 */}}
 {{- define "nethermind.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "nethermind.fullname" .) .Values.serviceAccount.name }}
+{{- default (printf "%s-%s" (include "nethermind.fullname" .) .Release.Namespace) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
