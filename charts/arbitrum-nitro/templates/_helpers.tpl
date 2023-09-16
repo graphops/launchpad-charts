@@ -59,7 +59,7 @@ Create the name of the service account to use
 */}}
 {{- define "arbitrum-nitro.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "arbitrum-nitro.fullname" .) .Values.serviceAccount.name }}
+{{- default (printf "%s-%s" (include "arbitrum-nitro.fullname" .) .Release.Namespace) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
