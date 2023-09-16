@@ -55,8 +55,7 @@ Create the name of the service account to use
 */}}
 {{- define "subgraph-radio.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- printf "%s-%s" (include "subgraph-radio.fullname" .) .Release.Namespace }}
-{{- else }}
+{{- default (printf "%s-%s" (include "subgraph-radio.fullname" .) .Release.Namespace) .Values.serviceAccount.name }}{{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
