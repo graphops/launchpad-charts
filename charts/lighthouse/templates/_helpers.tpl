@@ -59,7 +59,7 @@ Create the name of the service account to use
 */}}
 {{- define "lighthouse.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "lighthouse.fullname" .) .Values.serviceAccount.name }}
+{{- printf "%s-%s" (include "lighthouse.fullname" .) .Release.Namespace }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
