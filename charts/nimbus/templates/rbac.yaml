@@ -3,7 +3,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
   labels:
     {{- include "nimbus.labels" . | nindent 4 }}
 rules:
@@ -12,13 +12,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
   labels:
     {{- include "nimbus.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ include "nimbus.serviceAccountName" . }}
@@ -26,7 +26,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
   labels:
     {{- include "nimbus.labels" . | nindent 4 }}
 rules:
@@ -35,13 +35,13 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
   labels:
     {{- include "nimbus.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ .Release.Name }}-{{ .Release.Namespace }}
+  name: {{ include "nimbus.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ include "nimbus.serviceAccountName" . }}
