@@ -16698,6 +16698,7 @@ async function query() {
         node {
             name
             isPrerelease
+            isDraft
             description
             createdAt
             releaseAssets(last: 1) {
@@ -16734,7 +16735,7 @@ async function query() {
 
   const uploadResponse = await artifactClient.uploadArtifact(
     'releases',
-    [ 'releases.json' ],
+    ['releases.json'],
     '.',
     options
   )
