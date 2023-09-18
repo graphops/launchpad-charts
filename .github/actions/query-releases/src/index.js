@@ -25,6 +25,7 @@ async function query() {
         node {
             name
             isPrerelease
+            isDraft
             description
             createdAt
             releaseAssets(last: 1) {

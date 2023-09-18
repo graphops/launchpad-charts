@@ -54,9 +54,9 @@ jobs:
           helm repo index .releases/
 
           if [[ '${{ inputs.repoName }}' == 'stable' ]]; then
-            filter=(jq '.[] | select(.isPrerelease == false)')
+            filter=(jq '.[] | select(.isDraft == false) | select(.isPrerelease == false)')
           else
-            filter=(jq '.[]')
+            filter=(jq '.[] | select(.isDraft == false)')
           fi
 
           for release in $(cat releases.json | "${filter[@]}" | jq -c '. | { name: .name, date: .createdAt, url: .releaseAssets.nodes[].downloadUrl }'); do
