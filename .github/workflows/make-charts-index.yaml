@@ -47,17 +47,17 @@ jobs:
         run: |
           mkdir .releases
 
-          for chart_url in $(cat releases.json| jq -r '.[].releaseAssets.nodes[].downloadUrl'); do
-            wget -P .releases/ "$chart_url";
-          done
-
-          helm repo index .releases/
-
           if [[ '${{ inputs.repoName }}' == 'stable' ]]; then
             filter=(jq '.[] | select(.isDraft == false) | select(.isPrerelease == false)')
           else
             filter=(jq '.[] | select(.isDraft == false)')
           fi
+
+          for chart_url in $(cat releases.json| "${filter[@]}" | jq -r '.releaseAssets.nodes[].downloadUrl'); do
+            wget -P .releases/ "$chart_url";
+          done
+
+          helm repo index .releases/
 
           for release in $(cat releases.json | "${filter[@]}" | jq -c '. | { name: .name, date: .createdAt, url: .releaseAssets.nodes[].downloadUrl }'); do
             name=$(echo "$release" | jq -r '.name' | sed -r 's/(.*)-([0-9]+\.[0-9]+\.[0-9]+.*)/\1/g')
