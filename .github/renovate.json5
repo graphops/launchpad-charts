@@ -151,5 +151,13 @@
         "commitMessageTopic": "{{groupSlug}} dependencies",
         "commitMessageExtra": ""
       }
-    ]
+    ],
+
+    "postUpgradeTasks": {
+      "commands": [
+        bash src/scripts/renovate.sh"
+      ],
+      "fileFilters": ["charts/**/README.md", "charts/**/README.md.gotmpl"],
+      "executionMode": "update"
+    }
 }
