@@ -155,7 +155,7 @@
 
     "postUpgradeTasks": {
       "commands": [
-        bash src/scripts/renovate.sh"
+        "bash scripts/renovate.sh"
       ],
       "fileFilters": ["charts/**/README.md", "charts/**/README.md.gotmpl"],
       "executionMode": "update"
