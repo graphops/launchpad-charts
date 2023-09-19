@@ -38,5 +38,5 @@ done
 
 # Generate documentation.
 echo "Generating documentation..."
-helm-docs --template-files="$TEMPLATE_FILES"
+helm-docs --template-files=./templates.gotmpl --template-files=README.md.gotmpl
 echo "Documentation has been generated successfully."
