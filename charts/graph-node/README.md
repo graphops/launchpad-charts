@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.2](https://img.shields.io/badge/Version-0.2.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.32.0](https://img.shields.io/badge/AppVersion-v0.32.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.32.0](https://img.shields.io/badge/AppVersion-v0.32.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -216,6 +216,10 @@ The following additional template variables are computed and injected into the t
 
 You can use these keys in your custom configuration template (e.g. `{{ .computed.computedValue }}`).
 
+## Grafana Integration
+
+This chart supports integration with the [Grafana Chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) to automatically create [bundled Dashboards](dashboards) and Grafana Data Sources for each configured Graph Node Store. See keys under `grafana` in [Values](#Values) for configuration options.
+
 ## Upgrading
 
 We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
@@ -240,8 +244,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
- | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
- | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"topologyAwareRouting":{"enabled":false},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
+ | grafana.datasources | Enable creation of Grafana Data Sources for each Graph Node store using an init container | bool | `false` |
+ | grafana.datasourcesGraphNodeGroupName | Name of the Graph Node group that should be used to create Grafana Data Sources | string | `"block-ingestor"` |
+ | grafana.datasourcesSecretLabel | Must match `sidecar.datasources.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_datasource"` |
+ | grafana.datasourcesSecretLabelValue | Must match `sidecar.datasources.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
  | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432}` |
@@ -279,6 +287,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
+ | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
+ | rbac.rules[0].apiGroups[0] |  | string | `""` |
+ | rbac.rules[0].resources[0] |  | string | `"secrets"` |
+ | rbac.rules[0].verbs[0] |  | string | `"get"` |
+ | rbac.rules[0].verbs[1] |  | string | `"create"` |
+ | rbac.rules[0].verbs[2] |  | string | `"patch"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |

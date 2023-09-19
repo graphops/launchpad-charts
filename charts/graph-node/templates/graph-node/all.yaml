@@ -102,9 +102,99 @@ spec:
             name: {{ include "graph-node.fullname" . }}-config
       initContainers:
         - name: {{ $groupName }}-init
-          image: busybox:stable
+          image: lachlanevenson/k8s-kubectl:v1.25.4
           imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- if ne $groupName $.Values.blockIngestorGroupName }}
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+          {{- end }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              {{- if $.Values.grafana.datasources }}
+              {{- if eq $groupName $.Values.grafana.datasourcesGraphNodeGroupName }}
+              apply_grafana_datasources(){
+              echo "Grafana Datasource creation enabled for this group, {{ $groupName }}"
+              {{- range $storeName, $storeValues := $.Values.store }}
+              {{- if $storeValues.enabled }}
+              connection_string="{{ $storeValues.connection }}"
+              if [[ $connection_string == postgresql://* ]]; then
+                prefix_removed=${connection_string#postgresql://}
+              elif [[ $connection_string == postgres://* ]]; then
+                prefix_removed=${connection_string#postgres://}
+              else
+                echo "Invalid connection string "$connection_string", unable to parse and create Grafana Data Source Secret."
+                return
+              fi
+              user=$(echo $prefix_removed | sed -n 's,^\([^:@]*\).*,\1,p')
+              password=$(echo $prefix_removed | sed -n 's,^.*:\([^@]*\)@.*,\1,p')
+              host=$(echo $prefix_removed | sed -n 's,^.*@\([^:/]*\).*,\1,p')
+              port=$(echo $prefix_removed | sed -n 's,^.*@[^:]*:\([^/]*\).*,\1,p')
+              database=$(echo $prefix_removed | sed -n 's,^.*/\(.*\),\1,p')
+              secret_value=$(
+              cat <<EOL | base64 | tr -d '\n'
+              apiVersion: 1
+              datasources:
+              - name: {{ $.Release.Namespace }}-graph-node-store-{{ $storeName }}
+                uid: {{ $.Release.Namespace }}-graph-node-store-{{ $storeName }}
+                type: postgres
+                url: "$host"
+                port: "$port"
+                database: "$database"
+                user: "$user"
+                secureJsonData:
+                  password: "$password"
+              EOL
+              )
+              cat <<EOL > "{{ $storeName }}.yaml"
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: graph-node-{{ $storeName }}-datasource
+                labels:
+                  {{ $.Values.grafana.datasourcesSecretLabel }}: {{ $.Values.grafana.datasourcesSecretLabelValue | quote }}
+                  namespace: {{ $.Release.Namespace }}
+              data:
+                datasource-graph-node-store-{{ $storeName }}.yaml: "$secret_value"
+              EOL
+              {{- end }}
+              {{- end }}
+              unset connection_string user password host port database prefix_removed
+              {{- range $storeName, $storeValues := $.Values.store }}
+              (set -x; kubectl apply -f "{{ $storeName }}.yaml")
+              {{- end }}
+              }
+              {{- else }}
+              echo "Grafana Datasource creation enabled for {{ $.Values.grafana.datasourcesGraphNodeGroupName }}, not this group, {{ $groupName }}. Skipping..."
+              {{- end }}
+              apply_grafana_datasources
+              {{- end }}
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+
           securityContext:
             privileged: true # required for ulimit change
       containers:

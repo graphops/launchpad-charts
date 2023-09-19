@@ -198,6 +198,10 @@ The following additional template variables are computed and injected into the t
 
 You can use these keys in your custom configuration template (e.g. `{{`{{ .computed.computedValue }}`}}`).
 
+## Grafana Integration
+
+This chart supports integration with the [Grafana Chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) to automatically create [bundled Dashboards](dashboards) and Grafana Data Sources for each configured Graph Node Store. See keys under `grafana` in [Values](#Values) for configuration options.
+
 {{ template "graphops.upgradingSection" . }}
 
 {{ template "chart.requirementsSection" . }}
