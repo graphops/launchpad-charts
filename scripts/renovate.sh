@@ -27,15 +27,6 @@ echo "Installing helm-docs..."
 go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
 echo "helm-docs has been successfully installed."
 
-# Validate the existence of template files.
-TEMPLATE_FILES="./templates.gotmpl README.md.gotmpl"
-
-for file in $TEMPLATE_FILES; do
-  if [ ! -f "$file" ]; then
-    error_exit "Template file '$file' not found."
-  fi
-done
-
 # Generate documentation.
 echo "Generating documentation..."
 helm-docs --template-files=./templates.gotmpl --template-files=README.md.gotmpl
