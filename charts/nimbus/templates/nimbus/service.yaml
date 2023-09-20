@@ -24,6 +24,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  {{- if $values.service.topologyAwareRouting.enabled }}
+  annotations:
+    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
+    service.kubernetes.io/topology-mode: "auto"
+    {{- else }}
+    service.kubernetes.io/topology-aware-hints: "auto"
+    {{- end }}
+  {{- end }}
   name: {{ include "nimbus.fullname" . }}-{{ $componentName }}
   labels:
     {{- include "nimbus.labels" . | nindent 4 }}

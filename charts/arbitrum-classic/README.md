@@ -137,6 +137,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | arbitrum.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | arbitrum.service.ports.http-rpc | Service Port to expose engineAPI interface on | int | `9656` |
  | arbitrum.service.ports.ws |  | int | `8548` |
+ | arbitrum.service.topologyAwareRouting.enabled |  | bool | `false` |
  | arbitrum.service.type |  | string | `"ClusterIP"` |
  | arbitrum.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | arbitrum.tolerations |  | list | `[]` |

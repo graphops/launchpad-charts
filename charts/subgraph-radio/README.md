@@ -84,6 +84,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | secretEnv |  | object | `{}` |
  | service.ports.http-api | Service Port to expose JSON-RPC interface on | int | `7700` |
  | service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `2384` |
+ | service.topologyAwareRouting.enabled |  | bool | `false` |
  | service.type |  | string | `"ClusterIP"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |

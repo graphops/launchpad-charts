@@ -137,6 +137,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nethermind.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | nethermind.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | nethermind.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | nethermind.service.topologyAwareRouting.enabled |  | bool | `false` |
  | nethermind.service.type |  | string | `"ClusterIP"` |
  | nethermind.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nethermind.tolerations |  | list | `[]` |

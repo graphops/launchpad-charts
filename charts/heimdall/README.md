@@ -64,6 +64,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.restServer | Options for Heimdall rest-server sidecar | object | `{"extraArgs":[],"resources":{}}` |
  | heimdall.service.ports.http-rest |  | int | `1317` |
  | heimdall.service.ports.http-trpc |  | int | `26657` |
+ | heimdall.service.topologyAwareRouting.enabled |  | bool | `false` |
  | heimdall.service.type |  | string | `"ClusterIP"` |
  | heimdall.tolerations |  | list | `[]` |
  | heimdall.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |

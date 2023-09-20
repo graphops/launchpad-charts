@@ -68,6 +68,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | avalanche.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `9651` |
  | avalanche.service.ports.http-p2p |  | int | `9655` |
  | avalanche.service.ports.http-port |  | int | `9656` |
+ | avalanche.service.topologyAwareRouting.enabled |  | bool | `false` |
  | avalanche.service.type |  | string | `"ClusterIP"` |
  | avalanche.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | avalanche.tolerations |  | list | `[]` |
