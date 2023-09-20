@@ -1668,6 +1668,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.3.0
+      created: "2023-09-20T14:45:43Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: ddd8a197db7e51b208984d5c4de7ad030a0944945b8172e4ca304c9ae1c16b8f
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.4-canary.3/proxyd-0.3.4-canary.3.tgz
+      version: 0.3.4-canary.3
+    - apiVersion: v2
+      appVersion: v4.3.0
       created: "2023-09-19T16:56:00Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 9c1fddb1854d88d6aa9a4e5c3606a457b19128f93189e85aa39eab1f53c998da
@@ -1908,6 +1918,16 @@ entries:
   subgraph-radio:
     - apiVersion: v2
       appVersion: 0.1.7
+      created: "2023-09-20T14:45:35Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: 888cc0047fb8405549d9a2cc1ab16228527122b4cb7826313af92d7a7308152c
+      name: subgraph-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.3-canary.4/subgraph-radio-0.2.3-canary.4.tgz
+      version: 0.2.3-canary.4
+    - apiVersion: v2
+      appVersion: 0.1.7
       created: "2023-09-19T16:02:22Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 2bab2004194ecf99f4e5607e3bef6d9ed7b298886640430fe35bd2d6a8248bdb
@@ -2026,4 +2046,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-09-19T16:57:39.282864839Z"
+generated: "2023-09-20T14:48:16.025848863Z"
