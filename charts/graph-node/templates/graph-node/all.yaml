@@ -153,6 +153,7 @@ spec:
               host=$(echo $prefix_removed | sed -n 's,^.*@\([^:/]*\).*,\1,p')
               port=$(echo $prefix_removed | sed -n 's,^.*@[^:]*:\([^/]*\).*,\1,p')
               database=$(echo $prefix_removed | sed -n 's,^.*/\(.*\),\1,p')
+              host="$host.{{ $.Release.Namespace }}"
               secret_value=$(
               cat <<EOL | base64 | tr -d '\n'
               apiVersion: 1
@@ -186,10 +187,10 @@ spec:
               (set -x; kubectl apply -f "{{ $storeName }}.yaml")
               {{- end }}
               }
+              apply_grafana_datasources
               {{- else }}
               echo "Grafana Datasource creation enabled for {{ $.Values.grafana.datasourcesGraphNodeGroupName }}, not this group, {{ $groupName }}. Skipping..."
               {{- end }}
-              apply_grafana_datasources
               {{- end }}
               set -ex
               ulimit -n 65536
