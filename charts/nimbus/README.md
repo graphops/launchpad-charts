@@ -130,6 +130,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.resources |  | object | `{}` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
  | nimbus.service.ports.http-nimbus | Service Port to expose JSON-RPC interface on | int | `5052` |
+ | nimbus.service.topologyAwareRouting.enabled |  | bool | `false` |
  | nimbus.service.type |  | string | `"ClusterIP"` |
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |

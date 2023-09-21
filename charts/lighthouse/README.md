@@ -2,7 +2,7 @@
 
 Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.4.1](https://img.shields.io/badge/AppVersion-v4.4.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.2](https://img.shields.io/badge/Version-0.3.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.4.1](https://img.shields.io/badge/AppVersion-v4.4.1-informational?style=flat-square)
 
 ## Chart Features
 
@@ -107,6 +107,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.resources |  | object | `{}` |
  | lighthouse.service.ports.http-lighthouse | Service Port to expose JSON-RPC interface on | int | `5052` |
  | lighthouse.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `5054` |
+ | lighthouse.service.topologyAwareRouting.enabled |  | bool | `false` |
  | lighthouse.service.type |  | string | `"ClusterIP"` |
  | lighthouse.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | lighthouse.tolerations |  | list | `[]` |

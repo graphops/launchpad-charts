@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.49.2](https://img.shields.io/badge/AppVersion-v2.49.2-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.8.3](https://img.shields.io/badge/Version-0.8.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.49.2](https://img.shields.io/badge/AppVersion-v2.49.2-informational?style=flat-square)
 
 ## Features
 
@@ -182,6 +182,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | statefulNode.service.topologyAwareRouting.enabled |  | bool | `false` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | statefulNode.tolerations |  | list | `[]` |

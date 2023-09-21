@@ -72,6 +72,8 @@ graphNodeDefaults:
     fsGroup: 101337
 
   service:
+    topologyAwareRouting:
+      enabled: false
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
