@@ -1083,6 +1083,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v4.4.1
+      created: "2023-09-16T15:13:46Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 4561705fd0cb4b8e20875390d78eecee1aff6ea89aa96b4794e59f2ac7d433b9
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.1/lighthouse-0.3.1.tgz
+      version: 0.3.1
+    - apiVersion: v2
+      appVersion: v4.4.1
       created: "2023-09-13T16:53:28Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: b3ae85ab2ca9fa5c3d11b2a903fb6f07a4b47f2e6257ab057cba86f034b1bfc5
@@ -1273,6 +1283,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.0/listener-radio-0.1.0.tgz
       version: 0.1.0
   nethermind:
+    - apiVersion: v2
+      appVersion: 1.17.0-unstable
+      created: "2023-09-16T15:10:14Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 2e0e609e8d58061cb6c079ed69799823c54ec0f32291dadb8108330b71c0b0e0
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.1/nethermind-0.4.1.tgz
+      version: 0.4.1
     - apiVersion: v2
       appVersion: 1.17.0-unstable
       created: "2023-09-13T16:53:28Z"
@@ -2086,4 +2106,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-09-21T15:39:10.146847576Z"
+generated: "2023-09-21T15:39:32.480504894Z"
