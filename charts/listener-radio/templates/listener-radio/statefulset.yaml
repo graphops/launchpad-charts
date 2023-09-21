@@ -86,7 +86,7 @@ spec:
             {{- end }}
               export DATABASE_URL="postgres://$DATABASE_USER:$DATABASE_PASSWORD@$DATABASE_HOST:$DATABASE_PORT/$DATABASE_NAME";
               set -ex;
-              exec /usr/bin/dumb-init -- /usr/local/bin/listener-radio
+              exec /usr/bin/dumb-init -- /usr/local/bin/listener-radio \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
