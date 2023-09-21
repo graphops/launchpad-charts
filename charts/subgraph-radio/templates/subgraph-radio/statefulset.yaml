@@ -88,7 +88,7 @@ spec:
               . /env/init-nodeport;
             {{- end }}
               set -ex;
-              exec /usr/local/bin/subgraph-radio
+              exec /usr/local/bin/subgraph-radio \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
