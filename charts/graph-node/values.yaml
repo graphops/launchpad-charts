@@ -24,6 +24,20 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # @default -- See `values.yaml`
+  rules:
+    # Required for the init container to create Grafana Datasource Secrets
+    - apiGroups: [""]
+      resources:
+      - "secrets"
+      verbs:
+      - "get"
+      - "create"
+      - "patch"
+
 prometheus:
   serviceMonitors:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
@@ -39,7 +53,15 @@ grafana:
   # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
-  dashboardsConfigMapLabelValue: ""
+  dashboardsConfigMapLabelValue: "1"
+  # -- Enable creation of Grafana Data Sources for each Graph Node store using an init container
+  datasources: false
+  # -- Name of the Graph Node group that should be used to create Grafana Data Sources
+  datasourcesGraphNodeGroupName: "block-ingestor"
+  # -- Must match `sidecar.datasources.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  datasourcesSecretLabel: grafana_datasource
+  # -- Must match `sidecar.datasources.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  datasourcesSecretLabelValue: "1"
 
 # -- Default values for all Group Node Groups
 graphNodeDefaults:
