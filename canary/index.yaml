@@ -207,6 +207,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v2.50.0
+      created: "2023-09-28T10:02:50Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 475f3905131232d8b023ff1c0a46af3f369fd8fadeaac1c995fc47c72ac48a86
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.4-canary.2/erigon-0.8.4-canary.2.tgz
+      version: 0.8.4-canary.2
+    - apiVersion: v2
       appVersion: v2.49.3
       created: "2023-09-27T17:24:19Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -909,6 +919,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.32.0
+      created: "2023-09-28T10:02:50Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 7cd0bb44811665f1e41073d3e1988a49590ee4288c67adb8e3e5af8bf845af2b
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.1-canary.3/graph-node-0.3.1-canary.3.tgz
+      version: 0.3.1-canary.3
     - apiVersion: v2
       appVersion: v0.32.0
       created: "2023-09-27T17:24:19Z"
@@ -2307,4 +2327,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-09-27T17:27:13.564809017Z"
+generated: "2023-09-28T10:04:38.461360707Z"
