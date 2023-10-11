@@ -155,6 +155,16 @@ entries:
       version: 0.1.0
   avalanche:
     - apiVersion: v2
+      appVersion: v1.10.12
+      created: "2023-10-11T04:02:57Z"
+      description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
+      digest: 066ac7f7dc01188c470a5523910762e62524ac71e061934ae9d3f831b243f33b
+      name: avalanche
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/avalanche-0.1.3-canary.2/avalanche-0.1.3-canary.2.tgz
+      version: 0.1.3-canary.2
+    - apiVersion: v2
       appVersion: v1.10.11
       created: "2023-09-23T00:03:58Z"
       description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
@@ -2397,4 +2407,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-10-10T18:06:27.620959147Z"
+generated: "2023-10-11T04:04:43.016885204Z"
