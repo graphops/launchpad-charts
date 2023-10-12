@@ -83,16 +83,18 @@ image:
   tag: ""
 
 env:
+  # -- Indexer Management Server endpoint
+  INDEXER_MANAGEMENT_SERVER_ENDPOINT: ""
   # -- Graph Node endpoint for indexing statuses
   GRAPH_NODE_STATUS_ENDPOINT: ""
   # -- Indexer address
   INDEXER_ADDRESS: ""
   # -- Subgraph endpoint to the Graphcast Registry
-  REGISTRY_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/hopeyen/graphcast-registry-mainnet"
+  REGISTRY_SUBGRAPH: ""
   # -- Subgraph endpoint to The Graph network subgraph
-  NETWORK_SUBGRAPH: "https://api.thegraph.com/subgraphs/name/graphprotocol/graph-network-mainnet"
+  NETWORK_SUBGRAPH: ""
   # -- Supported Graphcast networks: mainnet, testnet
-  GRAPHCAST_NETWORK: "mainnet"
+  GRAPHCAST_NETWORK: ""
   # -- Comma separated static list of content topics to subscribe to
   RUST_LOG: "info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"
   # -- For more details of other available env variables you can set, check https://docs.graphops.xyz/graphcast/radios/subgraph-radio#advanced-configuration
