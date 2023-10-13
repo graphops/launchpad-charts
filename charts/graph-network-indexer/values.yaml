@@ -118,6 +118,8 @@ indexerAgent:
     fsGroup: 101337
 
   service:
+    topologyAwareRouting:
+      enabled: false
     type: ClusterIP
     ports: # Valid keys are names of ports that are exposed by the Pod
       # -- Service Port to expose Indexer Management API on
@@ -187,6 +189,8 @@ indexerService:
     fsGroup: 101337
 
   service:
+    topologyAwareRouting:
+      enabled: false
     type: ClusterIP
     ports: # Valid keys are names of ports that are exposed by the Pod
       # -- Service Port to expose Query API on
