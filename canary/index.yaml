@@ -2068,6 +2068,16 @@ entries:
   openebs-rawfile-localpv:
     - apiVersion: v2
       appVersion: 0.8.0
+      created: "2023-10-24T22:20:05Z"
+      description: RawFile Driver Container Storage Interface
+      digest: 9f05cfcf0233cf737179ad19bfa6a75d5b9e42241b425349f086a284166950b1
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.3/openebs-rawfile-localpv-0.8.3.tgz
+      version: 0.8.3
+    - apiVersion: v2
+      appVersion: 0.8.0
       created: "2023-08-16T04:41:14Z"
       description: RawFile Driver Container Storage Interface
       digest: 9533b1dfaa4ef875cb9cb18738a3cbe9ebd0eb05f2570dc2901d7f3d67d16141
@@ -2567,4 +2577,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-10-24T22:22:05.899253885Z"
+generated: "2023-10-24T22:49:51.106704864Z"
