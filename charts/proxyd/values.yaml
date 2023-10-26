@@ -162,21 +162,32 @@ rpcMethodMappings:
   trace_replayBlockTransactions: archive-trace
   trace_replayTransaction: archive-trace
 
-# -- The configuration template that is rendered by Helm
-# @default -- See default template in [values.yaml](values.yaml)
-configTemplate: |
-  [server]
-  # Host for the proxyd RPC server to listen on.
+# -- TOML configuration for server
+serverConfig: |
+  # Host for the proxyd RPC server to listen on
   rpc_host = "0.0.0.0"
   # Port for the above.
   rpc_port = 8545
-  # Maximum client body size, in bytes, that the server will accept.
-  max_body_size_bytes = 104857600 # 100 MiB
-  max_concurrent_rpcs = 0
+  # Maximum client body size, in bytes, that the server will accept
+  max_body_size_bytes = 10737420000 # 10 GiB
+  # Maximum number of concurrent RPCs that the server will accept
+  max_concurrent_rpcs = 0 # unlimited
   # Timeout for requests
   timeout_seconds = 300
 
-  [metrics]
+# -- TOML configuration for backend
+backendConfig: |
+  # How long proxyd should wait for a backend response before timing out.
+  response_timeout_seconds = 300
+  # Maximum response size, in bytes, that proxyd will accept from a backend.
+  max_response_size_bytes = 10737420000 # 10 GiB
+  # Maximum number of times proxyd will try a backend before giving up.
+  max_retries = 3
+  # Number of seconds to wait before trying an unhealthy backend again.
+  out_of_service_seconds = 10
+
+# -- TOML configuration for metrics
+metricsConfig: |
   # Whether or not to enable Prometheus metrics.
   enabled = true
   # Host for the Prometheus metrics endpoint to listen on.
@@ -184,15 +195,17 @@ configTemplate: |
   # Port for the above.
   port = 9761
 
+# -- The configuration template that is rendered by Helm
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+  [server]
+  {{ .Values.serverConfig }}
+
+  [metrics]
+  {{ .Values.metricsConfig }}
+
   [backend]
-  # How long proxyd should wait for a backend response before timing out.
-  response_timeout_seconds = 300
-  # Maximum response size, in bytes, that proxyd will accept from a backend.
-  max_response_size_bytes = 104857600 # 100 MiB
-  # Maximum number of times proxyd will try a backend before giving up.
-  max_retries = 3
-  # Number of seconds to wait before trying an unhealthy backend again.
-  out_of_service_seconds = 10
+  {{ .Values.backendConfig }}
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
