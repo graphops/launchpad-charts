@@ -121,6 +121,7 @@ spec:
                 --node.rpc.tracing.enable \
                 --node.cache.allow-slow-lookup \
                 --node.rpc.tracing.namespace="trace" \
+                --node.rpc.enable-l1-calls \
                 --metrics \
                 --metrics-server.addr=0.0.0.0 \
               {{- range $arg := $values.extraArgs }}
