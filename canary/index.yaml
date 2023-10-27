@@ -155,6 +155,16 @@ entries:
       version: 0.1.0
   avalanche:
     - apiVersion: v2
+      appVersion: v1.10.14
+      created: "2023-10-27T01:18:11Z"
+      description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
+      digest: 672b8288411684df69010d19e5b8c895349a786b371f6b19f53cadd717074d1f
+      name: avalanche
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/avalanche-0.1.3-canary.4/avalanche-0.1.3-canary.4.tgz
+      version: 0.1.3-canary.4
+    - apiVersion: v2
       appVersion: v1.10.13
       created: "2023-10-18T00:03:14Z"
       description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
@@ -226,6 +236,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.53.1
+      created: "2023-10-27T01:18:24Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 503babf2d45902dcc866b0e29d2efbd3627825e131ecf960e8b112c1f27521c5
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.5-canary.10/erigon-0.8.5-canary.10.tgz
+      version: 0.8.5-canary.10
     - apiVersion: v2
       appVersion: v2.53.0
       created: "2023-10-25T14:02:40Z"
@@ -910,6 +930,16 @@ entries:
   graph-network-indexer:
     - apiVersion: v2
       appVersion: v0.20.23
+      created: "2023-10-27T01:18:18Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 30ff48ac9a849f2476f5fb3082e57c4c064a2e788f5437d5cb13b229cf27c25f
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.3-canary.2/graph-network-indexer-0.2.3-canary.2.tgz
+      version: 0.2.3-canary.2
+    - apiVersion: v2
+      appVersion: v0.20.23
       created: "2023-10-13T20:02:57Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 1c126cec87abf143e5d138f3c474306e7081a5d47f44c97c1ce75f5eb3fe2f39
@@ -1089,6 +1119,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.33.0
+      created: "2023-10-27T01:18:18Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 78ba195c4fab80c91ea314c9a863786d0d05a02c6a4bcf0131e1a2ff1ca3f07a
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.3-canary.1/graph-node-0.3.3-canary.1.tgz
+      version: 0.3.3-canary.1
     - apiVersion: v2
       appVersion: v0.32.0
       created: "2023-10-11T22:06:28Z"
@@ -2597,4 +2637,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-10-26T15:41:17.420958814Z"
+generated: "2023-10-27T01:20:02.356795918Z"
