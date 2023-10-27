@@ -136,17 +136,3 @@ nitro:
     antiAffinityByHostname: true
 
   affinity: {}
-
-  p2pNodePort:
-    # -- Expose P2P port via NodePort
-    enabled: false
-    # -- NodePort to be used. Must be unique.
-    port: 31000
-    initContainer:
-      image:
-        # -- Container image to fetch nodeport information
-        repository: lachlanevenson/k8s-kubectl
-        # -- Container tag
-        tag: v1.25.4
-        # -- Container pull policy
-        pullPolicy: IfNotPresent

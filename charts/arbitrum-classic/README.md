@@ -2,7 +2,7 @@
 
 Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.5-e97c1a4](https://img.shields.io/badge/AppVersion-v1.4.5--e97c1a4-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.4.5-e97c1a4](https://img.shields.io/badge/AppVersion-v1.4.5--e97c1a4-informational?style=flat-square)
 
 ## Features
 
@@ -123,11 +123,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | arbitrum.extraArgs | Additional CLI arguments to pass to `arb-node` | list | `[]` |
  | arbitrum.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | arbitrum.nodeSelector |  | object | `{}` |
- | arbitrum.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
- | arbitrum.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | arbitrum.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | arbitrum.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | arbitrum.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | arbitrum.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | arbitrum.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | arbitrum.resources |  | object | `{}` |
