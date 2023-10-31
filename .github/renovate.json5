@@ -48,7 +48,7 @@
       },
       {
         "matchPackageNames": ["offchainlabs/arb-node", "offchainlabs/nitro-node"],
-        "versioning": "loose"
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>[a-zA-Z0-9]+))?$"
       },
       // Group our dependencies
       {
