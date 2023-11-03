@@ -335,6 +335,7 @@ metadata:
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
 spec:
   type: {{ $values.service.type }}
   ports:
@@ -364,6 +365,7 @@ spec:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
+      serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:
     - port: http-metrics
       {{- with .Values.prometheus.serviceMonitors.interval }}
