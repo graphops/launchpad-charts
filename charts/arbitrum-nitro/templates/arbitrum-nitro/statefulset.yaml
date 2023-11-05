@@ -61,7 +61,7 @@ spec:
               set -x
               STORAGE_PATH="/storage"
               if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nitro"
+                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/data/nitro"
               else
                 SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
               fi
