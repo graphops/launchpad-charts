@@ -47,6 +47,58 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      initContainers:
+      {{- if $values.restoreSnapshot.enabled }}
+        - name: init-snapshot
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              STORAGE_PATH="/storage"
+              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
+                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/nitro"
+              else
+                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
+              fi
+              # If enabled and snapshot URL has been provided, restore snapshot
+              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                echo "Snapshot restoration enabled"
+                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                  echo "Clearing existing chaindata..."
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                  wget -c --no-check-certificate -O - "${SNAPSHOT_URL}" | tar -xv -C "$SNAPSHOT_RESTORE_PATH"
+                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                else
+                  echo "Snapshot configuration already restored, continuing..."
+                fi
+              else
+                echo "Snapshot restoration not enabled, skipping..."
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: RESTORE_SNAPSHOT
+              value: "true"
+            - name: SNAPSHOT_RESTORE_PATH
+              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
+            - name: SNAPSHOT_URL
+              value: {{ $values.restoreSnapshot.snapshotUrl }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

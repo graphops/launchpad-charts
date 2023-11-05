@@ -84,6 +84,12 @@ nitro:
         # -- The amount of disk space to provision for arbitrum
         storage: 3Ti
 
+  restoreSnapshot:
+    # -- Enable initialising arbitrum state from a remote snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: "https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"
+
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
   # can lead to data integrity issues

@@ -100,6 +100,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nitro.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nitro.resources |  | object | `{}` |
+ | nitro.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
+ | nitro.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"` |
  | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | nitro.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
  | nitro.service.ports.ws-rpc | Service Port to expose engineAPI interface on | int | `8548` |
