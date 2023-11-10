@@ -80,7 +80,7 @@ spec:
       port: {{ include "lighthouse.p2pQuicPort" $values }}
       protocol: UDP
       targetPort: udp-p2p-quic
-      nodePort: {{ $port }}
+      nodePort: {{ $quicPort }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     statefulset.kubernetes.io/pod-name: "{{ include "lighthouse.fullname" $ }}-{{ $componentName }}-0"
