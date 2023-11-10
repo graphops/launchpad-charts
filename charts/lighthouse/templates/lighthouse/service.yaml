@@ -51,6 +51,7 @@ spec:
     {{- $componentLabel | nindent 4 }}
 {{- if $values.p2pNodePort.enabled }}
 {{- $port := $values.p2pNodePort.port }}
+{{- $quicPort := add $values.p2pNodePort.port 1 }}
 ---
 apiVersion: v1
 kind: Service
@@ -74,6 +75,11 @@ spec:
       port: {{ include "lighthouse.p2pPort" $values }}
       protocol: UDP
       targetPort: udp-p2p
+      nodePort: {{ $port }}
+    - name: udp-p2p-quic
+      port: {{ include "lighthouse.p2pQuicPort" $values }}
+      protocol: UDP
+      targetPort: udp-p2p-quic
       nodePort: {{ $port }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}

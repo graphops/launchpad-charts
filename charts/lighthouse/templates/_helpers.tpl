@@ -73,6 +73,14 @@ Create the name of the service account to use
 {{- end }}
 {{- end -}}
 
+{{- define "lighthouse.p2pQuicPort" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print (add .p2pNodePort.port 1) }}
+{{- else }}
+{{- printf "30304" -}}
+{{- end }}
+{{- end -}}
+
 {{- define "lighthouse.replicas" -}}
 {{- if .p2pNodePort.enabled }}
 {{- print 1 }}
