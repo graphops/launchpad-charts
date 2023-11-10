@@ -167,6 +167,9 @@ spec:
             - name: tcp-p2p
               containerPort: {{ include "lighthouse.p2pPort" $values }}
               protocol: TCP
+            - name: udp-p2p-quic
+              containerPort: {{ include "lighthouse.p2pQuicPort" $values }}
+              protocol: UDP
           volumeMounts:
             {{- if $values.p2pNodePort.enabled }}
             - name: env-nodeport
