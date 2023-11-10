@@ -51,7 +51,7 @@ spec:
     {{- $componentLabel | nindent 4 }}
 {{- if $values.p2pNodePort.enabled }}
 {{- $port := $values.p2pNodePort.port }}
-{{- $quicPort := add $values.p2pNodePort.port 1 }}
+{{- $quicPort := add $port 1 }}
 ---
 apiVersion: v1
 kind: Service
