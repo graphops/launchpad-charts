@@ -54,7 +54,7 @@
       {
         "matchPackagePatterns": ["avaplatform/avalanchego"],
         "enabled": false
-      }
+      },
       // Group our dependencies
       {
         "description": "Group dependencies",
