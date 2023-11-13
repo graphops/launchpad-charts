@@ -13,12 +13,13 @@
     "ignorePaths": [
     ],
 
-    "ignoreDeps": [
-    ],
+    "ignoreDeps": ["avaplatform/avalanchego],
 
     "pinDigests": true,
 
     "enabledManagers": ["helm-values", "helmv3", "regex"],
+
+    "excludeCommitPaths": ["../charts/avalanche/**"],
 
     "regexManagers": [
       {
