@@ -61,14 +61,6 @@
       },
       {
         "description": "Group dependencies",
-        "matchPaths": ["charts/avalanche/**"],
-        "groupName": "Avalanche dependencies",
-        "groupSlug": "avalanche",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
         "matchPaths": ["charts/celo/**"],
         "groupName": "Celo dependencies",
         "groupSlug": "celo",
