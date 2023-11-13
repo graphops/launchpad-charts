@@ -226,6 +226,16 @@ entries:
   avalanche:
     - apiVersion: v2
       appVersion: v1.10.15
+      created: "2023-11-13T16:13:47Z"
+      description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
+      digest: ee55be32fc992176b2b1f2af6bb4ab3997a292e3cecd16ae28aa4ec2b5419d66
+      name: avalanche
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/avalanche-0.1.3-canary.6/avalanche-0.1.3-canary.6.tgz
+      version: 0.1.3-canary.6
+    - apiVersion: v2
+      appVersion: v1.10.15
       created: "2023-11-02T02:33:34Z"
       description: Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
       digest: bac4cf69e2bfd87c0e853f408f03b6c38643c88328a990d2daa3bcbf2db3a0e9
@@ -1845,6 +1855,16 @@ entries:
   listener-radio:
     - apiVersion: v2
       appVersion: 0.0.2-alpha.1
+      created: "2023-11-13T16:13:47Z"
+      description: Deploy a Graphcast Listener Radio into your Kubernetes stack
+      digest: 57563781832689a895c42f7763dd857f9cec85abd1e2c1c67c620ddf83a70514
+      name: listener-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.4-canary.1/listener-radio-0.2.4-canary.1.tgz
+      version: 0.2.4-canary.1
+    - apiVersion: v2
+      appVersion: 0.0.2-alpha.1
       created: "2023-09-21T15:50:43Z"
       description: Deploy a Graphcast Listener Radio into your Kubernetes stack
       digest: ff0e8713a2b81f4dc02b1e865c6949d817f7802e011ad6dce35dfc32fb2d2a60
@@ -2758,6 +2778,16 @@ entries:
       version: 0.1.0
   subgraph-radio:
     - apiVersion: v2
+      appVersion: 0.1.8
+      created: "2023-11-13T16:13:47Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: 21344e2328de1675a1c2e6c00f0e717fb3c23325c268777c4314a152029829a7
+      name: subgraph-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.5-canary.1/subgraph-radio-0.2.5-canary.1.tgz
+      version: 0.2.5-canary.1
+    - apiVersion: v2
       appVersion: 0.1.10
       created: "2023-11-08T15:06:04Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
@@ -2957,4 +2987,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-11-13T11:35:21.528003941Z"
+generated: "2023-11-13T16:17:02.755831081Z"
