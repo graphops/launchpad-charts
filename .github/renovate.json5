@@ -19,8 +19,6 @@
 
     "enabledManagers": ["helm-values", "helmv3", "regex"],
 
-    "excludeCommitPaths": ["../charts/avalanche/**"],
-
     "regexManagers": [
       {
         "datasourceTemplate": "docker",
