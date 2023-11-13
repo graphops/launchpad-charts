@@ -2,6 +2,29 @@
 {{- $componentName := "nitro" }}
 {{- $componentLabel := include "arbitrum-nitro.componentLabelFor" $componentName }}
 
+{{/*
+Generate the array of options for nitro
+ */}}
+{{- with $.Values.nitro.config }}
+{{- $args := list }}
+{{- $args := concat $args (list (print "--parent-chain.connection.url=" .parentChainConnectionURL)) }}
+{{- $args := concat $args (list (print "--node.rpc.classic-redirect=" .nodeRpcClassicRedirect)) }}
+{{- $args := concat $args (list (print "--chain.id=" .chainId)) }}
+{{- $args := concat $args (list (print "--http.api=" .httpApi)) }}
+{{- $args := concat $args .extraArgs }}
+{{- $args := concat $args (list
+"--persistent.chain=/storage/data"
+"--persistent.global-config=/storage"
+"--http.addr=0.0.0.0"
+"--http.vhosts=*"
+"--metrics"
+"--metrics-server.addr=0.0.0.0"
+) }}
+{{- $_ := set $values.config "_computedArgs" $args }}
+{{- end }}
+
+#{{ $values.config._computedArgs | toYaml | indent 1 | replace "\n" "\n#" }}
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -114,15 +137,10 @@ spec:
             - |
               set -ex;
               exec nitro \
-                --persistent.chain=/storage/data \
-                --persistent.global-config=/storage \
-                --http.addr=0.0.0.0 \
-                --http.vhosts=* \
-                --metrics \
-              {{- range $arg := $values.extraArgs }}
-                {{- $arg | nindent 16 }} \
-              {{- end }}
-                --metrics-server.addr=0.0.0.0
+                {{- range $val := initial $values.config._computedArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $values.config._computedArgs }}
           ports:
             - name: ws-rpc
               containerPort: 8548

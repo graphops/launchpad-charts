@@ -68,8 +68,14 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 nitro:
-  # -- Additional CLI arguments to pass to `nitro`
-  extraArgs: []
+  # -- Nitro configuration parameters
+  config:
+    nodeRpcClassicRedirect: ""
+    parentChainConnectionURL: ""
+    chainId: 42161
+    httpApi: net,web3,eth,debug
+    # -- Additional CLI arguments to pass to `nitro`
+    extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
