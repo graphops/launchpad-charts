@@ -97,6 +97,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicURL":null,"defaultArgs":["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRPC":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainURL":"CHANGE_ME_RPC_URL"}` |
  | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
  | nitro.config.classicURL | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
+ | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"]` |
  | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
  | nitro.config.httpRPC | RPC config parameters | object | `{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"}` |
  | nitro.config.httpRPC.addr | Listen address | string | `"0.0.0.0"` |
