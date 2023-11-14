@@ -126,8 +126,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.service.type |  | string | `"ClusterIP"` |
  | nitro.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | nitro.tolerations |  | list | `[]` |
- | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
- | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"3Ti"` |
+ | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"6Ti"}},"storageClassName":null}` |
+ | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"6Ti"` |
  | nitro.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `nil` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |

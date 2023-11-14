@@ -111,7 +111,7 @@ arbitrum:
     resources:
       requests:
         # -- The amount of disk space to provision for arbitrum
-        storage: 3Ti
+        storage: 750G
 
   restoreSnapshot:
     # -- Enable initialising arbitrum state from a remote snapshot
