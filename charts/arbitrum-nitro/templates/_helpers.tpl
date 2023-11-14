@@ -78,14 +78,14 @@ Generate the array of options for nitro
 "--persistent.global-config=/storage"
 }}
 {{- with .config }}
-{{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainURL)) }}
+{{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainUrl)) }}
 {{- $args = concat $args (list (print "--chain.id=" .chain)) }}
-{{- $args = concat $args (list (print "--http.api=" .httpRPC.api)) }}
-{{- $args = concat $args (list (print "--http.addr=" .httpRPC.addr)) }}
-{{- $args = concat $args (list (print "--http.vhosts=" .httpRPC.vhosts)) }}
-{{- $args = concat $args (list (print "--http.corsdomain=" .httpRPC.cors)) }}
-{{- if not (empty .classicURL) }}
-{{- $args = concat $args (list (print "--node.rpc.classic-redirect=" .classicURL)) }}
+{{- $args = concat $args (list (print "--http.api=" .httpRpc.api)) }}
+{{- $args = concat $args (list (print "--http.addr=" .httpRpc.addr)) }}
+{{- $args = concat $args (list (print "--http.vhosts=" .httpRpc.vhosts)) }}
+{{- $args = concat $args (list (print "--http.corsdomain=" .httpRpc.cors)) }}
+{{- if not (empty .classicUrl) }}
+{{- $args = concat $args (list (print "--node.rpc.classic-redirect=" .classicUrl)) }}
 {{- end }}
 {{- if .metrics.enabled }}
 {{- $args = concat $args (list "--metrics" (print "--metrics-server-addr=" .metrics.addr)) }}

@@ -94,20 +94,20 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicURL":null,"defaultArgs":["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRPC":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainURL":"CHANGE_ME_RPC_URL"}` |
+ | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
  | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
- | nitro.config.classicURL | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
+ | nitro.config.classicUrl | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
  | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"]` |
  | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
- | nitro.config.httpRPC | RPC config parameters | object | `{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"}` |
- | nitro.config.httpRPC.addr | Listen address | string | `"0.0.0.0"` |
- | nitro.config.httpRPC.api | Enabled APIs | string | `"net,web3,eth,debug"` |
- | nitro.config.httpRPC.cors | Allowed CORS domains | string | `"*"` |
- | nitro.config.httpRPC.vhosts | Allowed vhosts | string | `"*"` |
+ | nitro.config.httpRpc | RPC config parameters | object | `{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"}` |
+ | nitro.config.httpRpc.addr | Listen address | string | `"0.0.0.0"` |
+ | nitro.config.httpRpc.api | Enabled APIs | string | `"net,web3,eth,debug"` |
+ | nitro.config.httpRpc.cors | Allowed CORS domains | string | `"*"` |
+ | nitro.config.httpRpc.vhosts | Allowed vhosts | string | `"*"` |
  | nitro.config.metrics | Metrics parameters | object | `{"addr":"0.0.0.0","enabled":true}` |
  | nitro.config.metrics.addr | Listen address | string | `"0.0.0.0"` |
  | nitro.config.metrics.enabled | Enable metrics | bool | `true` |
- | nitro.config.parentChainURL | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
+ | nitro.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |

@@ -73,11 +73,11 @@ nitro:
     # -- Chain ID, 42161 for Arbitrum One
     chain: 42161
     # -- RPC URL to L1 chain (ethereum)
-    parentChainURL: "CHANGE_ME_RPC_URL"
+    parentChainUrl: "CHANGE_ME_RPC_URL"
     # -- RPC Url to Arbitrum Classic Archive node if serving classic blocks
-    classicURL: null
+    classicUrl: null
     # -- RPC config parameters
-    httpRPC:
+    httpRpc:
       # -- Enabled APIs
       api: net,web3,eth,debug
       # -- Listen address
