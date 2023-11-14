@@ -2,7 +2,6 @@
 {{- $componentName := "nitro" }}
 {{- $componentLabel := include "arbitrum-nitro.componentLabelFor" $componentName }}
 {{- $nitroArgs := get (fromJson (include "arbitrum-nitro.computedArgs" $values)) "computedArgs" }}
-#{{ toYaml $nitroArgs | indent 1 | replace "\n" "\n#" }}
 
 apiVersion: apps/v1
 kind: StatefulSet
