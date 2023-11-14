@@ -70,8 +70,8 @@ grafana:
 nitro:
   # -- Nitro configuration parameters
   config:
-    nodeRpcClassicRedirect: ""
-    parentChainConnectionURL: ""
+    nodeRpcClassicRedirect: null
+    parentChainConnectionURL: "CHANGE_ME_RPC_URL"
     chainId: 42161
     httpApi: net,web3,eth,debug
     # -- Additional CLI arguments to pass to `nitro`
@@ -92,9 +92,13 @@ nitro:
 
   restoreSnapshot:
     # -- Enable initialising arbitrum state from a remote snapshot
-    enabled: false
+    enabled: true
     # -- URL for snapshot to download and extract to restore state
     snapshotUrl: "https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"
+    subpath: "data/nitro"
+    cleanSubpath: true
+    chunkSize: 1000000000
+    extraTarArgs: null
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown

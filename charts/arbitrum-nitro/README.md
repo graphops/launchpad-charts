@@ -94,15 +94,19 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.config | Nitro configuration parameters | object | `{"chainId":42161,"extraArgs":[],"httpApi":"net,web3,eth,debug","nodeRpcClassicRedirect":"","parentChainConnectionURL":""}` |
+ | nitro.config | Nitro configuration parameters | object | `{"chainId":42161,"extraArgs":[],"httpApi":"net,web3,eth,debug","nodeRpcClassicRedirect":null,"parentChainConnectionURL":"CHANGE_ME_RPC_URL"}` |
  | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nitro.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nitro.resources |  | object | `{}` |
- | nitro.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
+ | nitro.restoreSnapshot.chunkSize |  | int | `1000000000` |
+ | nitro.restoreSnapshot.cleanSubpath |  | bool | `true` |
+ | nitro.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `true` |
+ | nitro.restoreSnapshot.extraTarArgs |  | string | `nil` |
  | nitro.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"` |
+ | nitro.restoreSnapshot.subpath |  | string | `"data/nitro"` |
  | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | nitro.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
  | nitro.service.ports.ws-rpc | Service Port to expose engineAPI interface on | int | `8548` |

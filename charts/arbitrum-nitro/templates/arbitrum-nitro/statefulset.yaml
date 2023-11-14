@@ -5,14 +5,16 @@
 {{/*
 Generate the array of options for nitro
  */}}
+{{- $nitroArgs := list }}
 {{- with $.Values.nitro.config }}
-{{- $args := list }}
-{{- $args := concat $args (list (print "--parent-chain.connection.url=" .parentChainConnectionURL)) }}
-{{- $args := concat $args (list (print "--node.rpc.classic-redirect=" .nodeRpcClassicRedirect)) }}
-{{- $args := concat $args (list (print "--chain.id=" .chainId)) }}
-{{- $args := concat $args (list (print "--http.api=" .httpApi)) }}
-{{- $args := concat $args .extraArgs }}
-{{- $args := concat $args (list
+{{- $nitroArgs = concat $nitroArgs (list (print "--parent-chain.connection.url=" .parentChainConnectionURL)) }}
+{{- $nitroArgs = concat $nitroArgs (list (print "--chain.id=" .chainId)) }}
+{{- $nitroArgs = concat $nitroArgs (list (print "--http.api=" .httpApi)) }}
+{{- if not (empty .nodeRpcClassicRedirect) }}
+{{- $nitroArgs = concat $nitroArgs (list (print "--node.rpc.classic-redirect=" .nodeRpcClassicRedirect)) }}
+{{- end }}
+{{- $nitroArgs = concat $nitroArgs .extraArgs }}
+{{- $nitroArgs = concat $nitroArgs (list
 "--persistent.chain=/storage/data"
 "--persistent.global-config=/storage"
 "--http.addr=0.0.0.0"
@@ -20,7 +22,6 @@ Generate the array of options for nitro
 "--metrics"
 "--metrics-server.addr=0.0.0.0"
 ) }}
-{{- $_ := set $values.config "_computedArgs" $args }}
 {{- end }}
 
 #{{ $values.config._computedArgs | toYaml | indent 1 | replace "\n" "\n#" }}
@@ -73,48 +74,28 @@ spec:
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: busybox:stable
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
-          command:
-            - sh
-            - -c
-            - |
-              set -x
-              STORAGE_PATH="/storage"
-              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/data/nitro"
-              else
-                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
-              fi
-              # If enabled and snapshot URL has been provided, restore snapshot
-              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-                echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
-                  echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c --no-check-certificate -O - "${SNAPSHOT_URL}" | tar -xv -C "$SNAPSHOT_RESTORE_PATH"
-                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-                else
-                  echo "Snapshot configuration already restored, continuing..."
-                fi
-              else
-                echo "Snapshot restoration not enabled, skipping..."
-              fi
           volumeMounts:
             - name: storage
               mountPath: /storage
           env:
+            - name: DIR
+              value: "/storage"
             - name: RESTORE_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_RESTORE_PATH
-              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
-            - name: SNAPSHOT_URL
+              value: {{ $values.restoreSnapshot.enabled }}
+            - name: SUBPATH
+              value: {{ $values.restoreSnapshot.subpath }}
+            - name: RM_SUBPATH
+              value: {{ $values.restoreSnapshot.cleanSubpath }}
+            - name: URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
+            - name: TAR_ARGS
+              value: {{ $values.restoreSnapshot.extraTarArgs }}
+            - name: CHUNK_SIZE
+              value: {{ $values.restoreSnapshot.chunkSize }}
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key }}
@@ -137,10 +118,10 @@ spec:
             - |
               set -ex;
               exec nitro \
-                {{- range $val := initial $values.config._computedArgs }}
+                {{- range $val := initial $nitroArgs }}
                 {{ $val }} \
                 {{- end }}
-                {{ last $values.config._computedArgs }}
+                {{ last $nitroArgs }}
           ports:
             - name: ws-rpc
               containerPort: 8548
