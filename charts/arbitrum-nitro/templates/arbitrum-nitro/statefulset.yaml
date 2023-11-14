@@ -62,11 +62,11 @@ spec:
             - name: DIR
               value: "/storage"
             - name: RESTORE_SNAPSHOT
-              value: {{ $values.restoreSnapshot.enabled }}
+              value: {{ $values.restoreSnapshot.enabled | quote }}
             - name: SUBPATH
               value: {{ $values.restoreSnapshot.subpath }}
             - name: RM_SUBPATH
-              value: {{ $values.restoreSnapshot.cleanSubpath }}
+              value: {{ $values.restoreSnapshot.cleanSubpath | quote }}
             - name: URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
             - name: TAR_ARGS
