@@ -151,7 +151,7 @@ nitro:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/nitro/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
       http-rpc: 8547
-      # -- Service Port to expose engineAPI interface on
+      # -- Service Port to expose WebSockets interface on
       ws-rpc: 8548
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6070

@@ -121,7 +121,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.restoreSnapshot.subpath | Path where the snapshot should be unpacked to, relative to the volume root | string | `"data/nitro"` |
  | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | nitro.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
- | nitro.service.ports.ws-rpc | Service Port to expose engineAPI interface on | int | `8548` |
+ | nitro.service.ports.ws-rpc | Service Port to expose WebSockets interface on | int | `8548` |
  | nitro.service.topologyAwareRouting.enabled |  | bool | `false` |
  | nitro.service.type |  | string | `"ClusterIP"` |
  | nitro.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |

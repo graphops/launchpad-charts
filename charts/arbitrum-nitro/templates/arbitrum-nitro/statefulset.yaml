@@ -100,14 +100,14 @@ spec:
                 {{- end }}
                 {{ last $nitroArgs }}
           ports:
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
+              protocol: TCP
             - name: ws-rpc
-              containerPort: 8548
+              containerPort: {{ index $values.service.ports "ws-rpc" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 6070
-              protocol: TCP
-            - name: http-rpc
-              containerPort: 8547
+              containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
           volumeMounts:
             - name: storage
@@ -116,7 +116,7 @@ spec:
               mountPath: /tmp
           readinessProbe:
             httpGet:
-              port: 8547
+              port: {{ index $values.service.ports "http-rpc" }}
               path: /
           {{- with $values.resources }}
           resources:

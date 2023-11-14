@@ -68,3 +68,29 @@ Create the name of the service account to use
 {{- define "arbitrum-classic.replicas" -}}
 {{- default 1 .replicaCount  }}
 {{- end -}}
+
+{{/*
+Generate the array of options for arb-node
+ */}}
+{{- define "arbitrum-classic.computedArgs" -}}
+{{- $args := list
+"--persistent.chain=/storage"
+"--persistent.global-config=/storage"
+}}
+{{- with .config }}
+{{- $args = concat $args (list (print "--l1.url=" .parentChainUrl)) }}
+{{- $args = concat $args (list (print "--node.chain-id=" .chain)) }}
+{{- $args = concat $args (list (print "--node.rpc.addr=" .httpRpc.addr)) }}
+{{- if .httpRpc.tracing }}
+{{- $args = concat $args (list "--node.rpc.tracing.enable" (print "--node.rpc.tracing.namespace=" ( .httpRpc.tracingNamespace | quote ))) }}
+{{- end }}
+{{- if .metrics.enabled }}
+{{- $args = concat $args (list "--metrics" (print "--metrics-server.addr=" .metrics.addr)) }}
+{{- end }}
+{{- $args = concat $args .defaultArgs }}
+{{- $args = concat $args .extraArgs }}
+{{- end }}
+{{ dict "computedArgs" $args | toJson }}
+{{- end }}
+
+                --healthcheck.enable=true

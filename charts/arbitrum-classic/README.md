@@ -120,18 +120,32 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | arbitrum.affinity |  | object | `{}` |
  | arbitrum.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | arbitrum.extraArgs | Additional CLI arguments to pass to `arb-node` | list | `[]` |
+ | arbitrum.config | Nitro configuration parameters | object | `{"chain":42161,"defaultArgs":["--node.caching.archive","--l2.disable.upstream","--core.lazy-load-core-machine","--node.rpc.enable.l1.calls","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","tracing":true,"tracingNamespace":"trace"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | arbitrum.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
+ | arbitrum.config.defaultArgs | Non key default arguments on the chart | list | `["--node.caching.archive","--l2.disable.upstream","--core.lazy-load-core-machine","--node.rpc.enable.l1.calls","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"]` |
+ | arbitrum.config.extraArgs | Additional CLI arguments to pass to `arb-node` | list | `[]` |
+ | arbitrum.config.httpRpc | RPC config parameters | object | `{"addr":"0.0.0.0","tracing":true,"tracingNamespace":"trace"}` |
+ | arbitrum.config.httpRpc.addr | Listen address | string | `"0.0.0.0"` |
+ | arbitrum.config.httpRpc.tracing | Enable tracing | bool | `true` |
+ | arbitrum.config.httpRpc.tracingNamespace | Tracing namespace | string | `"trace"` |
+ | arbitrum.config.metrics | Metrics parameters | object | `{"addr":"0.0.0.0","enabled":true}` |
+ | arbitrum.config.metrics.addr | Listen address | string | `"0.0.0.0"` |
+ | arbitrum.config.metrics.enabled | Enable metrics | bool | `true` |
+ | arbitrum.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | arbitrum.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | arbitrum.nodeSelector |  | object | `{}` |
  | arbitrum.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | arbitrum.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | arbitrum.resources |  | object | `{}` |
- | arbitrum.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
- | arbitrum.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.io/mainnet/db.tar"` |
- | arbitrum.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8547` |
+ | arbitrum.restoreSnapshot.chunkSize | Size of chunks for chunked downloading. Too small hurts performance, too big leads to more waste when it needs to be retried | int | `1000000000` |
+ | arbitrum.restoreSnapshot.cleanSubpath | Erase destination path before unpacking | bool | `true` |
+ | arbitrum.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `true` |
+ | arbitrum.restoreSnapshot.extraTarArgs | A string with extra arguments to tar command (i.e. "--strip-components=1") | string | `"--strip-components=2"` |
+ | arbitrum.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.foundation/arb1/classic-archive.tar"` |
+ | arbitrum.restoreSnapshot.subpath | Path where the snapshot should be unpacked to, relative to the volume root | string | `"db"` |
  | arbitrum.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
- | arbitrum.service.ports.http-rpc | Service Port to expose engineAPI interface on | int | `9656` |
- | arbitrum.service.ports.ws |  | int | `8548` |
+ | arbitrum.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
+ | arbitrum.service.ports.ws-rpc | Service Port to expose WebSockets interface on | int | `8548` |
  | arbitrum.service.topologyAwareRouting.enabled |  | bool | `false` |
  | arbitrum.service.type |  | string | `"ClusterIP"` |
  | arbitrum.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |

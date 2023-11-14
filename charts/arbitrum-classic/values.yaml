@@ -67,8 +67,38 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 arbitrum:
-  # -- Additional CLI arguments to pass to `arb-node`
-  extraArgs: []
+  # -- Nitro configuration parameters
+  config:
+    # -- Chain ID, 42161 for Arbitrum One
+    chain: 42161
+    # -- RPC URL to L1 chain (ethereum)
+    parentChainUrl: "CHANGE_ME_RPC_URL"
+    # -- RPC config parameters
+    httpRpc:
+      # -- Listen address
+      addr: 0.0.0.0
+      # -- Enable tracing
+      tracing: true
+      # -- Tracing namespace
+      tracingNamespace: "trace"
+    # -- Metrics parameters
+    metrics:
+      # -- Enable metrics
+      enabled: true
+      # -- Listen address
+      addr: 0.0.0.0
+
+    # -- Non key default arguments on the chart
+    defaultArgs:
+      - "--node.caching.archive"
+      - "--l2.disable.upstream"
+      - "--core.lazy-load-core-machine"
+      - "--node.rpc.enable.l1.calls"
+      - "--node.cache.allow-slow-lookup"
+      - "--core.checkpoint-gas-frequency=156250000"
+
+    # -- Additional CLI arguments to pass to `arb-node`
+    extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
@@ -85,9 +115,17 @@ arbitrum:
 
   restoreSnapshot:
     # -- Enable initialising arbitrum state from a remote snapshot
-    enabled: false
+    enabled: true
     # -- URL for snapshot to download and extract to restore state
-    snapshotUrl: "https://snapshot.arbitrum.io/mainnet/db.tar"
+    snapshotUrl: "https://snapshot.arbitrum.foundation/arb1/classic-archive.tar"
+    # -- Path where the snapshot should be unpacked to, relative to the volume root
+    subpath: "db"
+    # -- Erase destination path before unpacking
+    cleanSubpath: true
+    # -- Size of chunks for chunked downloading. Too small hurts performance, too big leads to more waste when it needs to be retried
+    chunkSize: 1000000000
+    # -- A string with extra arguments to tar command (i.e. "--strip-components=1")
+    extraTarArgs: "--strip-components=2" # strip ./db/ from the tar archives
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -110,14 +148,13 @@ arbitrum:
       enabled: false
     type: ClusterIP
     ports:
-      # Valid keys are names of ports that are exposed by the Pod that (see templates/nitro/statefulset.yaml)
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/arbitrum/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
-      http-jsonrpc: 8547
-      # -- Service Port to expose engineAPI interface on
-      http-rpc: 9656
+      http-rpc: 8547
+      # -- Service Port to expose WebSockets interface on
+      ws-rpc: 8548
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6070
-      ws: 8548
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
