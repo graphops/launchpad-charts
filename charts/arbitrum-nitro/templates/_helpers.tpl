@@ -68,3 +68,30 @@ Create the name of the service account to use
 {{- define "arbitrum-nitro.replicas" -}}
 {{- default 1 .replicaCount  }}
 {{- end -}}
+
+{{/*
+Generate the array of options for nitro
+ */}}
+{{- define "arbitrum-nitro.computedArgs" -}}
+{{- $args := list
+"--persistent.chain=/storage/data"
+"--persistent.global-config=/storage"
+}}
+{{- with .config }}
+{{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainURL)) }}
+{{- $args = concat $args (list (print "--chain.id=" .chain)) }}
+{{- $args = concat $args (list (print "--http.api=" .httpRPC.api)) }}
+{{- $args = concat $args (list (print "--http.addr=" .httpRPC.addr)) }}
+{{- $args = concat $args (list (print "--http.vhosts=" .httpRPC.vhosts)) }}
+{{- $args = concat $args (list (print "--http.corsdomain=" .httpRPC.cors)) }}
+{{- if not (empty .classicURL) }}
+{{- $args = concat $args (list (print "--node.rpc.classic-redirect=" .classicURL)) }}
+{{- end }}
+{{- if .metrics.enabled }}
+{{- $args = concat $args (list "--metrics" (print "--metrics-server-addr" .metrics.addr)) }}
+{{- end }}
+{{- $args = concat $args .defaultArgs }}
+{{- $args = concat $args .extraArgs }}
+{{- end }}
+{{ dict "computedArgs" $args | toJson }}
+{{- end }}
