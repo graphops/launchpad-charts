@@ -96,7 +96,6 @@ nitro:
     # -- Enabled default arguments on the chart
     defaultArgs:
       - "--node.caching.archive"
-      - "--core.checkpoint-gas-frequency=156250000"
 
     # -- Additional CLI arguments to pass to `nitro`
     extraArgs: []

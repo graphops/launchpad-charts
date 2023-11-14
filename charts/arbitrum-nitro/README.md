@@ -94,10 +94,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--node.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
  | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
  | nitro.config.classicUrl | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
- | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--node.caching.archive","--core.checkpoint-gas-frequency=156250000"]` |
+ | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--node.caching.archive"]` |
  | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
  | nitro.config.httpRpc | RPC config parameters | object | `{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"}` |
  | nitro.config.httpRpc.addr | Listen address | string | `"0.0.0.0"` |
