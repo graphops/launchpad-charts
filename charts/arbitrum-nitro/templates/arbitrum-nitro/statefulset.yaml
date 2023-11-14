@@ -72,7 +72,7 @@ spec:
             - name: TAR_ARGS
               value: {{ $values.restoreSnapshot.extraTarArgs }}
             - name: CHUNK_SIZE
-              value: {{ $values.restoreSnapshot.chunkSize | quote }}
+              value: {{ (mul $values.restoreSnapshot.chunkSize 1) | quote }} # Multiplying by 1 to circumvent float64 conversion leading to scientific notation (here: https://github.com/helm/helm/issues/1707)
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key }}
