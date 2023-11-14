@@ -51,7 +51,7 @@ spec:
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: ghcr.io/graphops/docker-builds/init-stream-download@sha256:fd8a1e55f83ac9df25f3d28508b37325c6aa1cd177ec8ac23ef60ccb5f0c616a
+          image: ghcr.io/graphops/docker-builds/init-stream-download@sha256:e5748d048a43ad020339195ce9b71c4a9c0e9a75b16ae2afaef5f3c778cea789
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
