@@ -65,7 +65,8 @@
         "groupName": "Avalanche dependencies",
         "groupSlug": "avalanche",
         "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
+        "commitMessageExtra": "",
+        "enabled": false
       },
       {
         "description": "Group dependencies",

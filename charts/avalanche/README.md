@@ -2,7 +2,27 @@
 
 Deploy and scale [avalanche](https://github.com/avalancheEth/avalanche) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.10](https://img.shields.io/badge/AppVersion-v1.10.10-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.10.15](https://img.shields.io/badge/AppVersion-v1.10.15-informational?style=flat-square)
+
+# Deprecation and Maintenance Notice
+
+## :warning: IMPORTANT :warning:
+
+### Deprecation Notice
+
+As of 13th Nov 2023, this chart is no longer actively maintained or tested. It may not be compatible with newer versions or may lack critical security updates.
+
+### What This Means
+
+- **No Updates:** The chart will not receive updates, including for security vulnerabilities, dependencies, or compatibility with new versions.
+- **Limited Support:** Community support may be available, but there is no official support for issues or pull requests.
+- **Use at Your Own Risk:** Continued use of this chart is at your own risk. It may contain vulnerabilities or compatibility issues.
+
+### Recommendations
+
+- **Community Contributions:** If the community wishes to fork or continue development of this chart, they are welcome to do so.
+
+We appreciate your understanding and thank you for your past and future contributions.
 
 ## Chart Features
 

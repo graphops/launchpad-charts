@@ -21,7 +21,7 @@ service:
     enabled: false
   type: ClusterIP
   ports:
-    # Valid keys are names of ports that are exposed by the Pod that (see templates/avalanche/statefulset.yaml)
+    # Valid keys are names of ports that are exposed by the Pod that (see templates/subgraph-radio/statefulset.yaml)
     # -- Service Port to expose JSON-RPC interface on
     http-api: 7700
     # -- Service Port to expose Prometheus metrics on
