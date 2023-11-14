@@ -14,6 +14,16 @@ entries:
   arbitrum-classic:
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
+      created: "2023-11-14T17:47:01Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: c90b0ebe51b2622f5afa9d7f3deb71e59b710fa6cd87b03e6b99f2c748b75d0f
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.5-canary.4/arbitrum-classic-0.1.5-canary.4.tgz
+      version: 0.1.5-canary.4
+    - apiVersion: v2
+      appVersion: v1.4.5-e97c1a4
       created: "2023-11-14T16:56:54Z"
       description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
       digest: ba784bd3f32d29af78851ba21a6b3722418790edb4aa34caa4ce8fe94ea078f8
@@ -113,6 +123,26 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
       version: 0.1.0
   arbitrum-nitro:
+    - apiVersion: v2
+      appVersion: v2.1.3-e815395
+      created: "2023-11-14T17:47:01Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: c61e739f2771627976f0f9e82b3ff0609ea33b28d8eb1bd7af8d615750b1ec40
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.5-canary.21/arbitrum-nitro-0.1.5-canary.21.tgz
+      version: 0.1.5-canary.21
+    - apiVersion: v2
+      appVersion: v2.1.3-e815395
+      created: "2023-11-14T17:33:19Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: d78bd5d0bc45998b7d6a1a962b8b69c35b5c2bc27ab95a9807eaa5ea864b2984
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.5-canary.20/arbitrum-nitro-0.1.5-canary.20.tgz
+      version: 0.1.5-canary.20
     - apiVersion: v2
       appVersion: v2.1.3-e815395
       created: "2023-11-14T16:56:54Z"
@@ -3187,4 +3217,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-11-14T17:00:53.151275318Z"
+generated: "2023-11-14T19:01:16.259836586Z"
