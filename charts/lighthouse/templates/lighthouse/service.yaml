@@ -32,6 +32,7 @@ spec:
       port: {{ include "lighthouse.quicPort" $values }}
       targetPort: udp-transport
       protocol: UDP
+    {{- end }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
