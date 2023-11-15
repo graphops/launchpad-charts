@@ -119,10 +119,18 @@ lighthouse:
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/lighthouse/statefulset.yaml)
-      # -- Service Port to expose JSON-RPC interface on
+      # -- Service Port to expose REST http interface on
       http-lighthouse: 5052
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 5054
+      # -- The following ports, for for TCP transport, UDP discovery and QUIC are only used when p2pNodePort is disabled,
+      # -- otherwise the ports are determined by the p2pNodePort.port value
+      # -- TCP transport for P2P
+      tcp-p2p-transport: 9000
+      # -- UDP discovery protocol for P2P
+      udp-p2p-discovery: 9000
+      # -- For experimental QUIC protocol support
+      udp-p2p-transport: 9001
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -149,9 +157,11 @@ lighthouse:
   affinity: {}
 
   p2pNodePort:
-    # -- Expose P2P port via NodePort
+    # -- Expose P2P ports via NodePort.
     enabled: false
-    # -- NodePort to be used. Must be unique.
+    # -- Start NodePort to be used. The one specified and the following one (i.e. 31000 and 31001)
+    # -- will be used. The first one is used for discovery in TCP and UDP, the second one is used for QUIC support.
+    # ---The ports must be unique.
     port: 31000
     initContainer:
       image:

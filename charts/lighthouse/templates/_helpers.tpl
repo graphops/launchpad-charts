@@ -65,19 +65,27 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "lighthouse.p2pPort" -}}
+{{- define "lighthouse.port" -}}
 {{- if .p2pNodePort.enabled }}
 {{- print .p2pNodePort.port }}
 {{- else }}
-{{- printf "30303" -}}
+{{- print (index .service.ports "tcp-p2p-transport") -}}
 {{- end }}
 {{- end -}}
 
-{{- define "lighthouse.p2pQuicPort" -}}
+{{- define "lighthouse.discoveryPort" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print .p2pNodePort.port }}
+{{- else }}
+{{- print (index .service.ports "udp-p2p-discovery") -}}
+{{- end }}
+{{- end -}}
+
+{{- define "lighthouse.quicPort" -}}
 {{- if .p2pNodePort.enabled }}
 {{- print (add .p2pNodePort.port 1) }}
 {{- else }}
-{{- printf "30304" -}}
+{{- print (index .service.ports "udp-p2p-transport") -}}
 {{- end }}
 {{- end -}}
 
