@@ -159,9 +159,9 @@ lighthouse:
   p2pNodePort:
     # -- Expose P2P ports via NodePort.
     enabled: false
-    # -- Start NodePort to be used. The one specified and the following one (i.e. 31000 and 31001)
-    # -- will be used. The first one is used for discovery in TCP and UDP, the second one is used for QUIC support.
-    # ---The ports must be unique.
+    # -- The specified NodePort and the following one (i.e. 31000 and 31001) will be used
+    # -- The first one is used for discovery in TCP and UDP, the second one is used for QUIC support
+    # -- First port of the 2-port range to be used. The ports must be unique
     port: 31000
     initContainer:
       image:

@@ -101,7 +101,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | lighthouse.p2pNodePort.port | -The ports must be unique. | int | `31000` |
+ | lighthouse.p2pNodePort.port | First port of the 2-port range to be used. The ports must be unique | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | lighthouse.resources |  | object | `{}` |
