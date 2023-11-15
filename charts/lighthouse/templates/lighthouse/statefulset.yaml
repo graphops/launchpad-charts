@@ -83,7 +83,7 @@ spec:
           command:
             - sh
             - -c
-            - >
+            - |
               set -ex;
               #export EXTERNAL_PORT=$(kubectl get services {{ include "lighthouse.fullname" . }}-{{ $componentName }}-p2p-0 -o jsonpath='{.spec.ports[0].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
