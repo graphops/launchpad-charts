@@ -157,7 +157,7 @@ lighthouse:
   affinity: {}
 
   p2pNodePort:
-    # -- Expose P2P ports via NodePort.
+    # -- Expose P2P ports via NodePort
     enabled: false
     # -- The specified NodePort and the following one (i.e. 31000 and 31001) will be used
     # -- The first one is used for discovery in TCP and UDP, the second one is used for QUIC support
