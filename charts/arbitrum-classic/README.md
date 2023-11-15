@@ -120,9 +120,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | arbitrum.affinity |  | object | `{}` |
  | arbitrum.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | arbitrum.config | Nitro configuration parameters | object | `{"chain":42161,"defaultArgs":["--node.caching.archive","--l2.disable.upstream","--core.lazy-load-core-machine","--node.rpc.enable.l1.calls","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","tracing":true,"tracingNamespace":"trace"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | arbitrum.config | Nitro configuration parameters | object | `{"chain":42161,"defaultArgs":["--core.lazy-load-core-machine","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","tracing":true,"tracingNamespace":"trace"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
  | arbitrum.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
- | arbitrum.config.defaultArgs | Non key default arguments on the chart | list | `["--node.caching.archive","--l2.disable.upstream","--core.lazy-load-core-machine","--node.rpc.enable.l1.calls","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"]` |
+ | arbitrum.config.defaultArgs | Non key default arguments on the chart | list | `["--core.lazy-load-core-machine","--node.cache.allow-slow-lookup","--core.checkpoint-gas-frequency=156250000"]` |
  | arbitrum.config.extraArgs | Additional CLI arguments to pass to `arb-node` | list | `[]` |
  | arbitrum.config.httpRpc | RPC config parameters | object | `{"addr":"0.0.0.0","tracing":true,"tracingNamespace":"trace"}` |
  | arbitrum.config.httpRpc.addr | Listen address | string | `"0.0.0.0"` |

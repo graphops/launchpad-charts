@@ -90,10 +90,7 @@ arbitrum:
 
     # -- Non key default arguments on the chart
     defaultArgs:
-      - "--node.caching.archive"
-      - "--l2.disable.upstream"
       - "--core.lazy-load-core-machine"
-      - "--node.rpc.enable.l1.calls"
       - "--node.cache.allow-slow-lookup"
       - "--core.checkpoint-gas-frequency=156250000"
 
