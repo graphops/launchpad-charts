@@ -92,5 +92,3 @@ Generate the array of options for arb-node
 {{- end }}
 {{ dict "computedArgs" $args | toJson }}
 {{- end }}
-
-                --healthcheck.enable=true
