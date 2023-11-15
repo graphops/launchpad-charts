@@ -164,13 +164,13 @@ spec:
             - name: http-metrics
               containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
-            - name: tcp-p2p-transport
+            - name: tcp-transport
               containerPort: {{ include "lighthouse.port" $values }}
               protocol: TCP
-            - name: udp-p2p-discovery
+            - name: udp-discovery
               containerPort: {{ include "lighthouse.discoveryPort" $values }}
               protocol: UDP
-            - name: udp-p2p-transport
+            - name: udp-transport
               containerPort: {{ include "lighthouse.quicPort" $values }}
               protocol: UDP
           volumeMounts:

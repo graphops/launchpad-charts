@@ -49,17 +49,17 @@ spec:
       targetPort: http-metrics
       protocol: TCP
     {{- if not $values.p2pNodePort.enabled }}
-    - name: tcp-p2p-transport
+    - name: tcp-transport
       port: {{ include "lighthouse.port" $values }}
-      targetPort: tcp-p2p-transport
+      targetPort: tcp-transport
       protocol: TCP
-    - name: udp-p2p-discovery
+    - name: udp-discovery
       port: {{ include "lighthouse.discoveryPort" $values }}
-      targetPort: udp-p2p-discovery
+      targetPort: udp-discovery
       protocol: UDP
-    - name: udp-p2p-transport
+    - name: udp-transport
       port: {{ include "lighthouse.quicPort" $values }}
-      targetPort: udp-p2p-transport
+      targetPort: udp-transport
       protocol: UDP
     {{- end }}
   selector:
@@ -82,20 +82,20 @@ spec:
   type: NodePort
   externalTrafficPolicy: Local
   ports:
-    - name: tcp-p2p-transport
+    - name: tcp-transport
       port: {{ $port }}
       protocol: TCP
-      targetPort: tcp-p2p-transport
+      targetPort: tcp-transport
       nodePort: {{ $port }}
-    - name: udp-p2p-discovery
+    - name: udp-discovery
       port: {{ $port }}
       protocol: UDP
-      targetPort: udp-p2p-discovery
+      targetPort: udp-discovery
       nodePort: {{ $port }}
-    - name: udp-p2p-transport
+    - name: udp-transport
       port: {{ $quicPort }}
       protocol: UDP
-      targetPort: udp-p2p-transport
+      targetPort: udp-transport
       nodePort: {{ $quicPort }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}

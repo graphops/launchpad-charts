@@ -69,7 +69,7 @@ Create the name of the service account to use
 {{- if .p2pNodePort.enabled }}
 {{- print .p2pNodePort.port }}
 {{- else }}
-{{- print (index .service.ports "tcp-p2p-transport") -}}
+{{- print (index .service.ports "tcp-transport") -}}
 {{- end }}
 {{- end -}}
 
@@ -77,7 +77,7 @@ Create the name of the service account to use
 {{- if .p2pNodePort.enabled }}
 {{- print .p2pNodePort.port }}
 {{- else }}
-{{- print (index .service.ports "udp-p2p-discovery") -}}
+{{- print (index .service.ports "udp-discovery") -}}
 {{- end }}
 {{- end -}}
 
@@ -85,7 +85,7 @@ Create the name of the service account to use
 {{- if .p2pNodePort.enabled }}
 {{- print (add .p2pNodePort.port 1) }}
 {{- else }}
-{{- print (index .service.ports "udp-p2p-transport") -}}
+{{- print (index .service.ports "udp-transport") -}}
 {{- end }}
 {{- end -}}
 
