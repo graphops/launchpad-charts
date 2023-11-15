@@ -107,9 +107,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.resources |  | object | `{}` |
  | lighthouse.service.ports.http-lighthouse | Service Port to expose REST http interface on | int | `5052` |
  | lighthouse.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `5054` |
- | lighthouse.service.ports.tcp-p2p-transport | TCP transport for P2P | int | `9000` |
- | lighthouse.service.ports.udp-p2p-discovery | UDP discovery protocol for P2P | int | `9000` |
- | lighthouse.service.ports.udp-p2p-transport | For experimental QUIC protocol support | int | `9001` |
+ | lighthouse.service.ports.tcp-transport | TCP transport for P2P | int | `9000` |
+ | lighthouse.service.ports.udp-discovery | UDP discovery protocol for P2P | int | `9000` |
+ | lighthouse.service.ports.udp-transport | For experimental QUIC protocol support | int | `9001` |
  | lighthouse.service.topologyAwareRouting.enabled |  | bool | `false` |
  | lighthouse.service.type |  | string | `"ClusterIP"` |
  | lighthouse.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |

@@ -126,11 +126,11 @@ lighthouse:
       # -- The following ports, for for TCP transport, UDP discovery and QUIC are only used when p2pNodePort is disabled,
       # -- otherwise the ports are determined by the p2pNodePort.port value
       # -- TCP transport for P2P
-      tcp-p2p-transport: 9000
+      tcp-transport: 9000
       # -- UDP discovery protocol for P2P
-      udp-p2p-discovery: 9000
+      udp-discovery: 9000
       # -- For experimental QUIC protocol support
-      udp-p2p-transport: 9001
+      udp-transport: 9001
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
