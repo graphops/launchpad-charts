@@ -2,7 +2,7 @@
 
 Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.0.10-73224e3](https://img.shields.io/badge/AppVersion-v2.0.10--73224e3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.1.3-e815395](https://img.shields.io/badge/AppVersion-v2.1.3--e815395-informational?style=flat-square)
 
 ## Features
 
@@ -94,21 +94,40 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
+ | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--node.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
+ | nitro.config.classicUrl | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
+ | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--node.caching.archive"]` |
+ | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
+ | nitro.config.httpRpc | RPC config parameters | object | `{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"}` |
+ | nitro.config.httpRpc.addr | Listen address | string | `"0.0.0.0"` |
+ | nitro.config.httpRpc.api | Enabled APIs | string | `"net,web3,eth,debug"` |
+ | nitro.config.httpRpc.cors | Allowed CORS domains | string | `"*"` |
+ | nitro.config.httpRpc.vhosts | Allowed vhosts | string | `"*"` |
+ | nitro.config.metrics | Metrics parameters | object | `{"addr":"0.0.0.0","enabled":true}` |
+ | nitro.config.metrics.addr | Listen address | string | `"0.0.0.0"` |
+ | nitro.config.metrics.enabled | Enable metrics | bool | `true` |
+ | nitro.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nitro.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nitro.resources |  | object | `{}` |
+ | nitro.restoreSnapshot.chunkSize | Size of chunks for chunked downloading. Too small hurts performance, too big leads to more waste when it needs to be retried | int | `1000000000` |
+ | nitro.restoreSnapshot.cleanSubpath | Erase destination path before unpacking | bool | `true` |
+ | nitro.restoreSnapshot.enabled | Enable initialising arbitrum state from a remote snapshot | bool | `false` |
+ | nitro.restoreSnapshot.extraTarArgs | A string with extra arguments to tar command (i.e. "--strip-components=1") | string | `nil` |
+ | nitro.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"` |
+ | nitro.restoreSnapshot.subpath | Path where the snapshot should be unpacked to, relative to the volume root | string | `"data/nitro"` |
  | nitro.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | nitro.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
- | nitro.service.ports.ws-rpc | Service Port to expose engineAPI interface on | int | `8548` |
+ | nitro.service.ports.ws-rpc | Service Port to expose WebSockets interface on | int | `8548` |
  | nitro.service.topologyAwareRouting.enabled |  | bool | `false` |
  | nitro.service.type |  | string | `"ClusterIP"` |
  | nitro.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | nitro.tolerations |  | list | `[]` |
- | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
- | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"3Ti"` |
+ | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"8Ti"}},"storageClassName":null}` |
+ | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"8Ti"` |
  | nitro.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `nil` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |

@@ -1,6 +1,7 @@
 {{- $values := $.Values.nitro }}
 {{- $componentName := "nitro" }}
 {{- $componentLabel := include "arbitrum-nitro.componentLabelFor" $componentName }}
+{{- $nitroArgs := get (fromJson (include "arbitrum-nitro.computedArgs" $values)) "computedArgs" }}
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -47,6 +48,38 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+      initContainers:
+      {{- if $values.restoreSnapshot.enabled }}
+        - name: init-snapshot
+          image: ghcr.io/graphops/docker-builds/init-stream-download@sha256:acbe5bff3b273b6e56b7aad20e8368ab9ddb091250b744e41ad66d6e7c2d0901
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: DIR
+              value: "/storage"
+            - name: RESTORE_SNAPSHOT
+              value: {{ $values.restoreSnapshot.enabled | quote }}
+            - name: SUBPATH
+              value: {{ $values.restoreSnapshot.subpath }}
+            - name: RM_SUBPATH
+              value: {{ $values.restoreSnapshot.cleanSubpath | quote }}
+            - name: URL
+              value: {{ $values.restoreSnapshot.snapshotUrl }}
+            - name: TAR_ARGS
+              value: {{ $values.restoreSnapshot.extraTarArgs }}
+            - name: CHUNK_SIZE
+              value: {{ (mul $values.restoreSnapshot.chunkSize 1) | quote }} # Multiplying by 1 to circumvent float64 conversion leading to scientific notation (here: https://github.com/helm/helm/issues/1707)
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -62,24 +95,19 @@ spec:
             - |
               set -ex;
               exec nitro \
-                --persistent.chain=/storage/data \
-                --persistent.global-config=/storage \
-                --http.addr=0.0.0.0 \
-                --http.vhosts=* \
-                --metrics \
-              {{- range $arg := $values.extraArgs }}
-                {{- $arg | nindent 16 }} \
-              {{- end }}
-                --metrics-server.addr=0.0.0.0
+                {{- range $val := initial $nitroArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $nitroArgs }}
           ports:
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
+              protocol: TCP
             - name: ws-rpc
-              containerPort: 8548
+              containerPort: {{ index $values.service.ports "ws-rpc" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 6070
-              protocol: TCP
-            - name: http-rpc
-              containerPort: 8547
+              containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
           volumeMounts:
             - name: storage
@@ -88,7 +116,7 @@ spec:
               mountPath: /tmp
           readinessProbe:
             httpGet:
-              port: 8547
+              port: {{ index $values.service.ports "http-rpc" }}
               path: /
           {{- with $values.resources }}
           resources:

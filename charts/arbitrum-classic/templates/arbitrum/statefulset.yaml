@@ -1,6 +1,7 @@
 {{- $values := $.Values.arbitrum }}
 {{- $componentName := "arbitrum" }}
 {{- $componentLabel := include "arbitrum-classic.componentLabelFor" $componentName }}
+{{- $classicArgs := get (fromJson (include "arbitrum-classic.computedArgs" $values)) "computedArgs" }}
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -50,48 +51,28 @@ spec:
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: busybox:stable
+          image: ghcr.io/graphops/docker-builds/init-stream-download@sha256:acbe5bff3b273b6e56b7aad20e8368ab9ddb091250b744e41ad66d6e7c2d0901
           imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: true 
-          command:
-            - sh
-            - -c
-            - |
-              set -x
-              STORAGE_PATH="/storage"
-              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/snapshots"
-              else
-                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
-              fi
-              # If enabled and snapshot URL has been provided, restore snapshot
-              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-                echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
-                  echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c --no-check-certificate -O - "${SNAPSHOT_URL}" | tar -xv -C "$SNAPSHOT_RESTORE_PATH"
-                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-                else
-                  echo "Snapshot configuration already restored, continuing..."
-                fi
-              else
-                echo "Snapshot restoration not enabled, skipping..."
-              fi
+            privileged: true
           volumeMounts:
             - name: storage
               mountPath: /storage
           env:
+            - name: DIR
+              value: "/storage"
             - name: RESTORE_SNAPSHOT
-              value: "true"
-            - name: SNAPSHOT_RESTORE_PATH
-              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
-            - name: SNAPSHOT_URL
+              value: {{ $values.restoreSnapshot.enabled | quote }}
+            - name: SUBPATH
+              value: {{ $values.restoreSnapshot.subpath }}
+            - name: RM_SUBPATH
+              value: {{ $values.restoreSnapshot.cleanSubpath | quote }}
+            - name: URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
+            - name: TAR_ARGS
+              value: {{ $values.restoreSnapshot.extraTarArgs }}
+            - name: CHUNK_SIZE
+              value: {{ (mul $values.restoreSnapshot.chunkSize 1) | quote }} # Multiplying by 1 to circumvent float64 conversion leading to scientific notation (here: https://github.com/helm/helm/issues/1707)
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key }}
@@ -114,32 +95,19 @@ spec:
             - |
               set -ex;
               exec arb-node \
-                --core.checkpoint-gas-frequency=156250000 \
-                --persistent.chain=/storage \
-                --persistent.global-config=/storage \
-                --node.rpc.addr=0.0.0.0 \
-                --node.rpc.tracing.enable \
-                --node.cache.allow-slow-lookup \
-                --node.rpc.tracing.namespace="trace" \
-                --node.rpc.enable-l1-calls \
-                --metrics \
-                --metrics-server.addr=0.0.0.0 \
-              {{- range $arg := $values.extraArgs }}
-                {{- $arg | nindent 16 }} \
-              {{- end }}
-                --healthcheck.enable=true
+                {{- range $val := initial $classicArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $classicArgs }}
           ports:
-            - name: ws
-              containerPort: 8548
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
+              protocol: TCP
+            - name: ws-rpc
+              containerPort: {{ index $values.service.ports "ws-rpc" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 6070
-              protocol: TCP
-            - name: http-rpc
-              containerPort: 9656
-              protocol: TCP
-            - name: http-jsonrpc
-              containerPort: 8547
+              containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
           volumeMounts:
             - name: storage
@@ -148,7 +116,7 @@ spec:
               mountPath: /tmp
           readinessProbe:
             httpGet:
-              port: 8547
+              port: {{ index $values.service.ports "http-rpc" }}
               path: /
           {{- with $values.resources }}
           resources:

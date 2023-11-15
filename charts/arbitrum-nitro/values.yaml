@@ -68,8 +68,37 @@ grafana:
   dashboardsConfigMapLabelValue: "1"
 
 nitro:
-  # -- Additional CLI arguments to pass to `nitro`
-  extraArgs: []
+  # -- Nitro configuration parameters
+  config:
+    # -- Chain ID, 42161 for Arbitrum One
+    chain: 42161
+    # -- RPC URL to L1 chain (ethereum)
+    parentChainUrl: "CHANGE_ME_RPC_URL"
+    # -- RPC Url to Arbitrum Classic Archive node if serving classic blocks
+    classicUrl: null
+    # -- RPC config parameters
+    httpRpc:
+      # -- Enabled APIs
+      api: net,web3,eth,debug
+      # -- Listen address
+      addr: 0.0.0.0
+      # -- Allowed vhosts
+      vhosts: "*"
+      # -- Allowed CORS domains
+      cors: "*"
+    # -- Metrics parameters
+    metrics:
+      # -- Enable metrics
+      enabled: true
+      # -- Listen address
+      addr: 0.0.0.0
+
+    # -- Enabled default arguments on the chart
+    defaultArgs:
+      - "--node.caching.archive"
+
+    # -- Additional CLI arguments to pass to `nitro`
+    extraArgs: []
 
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
@@ -82,7 +111,21 @@ nitro:
     resources:
       requests:
         # -- The amount of disk space to provision for arbitrum
-        storage: 3Ti
+        storage: 8Ti
+
+  restoreSnapshot:
+    # -- Enable initialising arbitrum state from a remote snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: "https://snapshot.arbitrum.foundation/arb1/nitro-archive.tar"
+    # -- Path where the snapshot should be unpacked to, relative to the volume root
+    subpath: "data/nitro"
+    # -- Erase destination path before unpacking
+    cleanSubpath: true
+    # -- Size of chunks for chunked downloading. Too small hurts performance, too big leads to more waste when it needs to be retried
+    chunkSize: 1000000000
+    # -- A string with extra arguments to tar command (i.e. "--strip-components=1")
+    extraTarArgs: null
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -108,7 +151,7 @@ nitro:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/nitro/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
       http-rpc: 8547
-      # -- Service Port to expose engineAPI interface on
+      # -- Service Port to expose WebSockets interface on
       ws-rpc: 8548
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6070
