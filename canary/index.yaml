@@ -1924,6 +1924,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v4.5.0
+      created: "2023-11-15T17:24:15Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 17774e5991ceb14a321a2741e6ac5074c02770a8e91ffbe16d83f80c9a30436b
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.3-canary.13/lighthouse-0.3.3-canary.13.tgz
+      version: 0.3.3-canary.13
+    - apiVersion: v2
+      appVersion: v4.5.0
       created: "2023-11-15T17:14:06Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 8f6aefc9b35a92fca9f50467ac8d3beb06b690b03da58e8c36255e83d5877403
@@ -3337,4 +3347,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-11-15T17:16:39.520768097Z"
+generated: "2023-11-15T17:27:40.515068118Z"
