@@ -40,18 +40,34 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  {{- range $portName, $portNumber := $values.service.ports }}
-    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
-      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+    - name: http-lighthouse
+      port: {{ index $values.service.ports "http-lighthouse" }}
+      targetPort: http-lighthouse
       protocol: TCP
-      name: {{ $portName }}
-  {{- end }}
+    - name: http-metrics
+      port: {{ index $values.service.ports "http-metrics" }}
+      targetPort: http-metrics
+      protocol: TCP
+    {{- if not $values.p2pNodePort.enabled }}
+    - name: tcp-p2p-transport
+      port: {{ include "lighthouse.port" $values }}
+      targetPort: tcp-p2p-transport
+      protocol: TCP
+    - name: udp-p2p-discovery
+      port: {{ include "lighthouse.discoveryPort" $values }}
+      targetPort: udp-p2p-discovery
+      protocol: UDP
+    - name: udp-p2p-transport
+      port: {{ include "lighthouse.quicPort" $values }}
+      targetPort: udp-p2p-transport
+      protocol: UDP
+    {{- end }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 {{- if $values.p2pNodePort.enabled }}
 {{- $port := $values.p2pNodePort.port }}
-{{- $quicPort := add $port 1 }}
+{{- $quicPort := add $values.p2pNodePort.port 1 }}
 ---
 apiVersion: v1
 kind: Service
@@ -66,20 +82,20 @@ spec:
   type: NodePort
   externalTrafficPolicy: Local
   ports:
-    - name: tcp-p2p
-      port: {{ include "lighthouse.p2pPort" $values }}
+    - name: tcp-p2p-transport
+      port: {{ $port }}
       protocol: TCP
-      targetPort: tcp-p2p
+      targetPort: tcp-p2p-transport
       nodePort: {{ $port }}
-    - name: udp-p2p
-      port: {{ include "lighthouse.p2pPort" $values }}
+    - name: udp-p2p-discovery
+      port: {{ $port }}
       protocol: UDP
-      targetPort: udp-p2p
+      targetPort: udp-p2p-discovery
       nodePort: {{ $port }}
-    - name: udp-p2p-quic
-      port: {{ include "lighthouse.p2pQuicPort" $values }}
+    - name: udp-p2p-transport
+      port: {{ $quicPort }}
       protocol: UDP
-      targetPort: udp-p2p-quic
+      targetPort: udp-p2p-transport
       nodePort: {{ $quicPort }}
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}

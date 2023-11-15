@@ -97,16 +97,19 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | lighthouse.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | lighthouse.nodeSelector |  | object | `{}` |
- | lighthouse.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | lighthouse.p2pNodePort.enabled | Expose P2P ports via NodePort. | bool | `false` |
  | lighthouse.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | lighthouse.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
+ | lighthouse.p2pNodePort.port | -The ports must be unique. | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | lighthouse.resources |  | object | `{}` |
- | lighthouse.service.ports.http-lighthouse | Service Port to expose JSON-RPC interface on | int | `5052` |
+ | lighthouse.service.ports.http-lighthouse | Service Port to expose REST http interface on | int | `5052` |
  | lighthouse.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `5054` |
+ | lighthouse.service.ports.tcp-p2p-transport | TCP transport for P2P | int | `9000` |
+ | lighthouse.service.ports.udp-p2p-discovery | UDP discovery protocol for P2P | int | `9000` |
+ | lighthouse.service.ports.udp-p2p-transport | For experimental QUIC protocol support | int | `9001` |
  | lighthouse.service.topologyAwareRouting.enabled |  | bool | `false` |
  | lighthouse.service.type |  | string | `"ClusterIP"` |
  | lighthouse.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
