@@ -188,7 +188,7 @@ spec:
               mountPath: /tmp
           readinessProbe:
             tcpSocket:
-              port: http-lighthouse
+              port: tcp-transport
             initialDelaySeconds: 10
             periodSeconds: 10
           {{- with $values.resources }}
