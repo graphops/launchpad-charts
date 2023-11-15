@@ -11,12 +11,27 @@ metadata:
 spec:
   clusterIP: None # Headless service
   ports:
-  {{- range $portName, $portNumber := $values.service.ports }}
-    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
-      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+    - name: http-lighthouse
+      port: {{ index $values.service.ports "http-lighthouse" }}
+      targetPort: http-lighthouse
       protocol: TCP
-      name: {{ $portName }}
-  {{- end }}
+    - name: http-metrics
+      port: {{ index $values.service.ports "http-metrics" }}
+      targetPort: http-metrics
+      protocol: TCP
+    {{- if not $values.p2pNodePort.enabled }}
+    - name: tcp-transport
+      port: {{ include "lighthouse.port" $values }}
+      targetPort: tcp-transport
+      protocol: TCP
+    - name: udp-discovery
+      port: {{ include "lighthouse.discoveryPort" $values }}
+      targetPort: udp-discovery
+      protocol: UDP
+    - name: udp-transport
+      port: {{ include "lighthouse.quicPort" $values }}
+      targetPort: udp-transport
+      protocol: UDP
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
