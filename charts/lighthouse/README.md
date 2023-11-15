@@ -97,7 +97,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | lighthouse.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | lighthouse.nodeSelector |  | object | `{}` |
- | lighthouse.p2pNodePort.enabled | Expose P2P ports via NodePort. | bool | `false` |
+ | lighthouse.p2pNodePort.enabled | Expose P2P ports via NodePort | bool | `false` |
  | lighthouse.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
