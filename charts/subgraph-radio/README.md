@@ -2,7 +2,7 @@
 
 Deploy a Graphcast Subgraph Radio into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.7](https://img.shields.io/badge/AppVersion-0.1.7-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.10](https://img.shields.io/badge/AppVersion-0.1.10-informational?style=flat-square)
 
 ## Introduction
 
@@ -51,11 +51,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
  | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
- | env.GRAPHCAST_NETWORK | Supported Graphcast networks: mainnet, testnet | string | `"mainnet"` |
+ | env.GRAPHCAST_NETWORK | Supported Graphcast networks: mainnet, testnet | string | `""` |
  | env.GRAPH_NODE_STATUS_ENDPOINT | Graph Node endpoint for indexing statuses | string | `""` |
  | env.INDEXER_ADDRESS | Indexer address | string | `""` |
- | env.NETWORK_SUBGRAPH | Subgraph endpoint to The Graph network subgraph | string | `"https://api.thegraph.com/subgraphs/name/graphprotocol/graph-network-mainnet"` |
- | env.REGISTRY_SUBGRAPH | Subgraph endpoint to the Graphcast Registry | string | `"https://api.thegraph.com/subgraphs/name/hopeyen/graphcast-registry-mainnet"` |
+ | env.INDEXER_MANAGEMENT_SERVER_ENDPOINT | Indexer Management Server endpoint | string | `""` |
+ | env.NETWORK_SUBGRAPH | Subgraph endpoint to The Graph network subgraph | string | `""` |
+ | env.REGISTRY_SUBGRAPH | Subgraph endpoint to the Graphcast Registry | string | `""` |
  | env.RUST_LOG | Comma separated static list of content topics to subscribe to | string | `"info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | fullnameOverride |  | string | `""` |

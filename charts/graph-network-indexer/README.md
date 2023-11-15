@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.20.22](https://img.shields.io/badge/AppVersion-v0.20.22-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.20.23](https://img.shields.io/badge/AppVersion-v0.20.23-informational?style=flat-square)
 
 ## Introduction
 
@@ -67,6 +67,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.secretEnv |  | object | `{}` |
  | indexerAgent.service.ports.http-metrics | Service Port to expose Metrics on | int | `7300` |
  | indexerAgent.service.ports.http-mgmtapi | Service Port to expose Indexer Management API on | int | `8000` |
+ | indexerAgent.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
@@ -99,6 +100,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.secretEnv |  | object | `{}` |
  | indexerService.service.ports.http-metrics | Service Port to expose Metrics on | int | `7300` |
  | indexerService.service.ports.http-queryapi | Service Port to expose Query API on | int | `7600` |
+ | indexerService.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerService.service.type |  | string | `"ClusterIP"` |
  | indexerService.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerService.tolerations |  | list | `[]` |

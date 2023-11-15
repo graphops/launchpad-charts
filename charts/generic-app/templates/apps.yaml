@@ -9,7 +9,7 @@
 {{- with $lContext }}
 {{- $initOperations := .initOperations }}
 {{- if .enabled }}
-{{- $serviceAccountBlock := or .serviceAccount dict }}
+{{- $serviceAccountBlock := or .serviceAccount (dict "create" true) }}
 {{- $serviceAccountName := default $fullComponentName $serviceAccountBlock.name }}
 
 {{- $imagePullSecrets := .imagePullSecrets }}
@@ -63,6 +63,7 @@ roleRef:
 {{- end }}
 
 {{- range $containerName, $containerContext := .containers }}
+{{- if .preInstallPod }}
 {{- if .preInstallPod.enabled }}
 ---
 ### Release Lifecycle Pod - Pre-Install
@@ -170,6 +171,8 @@ spec:
           {{- end }}
       {{- end }}
 {{- end }}
+{{- end }}
+{{- if .preUpgradePod }}
 {{- if .preUpgradePod.enabled }}
 ---
 ### Release Lifecycle Pod - Pre-Upgrade
@@ -273,6 +276,7 @@ spec:
           {{- end }}
           {{- end }}
       {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 
