@@ -156,6 +156,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.nodeSelector |  | object | `{}` |
  | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | proxyd.replicaCount | Number of replicas | int | `1` |
  | proxyd.resources |  | object | `{}` |
  | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | proxyd.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `9761` |
