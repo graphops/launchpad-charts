@@ -1,0 +1,153 @@
+{{- $values := $.Values.reader }}
+{{- $componentName := "reader" }}
+{{- $componentLabel := include "firehose.componentLabelFor" $componentName }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "firehose.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
+{{- $env := merge .Values.common.env $values.env }}
+{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
+
+{{/* START StatefulSet */}}
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "firehose.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      {{- include "firehose.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  serviceName: {{ include "firehose.fullname" . }}-{{ $componentName }}-headless
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: reader
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+    - metadata:
+        name: reader-node
+      spec:
+        {{- toYaml $values.reader_node.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "firehose.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "firehose.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "reader-node"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/local/bin/eth-maintenance"]
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "geth --datadir $FIREETH_READER_NODE_DATA_DIR snapshot prune-state && echo DONE && tail -f /dev/null"
+          ports:
+            - name: eth66-udp-p2p
+              containerPort: {{ index $values.service.ports "eth66-udp-p2p" }}
+              protocol: UDP
+            - name: eth66-tcp-p2p
+              containerPort: {{ index $values.service.ports "eth66-tcp-p2p" }}
+              protocol: TCP
+            - name: eth-consensus
+              containerPort: {{ index $values.service.ports "eth-consensus" }}
+              protocol: TCP
+            - name: metrics-fh
+              containerPort: {{ index $values.service.ports "metrics-fh" }}
+              protocol: TCP
+            - name: metrics-geth
+              containerPort: {{ index $values.service.ports "metrics-geth" }}
+              protocol: TCP
+            - name: grpc
+              containerPort: 13010
+              protocol: TCP
+            - name: node-mgr
+              containerPort: {{ index $values.service.ports "node-mgr" }}
+
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with $env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+
+          volumeMounts:
+            - name: reader
+              mountPath: "/var/lib/fireeth"
+            - name: reader-node
+              mountPath: "/var/lib/geth"
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+      volumes:
+        - name: reader
+          persistentVolumeClaim:
+            claimName: reader
+        - name: reader-node
+          persistentVolumeClaim:
+            claimName: reader-node
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+
+{{/* END StatefulSet */}}

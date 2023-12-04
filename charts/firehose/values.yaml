@@ -1,0 +1,504 @@
+# Default values for subgraph-radio.
+# This is a YAML-formatted file.
+
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+     # Required to obtain the nodes external IP
+    - apiGroups: [""]
+      resources:
+      - "nodes"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to get information about the serices nodePort.
+    - apiGroups: [""]
+      resources:
+      - "services"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+
+# -- Image for subgraph-radio
+image:
+  repository: ghcr.io/streamingfast/firehose-ethereum
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+common:
+  env:
+    FIREETH_GLOBAL_LOG_TO_FILE: "false"
+    FIREETH_GLOBAL_DATA_DIR: "/var/lib/fireeth"
+    FIREETH_COMMON_LIVE_BLOCKS_ADDR: "relayer:13011"
+    FIREETH_COMMON_CHAIN_ID: "1"
+    FIREETH_COMMON_NETWORK_ID: "1"
+  secretEnv:
+    FIREETH_COMMON_ONE_BLOCK_STORE_URL:
+      secretName: firehose-seaweedfs-urls
+      key: one-blocks
+    FIREETH_COMMON_MERGED_BLOCKS_STORE_URL:
+      secretName: firehose-seaweedfs-urls
+      key: merged-blocks
+    FIREETH_COMMON_FORKED_BLOCKS_STORE_URL:
+      secretName: firehose-seaweedfs-urls
+      key: forked-blocks
+    FIREETH_COMMON_INDEX_STORE_URL:
+      secretName: firehose-seaweedfs-urls
+      key: index-store
+
+reader:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- Pull secrets required to fetch the Image
+  imagePullSecrets: []
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret: &jwt
+      # -- Name of the Secret resource in the same namespace
+      name: null
+      # -- Data key for the JWT in the Secret
+      key: null
+    # -- Use this literal value for the JWT
+    fromLiteral: 1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480
+
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Erigon GRPC interface on
+      eth-consensus: 8547
+      metrics-fh: 9102
+      metrics-geth: 6061
+      grpc: 13010
+      node-mgr: 13009
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: true
+    # -- NodePort to be used. Must be unique.
+    port: 32310
+
+  reader_node:
+    volumeClaimSpec:
+      accessModes: ["ReadWriteOnce"]
+      # -- The storage class to use when provisioning a persistent volume
+      storageClassName: openebs-zfs-localpv-compressed-8k
+      resources:
+        requests:
+          # -- The amount of disk space to provision
+          storage: 3Ti
+
+  # -- Set custom aliases for preconfigured commands in your environment
+  aliases: {}
+
+  # -- Image for subgraph-radio
+  image:
+    repository: ghcr.io/streamingfast/firehose-ethereum
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  env:
+  #    FIREETH_READER_NODE_ARGUMENTS: "--cache=8192 --maxpeers=100 --mainnet --syncmode full --metrics --metrics.addr=0.0.0.0 --metrics.port=6061 --port=30310 --discovery.port=30310 --http.port=8545 --authrpc.port=8547 --authrpc.addr=0.0.0.0 --authrpc.vhosts=* --authrpc.jwtsecret=/var/lib/jwt-eth/jwt.hex --snapshot=true --txlookuplimit=1000"
+    FIREETH_READER_NODE_ARGUMENTS: "--networkid=1 --datadir={node-data-dir} --port=30310 --http --http.api=eth,net,web3 --http.port=8545 --http.addr=0.0.0.0 --http.vhosts=* --firehose-enabled --cache=8192 --maxpeers=100 --mainnet --syncmode full --metrics --metrics.addr=0.0.0.0 --metrics.port=6061 --discovery.port=30310 --authrpc.port=8547 --authrpc.addr=0.0.0.0 --authrpc.vhosts=* --authrpc.jwtsecret=/jwt/jwt.hex --snapshot=true --txlookuplimit=1000"
+    FIREETH_READER_NODE_LOG_TO_ZAP: "false"
+    FIREETH_READER_NODE_DATA_DIR: "/var/lib/geth"
+
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your PG password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your PG password
+    #   key:
+
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+nimbus:
+  nimbus:
+    executionClientUrl: http://firehose-reader:8547
+    trustedNodeSync:
+      enabled: true
+      trustedNodeUrl: https://beaconstate.ethstaker.cc # https://eth-clients.github.io/checkpoint-sync-endpoints/
+    volumeClaimSpec:
+      storageClassName: "openebs-zfs-localpv-compressed-8k"
+    jwt:
+      existingSecret:
+        name: firehose-reader-jwt
+        key: jwt.hex
+  prometheus:
+    serviceMonitors:
+      enabled: true
+
+relayer:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- Pull secrets required to fetch the Image
+  imagePullSecrets: []
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  # -- Set custom aliases for preconfigured commands in your environment
+  aliases: {}
+
+  # -- Image for subgraph-radio
+  image:
+    repository: ghcr.io/streamingfast/firehose-ethereum
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Erigon GRPC interface on
+      grpc: 13011
+
+  env:
+    FIREETH_RELAYER_SOURCE: "reader-node:13010"
+
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your PG password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your PG password
+    #   key:
+
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+merger:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- Pull secrets required to fetch the Image
+  imagePullSecrets: []
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  # -- Set custom aliases for preconfigured commands in your environment
+  aliases: {}
+
+  # -- Image for subgraph-radio
+  image:
+    repository: ghcr.io/streamingfast/firehose-ethereum
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Erigon GRPC interface on
+      metrics: 9102
+
+  env: {}
+
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your PG password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your PG password
+    #   key:
+
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+grpc:
+  nameOverride: ""
+  fullnameOverride: ""
+
+  # -- Pull secrets required to fetch the Image
+  imagePullSecrets: []
+
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  # -- Set custom aliases for preconfigured commands in your environment
+  aliases: {}
+
+  # -- Image for subgraph-radio
+  image:
+    repository: ghcr.io/streamingfast/firehose-ethereum
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
+      # -- Service Port to expose Erigon GRPC interface on
+      grpc: 13042
+
+  env: {}
+
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your PG password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your PG password
+    #   key:
+
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# -- [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md)
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |2
+  start:
+    args:
+    # Define Firehose components that will be used for this setup
+    - merger
+    - firehose
+    - reader-node
+    - relayer
+    - combined-index-builder
+    flags:
+      # Prevent creation of file for logging (logs from previous sessions are not visible with this setting)
+      log-to-file: false
+
+      # Ethereum is the default chain, its id is 1. Update these flags for different chains such as Binance
+      common-chain-id: "1"
+      common-network-id: "1"
+      # Update the reader-node-path to reference the geth binary for the chain and OS being targeted
+      reader-node-path: ./geth_linux
+      # Update the reader-code-arguments for the chain being targeted
+      # Find specific values in the Firehose Ethereum Setup Documentation
+      reader-node-arguments: "--cache 8192 --maxpeers 100 --metrics --metrics.port 6061 --port=30303 --http.port=8545 --snapshot=true --txlookuplimit=1000"
+      reader-node-log-to-zap: false

@@ -1,0 +1,101 @@
+{{- $values := $.Values.merger }}
+{{- $componentName := "merger" }}
+{{- $componentLabel := include "firehose.componentLabelFor" $componentName }}
+
+{{- $env := merge .Values.common.env $values.env }}
+{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
+
+{{/* START StatefulSet */}}
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "firehose.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      {{- include "firehose.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  serviceName: {{ include "firehose.fullname" . }}-{{ $componentName }}-headless
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: merger
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "firehose.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "firehose.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "merger"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          ports:
+            - containerPort: {{ $values.service.ports.metrics }}
+              protocol: TCP
+              name: metrics
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with $env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: merger
+              mountPath: "/var/lib/fireeth"
+      volumes:
+        - name: merger
+          persistentVolumeClaim:
+            claimName: merger
+
+{{/* END StatefulSet */}}
