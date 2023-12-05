@@ -2,7 +2,7 @@
 
 Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.1.3](https://img.shields.io/badge/Version-1.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.0](https://img.shields.io/badge/AppVersion-v0.3.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.1.4](https://img.shields.io/badge/Version-1.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.3.5](https://img.shields.io/badge/AppVersion-v0.3.5-informational?style=flat-square)
 
 ## Features
 
@@ -56,7 +56,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
  | heimdall.image.pullPolicy |  | string | `"IfNotPresent"` |
  | heimdall.image.repository | Image for Heimdall | string | `"maticnetwork/heimdall"` |
- | heimdall.image.tag |  | string | `"v0.3.5"` |
+ | heimdall.image.tag | Overrides the image tag | string | Chart.appVersion |
  | heimdall.nodeSelector |  | object | `{}` |
  | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |
