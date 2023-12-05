@@ -1902,6 +1902,16 @@ entries:
       version: 0.1.0
   heimdall:
     - apiVersion: v2
+      appVersion: v1.0.3
+      created: "2023-12-05T17:36:11Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: a5249e6a72347def3fff483d891eb5e406aaba378f39844a711270f00295c3a2
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.5-canary.1/heimdall-1.1.5-canary.1.tgz
+      version: 1.1.5-canary.1
+    - apiVersion: v2
       appVersion: v0.3.0
       created: "2023-11-02T15:33:36Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
@@ -2394,6 +2404,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.0/listener-radio-0.1.0.tgz
       version: 0.1.0
   nethermind:
+    - apiVersion: v2
+      appVersion: 1.23.0
+      created: "2023-12-05T17:36:04Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: c1e9527cb79bae73dc9eab96e81a6366cac552617e3aa7f7844cdd510dc88673
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.1/nethermind-0.4.3-canary.1.tgz
+      version: 0.4.3-canary.1
     - apiVersion: v2
       appVersion: 1.17.0-unstable
       created: "2023-09-21T15:50:43Z"
@@ -3457,4 +3477,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2023-12-05T17:28:57.998831226Z"
+generated: "2023-12-05T17:39:47.501564524Z"
