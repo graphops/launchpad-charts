@@ -66,7 +66,7 @@ jobs:
             url=$(echo "$release" | jq -r '.url')
 
             name="$name" version="$version" date="$date" url="$url" yq -i e \
-            '.entries.[strenv(name)] |= map(select(.version == strenv(version)).created=strenv(date)) |= map(select(.version == strenv(version)).urls=[strenv(url)])' \
+            '.entries.[strenv(name)] |= map(select(.version == strenv(version)).created=strenv(date)) | .entries.[strenv(name)] |= map(select(.version == strenv(version)).urls=[strenv(url)])' \
             .releases/index.yaml
           done
 
