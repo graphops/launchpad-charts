@@ -9,7 +9,7 @@ entries:
       name: Avalanche
       type: application
       urls:
-        - Avalanche-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/Avalanche-0.1.0/Avalanche-0.1.0.tgz
       version: 0.1.0
   arbitrum-classic:
     - apiVersion: v2
@@ -20,7 +20,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.2.0/arbitrum-classic-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
@@ -30,7 +30,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.4/arbitrum-classic-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
@@ -40,7 +40,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.3/arbitrum-classic-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
@@ -50,7 +50,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.2/arbitrum-classic-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
@@ -60,7 +60,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.1/arbitrum-classic-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: v1.4.5-e97c1a4
@@ -70,7 +70,7 @@ entries:
       name: arbitrum-classic
       type: application
       urls:
-        - arbitrum-classic-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
@@ -81,7 +81,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.2.0/arbitrum-nitro-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
@@ -91,7 +91,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.4/arbitrum-nitro-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
@@ -101,7 +101,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.3/arbitrum-nitro-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
@@ -111,7 +111,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.2/arbitrum-nitro-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
@@ -121,7 +121,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.1/arbitrum-nitro-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: v2.0.10-73224e3
@@ -131,7 +131,7 @@ entries:
       name: arbitrum-nitro
       type: application
       urls:
-        - arbitrum-nitro-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.1.0/arbitrum-nitro-0.1.0.tgz
       version: 0.1.0
   avalanche:
     - apiVersion: v2
@@ -142,7 +142,7 @@ entries:
       name: avalanche
       type: application
       urls:
-        - avalanche-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/avalanche-0.1.3/avalanche-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: v1.10.10
@@ -152,7 +152,7 @@ entries:
       name: avalanche
       type: application
       urls:
-        - avalanche-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/avalanche-0.1.2/avalanche-0.1.2.tgz
       version: 0.1.2
   celo:
     - apiVersion: v2
@@ -163,7 +163,7 @@ entries:
       name: celo
       type: application
       urls:
-        - celo-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
     - apiVersion: v2
@@ -174,7 +174,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.9.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.1/erigon-0.9.1.tgz
       version: 0.9.1
     - apiVersion: v2
       appVersion: v2.53.4
@@ -184,7 +184,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.9.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.0/erigon-0.9.0.tgz
       version: 0.9.0
     - apiVersion: v2
       appVersion: v2.50.0
@@ -194,7 +194,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.8.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.4/erigon-0.8.4.tgz
       version: 0.8.4
     - apiVersion: v2
       appVersion: v2.49.2
@@ -204,7 +204,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.8.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.3/erigon-0.8.3.tgz
       version: 0.8.3
     - apiVersion: v2
       appVersion: v2.49.2
@@ -214,7 +214,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.8.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.2/erigon-0.8.2.tgz
       version: 0.8.2
     - apiVersion: v2
       appVersion: v2.49.1
@@ -224,7 +224,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.8.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.1/erigon-0.8.1.tgz
       version: 0.8.1
     - apiVersion: v2
       appVersion: v2.49.0
@@ -234,7 +234,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.8.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.8.0/erigon-0.8.0.tgz
       version: 0.8.0
     - apiVersion: v2
       appVersion: v2.48.1
@@ -244,7 +244,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.7.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.7.0/erigon-0.7.0.tgz
       version: 0.7.0
     - apiVersion: v2
       appVersion: v2.34.0
@@ -254,7 +254,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.6.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.6.0/erigon-0.6.0.tgz
       version: 0.6.0
     - apiVersion: v2
       appVersion: v2.33.1
@@ -264,7 +264,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.5.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.5.1/erigon-0.5.1.tgz
       version: 0.5.1
     - apiVersion: v2
       appVersion: v2.33.0
@@ -274,7 +274,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.5.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.5.0/erigon-0.5.0.tgz
       version: 0.5.0
     - apiVersion: v2
       appVersion: v2.32.0
@@ -284,7 +284,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.4.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.4.1/erigon-0.4.1.tgz
       version: 0.4.1
     - apiVersion: v2
       appVersion: v2.32.0
@@ -294,7 +294,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.4.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.4.0/erigon-0.4.0.tgz
       version: 0.4.0
     - apiVersion: v2
       appVersion: v2.31.0
@@ -304,7 +304,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.14.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.14/erigon-0.3.14.tgz
       version: 0.3.14
     - apiVersion: v2
       appVersion: v2.30.0
@@ -314,7 +314,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.13.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.13/erigon-0.3.13.tgz
       version: 0.3.13
     - apiVersion: v2
       appVersion: v2.30.0
@@ -324,7 +324,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.12.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.12/erigon-0.3.12.tgz
       version: 0.3.12
     - apiVersion: v2
       appVersion: v2.29.0
@@ -334,7 +334,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.11.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.11/erigon-0.3.11.tgz
       version: 0.3.11
     - apiVersion: v2
       appVersion: v2.28.1
@@ -344,7 +344,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.10.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.10/erigon-0.3.10.tgz
       version: 0.3.10
     - apiVersion: v2
       appVersion: v2.28.0
@@ -354,7 +354,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.9.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.9/erigon-0.3.9.tgz
       version: 0.3.9
     - apiVersion: v2
       appVersion: v2.28.0
@@ -364,7 +364,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.8.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.8/erigon-0.3.8.tgz
       version: 0.3.8
     - apiVersion: v2
       appVersion: v2.28.0
@@ -374,7 +374,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.7.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.7/erigon-0.3.7.tgz
       version: 0.3.7
     - apiVersion: v2
       appVersion: v2.27.0
@@ -384,7 +384,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.6.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.6/erigon-0.3.6.tgz
       version: 0.3.6
     - apiVersion: v2
       appVersion: v2022.10.01
@@ -394,7 +394,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.5/erigon-0.3.5.tgz
       version: 0.3.5
     - apiVersion: v2
       appVersion: v2022.09.03
@@ -404,7 +404,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.4/erigon-0.3.4.tgz
       version: 0.3.4
     - apiVersion: v2
       appVersion: v2022.09.03
@@ -414,7 +414,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.3/erigon-0.3.3.tgz
       version: 0.3.3
     - apiVersion: v2
       appVersion: v2022.09.03
@@ -424,7 +424,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.2/erigon-0.3.2.tgz
       version: 0.3.2
     - apiVersion: v2
       appVersion: v2022.09.03
@@ -434,7 +434,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.1/erigon-0.3.1.tgz
       version: 0.3.1
     - apiVersion: v2
       appVersion: v2022.09.03
@@ -444,7 +444,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.3.0/erigon-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: v2022.09.01
@@ -454,7 +454,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.6.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.6/erigon-0.2.6.tgz
       version: 0.2.6
     - apiVersion: v2
       appVersion: v2022.09.01
@@ -464,7 +464,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.5/erigon-0.2.5.tgz
       version: 0.2.5
     - apiVersion: v2
       appVersion: v2022.09.01
@@ -474,7 +474,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.4/erigon-0.2.4.tgz
       version: 0.2.4
     - apiVersion: v2
       appVersion: v2022.08.03
@@ -484,7 +484,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.3/erigon-0.2.3.tgz
       version: 0.2.3
     - apiVersion: v2
       appVersion: v2022.08.03
@@ -494,7 +494,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.2/erigon-0.2.2.tgz
       version: 0.2.2
     - apiVersion: v2
       appVersion: v2022.08.02
@@ -504,7 +504,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.1/erigon-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: v2022.08.02
@@ -514,7 +514,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.2.0/erigon-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v2022.08.02
@@ -524,7 +524,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.9.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.9/erigon-0.1.9.tgz
       version: 0.1.9
     - apiVersion: v2
       appVersion: v2022.08.02
@@ -534,7 +534,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.8.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.8/erigon-0.1.8.tgz
       version: 0.1.8
     - apiVersion: v2
       appVersion: v2022.08.01
@@ -544,7 +544,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.7.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.7/erigon-0.1.7.tgz
       version: 0.1.7
     - apiVersion: v2
       appVersion: v2022.07.04
@@ -554,7 +554,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.6.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.6/erigon-0.1.6.tgz
       version: 0.1.6
     - apiVersion: v2
       appVersion: v2022.07.03
@@ -564,7 +564,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.5/erigon-0.1.5.tgz
       version: 0.1.5
     - apiVersion: v2
       appVersion: v2022.07.02
@@ -574,7 +574,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.4/erigon-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: v2022.07.02
@@ -584,7 +584,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.3/erigon-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: v2022.07.01
@@ -594,7 +594,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.2/erigon-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: v2022.06.06
@@ -604,7 +604,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.1/erigon-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: v2022.06.06
@@ -614,7 +614,7 @@ entries:
       name: erigon
       type: application
       urls:
-        - erigon-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
       version: 0.1.0
   generic-app:
     - apiVersion: v2
@@ -625,7 +625,7 @@ entries:
       name: generic-app
       type: application
       urls:
-        - generic-app-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.1/generic-app-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: n/a
@@ -635,7 +635,7 @@ entries:
       name: generic-app
       type: application
       urls:
-        - generic-app-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
@@ -646,7 +646,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.2.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.3/graph-network-indexer-0.2.3.tgz
       version: 0.2.3
     - apiVersion: v2
       appVersion: v0.20.22
@@ -656,7 +656,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.2.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.2/graph-network-indexer-0.2.2.tgz
       version: 0.2.2
     - apiVersion: v2
       appVersion: v0.20.21
@@ -666,7 +666,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.1/graph-network-indexer-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: v0.20.17
@@ -676,7 +676,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.0/graph-network-indexer-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v0.20.5-alpha.1
@@ -686,7 +686,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.2/graph-network-indexer-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: v0.20.4
@@ -696,7 +696,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.1/graph-network-indexer-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: v0.20.3
@@ -706,7 +706,7 @@ entries:
       name: graph-network-indexer
       type: application
       urls:
-        - graph-network-indexer-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
     - apiVersion: v2
@@ -717,7 +717,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.3.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.4/graph-node-0.3.4.tgz
       version: 0.3.4
     - apiVersion: v2
       appVersion: v0.32.0
@@ -727,7 +727,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.3.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.3/graph-node-0.3.3.tgz
       version: 0.3.3
     - apiVersion: v2
       appVersion: v0.32.0
@@ -737,7 +737,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.3.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.2/graph-node-0.3.2.tgz
       version: 0.3.2
     - apiVersion: v2
       appVersion: v0.32.0
@@ -747,7 +747,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.3.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.1/graph-node-0.3.1.tgz
       version: 0.3.1
     - apiVersion: v2
       appVersion: v0.32.0
@@ -757,7 +757,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.3.0/graph-node-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: v0.32.0
@@ -767,7 +767,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.2.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.2.2/graph-node-0.2.2.tgz
       version: 0.2.2
     - apiVersion: v2
       appVersion: v0.32.0
@@ -777,7 +777,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.2.1/graph-node-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: v0.31.0
@@ -787,7 +787,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.2.0/graph-node-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v0.28.2
@@ -797,7 +797,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.5/graph-node-0.1.5.tgz
       version: 0.1.5
     - apiVersion: v2
       appVersion: v0.28.2
@@ -807,7 +807,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.4/graph-node-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: v0.28.2
@@ -817,7 +817,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.3/graph-node-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: v0.28.2
@@ -827,7 +827,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.2/graph-node-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: v0.28.2
@@ -837,7 +837,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.1/graph-node-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: v0.28.2
@@ -847,7 +847,7 @@ entries:
       name: graph-node
       type: application
       urls:
-        - graph-node-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.1.0/graph-node-0.1.0.tgz
       version: 0.1.0
   graph-toolbox:
     - apiVersion: v2
@@ -858,7 +858,7 @@ entries:
       name: graph-toolbox
       type: application
       urls:
-        - graph-toolbox-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-toolbox-0.1.0/graph-toolbox-0.1.0.tgz
       version: 0.1.0
   heimdall:
     - apiVersion: v2
@@ -869,7 +869,7 @@ entries:
       name: heimdall
       type: application
       urls:
-        - heimdall-1.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.3/heimdall-1.1.3.tgz
       version: 1.1.3
     - apiVersion: v2
       appVersion: v0.3.0
@@ -879,7 +879,7 @@ entries:
       name: heimdall
       type: application
       urls:
-        - heimdall-1.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.2/heimdall-1.1.2.tgz
       version: 1.1.2
     - apiVersion: v2
       appVersion: v0.3.0
@@ -889,7 +889,7 @@ entries:
       name: heimdall
       type: application
       urls:
-        - heimdall-1.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.1/heimdall-1.1.1.tgz
       version: 1.1.1
     - apiVersion: v2
       appVersion: v0.3.0
@@ -899,7 +899,7 @@ entries:
       name: heimdall
       type: application
       urls:
-        - heimdall-1.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.1.0/heimdall-1.1.0.tgz
       version: 1.1.0
     - apiVersion: v2
       appVersion: v0.3.0
@@ -909,7 +909,7 @@ entries:
       name: heimdall
       type: application
       urls:
-        - heimdall-1.0.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
@@ -920,7 +920,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.4.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.4.0/lighthouse-0.4.0.tgz
       version: 0.4.0
     - apiVersion: v2
       appVersion: v4.4.1
@@ -930,7 +930,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.3.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.2/lighthouse-0.3.2.tgz
       version: 0.3.2
     - apiVersion: v2
       appVersion: v4.4.1
@@ -940,7 +940,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.3.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.1/lighthouse-0.3.1.tgz
       version: 0.3.1
     - apiVersion: v2
       appVersion: v4.4.1
@@ -950,7 +950,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.3.0/lighthouse-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: v3.4.0
@@ -960,7 +960,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.2.0/lighthouse-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: v3.3.0
@@ -970,7 +970,7 @@ entries:
       name: lighthouse
       type: application
       urls:
-        - lighthouse-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.1.0/lighthouse-0.1.0.tgz
       version: 0.1.0
   listener-radio:
     - apiVersion: v2
@@ -981,7 +981,7 @@ entries:
       name: listener-radio
       type: application
       urls:
-        - listener-radio-0.2.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.3/listener-radio-0.2.3.tgz
       version: 0.2.3
     - apiVersion: v2
       appVersion: 0.0.2-alpha.1
@@ -991,7 +991,7 @@ entries:
       name: listener-radio
       type: application
       urls:
-        - listener-radio-0.2.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.2/listener-radio-0.2.2.tgz
       version: 0.2.2
     - apiVersion: v2
       appVersion: 0.0.1
@@ -1001,7 +1001,7 @@ entries:
       name: listener-radio
       type: application
       urls:
-        - listener-radio-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.1/listener-radio-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: 0.0.1
@@ -1011,7 +1011,7 @@ entries:
       name: listener-radio
       type: application
       urls:
-        - listener-radio-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.0/listener-radio-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: 0.0.1
@@ -1021,7 +1021,7 @@ entries:
       name: listener-radio
       type: application
       urls:
-        - listener-radio-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.0/listener-radio-0.1.0.tgz
       version: 0.1.0
   nethermind:
     - apiVersion: v2
@@ -1032,7 +1032,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.4.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.2/nethermind-0.4.2.tgz
       version: 0.4.2
     - apiVersion: v2
       appVersion: 1.17.0-unstable
@@ -1042,7 +1042,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.4.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.1/nethermind-0.4.1.tgz
       version: 0.4.1
     - apiVersion: v2
       appVersion: 1.17.0-unstable
@@ -1052,7 +1052,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.4.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.0/nethermind-0.4.0.tgz
       version: 0.4.0
     - apiVersion: v2
       appVersion: 1.16.0-unstable
@@ -1062,7 +1062,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.3.0/nethermind-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: 1.15.0
@@ -1072,7 +1072,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.2.0/nethermind-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: 1.14.7
@@ -1082,7 +1082,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.8.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.8/nethermind-0.1.8.tgz
       version: 0.1.8
     - apiVersion: v2
       appVersion: 1.14.6
@@ -1092,7 +1092,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.7.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.7/nethermind-0.1.7.tgz
       version: 0.1.7
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1102,7 +1102,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.6.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.6/nethermind-0.1.6.tgz
       version: 0.1.6
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1112,7 +1112,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.5/nethermind-0.1.5.tgz
       version: 0.1.5
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1122,7 +1122,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.4/nethermind-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1132,7 +1132,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.3/nethermind-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1142,7 +1142,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.2/nethermind-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: 1.14.3
@@ -1152,7 +1152,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.1/nethermind-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: 1.14.2
@@ -1162,7 +1162,7 @@ entries:
       name: nethermind
       type: application
       urls:
-        - nethermind-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
     - apiVersion: v2
@@ -1173,7 +1173,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.5.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.4/nimbus-0.5.4.tgz
       version: 0.5.4
     - apiVersion: v2
       appVersion: multiarch-v23.9.1
@@ -1183,7 +1183,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.5.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.3/nimbus-0.5.3.tgz
       version: 0.5.3
     - apiVersion: v2
       appVersion: multiarch-v23.9.0
@@ -1193,7 +1193,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.5.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.2/nimbus-0.5.2.tgz
       version: 0.5.2
     - apiVersion: v2
       appVersion: multiarch-v23.9.0
@@ -1203,7 +1203,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.5.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.1/nimbus-0.5.1.tgz
       version: 0.5.1
     - apiVersion: v2
       appVersion: multiarch-v23.8.0
@@ -1213,7 +1213,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.5.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.0/nimbus-0.5.0.tgz
       version: 0.5.0
     - apiVersion: v2
       appVersion: multiarch-v23.8.0
@@ -1223,7 +1223,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.4.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.4.1/nimbus-0.4.1.tgz
       version: 0.4.1
     - apiVersion: v2
       appVersion: multiarch-v23.7.0
@@ -1233,7 +1233,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.4.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.4.0/nimbus-0.4.0.tgz
       version: 0.4.0
     - apiVersion: v2
       appVersion: multiarch-v22.12.0
@@ -1243,7 +1243,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.3.0/nimbus-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: multiarch-v22.11.1
@@ -1253,7 +1253,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.2.1/nimbus-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: multiarch-v22.11.0
@@ -1263,7 +1263,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.2.0/nimbus-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: multiarch-v22.10.1
@@ -1273,7 +1273,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.4/nimbus-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: multiarch-v22.10.0
@@ -1283,7 +1283,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.3/nimbus-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: multiarch-v22.10.0
@@ -1293,7 +1293,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.2/nimbus-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: multiarch-v22.10.0
@@ -1303,7 +1303,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.1/nimbus-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: multiarch-v22.9.1
@@ -1313,7 +1313,7 @@ entries:
       name: nimbus
       type: application
       urls:
-        - nimbus-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.0/nimbus-0.1.0.tgz
       version: 0.1.0
   openebs-rawfile-localpv:
     - apiVersion: v2
@@ -1324,7 +1324,7 @@ entries:
       name: openebs-rawfile-localpv
       type: application
       urls:
-        - openebs-rawfile-localpv-0.8.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.3/openebs-rawfile-localpv-0.8.3.tgz
       version: 0.8.3
     - apiVersion: v2
       appVersion: 0.8.0
@@ -1334,7 +1334,7 @@ entries:
       name: openebs-rawfile-localpv
       type: application
       urls:
-        - openebs-rawfile-localpv-0.8.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.2/openebs-rawfile-localpv-0.8.2.tgz
       version: 0.8.2
     - apiVersion: v2
       appVersion: 0.8.0
@@ -1344,7 +1344,7 @@ entries:
       name: openebs-rawfile-localpv
       type: application
       urls:
-        - openebs-rawfile-localpv-0.8.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.1/openebs-rawfile-localpv-0.8.1.tgz
       version: 0.8.1
     - apiVersion: v2
       appVersion: 0.7.0
@@ -1354,7 +1354,7 @@ entries:
       name: openebs-rawfile-localpv
       type: application
       urls:
-        - openebs-rawfile-localpv-0.8.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.8.0/openebs-rawfile-localpv-0.8.0.tgz
       version: 0.8.0
     - apiVersion: v2
       appVersion: 0.7.0
@@ -1364,7 +1364,7 @@ entries:
       name: openebs-rawfile-localpv
       type: application
       urls:
-        - openebs-rawfile-localpv-0.7.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
     - apiVersion: v2
@@ -1375,7 +1375,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.4.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.4.0/proxyd-0.4.0.tgz
       version: 0.4.0
     - apiVersion: v2
       appVersion: v4.4.1
@@ -1385,7 +1385,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.3.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.4/proxyd-0.3.4.tgz
       version: 0.3.4
     - apiVersion: v2
       appVersion: v4.2.5
@@ -1395,7 +1395,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.3.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.3/proxyd-0.3.3.tgz
       version: 0.3.3
     - apiVersion: v2
       appVersion: v4.2.5
@@ -1405,7 +1405,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.3.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.2/proxyd-0.3.2.tgz
       version: 0.3.2
     - apiVersion: v2
       appVersion: 3.16.0
@@ -1415,7 +1415,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.3.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.1/proxyd-0.3.1.tgz
       version: 0.3.1
     - apiVersion: v2
       appVersion: v4.2.5
@@ -1425,7 +1425,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.3.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.3.0/proxyd-0.3.0.tgz
       version: 0.3.0
     - apiVersion: v2
       appVersion: 3.11.0
@@ -1435,7 +1435,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.2.1/proxyd-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: 3.11.0
@@ -1445,7 +1445,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.2.0/proxyd-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       appVersion: 3.11.0
@@ -1455,7 +1455,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.8.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.8/proxyd-0.1.8.tgz
       version: 0.1.8
     - apiVersion: v2
       appVersion: 3.10.2
@@ -1465,7 +1465,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.7.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.7/proxyd-0.1.7.tgz
       version: 0.1.7
     - apiVersion: v2
       appVersion: 3.10.2
@@ -1475,7 +1475,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.6.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.6/proxyd-0.1.6.tgz
       version: 0.1.6
     - apiVersion: v2
       appVersion: 3.10.2
@@ -1485,7 +1485,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.5.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.5/proxyd-0.1.5.tgz
       version: 0.1.5
     - apiVersion: v2
       appVersion: 3.9.1
@@ -1495,7 +1495,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.4/proxyd-0.1.4.tgz
       version: 0.1.4
     - apiVersion: v2
       appVersion: 3.9.1
@@ -1505,7 +1505,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.3/proxyd-0.1.3.tgz
       version: 0.1.3
     - apiVersion: v2
       appVersion: 3.9.1
@@ -1515,7 +1515,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.2/proxyd-0.1.2.tgz
       version: 0.1.2
     - apiVersion: v2
       appVersion: 3.9.1
@@ -1525,7 +1525,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.1/proxyd-0.1.1.tgz
       version: 0.1.1
     - apiVersion: v2
       appVersion: 3.8.9
@@ -1535,7 +1535,7 @@ entries:
       name: proxyd
       type: application
       urls:
-        - proxyd-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.1.0/proxyd-0.1.0.tgz
       version: 0.1.0
   resource-injector:
     - apiVersion: v2
@@ -1545,7 +1545,7 @@ entries:
       name: resource-injector
       type: application
       urls:
-        - resource-injector-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.2.0/resource-injector-0.2.0.tgz
       version: 0.2.0
     - apiVersion: v2
       created: "2022-06-01T20:36:23Z"
@@ -1554,7 +1554,7 @@ entries:
       name: resource-injector
       type: application
       urls:
-        - resource-injector-0.1.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
       version: 0.1.0
   subgraph-radio:
     - apiVersion: v2
@@ -1565,7 +1565,7 @@ entries:
       name: subgraph-radio
       type: application
       urls:
-        - subgraph-radio-0.2.4.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.4/subgraph-radio-0.2.4.tgz
       version: 0.2.4
     - apiVersion: v2
       appVersion: 0.1.7
@@ -1575,7 +1575,7 @@ entries:
       name: subgraph-radio
       type: application
       urls:
-        - subgraph-radio-0.2.3.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.3/subgraph-radio-0.2.3.tgz
       version: 0.2.3
     - apiVersion: v2
       appVersion: 0.1.6
@@ -1585,7 +1585,7 @@ entries:
       name: subgraph-radio
       type: application
       urls:
-        - subgraph-radio-0.2.2.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.2/subgraph-radio-0.2.2.tgz
       version: 0.2.2
     - apiVersion: v2
       appVersion: 0.1.6
@@ -1595,7 +1595,7 @@ entries:
       name: subgraph-radio
       type: application
       urls:
-        - subgraph-radio-0.2.1.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.1/subgraph-radio-0.2.1.tgz
       version: 0.2.1
     - apiVersion: v2
       appVersion: 0.1.5
@@ -1605,6 +1605,6 @@ entries:
       name: subgraph-radio
       type: application
       urls:
-        - subgraph-radio-0.2.0.tgz
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2023-12-05T10:30:12.680127077Z"
+generated: "2023-12-05T12:24:36.970924737Z"
