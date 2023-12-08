@@ -76,7 +76,7 @@ indexerAgent:
     # -- Overrides the image tag
     # @default -- Chart.appVersion
     tag: ""
-  
+
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
     # -- (required) URL for your graph-node admin API endpoint
@@ -159,6 +159,9 @@ indexerService:
     # -- Overrides the image tag
     # @default -- Chart.appVersion
     tag: ""
+
+  # -- Number of replicas to run
+  replicas: 1
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:

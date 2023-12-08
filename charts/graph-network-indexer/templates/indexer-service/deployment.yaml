@@ -11,7 +11,7 @@ metadata:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  replicas: 1 # Should only ever be one instance of indexer-agent
+  replicas: {{ $values.replicas }}
   selector:
     matchLabels:
       {{- include "graph-network-indexer.selectorLabels" . | nindent 6 }}
