@@ -60,12 +60,12 @@ spec:
                 path: jwt.hex
       {{- end }}
       {{- if $values.p2pHostPort.enabled }}
-        - name: env-nodeport
+        - name: env-external-endpoint
           emptyDir: {}
       {{- end }}
       initContainers:
       {{- if $values.p2pHostPort.enabled }}
-        - name: init-nodeport
+        - name: init-external-endpoint
           image: "{{ $values.p2pHostPort.initContainer.image.repository }}:{{ $values.p2pHostPort.initContainer.image.tag }}"
           imagePullPolicy: {{ $values.p2pHostPort.initContainer.image.pullPolicy }}
           securityContext:
@@ -85,14 +85,12 @@ spec:
             - -c
             - |
               set -ex;
-              #export EXTERNAL_PORT=$(kubectl get services {{ include "lighthouse.fullname" . }}-{{ $componentName }}-p2p-0 -o jsonpath='{.spec.ports[0].nodePort}');
-              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              #export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
               export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
-              #echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
-              echo "EXTERNAL_IP=$EXTERNAL_IP"     > /env/init-nodeport;
-              cat /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     > /env/init-external-endpoint;
+              cat /env/init-external-endpoint;
           volumeMounts:
-            - name: env-nodeport
+            - name: env-external-endpoint
               mountPath: /env
       {{- end }}
       {{- if $values.initChownData.enabled }}
@@ -128,7 +126,7 @@ spec:
             - -ac
             - |
             {{- if $values.p2pHostPort.enabled }}
-              . /env/init-nodeport;
+              . /env/init-external-endpoint;
             {{- end }}
               set -ex;
               exec lighthouse beacon_node \
@@ -184,7 +182,7 @@ spec:
               protocol: UDP
           volumeMounts:
             {{- if $values.p2pHostPort.enabled }}
-            - name: env-nodeport
+            - name: env-external-endpoint
               mountPath: /env
             {{- end }}
             {{- if $jwtEnabled }}
