@@ -59,15 +59,15 @@ spec:
               - key: {{ $jwtSecretKey }}
                 path: jwt.hex
       {{- end }}
-      {{- if $values.p2pNodePort.enabled }}
+      {{- if $values.p2pHostPort.enabled }}
         - name: env-nodeport
           emptyDir: {}
       {{- end }}
       initContainers:
-      {{- if $values.p2pNodePort.enabled }}
+      {{- if $values.p2pHostPort.enabled }}
         - name: init-nodeport
-          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
-          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          image: "{{ $values.p2pHostPort.initContainer.image.repository }}:{{ $values.p2pHostPort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pHostPort.initContainer.image.pullPolicy }}
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
@@ -127,7 +127,7 @@ spec:
             - sh
             - -ac
             - |
-            {{- if $values.p2pNodePort.enabled }}
+            {{- if $values.p2pHostPort.enabled }}
               . /env/init-nodeport;
             {{- end }}
               set -ex;
@@ -137,10 +137,10 @@ spec:
                 --execution-endpoint={{ $values.executionClientUrl }} \
               {{- end }}
                 --disable-enr-auto-update \
-              {{- if $values.p2pNodePort.enabled }}
+              {{- if $values.p2pHostPort.enabled }}
                 --enr-address=$EXTERNAL_IP \
-                --enr-udp-port={{ $values.p2pNodePort.port }} \
-                --enr-tcp-port={{ $values.p2pNodePort.port }} \
+                --enr-udp-port={{ $values.p2pHostPort.port }} \
+                --enr-tcp-port={{ $values.p2pHostPort.port }} \
               {{- end }}
                 --port={{ include "lighthouse.port" $values }} \
                 --discovery-port={{ include "lighthouse.discoveryPort" $values }} \
@@ -166,15 +166,24 @@ spec:
               protocol: TCP
             - name: tcp-transport
               containerPort: {{ include "lighthouse.port" $values }}
+              {{- if $values.p2pHostPort.enabled }}
+              hostPort: {{ include "lighthouse.port" $values }}
+              {{- end }}
               protocol: TCP
             - name: udp-discovery
               containerPort: {{ include "lighthouse.discoveryPort" $values }}
+              {{- if $values.p2pHostPort.enabled }}
+              hostPort: {{ include "lighthouse.discoveryPort" $values }}
+              {{- end }}
               protocol: UDP
             - name: udp-transport
               containerPort: {{ include "lighthouse.quicPort" $values }}
+              {{- if $values.p2pHostPort.enabled }}
+              hostPort: {{ include "lighthouse.quicPort" $values }}
+              {{- end }}
               protocol: UDP
           volumeMounts:
-            {{- if $values.p2pNodePort.enabled }}
+            {{- if $values.p2pHostPort.enabled }}
             - name: env-nodeport
               mountPath: /env
             {{- end }}

@@ -19,7 +19,7 @@ spec:
       port: {{ index $values.service.ports "http-metrics" }}
       targetPort: http-metrics
       protocol: TCP
-    {{- if not $values.p2pNodePort.enabled }}
+    {{- if not $values.p2pHostPort.enabled }}
     - name: tcp-transport
       port: {{ include "lighthouse.port" $values }}
       targetPort: tcp-transport
@@ -64,7 +64,7 @@ spec:
       port: {{ index $values.service.ports "http-metrics" }}
       targetPort: http-metrics
       protocol: TCP
-    {{- if not $values.p2pNodePort.enabled }}
+    {{- if not $values.p2pHostPort.enabled }}
     - name: tcp-transport
       port: {{ include "lighthouse.port" $values }}
       targetPort: tcp-transport
@@ -81,39 +81,3 @@ spec:
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-{{- if $values.p2pNodePort.enabled }}
-{{- $port := $values.p2pNodePort.port }}
-{{- $quicPort := add $values.p2pNodePort.port 1 }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-p2p-0
-  labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
-    pod: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-0
-    type: p2p # this label is used by the initContainer to select this service
-spec:
-  type: NodePort
-  externalTrafficPolicy: Local
-  ports:
-    - name: tcp-transport
-      port: {{ $port }}
-      protocol: TCP
-      targetPort: tcp-transport
-      nodePort: {{ $port }}
-    - name: udp-discovery
-      port: {{ $port }}
-      protocol: UDP
-      targetPort: udp-discovery
-      nodePort: {{ $port }}
-    - name: udp-transport
-      port: {{ $quicPort }}
-      protocol: UDP
-      targetPort: udp-transport
-      nodePort: {{ $quicPort }}
-  selector:
-    {{- include "lighthouse.selectorLabels" . | nindent 4 }}
-    statefulset.kubernetes.io/pod-name: "{{ include "lighthouse.fullname" $ }}-{{ $componentName }}-0"
-{{- end }}

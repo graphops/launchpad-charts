@@ -66,31 +66,31 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "lighthouse.port" -}}
-{{- if .p2pNodePort.enabled }}
-{{- print .p2pNodePort.port }}
+{{- if .p2pHostPort.enabled }}
+{{- print .p2pHostPort.port }}
 {{- else }}
 {{- print (index .service.ports "tcp-transport") -}}
 {{- end }}
 {{- end -}}
 
 {{- define "lighthouse.discoveryPort" -}}
-{{- if .p2pNodePort.enabled }}
-{{- print .p2pNodePort.port }}
+{{- if .p2pHostPort.enabled }}
+{{- print .p2pHostPort.port }}
 {{- else }}
 {{- print (index .service.ports "udp-discovery") -}}
 {{- end }}
 {{- end -}}
 
 {{- define "lighthouse.quicPort" -}}
-{{- if .p2pNodePort.enabled }}
-{{- print (add .p2pNodePort.port 1) }}
+{{- if .p2pHostPort.enabled }}
+{{- print (add .p2pHostPort.port 1) }}
 {{- else }}
 {{- print (index .service.ports "udp-transport") -}}
 {{- end }}
 {{- end -}}
 
 {{- define "lighthouse.replicas" -}}
-{{- if .p2pNodePort.enabled }}
+{{- if .p2pHostPort.enabled }}
 {{- print 1 }}
 {{ else }}
 {{- default 1 .replicaCount  }}
