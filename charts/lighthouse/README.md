@@ -2,7 +2,7 @@
 
 Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.5.0](https://img.shields.io/badge/AppVersion-v4.5.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.5.0](https://img.shields.io/badge/AppVersion-v4.5.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -97,11 +97,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | lighthouse.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | lighthouse.nodeSelector |  | object | `{}` |
- | lighthouse.p2pNodePort.enabled | Expose P2P ports via NodePort | bool | `false` |
- | lighthouse.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | lighthouse.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | lighthouse.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | lighthouse.p2pNodePort.port | First port of the 2-port range to be used. The ports must be unique | int | `31000` |
+ | lighthouse.p2pHostPort.enabled | Expose P2P ports via hostPort | bool | `false` |
+ | lighthouse.p2pHostPort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | lighthouse.p2pHostPort.initContainer.image.repository | Container image to fetch IP/port information | string | `"lachlanevenson/k8s-kubectl"` |
+ | lighthouse.p2pHostPort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
+ | lighthouse.p2pHostPort.port | First port of the 2-port range to be used. The ports must be unique | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | lighthouse.resources |  | object | `{}` |
