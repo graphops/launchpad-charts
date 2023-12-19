@@ -95,7 +95,7 @@ nitro:
 
     # -- Enabled default arguments on the chart
     defaultArgs:
-      - "--node.caching.archive"
+      - "--execution.caching.archive"
 
     # -- Additional CLI arguments to pass to `nitro`
     extraArgs: []
