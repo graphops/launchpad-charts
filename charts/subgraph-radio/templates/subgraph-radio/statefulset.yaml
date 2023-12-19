@@ -115,8 +115,8 @@ spec:
             - name: tmp
               mountPath: /tmp
           env:
-            - name: PERSISTENCE_FILE_PATH
-              value: "/data/subgraph_radio_state.json"
+            - name: SQLITE_FILE_PATH
+              value: "/data/state.sqlite"
             - name: METRICS_PORT
               value: "2384"
             - name: SERVER_PORT
