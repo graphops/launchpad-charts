@@ -85,7 +85,7 @@ Generate the array of options for nitro
 {{- $args = concat $args (list (print "--http.vhosts=" .httpRpc.vhosts)) }}
 {{- $args = concat $args (list (print "--http.corsdomain=" .httpRpc.cors)) }}
 {{- if not (empty .classicUrl) }}
-{{- $args = concat $args (list (print "--node.rpc.classic-redirect=" .classicUrl)) }}
+{{- $args = concat $args (list (print "--execution.rpc.classic-redirect=" .classicUrl)) }}
 {{- end }}
 {{- if .metrics.enabled }}
 {{- $args = concat $args (list "--metrics" (print "--metrics-server.addr=" .metrics.addr)) }}
