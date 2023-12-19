@@ -10,7 +10,7 @@ imagePullSecrets: []
 volumeClaimSpec:
   accessModes: ["ReadWriteOnce"]
   # -- The storage class to use when provisioning a persistent volume
-  storageClassName: openebs-zfs-localpv-compressed-128k 
+  storageClassName: "" 
   resources:
     requests:
       # -- The amount of disk space to provision
