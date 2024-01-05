@@ -697,6 +697,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v2.56.0
+      created: "2024-01-05T15:33:47Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: a84aa8bd833fefaa0a067c92b03f35949d366c8b9fd1c88e932124c3acf33593
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.3-canary.1/erigon-0.9.3-canary.1.tgz
+      version: 0.9.3-canary.1
+    - apiVersion: v2
       appVersion: v2.55.1
       created: "2023-12-11T18:21:59Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -3737,4 +3747,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-01-04T00:15:43.730397765Z"
+generated: "2024-01-05T15:35:54.364127883Z"
