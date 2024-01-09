@@ -74,6 +74,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v2.2.2-8f33fea
+      created: "2024-01-09T05:36:16Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 15f9b60749ef661a2d3515e6edc34101b7474cddcccf4c2a62e4243283193e38
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.2.3/arbitrum-nitro-0.2.3.tgz
+      version: 0.2.3
+    - apiVersion: v2
       appVersion: v2.2.0-f7dc9de
       created: "2023-12-19T18:28:05Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -1727,4 +1737,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-01-09T05:27:12.504614073Z"
+generated: "2024-01-09T16:33:38.270485586Z"
