@@ -2,7 +2,7 @@ name: Update Helm Repository
 
 on:
   release:
-    types: [released]
+    types: [published]
 
 jobs:
   call-update-helm-repo-stable:
