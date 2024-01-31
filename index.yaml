@@ -1023,6 +1023,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v4.6.0
+      created: "2024-01-30T20:33:43Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: f9b929d7dee67e6c2071f8c8a48da045598f339e23807940e76771b9c5791be4
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.1/lighthouse-0.5.1.tgz
+      version: 0.5.1
+    - apiVersion: v2
       appVersion: v4.5.0
       created: "2023-12-09T01:15:59Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -1285,6 +1295,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
+    - apiVersion: v2
+      appVersion: multiarch-v24.1.2
+      created: "2024-01-30T19:26:32Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: a6dfc2df3c83b7fa6b44a38c7d6363a8414d2f7b49acbbbd0bec2b8b97307b5e
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.7/nimbus-0.5.7.tgz
+      version: 0.5.7
     - apiVersion: v2
       appVersion: multiarch-v24.1.1
       created: "2024-01-09T02:57:52Z"
@@ -1787,4 +1807,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-01-22T23:49:06.603855977Z"
+generated: "2024-01-31T02:21:33.806516975Z"
