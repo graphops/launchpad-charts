@@ -125,6 +125,8 @@ rpcMethodMappings:
   web3_clientVersion: pruned
   web3_sha3: pruned
   net_version: pruned
+  net_peerCount: pruned
+  eth_syncing: pruned
   eth_chainId: pruned
   eth_protocolVersion: pruned
   eth_coinbase: pruned
