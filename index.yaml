@@ -1336,6 +1336,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v24.2.0
+      created: "2024-02-12T19:48:51Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 099862ee1594c5eeba6cafeab3e5e4989fa9308efa25d7ea444653dcc3558cdb
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.8/nimbus-0.5.8.tgz
+      version: 0.5.8
+    - apiVersion: v2
       appVersion: multiarch-v24.1.2
       created: "2024-01-30T19:26:32Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -1857,4 +1867,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-02-12T19:39:45.02985131Z"
+generated: "2024-02-12T19:57:38.950753226Z"
