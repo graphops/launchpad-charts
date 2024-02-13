@@ -174,6 +174,16 @@ wsBackendGroup: main
 # -- Method whitelist for WebSocket connections
 wsMethodWhitelist: []
 
+# -- Enable configuring Redis
+redisEnabled: false
+# -- URL to a Redis instance
+redisUrl: ""
+# -- Redis namespace to use for keys
+redisNamespace: ""
+
+# -- Enable caching
+cacheEnabled: false
+
 # -- TOML configuration for server
 serverConfigTemplate: |
   # Host for the proxyd RPC server to listen on
@@ -211,11 +221,26 @@ metricsConfigTemplate: |
   # Port for the above.
   port = 9761
 
+# -- TOML configuration for backend group websockets
 wsConfigTemplate: |
   # Backend group to use for WebSocket connections.
   ws_backend_group = {{ .Values.wsBackendGroup | quote }}
   # Method whitelist for WebSocket connections.
   ws_method_whitelist = {{ .Values.wsMethodWhitelist | toJson }}
+
+# -- TOML configuration for redis
+cacheConfigTemplate: |
+  # Whether or not to enable caching.
+  enabled = {{ .Values.cacheEnabled }}
+
+# -- TOML configuration for redis
+redisConfigTemplate: |
+  {{- if .Values.redisEnabled }}
+  # URL to a Redis instance.
+  url = {{ .Values.redisUrl | quote }}
+  # Redis namespace to use for keys.
+  namespace = {{ .Values.redisNamespace | quote }}
+  {{- end }}
 
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
@@ -229,6 +254,12 @@ configTemplate: |
 
   [backend]
   {{ tpl .Values.backendConfigTemplate $ }}
+
+  [cache]
+  {{ tpl .Values.cacheConfigTemplate $ }}
+
+  [redis]
+  {{ tpl .Values.redisConfigTemplate $ }}
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
@@ -250,7 +281,6 @@ configTemplate: |
   {{ toToml (dict "backends" $groupMembers) }}
   {{- end }}
   
-  # Mapping of methods to backend groups.
   [rpc_method_mappings]
   {{- range $method, $group := .Values.rpcMethodMappings }}
   {{ $method }} = {{ $group | quote }}
