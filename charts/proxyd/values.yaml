@@ -235,13 +235,11 @@ cacheConfigTemplate: |
 
 # -- TOML configuration for redis
 redisConfigTemplate: |
-  {{- if .Values.redisEnabled }}
   # URL to a Redis instance.
   url = {{ .Values.redisUrl | quote }}
   # Redis namespace to use for keys.
   namespace = {{ .Values.redisNamespace | quote }}
-  {{- end }}
-
+  
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
@@ -257,9 +255,6 @@ configTemplate: |
 
   [cache]
   {{ tpl .Values.cacheConfigTemplate $ }}
-
-  [redis]
-  {{ tpl .Values.redisConfigTemplate $ }}
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
@@ -284,4 +279,9 @@ configTemplate: |
   [rpc_method_mappings]
   {{- range $method, $group := .Values.rpcMethodMappings }}
   {{ $method }} = {{ $group | quote }}
+  {{- end }}
+
+  {{- if .Values.redisEnabled }}
+  [redis]
+  {{ tpl .Values.redisConfigTemplate $ }}
   {{- end }}

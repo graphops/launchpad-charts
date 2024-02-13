@@ -167,7 +167,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.service.type |  | string | `"ClusterIP"` |
  | proxyd.terminationGracePeriodSeconds | Amount of time to wait before force-killing the proxyd process | int | `60` |
  | proxyd.tolerations |  | list | `[]` |
- | redisConfigTemplate | TOML configuration for redis | string | `"{{- if .Values.redisEnabled }}\n# URL to a Redis instance.\nurl = {{ .Values.redisUrl \| quote }}\n# Redis namespace to use for keys.\nnamespace = {{ .Values.redisNamespace \| quote }}\n{{- end }}\n"` |
+ | redisConfigTemplate | TOML configuration for redis | string | `"# URL to a Redis instance.\nurl = {{ .Values.redisUrl \| quote }}\n# Redis namespace to use for keys.\nnamespace = {{ .Values.redisNamespace \| quote }}\n"` |
  | redisEnabled | Enable configuring Redis | bool | `false` |
  | redisNamespace | Redis namespace to use for keys | string | `""` |
  | redisUrl | URL to a Redis instance | string | `""` |
