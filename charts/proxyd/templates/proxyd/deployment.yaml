@@ -124,6 +124,9 @@ spec:
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
+            - name: http-ws
+              containerPort: 8546
+              protocol: TCP
             - name: http-metrics
               containerPort: 9761
               protocol: TCP
