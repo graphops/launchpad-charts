@@ -66,7 +66,7 @@ spec:
   template:
     metadata:
       annotations:
-      {{- if not .Values.proxyd.configTemplating.enabled }}
+      {{- if .Values.proxyd.configTemplating.enabled }}
         checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
       {{- end }}
       {{- with $values.podAnnotations }}

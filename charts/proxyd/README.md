@@ -133,7 +133,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | backends.example-backend.groups | Define which backend groups the backend is part of | list | `["main"]` |
  | backends.example-backend.rpcUrl | Define the JSON-RPC URL for the backend | string | `"http://your-node:8545"` |
  | backends.example-backend.wsUrl | Define the JSON-RPC Websocket URL for the backend | string | `"ws://your-node:8545"` |
- | cacheConfigTemplate | TOML configuration for redis | string | `"# Whether or not to enable caching.\nenabled = {{ .Values.cacheEnabled }}\n"` |
+ | cacheConfigTemplate | TOML configuration for cache | string | `"# Whether or not to enable caching.\nenabled = {{ .Values.cacheEnabled }}\n"` |
  | cacheEnabled | Enable caching | bool | `false` |
  | configTemplate | The configuration template that is rendered by Helm | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |

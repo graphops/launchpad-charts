@@ -228,7 +228,7 @@ wsConfigTemplate: |
   # Method whitelist for WebSocket connections.
   ws_method_whitelist = {{ .Values.wsMethodWhitelist | toJson }}
 
-# -- TOML configuration for redis
+# -- TOML configuration for cache
 cacheConfigTemplate: |
   # Whether or not to enable caching.
   enabled = {{ .Values.cacheEnabled }}
