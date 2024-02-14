@@ -70,6 +70,7 @@ proxyd:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
+      http-ws: 8546
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 9761
 
@@ -112,67 +113,87 @@ backends:
     enabled: false
     # -- Define the JSON-RPC URL for the backend
     rpcUrl: http://your-node:8545
+    # -- Define the JSON-RPC Websocket URL for the backend
+    wsUrl: ws://your-node:8545
     # -- Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47))
     extraConfig: {}
     # -- Define which backend groups the backend is part of
     groups:
-      - pruned
-      - archive
-      - archive-trace
+      - main
 
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
 rpcMethodMappings:
-  web3_clientVersion: pruned
-  web3_sha3: pruned
-  net_version: pruned
-  net_peerCount: pruned
-  eth_syncing: pruned
-  eth_chainId: pruned
-  eth_protocolVersion: pruned
-  eth_coinbase: pruned
-  eth_feeHistory: pruned
-  eth_gasPrice: pruned
-  eth_blockNumber: pruned
-  eth_getBalance: pruned
-  eth_getStorageAt: pruned
-  eth_getTransactionCount: pruned
-  eth_getBlockTransactionCountByHash: pruned
-  eth_getBlockTransactionCountByNumber: pruned
-  eth_getCode: pruned
-  eth_sign: pruned
-  eth_sendTransaction: pruned
-  eth_sendRawTransaction: pruned
-  eth_estimateGas: pruned
-  eth_getBlockByHash: pruned
-  eth_getBlockByNumber: pruned
-  eth_getTransactionByHash: archive
-  eth_getTransactionByBlockHashAndIndex: archive
-  eth_getTransactionByBlockNumberAndIndex: archive
-  eth_getTransactionReceipt: archive
-  eth_getUncleByBlockHashAndIndex: pruned
-  eth_getUncleByBlockNumberAndIndex: pruned
-  eth_newFilter: pruned
-  eth_newBlockFilter: pruned
-  eth_newPendingTransactionFilter: pruned
-  eth_uninstallFilter: pruned
-  eth_getFilterChanges: pruned
-  eth_getLogs: pruned
-  eth_call: archive
-  trace_block: archive-trace
-  trace_filter: archive-trace
-  trace_transaction: archive-trace
-  trace_call: archive-trace
-  trace_callMany: archive-trace
-  trace_rawTransaction: archive-trace
-  trace_replayBlockTransactions: archive-trace
-  trace_replayTransaction: archive-trace
+  web3_clientVersion: main
+  web3_sha3: main
+  net_version: main
+  net_peerCount: main
+  eth_syncing: main
+  eth_chainId: main
+  eth_protocolVersion: main
+  eth_coinbase: main
+  eth_feeHistory: main
+  eth_gasPrice: main
+  eth_blockNumber: main
+  eth_getBalance: main
+  eth_getStorageAt: main
+  eth_getTransactionCount: main
+  eth_getBlockTransactionCountByHash: main
+  eth_getBlockTransactionCountByNumber: main
+  eth_getCode: main
+  eth_sign: main
+  eth_sendTransaction: main
+  eth_sendRawTransaction: main
+  eth_estimateGas: main
+  eth_getBlockByHash: main
+  eth_getBlockByNumber: main
+  eth_getTransactionByHash: main
+  eth_getTransactionByBlockHashAndIndex: main
+  eth_getTransactionByBlockNumberAndIndex: main
+  eth_getTransactionReceipt: main
+  eth_getUncleByBlockHashAndIndex: main
+  eth_getUncleByBlockNumberAndIndex: main
+  eth_newFilter: main
+  eth_newBlockFilter: main
+  eth_newPendingTransactionFilter: main
+  eth_uninstallFilter: main
+  eth_getFilterChanges: main
+  eth_getLogs: main
+  eth_call: main
+  trace_block: main
+  trace_filter: main
+  trace_transaction: main
+  trace_call: main
+  trace_callMany: main
+  trace_rawTransaction: main
+  trace_replayBlockTransactions: main
+  trace_replayTransaction: main
+
+# -- Backend group to use for WebSocket connections
+wsBackendGroup: main
+
+# -- Method whitelist for WebSocket connections
+wsMethodWhitelist: []
+
+# -- Enable configuring Redis
+redisEnabled: false
+# -- URL to a Redis instance
+redisUrl: ""
+# -- Redis namespace to use for keys
+redisNamespace: ""
+
+# -- Enable caching
+cacheEnabled: false
 
 # -- TOML configuration for server
-serverConfig: |
+serverConfigTemplate: |
   # Host for the proxyd RPC server to listen on
   rpc_host = "0.0.0.0"
   # Port for the above.
   rpc_port = 8545
+  # Host for the proxyd WebSocket server to listen on
+  ws_host = "0.0.0.0"
+  # Port for the above.
+  ws_port = 8546
   # Maximum client body size, in bytes, that the server will accept
   max_body_size_bytes = 10737420000 # 10 GiB
   # Maximum number of concurrent RPCs that the server will accept
@@ -181,7 +202,7 @@ serverConfig: |
   timeout_seconds = 300
 
 # -- TOML configuration for backend
-backendConfig: |
+backendConfigTemplate: |
   # How long proxyd should wait for a backend response before timing out.
   response_timeout_seconds = 300
   # Maximum response size, in bytes, that proxyd will accept from a backend.
@@ -192,7 +213,7 @@ backendConfig: |
   out_of_service_seconds = 10
 
 # -- TOML configuration for metrics
-metricsConfig: |
+metricsConfigTemplate: |
   # Whether or not to enable Prometheus metrics.
   enabled = true
   # Host for the Prometheus metrics endpoint to listen on.
@@ -200,17 +221,40 @@ metricsConfig: |
   # Port for the above.
   port = 9761
 
+# -- TOML configuration for backend group websockets
+wsConfigTemplate: |
+  # Backend group to use for WebSocket connections.
+  ws_backend_group = {{ .Values.wsBackendGroup | quote }}
+  # Method whitelist for WebSocket connections.
+  ws_method_whitelist = {{ .Values.wsMethodWhitelist | toJson }}
+
+# -- TOML configuration for cache
+cacheConfigTemplate: |
+  # Whether or not to enable caching.
+  enabled = {{ .Values.cacheEnabled }}
+
+# -- TOML configuration for redis
+redisConfigTemplate: |
+  # URL to a Redis instance.
+  url = {{ .Values.redisUrl | quote }}
+  # Redis namespace to use for keys.
+  namespace = {{ .Values.redisNamespace | quote }}
+  
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
+  {{ tpl .Values.wsConfigTemplate $ }}
   [server]
-  {{ .Values.serverConfig }}
+  {{ tpl .Values.serverConfigTemplate $ }}
 
   [metrics]
-  {{ .Values.metricsConfig }}
+  {{ tpl .Values.metricsConfigTemplate $ }}
 
   [backend]
-  {{ .Values.backendConfig }}
+  {{ tpl .Values.backendConfigTemplate $ }}
+
+  [cache]
+  {{ tpl .Values.cacheConfigTemplate $ }}
 
   [backends]
   {{- range $backendName, $backendValues := .Values.backends }}
@@ -232,8 +276,12 @@ configTemplate: |
   {{ toToml (dict "backends" $groupMembers) }}
   {{- end }}
   
-  # Mapping of methods to backend groups.
   [rpc_method_mappings]
   {{- range $method, $group := .Values.rpcMethodMappings }}
   {{ $method }} = {{ $group | quote }}
+  {{- end }}
+
+  {{- if .Values.redisEnabled }}
+  [redis]
+  {{ tpl .Values.redisConfigTemplate $ }}
   {{- end }}

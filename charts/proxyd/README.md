@@ -2,7 +2,7 @@
 
 Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.4.4](https://img.shields.io/badge/AppVersion-v4.4.4-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.4.4](https://img.shields.io/badge/AppVersion-v4.4.4-informational?style=flat-square)
 
 ## Introduction
 
@@ -126,12 +126,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
- | backendConfig | TOML configuration for backend | string | `"# How long proxyd should wait for a backend response before timing out.\nresponse_timeout_seconds = 300\n# Maximum response size, in bytes, that proxyd will accept from a backend.\nmax_response_size_bytes = 10737420000 # 10 GiB\n# Maximum number of times proxyd will try a backend before giving up.\nmax_retries = 3\n# Number of seconds to wait before trying an unhealthy backend again.\nout_of_service_seconds = 10\n"` |
- | backends.example-backend | Example backend configuration, keep disabled | object | `{"enabled":false,"extraConfig":{},"groups":["pruned","archive","archive-trace"],"rpcUrl":"http://your-node:8545"}` |
+ | backendConfigTemplate | TOML configuration for backend | string | `"# How long proxyd should wait for a backend response before timing out.\nresponse_timeout_seconds = 300\n# Maximum response size, in bytes, that proxyd will accept from a backend.\nmax_response_size_bytes = 10737420000 # 10 GiB\n# Maximum number of times proxyd will try a backend before giving up.\nmax_retries = 3\n# Number of seconds to wait before trying an unhealthy backend again.\nout_of_service_seconds = 10\n"` |
+ | backends.example-backend | Example backend configuration, keep disabled | object | `{"enabled":false,"extraConfig":{},"groups":["main"],"rpcUrl":"http://your-node:8545","wsUrl":"ws://your-node:8545"}` |
  | backends.example-backend.enabled | Enable the backend | bool | `false` |
  | backends.example-backend.extraConfig | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) | object | `{}` |
- | backends.example-backend.groups | Define which backend groups the backend is part of | list | `["pruned","archive","archive-trace"]` |
+ | backends.example-backend.groups | Define which backend groups the backend is part of | list | `["main"]` |
  | backends.example-backend.rpcUrl | Define the JSON-RPC URL for the backend | string | `"http://your-node:8545"` |
+ | backends.example-backend.wsUrl | Define the JSON-RPC Websocket URL for the backend | string | `"ws://your-node:8545"` |
+ | cacheConfigTemplate | TOML configuration for cache | string | `"# Whether or not to enable caching.\nenabled = {{ .Values.cacheEnabled }}\n"` |
+ | cacheEnabled | Enable caching | bool | `false` |
  | configTemplate | The configuration template that is rendered by Helm | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
@@ -141,7 +144,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | image.repository | Image for proxyd | string | `"us-docker.pkg.dev/oplabs-tools-artifacts/images/proxyd"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
- | metricsConfig | TOML configuration for metrics | string | `"# Whether or not to enable Prometheus metrics.\nenabled = true\n# Host for the Prometheus metrics endpoint to listen on.\nhost = \"0.0.0.0\"\n# Port for the above.\nport = 9761\n"` |
+ | metricsConfigTemplate | TOML configuration for metrics | string | `"# Whether or not to enable Prometheus metrics.\nenabled = true\n# Host for the Prometheus metrics endpoint to listen on.\nhost = \"0.0.0.0\"\n# Port for the above.\nport = 9761\n"` |
  | nameOverride |  | string | `""` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
@@ -160,14 +163,22 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.resources |  | object | `{}` |
  | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | proxyd.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `9761` |
+ | proxyd.service.ports.http-ws |  | int | `8546` |
  | proxyd.service.type |  | string | `"ClusterIP"` |
  | proxyd.terminationGracePeriodSeconds | Amount of time to wait before force-killing the proxyd process | int | `60` |
  | proxyd.tolerations |  | list | `[]` |
- | rpcMethodMappings | Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name) | object | `{"eth_blockNumber":"pruned","eth_call":"archive","eth_chainId":"pruned","eth_coinbase":"pruned","eth_estimateGas":"pruned","eth_feeHistory":"pruned","eth_gasPrice":"pruned","eth_getBalance":"pruned","eth_getBlockByHash":"pruned","eth_getBlockByNumber":"pruned","eth_getBlockTransactionCountByHash":"pruned","eth_getBlockTransactionCountByNumber":"pruned","eth_getCode":"pruned","eth_getFilterChanges":"pruned","eth_getLogs":"pruned","eth_getStorageAt":"pruned","eth_getTransactionByBlockHashAndIndex":"archive","eth_getTransactionByBlockNumberAndIndex":"archive","eth_getTransactionByHash":"archive","eth_getTransactionCount":"pruned","eth_getTransactionReceipt":"archive","eth_getUncleByBlockHashAndIndex":"pruned","eth_getUncleByBlockNumberAndIndex":"pruned","eth_newBlockFilter":"pruned","eth_newFilter":"pruned","eth_newPendingTransactionFilter":"pruned","eth_protocolVersion":"pruned","eth_sendRawTransaction":"pruned","eth_sendTransaction":"pruned","eth_sign":"pruned","eth_syncing":"pruned","eth_uninstallFilter":"pruned","net_peerCount":"pruned","net_version":"pruned","trace_block":"archive-trace","trace_call":"archive-trace","trace_callMany":"archive-trace","trace_filter":"archive-trace","trace_rawTransaction":"archive-trace","trace_replayBlockTransactions":"archive-trace","trace_replayTransaction":"archive-trace","trace_transaction":"archive-trace","web3_clientVersion":"pruned","web3_sha3":"pruned"}` |
- | serverConfig | TOML configuration for server | string | `"# Host for the proxyd RPC server to listen on\nrpc_host = \"0.0.0.0\"\n# Port for the above.\nrpc_port = 8545\n# Maximum client body size, in bytes, that the server will accept\nmax_body_size_bytes = 10737420000 # 10 GiB\n# Maximum number of concurrent RPCs that the server will accept\nmax_concurrent_rpcs = 0 # unlimited\n# Timeout for requests\ntimeout_seconds = 300\n"` |
+ | redisConfigTemplate | TOML configuration for redis | string | `"# URL to a Redis instance.\nurl = {{ .Values.redisUrl \| quote }}\n# Redis namespace to use for keys.\nnamespace = {{ .Values.redisNamespace \| quote }}\n"` |
+ | redisEnabled | Enable configuring Redis | bool | `false` |
+ | redisNamespace | Redis namespace to use for keys | string | `""` |
+ | redisUrl | URL to a Redis instance | string | `""` |
+ | rpcMethodMappings | Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name) | object | `{"eth_blockNumber":"main","eth_call":"main","eth_chainId":"main","eth_coinbase":"main","eth_estimateGas":"main","eth_feeHistory":"main","eth_gasPrice":"main","eth_getBalance":"main","eth_getBlockByHash":"main","eth_getBlockByNumber":"main","eth_getBlockTransactionCountByHash":"main","eth_getBlockTransactionCountByNumber":"main","eth_getCode":"main","eth_getFilterChanges":"main","eth_getLogs":"main","eth_getStorageAt":"main","eth_getTransactionByBlockHashAndIndex":"main","eth_getTransactionByBlockNumberAndIndex":"main","eth_getTransactionByHash":"main","eth_getTransactionCount":"main","eth_getTransactionReceipt":"main","eth_getUncleByBlockHashAndIndex":"main","eth_getUncleByBlockNumberAndIndex":"main","eth_newBlockFilter":"main","eth_newFilter":"main","eth_newPendingTransactionFilter":"main","eth_protocolVersion":"main","eth_sendRawTransaction":"main","eth_sendTransaction":"main","eth_sign":"main","eth_syncing":"main","eth_uninstallFilter":"main","net_peerCount":"main","net_version":"main","trace_block":"main","trace_call":"main","trace_callMany":"main","trace_filter":"main","trace_rawTransaction":"main","trace_replayBlockTransactions":"main","trace_replayTransaction":"main","trace_transaction":"main","web3_clientVersion":"main","web3_sha3":"main"}` |
+ | serverConfigTemplate | TOML configuration for server | string | `"# Host for the proxyd RPC server to listen on\nrpc_host = \"0.0.0.0\"\n# Port for the above.\nrpc_port = 8545\n# Host for the proxyd WebSocket server to listen on\nws_host = \"0.0.0.0\"\n# Port for the above.\nws_port = 8546\n# Maximum client body size, in bytes, that the server will accept\nmax_body_size_bytes = 10737420000 # 10 GiB\n# Maximum number of concurrent RPCs that the server will accept\nmax_concurrent_rpcs = 0 # unlimited\n# Timeout for requests\ntimeout_seconds = 300\n"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | wsBackendGroup | Backend group to use for WebSocket connections | string | `"main"` |
+ | wsConfigTemplate | TOML configuration for backend group websockets | string | `"# Backend group to use for WebSocket connections.\nws_backend_group = {{ .Values.wsBackendGroup \| quote }}\n# Method whitelist for WebSocket connections.\nws_method_whitelist = {{ .Values.wsMethodWhitelist \| toJson }}\n"` |
+ | wsMethodWhitelist | Method whitelist for WebSocket connections | list | `[]` |
 
 ## Contributing
 
