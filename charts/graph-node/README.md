@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.7](https://img.shields.io/badge/Version-0.3.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.34.1](https://img.shields.io/badge/AppVersion-v0.34.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.8](https://img.shields.io/badge/Version-0.3.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.34.1](https://img.shields.io/badge/AppVersion-v0.34.1-informational?style=flat-square)
 
 ## Introduction
 
@@ -233,12 +233,21 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | blockIngestorGroupName | Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor. | string | `"block-ingestor"` |
- | chains | Blockchain configuration for Graph Node | object | `{"mainnet":{"enabled":false,"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}}` |
- | chains.mainnet | Ethereum Mainnet | object | `{"enabled":false,"provider":[{"features":["archive","traces"],"label":"eth-mainnet","url":""}],"shard":"primary"}` |
+ | chains | Blockchain configuration for Graph Node | object | `{"mainnet":{"enabled":false,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":""},"label":"eth-mainnet"},{"details":{"token":"$FIREHOSE_TOKEN_IN_ENV","type":"firehose","url":""},"label":"eth-mainnet-firehose"},{"details":{"token":"$SUBSTREAMS_TOKEN_IN_ENV","type":"substreams","url":""},"label":"eth-mainnet-substreams"}],"shard":"primary"}}` |
+ | chains.mainnet | Ethereum Mainnet | object | `{"enabled":false,"provider":[{"details":{"features":["archive","traces"],"type":"web3","url":""},"label":"eth-mainnet"},{"details":{"token":"$FIREHOSE_TOKEN_IN_ENV","type":"firehose","url":""},"label":"eth-mainnet-firehose"},{"details":{"token":"$SUBSTREAMS_TOKEN_IN_ENV","type":"substreams","url":""},"label":"eth-mainnet-substreams"}],"shard":"primary"}` |
  | chains.mainnet.enabled | Enable this configuring graph-node with this chain | bool | `false` |
- | chains.mainnet.provider[0].features | Data capabilities this node has | list | `["archive","traces"]` |
- | chains.mainnet.provider[0].label | Label for the RPC endpoint | string | `"eth-mainnet"` |
- | chains.mainnet.provider[0].url | URL for JSON-RPC endpoint | string | `""` |
+ | chains.mainnet.provider[0].details.features | Data capabilities this node has | list | `["archive","traces"]` |
+ | chains.mainnet.provider[0].details.type | Type of Provider: web3 | string | `"web3"` |
+ | chains.mainnet.provider[0].details.url | URL for JSON-RPC endpoint | string | `""` |
+ | chains.mainnet.provider[0].label | Label for a JSON-RPC endpoint | string | `"eth-mainnet"` |
+ | chains.mainnet.provider[1].details.token | Token to authenticate | string | `"$FIREHOSE_TOKEN_IN_ENV"` |
+ | chains.mainnet.provider[1].details.type | Type of Provider: firehose | string | `"firehose"` |
+ | chains.mainnet.provider[1].details.url | URL for Firehose  endpoint | string | `""` |
+ | chains.mainnet.provider[1].label | Label for a Firehose endpoint | string | `"eth-mainnet-firehose"` |
+ | chains.mainnet.provider[2].details.token | Token to authenticate | string | `"$SUBSTREAMS_TOKEN_IN_ENV"` |
+ | chains.mainnet.provider[2].details.type | Type of Provider: substreams | string | `"substreams"` |
+ | chains.mainnet.provider[2].details.url | URL for Substreams endpoint | string | `""` |
+ | chains.mainnet.provider[2].label | Label for a Substreams endpoint | string | `"eth-mainnet-substreams"` |
  | chains.mainnet.shard | The database shard to use for this chain | string | `"primary"` |
  | configTemplate | [Configuration for graph-node](https://github.com/graphprotocol/graph-node/blob/master/docs/config.md) | string | See default template in [values.yaml](values.yaml) |
  | fullnameOverride |  | string | `""` |

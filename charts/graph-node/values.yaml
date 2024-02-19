@@ -193,15 +193,38 @@ chains:
     enabled: false
     # -- The database shard to use for this chain
     shard: primary
-    ## -- A list of JSON-RPC endpoints for this node
+    ## -- A list of JSON-RPC endpoints for this node (you should override this list with your own configuration)
     provider:
-      - 
-        # -- Label for the RPC endpoint
+      -
+        # -- Label for a JSON-RPC endpoint
         label: eth-mainnet
-        # -- URL for JSON-RPC endpoint
-        url: ""
-        # -- Data capabilities this node has
-        features: [archive, traces]
+        details:
+          # -- Type of Provider: web3
+          type: web3
+          # -- URL for JSON-RPC endpoint
+          url: ""
+          # -- Data capabilities this node has
+          features: [archive, traces]
+      -
+        # -- Label for a Firehose endpoint
+        label: eth-mainnet-firehose
+        details:
+          # -- Type of Provider: firehose
+          type: firehose
+          # -- URL for Firehose  endpoint
+          url: ""
+          # -- Token to authenticate
+          token: "$FIREHOSE_TOKEN_IN_ENV"
+      -
+        # -- Label for a Substreams endpoint
+        label: eth-mainnet-substreams
+        details:
+          # -- Type of Provider: substreams
+          type: substreams
+          # -- URL for Substreams endpoint
+          url: ""
+          # -- Token to authenticate
+          token: "$SUBSTREAMS_TOKEN_IN_ENV"
 
 # -- Store configuration for Graph Node
 store:
