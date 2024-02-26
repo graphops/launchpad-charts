@@ -275,9 +275,10 @@ configTemplate: |
   {{- end }}
 
   [backend_groups]
+  {{- $backendOptions := .Values.backendGroups }}
   {{- range $groupName, $groupMembers := .computed.backendGroups }}
   [backend_groups.{{ $groupName }}]
-  {{ toToml .Values.backendGroups }}
+  {{ toToml $backendOptions }}
   {{ toToml (dict "backends" $groupMembers) }}
   {{- end }}
   
