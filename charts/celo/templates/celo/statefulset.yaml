@@ -114,9 +114,6 @@ spec:
                 --metrics \
                 --metrics.addr=0.0.0.0 \
                 --metrics.port=6060 \
-                --ws \
-                --ws.addr=0.0.0.0 \
-                --ws.port=8456 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
