@@ -2584,6 +2584,26 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v5.0.0
+      created: "2024-02-26T22:46:37Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 83c75de861821980a0862b22eb04c8d0050488043306d4ac8268780c6c31a298
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.2-canary.3/lighthouse-0.5.2-canary.3.tgz
+      version: 0.5.2-canary.3
+    - apiVersion: v2
+      appVersion: v5.0.0
+      created: "2024-02-26T22:46:13Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 65f5ce25794879030b0d18119550494edfdad2cae2b99f6c48f2d302e50606d7
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.2-canary.2/lighthouse-0.5.2-canary.2.tgz
+      version: 0.5.2-canary.2
+    - apiVersion: v2
+      appVersion: v5.0.0
       created: "2024-02-21T00:47:44Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 3b9b8dc3e72fde97fa6373055e4c8983a9a7809e9d1d3b1a752a4342b4ebaafd
@@ -3295,6 +3315,26 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
+    - apiVersion: v2
+      appVersion: multiarch-v24.2.1
+      created: "2024-02-26T22:47:59Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 83d03b1107e5acc40ed043affea3240ecabbf8ee58da44cf633b9011195416d5
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.9-canary.3/nimbus-0.5.9-canary.3.tgz
+      version: 0.5.9-canary.3
+    - apiVersion: v2
+      appVersion: multiarch-v24.2.1
+      created: "2024-02-26T22:47:49Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: ee1bf87955d797b8c025efe27a028278dd2b9530a29e606bab96dbf4243c0160
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.9-canary.2/nimbus-0.5.9-canary.2.tgz
+      version: 0.5.9-canary.2
     - apiVersion: v2
       appVersion: multiarch-v24.2.1
       created: "2024-02-23T10:34:05Z"
@@ -4517,4 +4557,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-02-26T22:49:49.532941176Z"
+generated: "2024-02-26T22:50:02.764676488Z"
