@@ -121,6 +121,11 @@ backends:
     groups:
       - main
 
+  # -- Options for backend groups
+backendGroups:
+  # -- Enable consensus awareness
+  consensus_aware: true
+
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
 rpcMethodMappings:
   web3_clientVersion: main
@@ -272,7 +277,7 @@ configTemplate: |
   [backend_groups]
   {{- range $groupName, $groupMembers := .computed.backendGroups }}
   [backend_groups.{{ $groupName }}]
-  consensus_aware = true
+  {{ toToml .Values.backendGroups }}
   {{ toToml (dict "backends" $groupMembers) }}
   {{- end }}
   
