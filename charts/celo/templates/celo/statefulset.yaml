@@ -113,18 +113,19 @@ spec:
                 --http.vhosts=* \
                 --metrics \
                 --metrics.addr=0.0.0.0 \
+                --metrics.port=6060 \
               {{- range $arg := $values.extraArgs }}
                 {{- $arg | nindent 16 }} \
               {{- end }}
           ports:
-            - name: grpc-celo
-              containerPort: 8545
-              protocol: TCP
             - name: http-metrics
-              containerPort: 8545
+              containerPort: 6060
               protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
+              protocol: TCP
+            - name: ws-rpc
+              containerPort: 8546
               protocol: TCP
             - name: udp-p2p
               containerPort: {{ include "celo.p2pPort" $values }}
