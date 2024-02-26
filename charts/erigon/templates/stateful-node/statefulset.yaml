@@ -194,6 +194,9 @@ spec:
             - name: http-jsonrpc
               containerPort: 8545
               protocol: TCP
+            - name: ws-rpc
+              containerPort: 8546
+              protocol: TCP
             - name: http-engineapi
               containerPort: 8551
               protocol: TCP
