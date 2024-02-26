@@ -127,6 +127,8 @@ statefulNode:
       grpc-erigon: 9090
       # -- Service Port to expose JSON-RPC interface on
       http-jsonrpc: 8545
+      # -- Service Port to expose WS-RPC interface on
+      ws-rpc: 8546
       # -- Service Port to expose engineAPI interface on
       http-engineapi: 8551
       # -- Service Port to expose Prometheus metrics on
