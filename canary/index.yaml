@@ -838,6 +838,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v2.58.1
+      created: "2024-02-26T19:08:45Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 89e327d8ba4725d74134ec14acf4480145e2c37d9c07db822a06baa49646abb1
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.7/erigon-0.9.7.tgz
+      version: 0.9.7
+    - apiVersion: v2
+      appVersion: v2.58.1
       created: "2024-02-26T19:04:19Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: db14320e91b7a117004df304e2112ef3668c860d646f4f5935c15953c874d26a
@@ -2604,6 +2614,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v5.0.0
+      created: "2024-02-26T22:46:58Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 83a8b2bbb422e866b8b761d811dd5c5f3222b130fdc0c30ae2c75c95d5ea641f
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.2/lighthouse-0.5.2.tgz
+      version: 0.5.2
+    - apiVersion: v2
+      appVersion: v5.0.0
       created: "2024-02-26T22:46:37Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 83c75de861821980a0862b22eb04c8d0050488043306d4ac8268780c6c31a298
@@ -3335,6 +3355,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
+    - apiVersion: v2
+      appVersion: multiarch-v24.2.1
+      created: "2024-02-26T22:48:14Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 74f137ab0f68ed9a1920488390236c143557828c440e8d84c1e391c65d3bea94
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.9/nimbus-0.5.9.tgz
+      version: 0.5.9
     - apiVersion: v2
       appVersion: multiarch-v24.2.1
       created: "2024-02-26T22:47:59Z"
@@ -4577,4 +4607,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-02-26T22:59:25.177956933Z"
+generated: "2024-02-26T23:00:19.337950901Z"
