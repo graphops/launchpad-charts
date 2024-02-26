@@ -1589,6 +1589,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.4.4
+      created: "2024-02-26T22:37:26Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 7efee811b98d21167b56afd74a05810367fa062163af53a9de390805cec822be
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.5.1/proxyd-0.5.1.tgz
+      version: 0.5.1
+    - apiVersion: v2
+      appVersion: v4.4.4
       created: "2024-02-14T10:20:06Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 4812c63061f07b5ed5827ab0c67d2102d5a60ce891f3082facc48c93ebfe6f38
@@ -1887,4 +1897,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-02-19T13:52:19.171547701Z"
+generated: "2024-02-26T22:39:35.846817788Z"
