@@ -75,9 +75,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | celo.resources |  | object | `{}` |
- | celo.service.ports.grpc-celo | Service Port to expose gRPC interface on | int | `8545` |
  | celo.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | celo.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8545` |
+ | celo.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | celo.service.ports.ws-rpc | Service Port to expose WS-RPC interface on | int | `8546` |
  | celo.service.topologyAwareRouting.enabled |  | bool | `false` |
  | celo.service.type |  | string | `"ClusterIP"` |
  | celo.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
