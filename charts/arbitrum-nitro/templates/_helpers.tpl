@@ -79,6 +79,7 @@ Generate the array of options for nitro
 }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainUrl)) }}
+{{- $args = concat $args (list (print "--parent-chain.blob-client.beacon-url=" .parentChainBeaconUrl)) }}
 {{- $args = concat $args (list (print "--chain.id=" .chain)) }}
 {{- $args = concat $args (list (print "--http.api=" .httpRpc.api)) }}
 {{- $args = concat $args (list (print "--http.addr=" .httpRpc.addr)) }}
