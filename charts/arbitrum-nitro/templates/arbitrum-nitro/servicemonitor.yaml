@@ -1,7 +1,6 @@
 {{- $values := $.Values.nitro }}
 {{- $componentName := "nitro" }}
 {{- $componentLabel := include "arbitrum-nitro.componentLabelFor" $componentName }}
-{{- if $values.enabled }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
@@ -31,5 +30,4 @@ spec:
     relabelings:
     {{- toYaml .Values.prometheus.serviceMonitors.relabelings | nindent 8 }}
     {{- end }}
-{{- end }}
 {{- end }}
