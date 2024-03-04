@@ -74,6 +74,8 @@ nitro:
     chain: 42161
     # -- RPC URL to L1 chain (ethereum)
     parentChainUrl: "CHANGE_ME_RPC_URL"
+    # -- Beacon URL to L1 chain (ethereum)
+    parentChainBeaconUrl: "CHANGE_ME_BEACON_URL"
     # -- RPC Url to Arbitrum Classic Archive node if serving classic blocks
     classicUrl: null
     # -- RPC config parameters

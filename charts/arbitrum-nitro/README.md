@@ -2,7 +2,7 @@
 
 Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.4](https://img.shields.io/badge/Version-0.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.2.4-8517340](https://img.shields.io/badge/AppVersion-v2.2.4--8517340-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.1](https://img.shields.io/badge/Version-0.3.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.3.0-3e14543](https://img.shields.io/badge/AppVersion-v2.3.0--3e14543-informational?style=flat-square)
 
 ## Features
 
@@ -94,7 +94,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--execution.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--execution.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainBeaconUrl":"CHANGE_ME_BEACON_URL","parentChainUrl":"CHANGE_ME_RPC_URL"}` |
  | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
  | nitro.config.classicUrl | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
  | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--execution.caching.archive"]` |
@@ -107,6 +107,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.config.metrics | Metrics parameters | object | `{"addr":"0.0.0.0","enabled":true}` |
  | nitro.config.metrics.addr | Listen address | string | `"0.0.0.0"` |
  | nitro.config.metrics.enabled | Enable metrics | bool | `true` |
+ | nitro.config.parentChainBeaconUrl | Beacon URL to L1 chain (ethereum) | string | `"CHANGE_ME_BEACON_URL"` |
  | nitro.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
