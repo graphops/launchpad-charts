@@ -184,6 +184,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v2.3.0-3e14543
+      created: "2024-03-04T19:58:06Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: de830dec82b7ef04ea907aeacc41fde948734b3b26a8fe29848b3ae366351a65
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.3.2-canary.2/arbitrum-nitro-0.3.2-canary.2.tgz
+      version: 0.3.2-canary.2
+    - apiVersion: v2
       appVersion: v2.3.1-26fad6f
       created: "2024-03-02T01:23:06Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -3437,6 +3447,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v24.2.2
+      created: "2024-03-04T19:57:40Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: bd2df6f6b98e93647f92186379f71314b23be7d63b5bf8a6be5cc1479d8819b9
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.10-canary.2/nimbus-0.5.10-canary.2.tgz
+      version: 0.5.10-canary.2
+    - apiVersion: v2
+      appVersion: multiarch-v24.2.2
       created: "2024-02-27T02:08:43Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 0907a52af3806dd66886a89a67d2a0ca1ea0d1413e22fbd318f209597eef418f
@@ -4707,4 +4727,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-03-04T16:07:00.156060177Z"
+generated: "2024-03-04T20:01:16.466467342Z"
