@@ -56,7 +56,8 @@
       },
       {
         "matchPackageNames": ["ghcr.io/graphops/listener-radio"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$",
+        "ignoreUnstable": false
       },
       // Group our dependencies
       {
