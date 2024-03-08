@@ -4048,6 +4048,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.5.1
+      created: "2024-03-08T18:33:47Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 3db068a0d6a958f3fa3603a51f80ee206e0657459df670b18bea39c602e6c225
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.5.2-canary.2/proxyd-0.5.2-canary.2.tgz
+      version: 0.5.2-canary.2
+    - apiVersion: v2
       appVersion: v4.5.0
       created: "2024-02-26T22:44:30Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
@@ -4777,4 +4787,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-03-07T16:32:00.271777708Z"
+generated: "2024-03-08T18:36:07.791368474Z"
