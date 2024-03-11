@@ -74,6 +74,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v2.3.1-26fad6f
+      created: "2024-03-04T20:40:54Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 4651a06edcda6357e1896fca722b656a1e3b90df5cca4977b7707bfbc0c11050
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.3.2/arbitrum-nitro-0.3.2.tgz
+      version: 0.3.2
+    - apiVersion: v2
       appVersion: v2.3.0-3e14543
       created: "2024-02-28T11:00:41Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -236,6 +246,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.58.2
+      created: "2024-03-11T18:59:32Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: ea779dfb5dc81946b7d1e060feb4747f92adfaae5a24866a38f8f8ff95375b82
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.8/erigon-0.9.8.tgz
+      version: 0.9.8
     - apiVersion: v2
       appVersion: v2.58.1
       created: "2024-02-26T19:08:45Z"
@@ -1658,6 +1678,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.5.1
+      created: "2024-03-11T19:03:03Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 9fa2c766111fb7aa874c57ab1f5983a50e5a53f6fda6ea0a4cff2041e04f8587
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.5.2/proxyd-0.5.2.tgz
+      version: 0.5.2
+    - apiVersion: v2
       appVersion: v4.4.4
       created: "2024-02-26T22:37:26Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
@@ -1967,4 +1997,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-03-04T20:16:16.416460454Z"
+generated: "2024-03-11T19:11:59.745951515Z"
