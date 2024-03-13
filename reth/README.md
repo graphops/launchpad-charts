@@ -1,125 +1,163 @@
-
-# reth
-
-![Version: 0.0.13](https://img.shields.io/badge/Version-0.0.13-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+# Reth Helm Chart
 
 Reth (short for Rust Ethereum, pronunciation) is a new Ethereum full node implementation that is focused on being user-friendly, highly modular, as well as being fast and efficient. Reth is an Execution Layer (EL) and is compatible with all Ethereum Consensus Layer (CL) implementations that support the Engine API. It is originally built and driven forward by Paradigm, and is licensed under the Apache and MIT licenses.
 
-**Homepage:** <https://www.paradigm.xyz/2022/12/reth>
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
-## Source Code
+## Features
 
-* <https://github.com/paradigmxyz/reth/>
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
+- Deploys a scalable pool of `rpcdaemon` instances, with auto-scaling support, for automatic elastic JSON-RPC
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for exposing a NodePort to enable inbound P2P dials for better peering
 
-## Values
+## Quickstart
 
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| affinity | object | `{}` | Affinity configuration for pods |
-| annotations | object | `{}` | Annotations for the StatefulSet |
-| authPort | int | `8551` | Engine Port (Auth Port) |
-| containerSecurityContext | object | See `values.yaml` | The security context for containers |
-| customCommand | list | `[]` | Legacy way of overwriting the default command. You may prefer to change defaultCommandTemplate instead. |
-| defaultCommandTemplate | string | See `values.yaml` | Template used for the default command |
-| extraArgs | list | `[]` | Extra args for the reth container |
-| extraContainerPorts | list | `[]` | Additional ports for the main container |
-| extraContainers | list | `[]` | Additional containers |
-| extraEnv | list | `[]` | Additional env variables |
-| extraPorts | list | `[]` | Additional ports. Useful when using extraContainers or extraContainerPorts |
-| extraVolumeMounts | list | `[]` | Additional volume mounts |
-| extraVolumes | list | `[]` | Additional volumes |
-| fullnameOverride | string | `""` | Overrides the chart's computed fullname |
-| httpPort | int | `8545` | HTTP Port |
-| image.pullPolicy | string | `"IfNotPresent"` | reth container pull policy |
-| image.repository | string | `"ethpandaops/reth"` | reth container image repository |
-| image.tag | string | `"main"` | reth container image tag |
-| imagePullSecrets | list | `[]` | Image pull secrets for Docker images |
-| ingress.annotations | object | `{}` | Annotations for Ingress |
-| ingress.enabled | bool | `false` | Ingress resource for the HTTP API |
-| ingress.hosts[0].host | string | `"chart-example.local"` |  |
-| ingress.hosts[0].paths | list | `[]` |  |
-| ingress.tls | list | `[]` | Ingress TLS |
-| initChownData.enabled | bool | `true` | Init container to set the correct permissions to access data directories |
-| initChownData.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
-| initChownData.image.repository | string | `"busybox"` | Container repository |
-| initChownData.image.tag | string | `"1.34.0"` | Container tag |
-| initChownData.resources | object | `{}` | Resource requests and limits |
-| initContainers | list | `[]` | Additional init containers |
-| jwt | string | `"ecb22bc24e7d4061f7ed690ccd5846d7d73f5d2b9733267e12f56790398d908a"` | JWT secret is attached as a secret object. Change this value. |
-| livenessProbe | object | See `values.yaml` | Liveness probe |
-| metricsPort | int | `9001` | Metrics Port |
-| nameOverride | string | `""` | Overrides the chart's name |
-| nodeSelector | object | `{}` | Node selector for pods |
-| p2pNodePort.enabled | bool | `false` | Expose P2P port via NodePort |
-| p2pNodePort.initContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
-| p2pNodePort.initContainer.image.repository | string | `"lachlanevenson/k8s-kubectl"` | Container image to fetch nodeport information |
-| p2pNodePort.initContainer.image.tag | string | `"v1.21.3"` | Container tag |
-| p2pNodePort.port | int | `31000` | NodePort to be used |
-| p2pNodePort.portForwardContainer.image.pullPolicy | string | `"IfNotPresent"` | Container pull policy |
-| p2pNodePort.portForwardContainer.image.repository | string | `"alpine/socat"` | Container image for the port forwarder |
-| p2pNodePort.portForwardContainer.image.tag | string | `"latest"` | Container tag |
-| p2pPort | int | `30303` | P2P Port |
-| persistence.accessModes | list | `["ReadWriteOnce"]` | Access mode for the volume claim template |
-| persistence.annotations | object | `{}` | Annotations for volume claim template |
-| persistence.enabled | bool | `false` | Uses an EmptyDir when not enabled |
-| persistence.existingClaim | string | `nil` | Use an existing PVC when persistence.enabled |
-| persistence.selector | object | `{}` | Selector for volume claim template |
-| persistence.size | string | `"20Gi"` | Requested size for volume claim template |
-| persistence.storageClassName | string | `nil` | Use a specific storage class E.g 'local-path' for local storage to achieve best performance Read more (https://github.com/rancher/local-path-provisioner) |
-| podAnnotations | object | `{}` | Pod annotations |
-| podDisruptionBudget | object | `{}` | Define the PodDisruptionBudget spec If not set then a PodDisruptionBudget will not be created |
-| podLabels | object | `{}` | Pod labels |
-| podManagementPolicy | string | `"OrderedReady"` | Pod management policy |
-| priorityClassName | string | `nil` | Pod priority class |
-| rbac.clusterRules | list | See `values.yaml` | Required ClusterRole rules |
-| rbac.create | bool | `true` | Specifies whether RBAC resources are to be created |
-| rbac.rules | list | See `values.yaml` | Required ClusterRole rules |
-| readinessProbe | object | See `values.yaml` | Readiness probe |
-| replicas | int | `1` | Number of replicas |
-| resources | object | `{}` | Resource requests and limits |
-| secretEnv | object | `{}` | Additional env variables injected via a created secret |
-| securityContext | object | See `values.yaml` | The security context for pods |
-| serviceAccount.annotations | object | `{}` | Annotations to add to the service account |
-| serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
-| serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| serviceMonitor.annotations | object | `{}` | Additional ServiceMonitor annotations |
-| serviceMonitor.enabled | bool | `false` | If true, a ServiceMonitor CRD is created for a prometheus operator https://github.com/coreos/prometheus-operator |
-| serviceMonitor.interval | string | `"1m"` | ServiceMonitor scrape interval |
-| serviceMonitor.labels | object | `{}` | Additional ServiceMonitor labels |
-| serviceMonitor.namespace | string | `nil` | Alternative namespace for ServiceMonitor |
-| serviceMonitor.path | string | `"/debug/metrics/prometheus"` | Path to scrape |
-| serviceMonitor.relabelings | list | `[]` | ServiceMonitor relabelings |
-| serviceMonitor.scheme | string | `"http"` | ServiceMonitor scheme |
-| serviceMonitor.scrapeTimeout | string | `"30s"` | ServiceMonitor scrape timeout |
-| serviceMonitor.tlsConfig | object | `{}` | ServiceMonitor TLS configuration |
-| terminationGracePeriodSeconds | int | `300` | How long to wait until the pod is forcefully terminated |
-| tolerations | list | `[]` | Tolerations for pods |
-| topologySpreadConstraints | list | `[]` | Topology Spread Constraints for pods |
-| updateStrategy | object | `{"type":"RollingUpdate"}` | Update stategy for the Statefulset |
-| updateStrategy.type | string | `"RollingUpdate"` | Update stategy type |
-| wsPort | int | `8546` | WS Port |
+To install the chart with the release name `my-release`:
 
-# Examples
-
-## Connecting to the goerli test network
-
-```yaml
-extraArgs:
-  - --chain=goerli
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/reth
 ```
 
-## Exposing the P2P service via NodePort
+Once the release is installed, the node will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
 
-This will make your node accessible via the Internet using a service of type [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport).
-When using `p2pNodePort.enabled` the exposed IP address on your ENR record will be the "External IP" of the node where the pod is running.
+## Specifying the Engine API JWT
 
-**Limitations:** You can only run a single replica per chart deployment when using `p2pNodePort.enabled=true`.If you need N nodes, simply deploy the chart N times.
-Currently reth doesn't allow you to announce a a different discovery port, which would be a requirement to run multiple replicas within the same chart.
+You can specify the JWT for Reth either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Reth Pod.
+
+Using a literal value:
 
 ```yaml
-replicas: 1
+# values.yaml
+
+jwt:
+  fromLiteral: some-secure-random-value-that-you-generate # You can generate this with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+# values.yaml
+
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
+
+## Enabling inbound P2P dials
+
+By default, your node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+
+```yaml
+# values.yaml
 
 p2pNodePort:
   enabled: true
-  port: 31000
+  port: 31000 # Must be globally unique and available on the host
 ```
+
+You can monitor progress by following the logs of the `stateful-node-init` container: `kubectl logs --since 1m -f release-name-stateful-node-0 -c stateful-node-init`
+
+## Upgrading
+
+We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
+
+This project uses [Semantic Versioning](https://semver.org/). Changes to the version of the application (the `appVersion`) that the Chart deploys will generally result in a patch version bump for the Chart. Breaking changes to the Chart or its `values.yaml` interface will be reflected with a major version bump.
+
+We do not recommend that you upgrade the application by overriding `image.tag`. Instead, use the version of the Chart that is built for your desired `appVersion`.
+
+## Values
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | affinity | Affinity configuration for pods | object | `{}` |
+ | annotations | Annotations for the StatefulSet | object | `{}` |
+ | authPort | Engine Port (Auth Port) | int | `8551` |
+ | containerSecurityContext | The security context for containers | object | See `values.yaml` |
+ | extraArgs | Extra args for the reth container | list | `[]` |
+ | extraContainerPorts | Additional ports for the main container | list | `[]` |
+ | extraContainers | Additional containers | list | `[]` |
+ | extraEnv | Additional env variables | list | `[]` |
+ | extraPorts | Additional ports. Useful when using extraContainers or extraContainerPorts | list | `[]` |
+ | extraVolumeMounts | Additional volume mounts | list | `[]` |
+ | extraVolumes | Additional volumes | list | `[]` |
+ | fullnameOverride | Overrides the chart's computed fullname | string | `""` |
+ | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
+ | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
+ | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
+ | httpPort | HTTP Port | int | `8545` |
+ | image.pullPolicy | reth container pull policy | string | `"IfNotPresent"` |
+ | image.repository | reth container image repository | string | `"ethpandaops/reth"` |
+ | image.tag | reth container image tag | string | `"main"` |
+ | imagePullSecrets | Image pull secrets for Docker images | list | `[]` |
+ | initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
+ | initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | initChownData.image.repository | Container repository | string | `"busybox"` |
+ | initChownData.image.tag | Container tag | string | `"1.34.0"` |
+ | initChownData.resources | Resource requests and limits | object | `{}` |
+ | initContainers | Additional init containers | list | `[]` |
+ | jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
+ | jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
+ | jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
+ | jwt.fromLiteral | Use this literal value for the JWT | string | `"ecb22bc24e7d4061f7ed690ccd5846d7d73f5d2b9733267e12f56790398d908a"` |
+ | livenessProbe | Liveness probe | object | See `values.yaml` |
+ | metricsPort | Metrics Port | int | `9001` |
+ | nameOverride | Overrides the chart's name | string | `""` |
+ | nodeSelector | Node selector for pods | object | `{}` |
+ | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
+ | p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
+ | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.3"` |
+ | p2pNodePort.port | NodePort to be used | int | `31000` |
+ | p2pNodePort.portForwardContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | p2pNodePort.portForwardContainer.image.repository | Container image for the port forwarder | string | `"alpine/socat"` |
+ | p2pNodePort.portForwardContainer.image.tag | Container tag | string | `"latest"` |
+ | p2pPort | P2P Port | int | `30303` |
+ | persistence.accessModes | Access mode for the volume claim template | list | `["ReadWriteOnce"]` |
+ | persistence.annotations | Annotations for volume claim template | object | `{}` |
+ | persistence.enabled | Uses an EmptyDir when not enabled | bool | `false` |
+ | persistence.existingClaim | Use an existing PVC when persistence.enabled | string | `nil` |
+ | persistence.selector | Selector for volume claim template | object | `{}` |
+ | persistence.size | Requested size for volume claim template | string | `"20Gi"` |
+ | persistence.storageClassName | Use a specific storage class E.g 'local-path' for local storage to achieve best performance Read more (https://github.com/rancher/local-path-provisioner) | string | `nil` |
+ | podAnnotations | Pod annotations | object | `{}` |
+ | podDisruptionBudget | Define the PodDisruptionBudget spec If not set then a PodDisruptionBudget will not be created | object | `{}` |
+ | podLabels | Pod labels | object | `{}` |
+ | podManagementPolicy | Pod management policy | string | `"OrderedReady"` |
+ | priorityClassName | Pod priority class | string | `nil` |
+ | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
+ | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
+ | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
+ | readinessProbe | Readiness probe | object | See `values.yaml` |
+ | replicas | Number of replicas | int | `1` |
+ | resources | Resource requests and limits | object | `{}` |
+ | secretEnv | Additional env variables injected via a created secret | object | `{}` |
+ | securityContext | The security context for pods | object | See `values.yaml` |
+ | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
+ | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
+ | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | serviceMonitor.annotations | Additional ServiceMonitor annotations | object | `{}` |
+ | serviceMonitor.enabled | If true, a ServiceMonitor CRD is created for a prometheus operator https://github.com/coreos/prometheus-operator | bool | `false` |
+ | serviceMonitor.interval | ServiceMonitor scrape interval | string | `"1m"` |
+ | serviceMonitor.labels | Additional ServiceMonitor labels | object | `{}` |
+ | serviceMonitor.namespace | Alternative namespace for ServiceMonitor | string | `nil` |
+ | serviceMonitor.path | Path to scrape | string | `"/debug/metrics/prometheus"` |
+ | serviceMonitor.relabelings | ServiceMonitor relabelings | list | `[]` |
+ | serviceMonitor.scheme | ServiceMonitor scheme | string | `"http"` |
+ | serviceMonitor.scrapeTimeout | ServiceMonitor scrape timeout | string | `"30s"` |
+ | serviceMonitor.tlsConfig | ServiceMonitor TLS configuration | object | `{}` |
+ | terminationGracePeriodSeconds | How long to wait until the pod is forcefully terminated | int | `300` |
+ | tolerations | Tolerations for pods # ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/ | list | `[]` |
+ | topologySpreadConstraints | Topology Spread Constraints for pods # ref: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/ | list | `[]` |
+ | updateStrategy | Update stategy for the Statefulset | object | `{"type":"RollingUpdate"}` |
+ | updateStrategy.type | Update stategy type | string | `"RollingUpdate"` |
+ | wsPort | WS Port | int | `8546` |
+
+## Contributing
+
+We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
