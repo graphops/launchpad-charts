@@ -1,0 +1,328 @@
+# Default values for subgraph-radio.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+service:
+  topologyAwareRouting:
+    enabled: false
+  type: ClusterIP
+  ports:
+    # Valid keys are names of ports that are exposed by the Pod that (see templates/file-service/workload.yaml)
+    # -- Service Port to expose service interface on
+    http-api: "5679"
+    # -- Service Port to expose Admin API on
+    http-admin: "5665"
+    # -- Service Port to expose metrics on
+    http-metrics: "5680"
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+     # Required to obtain the nodes external IP
+    - apiGroups: [""]
+      resources:
+      - "nodes"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to get information about the serices nodePort.
+    - apiGroups: [""]
+      resources:
+      - "services"
+      verbs:
+      - "get"
+      - "list"
+      - "watch"
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Set custom aliases for preconfigured commands in your environment
+aliases: {}
+
+# -- Image for file-service
+image:
+  repository: ghcr.io/graphops/file-service
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+env: {}
+# # -- Comma separated list of IPFS hashes and shared prefix of files in the bundles (empty if just in main_directory) to serve upon start-up; the list can be managed through the /admin API without service restart.\nformat: [ipfs_hash:prefix]
+# INITIAL_BUNDLES:
+# # -- Admin Auth token for server management
+# ADMIN_AUTH_TOKEN: "kueen"
+# # -- Expost Admin service at address with both host and port
+# ADMIN_ADDR: {{ printf "%s:%s" "0.0.0.0" ( index .Values.service.ports "http-api" ) | quote }}
+# # -- IPFS gateway to interact with
+# IPFS_GATEWAY_URL: "https://ipfs.network.thegraph.com"
+# # -- Support logging formats: pretty, json, full, compact
+# LOG_FORMAT: "Pretty"
+# # -- Default price per byte in GRT
+# DEFAULT_PRICE_PER_BYTE: 1
+# # -- Bucket region (ex. ams3)
+# REGION: {{ .Values.storage.objectStorage.region | quote }}
+# # -- Object store bucket name
+# BUCKET: {{ .Values.storage.objectStorage.bucket | quote }}
+# # -- access key id to the bucket
+# ACCESS_KEY_ID: {{ .Values.storage.objectStorage.accessKeyId | toJson }}
+# # -- Secret key to the bucket
+# SECRET_KEY: {{ .Values.storage.objectStorage.secret
+# AccessKey | toJson }}
+# # -- Endpoint to the bucket (ex. https://ams3.digitaloceanspaces.com)
+# STORAGE_ENDPOINT: {{ .Values.storage.objectStorage.endpoint | quote }}
+# # -- Mnemonic to the Indexer operator wallet (first address of the wallet is used)
+# MNEMONIC: "ice palace drill gadget biology glow tray equip heavy wolf toddler menu"
+# # -- Blockchain provider endpoint
+# PROVIDER:
+# # -- TAP verifier contract address
+# VERIFIER: "0xfC24cE7a4428A6B89B52645243662A02BA734ECF"
+# # -- The Graph Network subgraph API endpoint
+# NETWORK_SUBGRAPH:
+# # -- The Graph Scalar TAP subgraph API endpoint
+# ESCROW_SUBGRAPH:
+# # -- Output directory for the downloaded files
+# MAIN_DIR:
+# # -- IPFS hash for the target bundle.yaml
+# IPFS_HASH:
+# # -- Client pings the gateway for file discovery; TODO: currently gateway_url is used to ping local server url directly
+# GATEWAY_URL:
+# # -- A list of indexer endpoints to query data from
+# INDEXER_ENDPOINTS:
+# # -- Auth token that to query for free
+# FREE_QUERY_AUTH_TOKEN:
+# # -- Maximum retry for each chunk
+# MAX_RETRY:
+# # -- Configure maximum concurrency limit for downloading the bundle from; affects cost estimation for escrow accounts, transfer speed performance, failure rate
+# PROVIDER_CONCURRENCY:
+
+secretEnv: {}
+  # PRIVATE_KEY:
+  #   # -- Name of the secret that contains your PG password
+  #   secretName:
+  #   # -- Name of the data key in the secret that contains your PG password
+  #   key:
+  
+# -- Additional CLI arguments to pass to `indexer-agent`
+extraArgs: []
+
+# Increasing the grace termination period prevents Kubernetes
+# from killing the node process prematurely. Premature shutdown
+# can lead to data integrity issues
+# -- Amount of time to wait before force-killing the process
+terminationGracePeriodSeconds: 10
+
+# -- Annotations for the `Pod`
+podAnnotations: {}
+
+# -- Pod-wide security context
+podSecurityContext: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+  #   ephemeral-storage: 100Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+storage:
+  filesystem:
+    enabled: false
+    dir: "./../example-file"
+    volumeClaimSpec:
+      accessModes: ["ReadWriteOnce"]
+      # -- The storage class to use when provisioning a persistent volume
+      storageClassName: ""
+      resources:
+        requests:
+          # -- The amount of disk space to provision
+          storage: 50Gi
+  objectStorage:
+    enabled: true
+    region: "ams3"
+    bucket: "contain-texture-dragon"
+    accessKeyId: []
+    secretAccessKey: []
+    endpoint: "https://ams3.digitaloceanspaces.com"
+
+server:
+  adminAuthToken: "kueen"
+  adminHost: 0.0.0.0
+  defaultPricePerByte: 1
+  ipfsGateway: "https://ipfs.network.thegraph.com"
+  logFormat: "Pretty"
+
+common:
+  server:
+    urlPrefix: "/"
+    freeQueryAuthToken: "free-token"
+  indexer:
+    address: "0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+    operatorMnemonic: "ice palace drill gadget biology glow tray equip heavy wolf toddler menu"
+  graphNode:
+    statusUrl: "http://localhost:8030/graphql"
+    queryBaseUrl: "http://localhost:8000"
+  database:
+    postgresUrl: "postgres://postgres@postgres:5432"
+  networkSubgraph:
+    queryUrl: "https://localhost:8080/network"
+    syncingInterval: 60
+    serveSubgraph: false
+    serveAuthToken: "it-is-serving-network-subgraph-data"
+  escrowSubgraph:
+    queryUrl: "https://localhost:8080/escrow"
+    syncingInterval: 60
+    serveSubgraph: false
+  graphNetwork:
+    id: 1
+    chainId: 411614
+  scalar:
+    chain_id: 421614
+    receiptsVerifierAddress: "0xfC24cE7a4428A6B89B52645243662A02BA734ECF"
+
+# -- TOML configuration for redis
+serverConfigTemplate: |
+  initial_bundles = [
+      "QmVPPWWaraEvoc4LCrYXtMbL13WPNbnuXV2yo7W8zexFGq:",
+      "QmeD3dRVV6Gs84TRwiNj3tLt9mBEMVqy3GoWm7WN8oDzGz:",
+      "QmTSwj1BGkkmVSnhw6uEGkcxGZvP5nq4pDhzHjwJvsQC2Z:"
+  ]
+  admin_auth_token = {{ .Values.server.adminAuthToken | quote }}
+  admin_host_and_port = "{{ printf "%s:%s" "0.0.0.0" ( index .Values.service.ports "adminPort" ) | quote }}"
+  default_price_per_byte = {{ .Values.server.defaultPricePerByte | toJson }}
+  ipfs_gateway = {{ .Values.server.ipfsGateway | quote }}
+  log_format = {{ .Values.server.logFormat | quote }}
+  {{- with .Values.storage.filesystem }}
+  {{- if .enabled }}
+  [server.storage_method.LocalFiles]
+  main_dir = {{ .dir | quote }}
+  {{- end }}
+  {{- end }}
+  {{- with .Values.storage.objectStorage }}
+  {{- if .enabled }}
+  [server.storage_method.ObjectStorage]
+  region = {{ .region | quote }}
+  bucket = {{ .bucket | quote }}
+  access_key_id = {{ .accessKeyId | toJson }}
+  secret_key = {{ .secretAccessKey | toJson }}
+  endpoint = {{ .endpoint | quote }}
+  {{- end }}
+  {{- end }}
+
+commonServerConfigTemplate: |
+  {{- with .Values.common.server }}
+  url_prefix = {{ .urlPrefix | quote }}
+  free_query_auth_token = {{ freeQueryAuthToken | quote }}
+  {{- end }}
+  host_and_port = {{ join "%s:%s" "0.0.0.0" (index .Values.service.ports "http-api" ) | quote }}
+  metrics_host_and_port = {{ join "%s:%s" "0.0.0.0" ( index .Values.service.ports "http-metrics" ) | quote }}
+
+commonIndexerConfigTemplate: |
+  {{- with .Values.common.indexer }}
+  indexer_address = {{ .address | quote }}
+  operator_mnemonic = {{ .operatorMnemonic | quote }}
+  {{- end }}
+
+commonGraphNodeConfigTemplate: |
+  {{- with .Values.common.graphNode }}
+  status_url = {{ .statusUrl | quote }}
+  query_base_url = {{ .queryBaseUrl | quote }}
+  {{- end }}
+
+commonNetworkSubgraphConfigTemplate: |
+  {{- with .Values.common.networkSubgraph }}
+  query_url = {{ .queryUrl | quote }}
+  syncing_interval = {{ .syncingInterval | toJson }}
+  serve_subgraph = {{ .serveSubgraph | toJson }}
+  serve_auth_token = {{ .serveAuthToken | quote }}
+  {{- end }}
+
+commonEcrowSubgraphConfigTemplate: |
+  {{- with .Values.common.escrowSubgraph }}
+  query_url = {{ .queryUrl | quote }}
+  syncing_interval = {{ .syncingInterval | toJson }}
+  serve_subgraph = {{ .serveSubgraph | toJson }}
+  {{- end }}
+
+commonGraphNetworkConfigTemplate: |
+  {{- with .Values.common.graphNetwork }}
+  id = {{ .Id | toJson }}
+  chain_id = {{ .chainId | toJson }}
+  {{- end }}
+
+commonScalarConfigTemplate: |
+  {{- with .Values.common.scalar }}
+  chain_id = {{ .chainId | toJson }}
+  receipts_verifier_address = {{ .receiptsVerifierAddress | quote }}
+  {{- end }}
+
+# -- The configuration template that is rendered by Helm
+# @default -- See default template in [values.yaml](values.yaml)
+configTemplate: |
+  [server]
+  {{ tpl .Values.serverConfigTemplate $ }}
+  [common]
+  [common.server]
+  {{ tpl .Values.commonServerConfigTemplate $ }}
+
+  [common.indexer]
+  {{ tpl .Values.commonIndexerConfigTemplate $ }}
+
+  [common.graph_node]
+  {{ tpl .Values.commonGraphNodeConfigTemplate $ }}
+
+  [common.database]
+  postgres_url = "postgres://postgres@postgres:5432"
+
+  [common.network_subgraph]
+  {{ tpl .Values.commonNetworkSubgraphConfigTemplate $ }}
+
+  [common.escrow_subgraph]
+  {{ tpl .Values.commonEscrowSubgraphConfigTemplate $ }}
+
+  [common.graph_network]
+  {{ tpl .Values.commonGraphNetworkConfigTemplate $ }}
+
+  [common.scalar]
+  {{ tpl .Values.commonScalarConfigTemplate $ }}
