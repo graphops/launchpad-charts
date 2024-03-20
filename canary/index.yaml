@@ -977,6 +977,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v2.59.0
+      created: "2024-03-20T12:05:13Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: b3efeec4df6daa65cf49320a939c1fbed615eedda028e69c4c1b719cfd49da97
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.9-canary.1/erigon-0.9.9-canary.1.tgz
+      version: 0.9.9-canary.1
+    - apiVersion: v2
       appVersion: v2.58.2
       created: "2024-03-11T18:59:32Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -2782,6 +2792,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
+    - apiVersion: v2
+      appVersion: v5.1.1
+      created: "2024-03-18T19:20:32Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 1da3bb86cafc91ce5a8fd1f1896be24b8e82b84798a1ad8abc58ae52fca59ab7
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.4/lighthouse-0.5.4.tgz
+      version: 0.5.4
     - apiVersion: v2
       appVersion: v5.1.1
       created: "2024-03-18T19:09:36Z"
@@ -4977,4 +4997,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-03-18T19:26:56.898537614Z"
+generated: "2024-03-20T12:08:03.316611719Z"
