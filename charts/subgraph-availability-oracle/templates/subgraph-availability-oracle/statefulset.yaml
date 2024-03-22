@@ -1,0 +1,106 @@
+{{- $values := $.Values }}
+{{/* START StatefulSet */}}
+---
+apiVersion: apps/v1
+kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
+metadata:
+  name: {{ include "subgraph-availability-oracle.fullname" . }}
+  labels:
+    {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "subgraph-availability-oracle.fullname" . }}-headless
+  replicas: 1 # Should only ever be one instance
+  selector:
+    matchLabels:
+      {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "subgraph-availability-oracle.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      containers:
+        - name: subgraph-availability-oracle
+          command:
+            - /bin/sh
+            - -ac
+            - |
+              set -ex;
+              {{- if $values.extraArgs }}
+              exec availability-oracle \
+              {{- range $val := initial $values.extraArgs }}
+              {{ $val }} \
+              {{- end }}
+              {{ last $values.extraArgs }}
+              {{- else }}
+              exec availability-oracle
+              {{- end }}
+
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext: {}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          env:
+            - name: ORACLE_METRICS_PORT
+              value: "8090"
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          {{- with $values.extraArgs }}
+          args:
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+          - name: http-metrics
+            containerPort: 8090
+            protocol: TCP
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END StatefulSet */}}
