@@ -49,8 +49,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
  | heimdall.affinity |  | object | `{}` |
  | heimdall.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Heimdall instances on the same host | bool | `true` |
+ | heimdall.bootnodes | Specified seed nodes - Optional, defaults are provided for each network | string | `""` |
  | heimdall.enabled | Enable creation of `StatefulSet` for Heimdall | bool | `true` |
- | heimdall.env | Environment variables to set in key/value format | object | `{"BOOTNODES":"","ETH1_RPC_URL":""}` |
+ | heimdall.env | Environment variables to set in key/value format | object | `{"ETH1_RPC_URL":""}` |
  | heimdall.extraArgs | Additional CLI arguments to pass to Heimdall | list | `[]` |
  | heimdall.fromSnapshot.enabled | Enable initialising Heimdall from a remote Snapshot | bool | `false` |
  | heimdall.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
@@ -71,7 +72,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Heimdall | string | `"300Gi"` |
  | heimdall.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for heimdall | string | `nil` |
  | nameOverride |  | string | `""` |
- | network | Specifies the heimdall network instance, one of: `mainnet`, `testnet` | string | `"mainnet"` |
+ | network | Specifies the heimdall network instance, one of: `mainnet`, `mumbai`, `amoy` | string | `"mainnet"` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
  | prometheus.serviceMonitors.labels |  | object | `{}` |

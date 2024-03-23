@@ -4,7 +4,7 @@
 nameOverride: ""
 fullnameOverride: ""
 
-# -- Specifies the heimdall network instance, one of: `mainnet`, `testnet`
+# -- Specifies the heimdall network instance, one of: `mainnet`, `mumbai`, `amoy`
 network: mainnet
 
 serviceAccount:
@@ -59,9 +59,11 @@ heimdall:
     # -- URL to snapshot to download and extract, see [here](https://snapshots.matic.today)
     snapshotUrl:
 
+  # -- Specified seed nodes - Optional, defaults are provided for each network
+  bootnodes: ""
+
   # -- Environment variables to set in key/value format
   env:
-    BOOTNODES: ""  
     ETH1_RPC_URL: "" # optional
 
   # -- Annotations for the `Pod`
