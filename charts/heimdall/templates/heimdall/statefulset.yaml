@@ -110,7 +110,7 @@ spec:
             - name: METRICS
               value: "true"
             - name: METRICS_PORT
-              value: {{ $values.p2pNodePort.port | quote }}
+              value: {{ index $values.service.ports "http-metrics" | quote }}
           {{- end }}
           {{- if $values.config.fromSnapshot.enabled }}
             - name: BOOTSTRAP
