@@ -1,6 +1,8 @@
 {{- $values := $.Values.heimdall }}
 {{- $componentName := "heimdall" }}
 {{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
+{{- $heimdallArgs := get (fromJson (include "heimdall.computedArgs" $values)) "computedArgs" }}
+{{- $heimdallRestArgs := get (fromJson (include "heimdall.computedRestArgs" $values)) "computedRestArgs" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -76,14 +78,14 @@ spec:
               cd $HEIMDALLD_HOME/config
 
               # Patch config.toml
-              sed -i "s#^cors_allowed_origins.*#cors_allowed_origins = [\"*\"]#" config.toml
-              sed -i "s#^seeds.*#seeds = \"${BOOTNODES}\"#" config.toml
-              sed -i "s#^prometheus = false#prometheus = true#" config.toml
+              sed -iE "s#^cors_allowed_origins.*#cors_allowed_origins = ${CORS_ALLOWED_ORIGINS}#" config.toml
+              sed -iE "s#^seeds.*#seeds = \"${SEEDS}\"#" config.toml
 
-              # If ETH1_RPC_URL is set, patch in eth1
-              if [ "${ETH1_RPC_URL}" != "" ]; then
-                # Patch heimdall-config.toml
-                sed -i "s#^eth_rpc_url.*#eth_rpc_url = \"${ETH1_RPC_URL}\"#" heimdall-config.toml
+              if [ "${METRICS}" == "true" ]; then
+                sed -iE "s#^prometheus \?=.*#prometheus = true#" config.toml
+                sed -iE "s#^prometheus_listen_addr \?=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
+              else
+                sed -iE "s#^prometheus \?=.*#prometheus = false#" config.toml
               fi
 
               # If enabled and snapshot URL has been provided, bootstrap snapshot
@@ -100,13 +102,21 @@ spec:
             - name: genesis-config
               mountPath: /genesis-config
           env:
-            - name: BOOTNODES
-              value: {{ include "heimdall.bootnodes" . | quote }}
-          {{- if $values.fromSnapshot.enabled }}
+            - name: SEEDS
+              value: {{ include "heimdall.seeds" . | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ $values.config.corsAllowedOrigins | quote }}
+          {{- if $values.config.metrics.enabled }}
+            - name: METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: {{ $values.p2pNodePort.port | quote }}
+          {{- end }}
+          {{- if $values.config.fromSnapshot.enabled }}
             - name: BOOTSTRAP
               value: "1"
             - name: SNAPSHOT_URL
-              value: {{ $values.fromSnapshot.snapshotUrl }}
+              value: {{ $values.config.fromSnapshot.snapshotUrl }}
           {{- end }}
           {{- with $values.env }}
           {{- range $key, $val := .}}
@@ -117,7 +127,7 @@ spec:
 
       containers:
         - name: {{ $componentName }}
-          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:
           #   readOnlyRootFilesystem: true
@@ -129,29 +139,24 @@ spec:
             - -c
             - |
               set -x
-
-              export HEIMDALL_DIR=/storage
-
               exec heimdalld start \
-                {{- range $arg := $values.extraArgs }}
-                  {{- $arg  | nindent 16 }} \
+                {{- range $val := initial $heimdallArgs }}
+                {{ $val }} \
                 {{- end }}
-                --home=$HEIMDALL_DIR \
-                --rpc.laddr=tcp://0.0.0.0:26657 \
-                --p2p.upnp=false
+                {{ last $heimdallArgs }}
+
           ports:
-            - name: http-trpc # Tendermint RPC
-              containerPort: 26657
-              protocol: TCP
-            - name: udp-p2p
-              containerPort: 26656
-              protocol: UDP
-            - name: tcp-p2p
-              containerPort: 26656
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 26660
+              containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
+          {{- if $values.p2pNodePort.enabled }}
+            - name: tcp-p2p
+              containerPort: {{ $values.p2pNodePort.port }}
+              protocol: TCP
+          {{- end }}
           volumeMounts:
             - name: storage
               mountPath: /storage
@@ -175,36 +180,30 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
         - name: {{ $componentName }}-rest-server
-          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:
           #   readOnlyRootFilesystem: false
           #   capabilities:
           #     drop:
           #       - ALL
-          command: # TODO chain ID should be based on network selection
+          command:
             - sh
             - -c
             - |
               set -x;
-
-              export HEIMDALL_DIR=/storage;
-
               exec heimdalld rest-server \
-                {{- range $arg := $values.restServer.extraArgs }}
+                {{- range $val := initial $heimdallRestArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $heimdallRestArgs }}
+                {{- range $arg := $values.config.restServer.extraArgs }}
                   {{- $arg  | nindent 16 }} \
                 {{- end }}
-                --home=$HEIMDALL_DIR \
-                --node=tcp://127.0.0.1:26657 \
-                --trust-node=true \
-                --max-open=1000 \
-                --laddr=tcp://0.0.0.0:1317
+
           ports:
-            # - name: http-metrics # TODO figure out metrics scraping, potentially with exporter sidecar, but hopefully its builtin
-            #   containerPort: 6060
-            #   protocol: TCP
             - name: http-rest
-              containerPort: 1317
+              containerPort: {{ index $values.service.ports "http-rest" }}
               protocol: TCP
           volumeMounts:
             - name: storage
@@ -224,7 +223,7 @@ spec:
           #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
           #   grpc:
           #     port: 9090 # named ports not supported yet by grpc probes
-          {{- with $values.restServer.resources }}
+          {{- with $values.config.restServer.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
