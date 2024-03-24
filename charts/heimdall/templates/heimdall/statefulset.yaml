@@ -81,7 +81,7 @@ spec:
               sed -iE "s#^cors_allowed_origins.*#cors_allowed_origins = ${CORS_ALLOWED_ORIGINS}#" config.toml
               sed -iE "s#^seeds.*#seeds = \"${SEEDS}\"#" config.toml
 
-              if [ "${METRICS}" == "true" ]; then
+              if [ "${METRICS}" = "true" ]; then
                 sed -iE "s#^prometheus \?=.*#prometheus = true#" config.toml
                 sed -iE "s#^prometheus_listen_addr \?=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
               else
