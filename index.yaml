@@ -1143,6 +1143,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v5.1.2
+      created: "2024-03-25T23:05:19Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 8bcde98fcb6cc22b36407444609a27b3146f63a61c23ce6276e2914d89e0ef8d
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.5/lighthouse-0.5.5.tgz
+      version: 0.5.5
+    - apiVersion: v2
       appVersion: v5.1.1
       created: "2024-03-18T19:20:32Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -1708,6 +1718,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.5.4
+      created: "2024-03-25T23:01:14Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: b7f1ef4c6cb6109204c4f9640b47f5b662a72239f8a4d524cf7f0aeb9f49ccf7
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.5.3/proxyd-0.5.3.tgz
+      version: 0.5.3
+    - apiVersion: v2
       appVersion: v4.5.1
       created: "2024-03-11T19:03:03Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
@@ -2037,4 +2057,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-03-18T19:25:28.819441662Z"
+generated: "2024-03-25T23:08:52.433779218Z"
