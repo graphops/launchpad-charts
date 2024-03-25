@@ -97,10 +97,10 @@ Generate the array of options for heimdall
 {{- $args = concat $args (list (print "--rpc.laddr=" ( print "tcp://127.0.0.1:" ( index .service.ports "http-rpc" ) | quote ))) }}
 {{- if .p2pNodePort.enabled }}
 {{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" .p2pNodePort.port | quote ))) }}
+{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- end }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}
-{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- $args = concat $args (list (print "--log_level=" ( print .logLevel | quote ) )) }}
 {{- $args = concat $args (list (print "--logs-type=" ( print .logsType | quote ) )) }}
 {{- $args = concat $args .extraArgs }}
@@ -117,9 +117,9 @@ Generate the array of options for heimdall rest server
 }}
 {{- $args = concat $args (list (print "--laddr=" ( print "tcp://0.0.0.0:" ( index .service.ports "http-rest" ) | quote ))) }}
 {{- $args = concat $args (list (print "--node=" ( print "tcp://127.0.0.1:" ( index .service.ports "http-rpc" ) | quote ))) }}
+{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}
-{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- $args = concat $args .restServer.extraArgs }}
 {{- end }}
 {{ dict "computedRestArgs" $args | toJson }}
