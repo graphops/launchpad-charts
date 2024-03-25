@@ -11,4 +11,4 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 data:
   genesis.json: |
-    {{ (required "Invalid network specified" (.Files.Get (print "genesis/" $componentName "/" .Values.network ".json"))) | nindent 4 }}
+    {{ (required "Invalid network specified" (.Files.Get (print "genesis/" $componentName "/" .Values.heimdall.config.network ".json"))) | nindent 4 }}
