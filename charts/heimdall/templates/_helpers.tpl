@@ -100,6 +100,7 @@ Generate the array of options for heimdall
 {{- end }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}
+{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- $args = concat $args (list (print "--log_level=" ( print .logLevel | quote ) )) }}
 {{- $args = concat $args (list (print "--logs-type=" ( print .logsType | quote ) )) }}
 {{- $args = concat $args .extraArgs }}
@@ -118,6 +119,7 @@ Generate the array of options for heimdall rest server
 {{- $args = concat $args (list (print "--node=" ( print "tcp://127.0.0.1:" ( index .service.ports "http-rpc" ) | quote ))) }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}
+{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- $args = concat $args .restServer.extraArgs }}
 {{- end }}
 {{ dict "computedRestArgs" $args | toJson }}
