@@ -185,16 +185,6 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v2.3.2-064fa11
-      created: "2024-03-25T23:07:04Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: 514f3603437dfe73dd50e7afb9babfa66b08ff5ec5b01b9330d9e3ae4dc03b36
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.3.3/arbitrum-nitro-0.3.3.tgz
-      version: 0.3.3
-    - apiVersion: v2
-      appVersion: v2.3.2-064fa11
       created: "2024-03-25T23:06:36Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: dc7a531b25c9bc2c82949358d458fbe95ce0f3f417230d6761848cfbc3fcfc35
@@ -996,16 +986,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
-    - apiVersion: v2
-      appVersion: v2.59.0
-      created: "2024-03-25T23:02:47Z"
-      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
-      digest: 1892dfe6a79664b6337b28332404520c88b97b1c2d2c44b7a68adc4ed25a01bb
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.9.9/erigon-0.9.9.tgz
-      version: 0.9.9
     - apiVersion: v2
       appVersion: v2.59.0
       created: "2024-03-25T23:02:05Z"
@@ -2902,16 +2882,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
-    - apiVersion: v2
-      appVersion: v5.1.2
-      created: "2024-03-25T23:05:19Z"
-      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
-      digest: 8bcde98fcb6cc22b36407444609a27b3146f63a61c23ce6276e2914d89e0ef8d
-      name: lighthouse
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.5/lighthouse-0.5.5.tgz
-      version: 0.5.5
     - apiVersion: v2
       appVersion: v5.1.2
       created: "2024-03-25T23:04:55Z"
@@ -5187,4 +5157,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-03-25T23:10:36.708343882Z"
+generated: "2024-03-25T23:13:03.813758843Z"
