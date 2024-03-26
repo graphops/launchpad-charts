@@ -45,7 +45,7 @@ data:
 
 {{/* Finally, we render out the resources for our Graph Node groups */}}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-{{- $values := deepCopy $.Values.graphNodeDefaults | mustMerge $groupValues }}
+{{- $values := deepCopy $groupValues | mustMergeOverwrite $.Values.graphNodeDefaults }}
 {{- if $values.enabled }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $groupName }}
 {{/* The outer range seems to mess with the inner context and break helpers.
