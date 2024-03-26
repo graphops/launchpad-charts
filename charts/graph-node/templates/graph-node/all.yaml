@@ -6,7 +6,7 @@
      into the graph node config file */}}
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-  {{- $values := deepCopy $.Values.graphNodeDefaults | mustMerge $groupValues }}
+  {{- $values := deepCopy $groupValues | mustMergeOverwrite $.Values.graphNodeDefaults }}
   {{- if $values.enabled }}
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
