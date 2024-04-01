@@ -1294,6 +1294,16 @@ entries:
       version: 0.1.0
   listener-radio:
     - apiVersion: v2
+      appVersion: 0.0.4
+      created: "2024-04-01T13:03:31Z"
+      description: Deploy a Graphcast Listener Radio into your Kubernetes stack
+      digest: 67de8971bb53d43c14b145268460b334cd7ed7c57570698935d4a8131d864d2b
+      name: listener-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.4/listener-radio-0.2.4.tgz
+      version: 0.2.4
+    - apiVersion: v2
       appVersion: 0.0.2-alpha.1
       created: "2023-09-21T15:50:43Z"
       description: Deploy a Graphcast Listener Radio into your Kubernetes stack
@@ -2087,4 +2097,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-03-25T23:16:13.363849379Z"
+generated: "2024-04-01T13:10:15.397356327Z"
