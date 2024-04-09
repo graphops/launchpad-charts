@@ -6,7 +6,7 @@
      into the graph node config file */}}
 {{- $indexPools := dict }}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-  {{- $values := deepCopy $groupValues | mustMergeOverwrite $.Values.graphNodeDefaults }}
+  {{- $values := deepCopy $groupValues | mustMergeOverwrite (deepCopy $.Values.graphNodeDefaults) }}
   {{- if $values.enabled }}
     {{- range $indexPoolName := $values.includeInIndexPools }}
       {{- $indexPoolNodeIds := default list (get $indexPools $indexPoolName) }}
@@ -45,7 +45,7 @@ data:
 
 {{/* Finally, we render out the resources for our Graph Node groups */}}
 {{- range $groupName, $groupValues := $.Values.graphNodeGroups }}
-{{- $values := deepCopy $groupValues | mustMergeOverwrite $.Values.graphNodeDefaults }}
+{{- $values := deepCopy $groupValues | mustMergeOverwrite (deepCopy $.Values.graphNodeDefaults) }}
 {{- if $values.enabled }}
 {{- $componentLabel := include "graph-node.componentLabelFor" $groupName }}
 {{/* The outer range seems to mess with the inner context and break helpers.
@@ -214,7 +214,6 @@ spec:
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
-          {{- if (or $values.env $values.secretEnv) }}
           env:
             - name: NODE_ID
               valueFrom:
@@ -224,6 +223,7 @@ spec:
             - name: DISABLE_BLOCK_INGESTOR
               value: "true"
           {{- end }}
+          {{- if (or $values.env $values.secretEnv) }}
           {{- with $values.env }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
