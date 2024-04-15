@@ -1,8 +1,8 @@
-# Subgraph-Radio Helm Chart
+# File-Service Helm Chart
 
-Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+Deploy a file hosting service server in to your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-1155f59](https://img.shields.io/badge/AppVersion-sha--1155f59-informational?style=flat-square)
 
 ## Introduction
 
@@ -34,7 +34,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add graphops http://graphops.github.io/launchpad-charts
-$ helm install my-release graphops/subgraph-radio
+$ helm install my-release graphops/file-service
 ```
 
 ## Upgrading
@@ -51,26 +51,40 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
  | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
- | env.GRAPHCAST_NETWORK | Supported Graphcast networks: mainnet, testnet | string | `""` |
- | env.GRAPH_NODE_STATUS_ENDPOINT | Graph Node endpoint for indexing statuses | string | `""` |
- | env.INDEXER_ADDRESS | Indexer address | string | `""` |
- | env.INDEXER_MANAGEMENT_SERVER_ENDPOINT | Indexer Management Server endpoint | string | `""` |
- | env.NETWORK_SUBGRAPH | Subgraph endpoint to The Graph network subgraph | string | `""` |
- | env.REGISTRY_SUBGRAPH | Subgraph endpoint to the Graphcast Registry | string | `""` |
- | env.RUST_LOG | Comma separated static list of content topics to subscribe to | string | `"info,hyper=off,graphcast_sdk=info,waku_bindings=off,subgraph_radio=info"` |
+ | common.database.postgresUrl |  | string | `"postgres://fileservice:XXXXXX@file-service-database:5432/fileservice"` |
+ | common.escrowSubgraph.queryUrl |  | string | `"https://localhost:8080/escrow"` |
+ | common.escrowSubgraph.serveSubgraph |  | bool | `false` |
+ | common.escrowSubgraph.syncingInterval |  | int | `60` |
+ | common.graphNetwork.chainId |  | int | `411614` |
+ | common.graphNetwork.id |  | int | `1` |
+ | common.graphNode.queryBaseUrl |  | string | `"http://localhost:8000"` |
+ | common.graphNode.statusUrl |  | string | `"http://localhost:8030/graphql"` |
+ | common.indexer.address |  | string | `"0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"` |
+ | common.indexer.operatorMnemonic |  | string | `"ice palace drill gadget biology glow tray equip heavy wolf toddler menu"` |
+ | common.networkSubgraph.queryUrl |  | string | `"https://localhost:8080/network"` |
+ | common.networkSubgraph.serveAuthToken |  | string | `"it-is-serving-network-subgraph-data"` |
+ | common.networkSubgraph.serveSubgraph |  | bool | `false` |
+ | common.networkSubgraph.syncingInterval |  | int | `60` |
+ | common.scalar.chainId |  | int | `421614` |
+ | common.scalar.receiptsVerifierAddress |  | string | `"0xfC24cE7a4428A6B89B52645243662A02BA734ECF"` |
+ | common.server.freeQueryAuthToken |  | string | `"free-token"` |
+ | common.server.urlPrefix |  | string | `"/"` |
+ | commonEscrowSubgraphConfigTemplate |  | string | `"{{- with .Values.common.escrowSubgraph }}\nquery_url = {{ .queryUrl \| quote }}\nsyncing_interval = {{ .syncingInterval \| toJson }}\nserve_subgraph = {{ .serveSubgraph \| toJson }}\n{{- end }}\n"` |
+ | commonGraphNetworkConfigTemplate |  | string | `"{{- with .Values.common.graphNetwork }}\nid = {{ .id \| toJson }}\nchain_id = {{ .chainId \| toJson }}\n{{- end }}\n"` |
+ | commonGraphNodeConfigTemplate |  | string | `"{{- with .Values.common.graphNode }}\nstatus_url = {{ .statusUrl \| quote }}\nquery_base_url = {{ .queryBaseUrl \| quote }}\n{{- end }}\n"` |
+ | commonIndexerConfigTemplate |  | string | `"{{- with .Values.common.indexer }}\nindexer_address = {{ .address \| quote }}\noperator_mnemonic = {{ .operatorMnemonic \| quote }}\n{{- end }}\n"` |
+ | commonNetworkSubgraphConfigTemplate |  | string | `"{{- with .Values.common.networkSubgraph }}\nquery_url = {{ .queryUrl \| quote }}\nsyncing_interval = {{ .syncingInterval \| toJson }}\nserve_subgraph = {{ .serveSubgraph \| toJson }}\nserve_auth_token = {{ .serveAuthToken \| quote }}\n{{- end }}\n"` |
+ | commonScalarConfigTemplate |  | string | `"{{- with .Values.common.scalar }}\nchain_id = {{ .chainId \| toJson }}\nreceipts_verifier_address = {{ .receiptsVerifierAddress \| quote }}\n{{- end }}\n"` |
+ | commonServerConfigTemplate |  | string | `"{{- with .Values.common.server }}\nurl_prefix = {{ .urlPrefix \| quote }}\nfree_query_auth_token = {{ .freeQueryAuthToken \| quote }}\n{{- end }}\nhost_and_port = {{ printf \"%v:%v\" \"0.0.0.0\" (index .Values.service.ports \"http-api\" ) \| quote }}\nmetrics_host_and_port = {{ printf \"%v:%v\" \"0.0.0.0\" ( index .Values.service.ports \"http-metrics\" ) \| quote }}\n"` |
+ | configTemplate | The configuration template that is rendered by Helm | string | See default template in [values.yaml](values.yaml) |
+ | env |  | object | `{}` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | fullnameOverride |  | string | `""` |
- | image | Image for subgraph-radio | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphops/subgraph-radio","tag":""}` |
+ | image | Image for file-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphops/file-service","tag":""}` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | nameOverride |  | string | `""` |
  | nodeSelector |  | object | `{}` |
- | p2pNodePort.discv5Port | Discv5 NodePort to be used. Must be unique. | int | `32766` |
- | p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
- | p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | p2pNodePort.wakuPort | Waku NodePort to be used. Must be unique. | int | `32767` |
  | podAnnotations | Annotations for the `Pod` | object | `{}` |
  | podSecurityContext | Pod-wide security context | object | `{}` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
@@ -83,18 +97,31 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
  | resources |  | object | `{}` |
  | secretEnv |  | object | `{}` |
- | service.ports.http-api | Service Port to expose JSON-RPC interface on | int | `7700` |
- | service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `2384` |
+ | server.adminAuthToken |  | string | `"kueen"` |
+ | server.adminHost |  | string | `"0.0.0.0"` |
+ | server.defaultPricePerByte |  | int | `1` |
+ | server.ipfsGateway |  | string | `"https://ipfs.network.thegraph.com"` |
+ | server.logFormat |  | string | `"Pretty"` |
+ | serverConfigTemplate | TOML configuration for redis | string | `"\ninitial_bundles = [\n    \"QmVPPWWaraEvoc4LCrYXtMbL13WPNbnuXV2yo7W8zexFGq:\",\n    \"QmeD3dRVV6Gs84TRwiNj3tLt9mBEMVqy3GoWm7WN8oDzGz:\",\n    \"QmTSwj1BGkkmVSnhw6uEGkcxGZvP5nq4pDhzHjwJvsQC2Z:\"\n]\ninitial_files = []\nadmin_auth_token = {{ .Values.server.adminAuthToken \| quote }}\nadmin_host_and_port = {{ printf \"%v:%v\" \"0.0.0.0\" ( index .Values.service.ports \"http-admin\" ) \| quote }}\ndefault_price_per_byte = {{ .Values.server.defaultPricePerByte \| toJson }}\nipfs_gateway = {{ .Values.server.ipfsGateway \| quote }}\nlog_format = {{ .Values.server.logFormat \| quote }}\n{{- with .Values.storage.filesystem }}\n{{- if .enabled }}\n[server.storage_method.LocalFiles]\nmain_dir = {{ .dir \| quote }}\n{{- end }}\n{{- end }}\n{{- with .Values.storage.objectStorage }}\n{{- if .enabled }}\n[server.storage_method.ObjectStorage]\nregion = {{ .region \| quote }}\nbucket = {{ .bucket \| quote }}\naccess_key_id = {{ .accessKeyId \| toJson }}\nsecret_key = {{ .secretAccessKey \| toJson }}\nendpoint = {{ .endpoint \| quote }}\n{{- end }}\n{{- end }}\n"` |
+ | service.ports.http-admin | Service Port to expose Admin API on | int | `5665` |
+ | service.ports.http-api | Service Port to expose service interface on | int | `5679` |
+ | service.ports.http-metrics | Service Port to expose metrics on | int | `5680` |
  | service.topologyAwareRouting.enabled |  | bool | `false` |
  | service.type |  | string | `"ClusterIP"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
+ | storage.filesystem.dir |  | string | `"./../example-file"` |
+ | storage.filesystem.enabled |  | bool | `false` |
+ | storage.filesystem.existingVolumeClaim |  | string | `""` |
+ | storage.objectStorage.accessKeyId |  | string | `""` |
+ | storage.objectStorage.bucket |  | string | `"contain-texture-dragon"` |
+ | storage.objectStorage.enabled |  | bool | `true` |
+ | storage.objectStorage.endpoint |  | string | `"https://ams3.digitaloceanspaces.com"` |
+ | storage.objectStorage.region |  | string | `"ams3"` |
+ | storage.objectStorage.secretAccessKey |  | string | `""` |
  | terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | tolerations |  | list | `[]` |
- | volumeClaimSpec.accessModes[0] |  | string | `"ReadWriteOnce"` |
- | volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"50Gi"` |
- | volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `""` |
 
 ## Contributing
 

@@ -1,5 +1,5 @@
 {{- $values := $.Values }}
-{{- $isStatefulSet := include "file-service.kindIsStatefulSet" . | fromJson }}
+{{- $isStatefulSet := eq (include "file-service.kindIsStatefulSet" .) "true" }}
 {{/* START Deployment/StatefulSet */}}
 ---
 apiVersion: apps/v1
@@ -43,12 +43,24 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "file-service.fullname" . }}-config
+        {{- if $isStatefulSet }}
+        - name: file-service-data
+          persistentVolumeClaim:
+            claimName: {{ $values.storage.filesystem.existingVolumeClaim }}
+        {{- end }}
       containers:
         - name: file-service
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           securityContext: {}
           volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
             {{- if $isStatefulSet }}
             - name: file-service-data
               mountPath: "/data"
@@ -74,17 +86,17 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
-          {{- with $values.extraArgs }}
           args:
+            - --config=/config/config.toml
+          {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
           ports:
-          - name: http-metrics
-            containerPort: 2384
-            protocol: TCP
-          - name: http-api
-            containerPort: 7700
-            protocol: TCP
+          {{- range $key, $val := $values.service.ports }}
+            - name: {{ $key }}
+              containerPort: {{ $val }}
+              protocol: TCP
+          {{- end }}
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}

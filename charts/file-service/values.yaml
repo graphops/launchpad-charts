@@ -14,11 +14,11 @@ service:
   ports:
     # Valid keys are names of ports that are exposed by the Pod that (see templates/file-service/workload.yaml)
     # -- Service Port to expose service interface on
-    http-api: "5679"
+    http-api: 5679
     # -- Service Port to expose Admin API on
-    http-admin: "5665"
+    http-admin: 5665
     # -- Service Port to expose metrics on
-    http-metrics: "5680"
+    http-metrics: 5680
 
 rbac:
   # -- Specifies whether RBAC resources are to be created
@@ -170,20 +170,13 @@ storage:
   filesystem:
     enabled: false
     dir: "./../example-file"
-    volumeClaimSpec:
-      accessModes: ["ReadWriteOnce"]
-      # -- The storage class to use when provisioning a persistent volume
-      storageClassName: ""
-      resources:
-        requests:
-          # -- The amount of disk space to provision
-          storage: 50Gi
+    existingVolumeClaim: ""
   objectStorage:
     enabled: true
     region: "ams3"
     bucket: "contain-texture-dragon"
-    accessKeyId: []
-    secretAccessKey: []
+    accessKeyId: ""
+    secretAccessKey: ""
     endpoint: "https://ams3.digitaloceanspaces.com"
 
 server:
@@ -204,7 +197,7 @@ common:
     statusUrl: "http://localhost:8030/graphql"
     queryBaseUrl: "http://localhost:8000"
   database:
-    postgresUrl: "postgres://postgres@postgres:5432"
+    postgresUrl: "postgres://fileservice:XXXXXX@file-service-database:5432/fileservice"
   networkSubgraph:
     queryUrl: "https://localhost:8080/network"
     syncingInterval: 60
@@ -218,18 +211,20 @@ common:
     id: 1
     chainId: 411614
   scalar:
-    chain_id: 421614
+    chainId: 421614
     receiptsVerifierAddress: "0xfC24cE7a4428A6B89B52645243662A02BA734ECF"
 
 # -- TOML configuration for redis
 serverConfigTemplate: |
+
   initial_bundles = [
       "QmVPPWWaraEvoc4LCrYXtMbL13WPNbnuXV2yo7W8zexFGq:",
       "QmeD3dRVV6Gs84TRwiNj3tLt9mBEMVqy3GoWm7WN8oDzGz:",
       "QmTSwj1BGkkmVSnhw6uEGkcxGZvP5nq4pDhzHjwJvsQC2Z:"
   ]
+  initial_files = []
   admin_auth_token = {{ .Values.server.adminAuthToken | quote }}
-  admin_host_and_port = "{{ printf "%s:%s" "0.0.0.0" ( index .Values.service.ports "adminPort" ) | quote }}"
+  admin_host_and_port = {{ printf "%v:%v" "0.0.0.0" ( index .Values.service.ports "http-admin" ) | quote }}
   default_price_per_byte = {{ .Values.server.defaultPricePerByte | toJson }}
   ipfs_gateway = {{ .Values.server.ipfsGateway | quote }}
   log_format = {{ .Values.server.logFormat | quote }}
@@ -253,10 +248,10 @@ serverConfigTemplate: |
 commonServerConfigTemplate: |
   {{- with .Values.common.server }}
   url_prefix = {{ .urlPrefix | quote }}
-  free_query_auth_token = {{ freeQueryAuthToken | quote }}
+  free_query_auth_token = {{ .freeQueryAuthToken | quote }}
   {{- end }}
-  host_and_port = {{ join "%s:%s" "0.0.0.0" (index .Values.service.ports "http-api" ) | quote }}
-  metrics_host_and_port = {{ join "%s:%s" "0.0.0.0" ( index .Values.service.ports "http-metrics" ) | quote }}
+  host_and_port = {{ printf "%v:%v" "0.0.0.0" (index .Values.service.ports "http-api" ) | quote }}
+  metrics_host_and_port = {{ printf "%v:%v" "0.0.0.0" ( index .Values.service.ports "http-metrics" ) | quote }}
 
 commonIndexerConfigTemplate: |
   {{- with .Values.common.indexer }}
@@ -278,7 +273,7 @@ commonNetworkSubgraphConfigTemplate: |
   serve_auth_token = {{ .serveAuthToken | quote }}
   {{- end }}
 
-commonEcrowSubgraphConfigTemplate: |
+commonEscrowSubgraphConfigTemplate: |
   {{- with .Values.common.escrowSubgraph }}
   query_url = {{ .queryUrl | quote }}
   syncing_interval = {{ .syncingInterval | toJson }}
@@ -287,7 +282,7 @@ commonEcrowSubgraphConfigTemplate: |
 
 commonGraphNetworkConfigTemplate: |
   {{- with .Values.common.graphNetwork }}
-  id = {{ .Id | toJson }}
+  id = {{ .id | toJson }}
   chain_id = {{ .chainId | toJson }}
   {{- end }}
 
@@ -301,28 +296,28 @@ commonScalarConfigTemplate: |
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
   [server]
-  {{ tpl .Values.serverConfigTemplate $ }}
+  {{- tpl .Values.serverConfigTemplate $ }}
   [common]
   [common.server]
-  {{ tpl .Values.commonServerConfigTemplate $ }}
+  {{- tpl .Values.commonServerConfigTemplate $ }}
 
   [common.indexer]
-  {{ tpl .Values.commonIndexerConfigTemplate $ }}
+  {{- tpl .Values.commonIndexerConfigTemplate $ }}
 
   [common.graph_node]
-  {{ tpl .Values.commonGraphNodeConfigTemplate $ }}
+  {{- tpl .Values.commonGraphNodeConfigTemplate $ }}
 
   [common.database]
-  postgres_url = "postgres://postgres@postgres:5432"
+  postgres_url = "postgres://fileservice:XXXXXX@file-service-database:5432/fileservice"
 
   [common.network_subgraph]
-  {{ tpl .Values.commonNetworkSubgraphConfigTemplate $ }}
+  {{- tpl .Values.commonNetworkSubgraphConfigTemplate $ }}
 
   [common.escrow_subgraph]
-  {{ tpl .Values.commonEscrowSubgraphConfigTemplate $ }}
+  {{- tpl .Values.commonEscrowSubgraphConfigTemplate $ }}
 
   [common.graph_network]
-  {{ tpl .Values.commonGraphNetworkConfigTemplate $ }}
+  {{- tpl .Values.commonGraphNetworkConfigTemplate $ }}
 
   [common.scalar]
-  {{ tpl .Values.commonScalarConfigTemplate $ }}
+  {{- tpl .Values.commonScalarConfigTemplate $ }}
