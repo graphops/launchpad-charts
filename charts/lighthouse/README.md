@@ -70,6 +70,12 @@ This project uses [Semantic Versioning](https://semver.org/). Changes to the ver
 
 We do not recommend that you upgrade the application by overriding `image.tag`. Instead, use the version of the Chart that is built for your desired `appVersion`.
 
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+|  | common | >= 0 |
+
 ## Values
 
 | Key | Description | Type | Default |

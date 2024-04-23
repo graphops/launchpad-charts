@@ -1,6 +1,6 @@
 {{- $values := $.Values.lighthouse }}
 {{- $componentName := "lighthouse" }}
-{{- $componentLabel := include "lighthouse.componentLabelFor" $componentName }}
+{{- $componentLabel := include "common.labels.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}
 {{- if $.Values.prometheus.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
@@ -8,13 +8,13 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
   jobLabel: "{{ .Release.Name }}"
   selector:
     matchLabels:
-      {{- include "lighthouse.selectorLabels" . | nindent 6 }}
+      {{- include "common.labels.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
       serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:

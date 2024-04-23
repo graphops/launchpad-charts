@@ -1,12 +1,12 @@
 {{- $values := $.Values.lighthouse }}
 {{- $componentName := "lighthouse" }}
-{{- $componentLabel := include "lighthouse.componentLabelFor" $componentName }}
+{{- $componentLabel := include "common.labels.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-headless
+  name: {{ include "common.names.fullname" . }}-{{ $componentName }}-headless
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
   clusterIP: None # Headless service
@@ -34,7 +34,7 @@ spec:
       protocol: UDP
     {{- end }}
   selector:
-    {{- include "lighthouse.selectorLabels" . | nindent 4 }}
+    {{- include "common.labels.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 ---
 apiVersion: v1
@@ -48,9 +48,9 @@ metadata:
     service.kubernetes.io/topology-aware-hints: "auto"
     {{- end }}
   {{- end }}
-  name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}
+  name: {{ include "common.names.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
     serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
 spec:
@@ -79,5 +79,5 @@ spec:
       protocol: UDP
     {{- end }}
   selector:
-    {{- include "lighthouse.selectorLabels" . | nindent 4 }}
+    {{- include "common.labels.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}

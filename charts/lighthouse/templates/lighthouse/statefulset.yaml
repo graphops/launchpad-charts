@@ -1,24 +1,24 @@
 {{- $values := $.Values.lighthouse }}
 {{- $componentName := "lighthouse" }}
-{{- $componentLabel := include "lighthouse.componentLabelFor" $componentName }}
+{{- $componentLabel := include "common.labels.componentLabelFor" $componentName }}
 
 {{- $jwtEnabled := or $values.jwt.existingSecret $values.jwt.fromLiteral }}
-{{- $jwtSecretName := default (print (include "lighthouse.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretName := default (print (include "common.names.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
 {{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}
+  name: {{ include "common.names.fullname" . }}-{{ $componentName }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-headless
+  serviceName: {{ include "common.names.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ include "lighthouse.replicas" $values }}
   selector:
     matchLabels:
-      {{- include "lighthouse.selectorLabels" . | nindent 6 }}
+      {{- include "common.labels.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   volumeClaimTemplates:
     - metadata:
@@ -32,7 +32,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "lighthouse.selectorLabels" . | nindent 8 }}
+        {{- include "common.labels.selectorLabels" . | nindent 8 }}
         {{- $componentLabel | nindent 8 }}
         {{- with $values.extraLabels }}
         {{- toYaml . | nindent 8 }}
@@ -42,7 +42,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "lighthouse.serviceAccountName" . }}
+      serviceAccountName: {{ include "common.names.serviceAccountName" . }}
       {{- with $values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}

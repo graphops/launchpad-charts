@@ -5,7 +5,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "lighthouse.fullname" . }}-dashboards
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
     {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
 data:
 {{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}

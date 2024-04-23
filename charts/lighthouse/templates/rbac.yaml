@@ -3,47 +3,47 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
 rules:
 {{- toYaml .Values.rbac.rules | nindent 0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "lighthouse.serviceAccountName" . }}
+    name: {{ include "common.names.serviceAccountName" . }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
 rules:
 {{- toYaml .Values.rbac.clusterRules | nindent 0 }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
   labels:
-    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- include "common.labels.sharedLabels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "lighthouse.serviceAccountName" . }}
+  name: {{ include "common.names.serviceAccountName" . }}
 subjects:
   - kind: ServiceAccount
-    name: {{ include "lighthouse.serviceAccountName" . }}
+    name: {{ include "common.names.serviceAccountName" . }}
     namespace: {{ .Release.Namespace }}
 {{- end }}
