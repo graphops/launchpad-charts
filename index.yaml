@@ -246,6 +246,16 @@ entries:
       version: 0.1.2
   celo:
     - apiVersion: v2
+      appVersion: 1.8.4
+      created: "2024-04-24T11:39:03Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: 6c310836dc8366fa59da3d9e3c2ad90e735dfcaa1c3eef838a75966a3b9fca47
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.4/celo-0.1.4.tgz
+      version: 0.1.4
+    - apiVersion: v2
       appVersion: 1.8.3
       created: "2024-04-23T23:08:21Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
@@ -2187,4 +2197,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-04-23T23:15:54.751244449Z"
+generated: "2024-04-24T11:42:06.344725789Z"
