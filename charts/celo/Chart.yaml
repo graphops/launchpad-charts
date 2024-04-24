@@ -22,4 +22,4 @@ version: 0.1.3
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=us.gcr.io/celo-org/geth
-appVersion: "1.8.3"
+appVersion: "1.8.4"
