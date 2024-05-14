@@ -68,6 +68,9 @@ graphNodeDefaults:
   # -- Enable the group
   enabled: true
 
+  # -- Workload kind, as one may want to use Deployment for query-nodes
+  kind: StatefulSet
+
   # -- The number of nodes to run in the group
   replicaCount: 1
 
