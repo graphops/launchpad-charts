@@ -54,7 +54,7 @@ data:
 {{/* START StatefulSet/Deployment */}}
 ---
 apiVersion: apps/v1
-kind: $values.kind
+kind: {{ $values.kind }}
 metadata:
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
