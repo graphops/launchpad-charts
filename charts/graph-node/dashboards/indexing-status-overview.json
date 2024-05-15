@@ -421,7 +421,6 @@
         }
       ],
       "title": "Subgraph Sync Rate for ${namespace} (blocks/minute)",
-      "transformations": [],
       "type": "timeseries"
     },
     {
@@ -683,7 +682,6 @@
         "y": 20
       },
       "id": 44,
-      "links": [],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -920,7 +918,6 @@
         }
       ],
       "title": "Subgraph Fatal Errors for ${namespace}",
-      "transformations": [],
       "type": "table"
     },
     {
@@ -1063,8 +1060,7 @@
             },
             "properties": [
               {
-                "id": "custom.width",
-                "value": null
+                "id": "custom.width"
               }
             ]
           }
@@ -1077,7 +1073,6 @@
         "y": 48
       },
       "id": 45,
-      "links": [],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -1261,7 +1256,6 @@
       },
       "id": 2,
       "interval": "10s",
-      "links": [],
       "maxDataPoints": 100,
       "options": {
         "cellHeight": "sm",
@@ -1354,8 +1348,7 @@
                 "id": "custom.align"
               },
               {
-                "id": "custom.width",
-                "value": null
+                "id": "custom.width"
               }
             ]
           },
@@ -1380,7 +1373,6 @@
         "y": 48
       },
       "id": 6,
-      "links": [],
       "options": {
         "cellHeight": "sm",
         "footer": {
@@ -1442,10 +1434,213 @@
         }
       ],
       "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 57
+      },
+      "id": 52,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "store_connection_wait_time_ms{namespace=\"${namespace}\"}",
+          "instant": false,
+          "legendFormat": "{{pod}}/{{shard}}/{{pool}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Store Connection Wait Time for ${namespace}",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 57
+      },
+      "id": 53,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "last"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "store_connection_checkout_count{namespace=\"${namespace}\"}",
+          "instant": false,
+          "legendFormat": "{{pod}}/{{shard}}/{{pool}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Store Connection Checkout Count for ${namespace}",
+      "type": "timeseries"
     }
   ],
   "refresh": "30s",
-  "schemaVersion": 38,
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
