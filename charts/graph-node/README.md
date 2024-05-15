@@ -286,7 +286,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.service.ports.http-status | Service Port to expose Graph Node Status endpoint on | int | `8030` |
  | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | graphNodeDefaults.tolerations | Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) | list | `[]` |
- | graphNodeGroups | Groups of Graph Nodes to deploy | object | `{"block-ingestor":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":[],"replicaCount":1},"index":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":["default"],"replicaCount":1},"query":{"enabled":true,"env":{"node_role":"query-node"},"replicaCount":1}}` |
+ | graphNodeGroups | Groups of Graph Nodes to deploy | object | `{"block-ingestor":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":[],"replicaCount":1,"terminationGracePeriodSeconds":"0"},"index":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":["default"],"replicaCount":1,"terminationGracePeriodSeconds":"0"},"query":{"enabled":true,"env":{"node_role":"query-node"},"replicaCount":1}}` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for Graph Node | string | `"graphprotocol/graph-node"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
