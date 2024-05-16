@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.2](https://img.shields.io/badge/Version-0.4.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.34.1](https://img.shields.io/badge/AppVersion-v0.34.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.34.1](https://img.shields.io/badge/AppVersion-v0.34.1-informational?style=flat-square)
 
 ## Introduction
 
@@ -258,7 +258,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.datasourcesGraphNodeGroupName | Name of the Graph Node group that should be used to create Grafana Data Sources | string | `"block-ingestor"` |
  | grafana.datasourcesSecretLabel | Must match `sidecar.datasources.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_datasource"` |
  | grafana.datasourcesSecretLabelValue | Must match `sidecar.datasources.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
- | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"topologyAwareRouting":{"enabled":false},"type":"ClusterIP"},"terminationGracePeriodSeconds":60,"tolerations":[]}` |
+ | graphNodeDefaults | Default values for all Group Node Groups | object | `{"affinity":{},"affinityPresets":{"antiAffinityByHostname":true},"enabled":true,"env":{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432},"extraArgs":[],"includeInIndexPools":[],"kind":"StatefulSet","nodeSelector":{},"podAnnotations":{},"podSecurityContext":{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337},"replicaCount":1,"resources":{},"secretEnv":{"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}},"service":{"ports":{"http-admin":8020,"http-metrics":8040,"http-query":8000,"http-queryws":8001,"http-status":8030},"topologyAwareRouting":{"enabled":false},"type":"ClusterIP"},"terminationGracePeriodSeconds":0,"terminationGracePeriodSecondsQueryNodes":60,"tolerations":[]}` |
  | graphNodeDefaults.affinityPresets.antiAffinityByHostname | Create anti-affinity rule to deter scheduling replicas on the same host | bool | `true` |
  | graphNodeDefaults.enabled | Enable the group | bool | `true` |
  | graphNodeDefaults.env | Environment variable defaults for all Graph Node groups | object | `{"IPFS":"","PRIMARY_SUBGRAPH_DATA_PGDATABASE":"","PRIMARY_SUBGRAPH_DATA_PGHOST":"","PRIMARY_SUBGRAPH_DATA_PGPORT":5432}` |
@@ -268,6 +268,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.env.PRIMARY_SUBGRAPH_DATA_PGPORT | Port for the primary shard PostgreSQL server | int | `5432` |
  | graphNodeDefaults.extraArgs | Additional CLI arguments to pass to Graph Node | list | `[]` |
  | graphNodeDefaults.includeInIndexPools | List of Index Pools to include nodes in the group in | list | `[]` |
+ | graphNodeDefaults.kind | Workload kind, as one may want to use Deployment for query-nodes | string | `"StatefulSet"` |
  | graphNodeDefaults.nodeSelector | Specify a [node selector](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) | object | `{}` |
  | graphNodeDefaults.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | graphNodeDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -283,7 +284,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.service.ports.http-query | Service Port to expose Graph Node Query endpoint on | int | `8000` |
  | graphNodeDefaults.service.ports.http-queryws | Service Port to expose Graph Node Websocket Query endpoint on | int | `8001` |
  | graphNodeDefaults.service.ports.http-status | Service Port to expose Graph Node Status endpoint on | int | `8030` |
- | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
+ | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process, graph-node ignores SIGTERM (check here: https://github.com/graphops/launchpad-charts/issues/287, and here: https://github.com/graphprotocol/graph-node/issues/4712) | int | `0` |
+ | graphNodeDefaults.terminationGracePeriodSecondsQueryNodes | terminationGracePeriodSeconds specifically for query nodes, which will be identified by the env.node_role parameter defined in the GraphNodeGroups section. | int | `60` |
  | graphNodeDefaults.tolerations | Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) | list | `[]` |
  | graphNodeGroups | Groups of Graph Nodes to deploy | object | `{"block-ingestor":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":[],"replicaCount":1},"index":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":["default"],"replicaCount":1},"query":{"enabled":true,"env":{"node_role":"query-node"},"replicaCount":1}}` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |

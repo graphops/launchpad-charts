@@ -51,10 +51,10 @@ data:
 {{/* The outer range seems to mess with the inner context and break helpers.
        The with below resets the inner context to the root ($) */}}
 {{- with $ }}
-{{/* START StatefulSet */}}
+{{/* START StatefulSet/Deployment */}}
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: {{ $values.kind }}
 metadata:
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
   labels:
@@ -63,7 +63,9 @@ metadata:
 spec:
   serviceName: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
+  {{- if (eq $values.kind "StatefulSet") }}
   podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  {{- end }}
   updateStrategy:
     type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     # Requires k8s 1.24+
@@ -94,7 +96,11 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if (eq $values.env.node_role "query-node") }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSecondsQueryNode | default "60" }}
+      {{- else }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "0" }}
+      {{- end }}
       volumes:
         - name: config
           configMap:
@@ -297,7 +303,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{/* END StatefulSet */}}
+{{/* END StatefulSet/Deployment */}}
 {{/* START Services */}}
 ---
 apiVersion: v1
