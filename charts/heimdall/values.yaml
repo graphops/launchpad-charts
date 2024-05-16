@@ -36,7 +36,7 @@ heimdall:
   enabled: true
   image:
     # -- Image for Heimdall
-    repository: maticnetwork/heimdall
+    repository: 0xpolygon/heimdall
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion

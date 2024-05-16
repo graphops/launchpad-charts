@@ -2,7 +2,7 @@
 
 Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.1.4](https://img.shields.io/badge/Version-1.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.3](https://img.shields.io/badge/AppVersion-v1.0.3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.1.4](https://img.shields.io/badge/Version-1.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.5](https://img.shields.io/badge/AppVersion-v1.0.5-informational?style=flat-square)
 
 ## Features
 
@@ -63,7 +63,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.enabled | Enable creation of `StatefulSet` for Heimdall | bool | `true` |
  | heimdall.env | Environment variables to set in key/value format | object | `{}` |
  | heimdall.image.pullPolicy |  | string | `"IfNotPresent"` |
- | heimdall.image.repository | Image for Heimdall | string | `"maticnetwork/heimdall"` |
+ | heimdall.image.repository | Image for Heimdall | string | `"0xpolygon/heimdall"` |
  | heimdall.image.tag | Overrides the image tag | string | Chart.appVersion |
  | heimdall.nodeSelector |  | object | `{}` |
  | heimdall.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
