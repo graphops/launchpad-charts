@@ -96,7 +96,11 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if (eq $values.env.node_role "query-node") }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSecondsQueryNode | default "60" }}
+      {{- else }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "0" }}
+      {{- end }}
       volumes:
         - name: config
           configMap:
