@@ -83,12 +83,11 @@ graphNodeDefaults:
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
   # can lead to data integrity issues
-  # -- Amount of time to wait before force-killing the Erigon process
-  # graph-node ignores SIGTERM (check here: https://github.com/graphops/launchpad-charts/issues/287, and here: https://github.com/graphprotocol/graph-node/issues/4712)
+  # -- Amount of time to wait before force-killing the Erigon process, graph-node ignores SIGTERM (check here: https://github.com/graphops/launchpad-charts/issues/287, and here: https://github.com/graphprotocol/graph-node/issues/4712)
   terminationGracePeriodSeconds: 0
   # Since graph-node could get fixed to at least use SIGTERM to stop taking new queries
   # but wait to finish the existing ones, allow for a grace period specifically on query nodes.
-  # Query nodes will be identified by the env.node_role parameter defined in the GraphNodeGroups section.
+  # -- terminationGracePeriodSeconds specifically for query nodes, which will be identified by the env.node_role parameter defined in the GraphNodeGroups section.
   terminationGracePeriodSecondsQueryNodes: 60
 
   # -- Annotations for the `Pod`

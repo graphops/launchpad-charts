@@ -284,7 +284,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | graphNodeDefaults.service.ports.http-query | Service Port to expose Graph Node Query endpoint on | int | `8000` |
  | graphNodeDefaults.service.ports.http-queryws | Service Port to expose Graph Node Websocket Query endpoint on | int | `8001` |
  | graphNodeDefaults.service.ports.http-status | Service Port to expose Graph Node Status endpoint on | int | `8030` |
- | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process graph-node ignores SIGTERM (check here: https://github.com/graphops/launchpad-charts/issues/287, and here: https://github.com/graphprotocol/graph-node/issues/4712) | int | `0` |
+ | graphNodeDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process, graph-node ignores SIGTERM (check here: https://github.com/graphops/launchpad-charts/issues/287, and here: https://github.com/graphprotocol/graph-node/issues/4712) | int | `0` |
+ | graphNodeDefaults.terminationGracePeriodSecondsQueryNodes | terminationGracePeriodSeconds specifically for query nodes, which will be identified by the env.node_role parameter defined in the GraphNodeGroups section. | int | `60` |
  | graphNodeDefaults.tolerations | Specify [tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) | list | `[]` |
  | graphNodeGroups | Groups of Graph Nodes to deploy | object | `{"block-ingestor":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":[],"replicaCount":1},"index":{"enabled":true,"env":{"node_role":"index-node"},"includeInIndexPools":["default"],"replicaCount":1},"query":{"enabled":true,"env":{"node_role":"query-node"},"replicaCount":1}}` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
