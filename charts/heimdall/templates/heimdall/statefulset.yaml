@@ -50,7 +50,7 @@ spec:
             name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
       initContainers:
         - name: {{ $componentName }}-init
-          image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           # securityContext:
           #   readOnlyRootFilesystem: false
