@@ -22,4 +22,4 @@ version: 0.3.4
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=offchainlabs/nitro-node
-appVersion: "v2.3.3-6a1c1a7"
+appVersion: "v2.3.4-b4cc111"
