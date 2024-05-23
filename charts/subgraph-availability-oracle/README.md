@@ -53,7 +53,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | aliases | Set custom aliases for preconfigured commands in your environment | object | `{}` |
  | env.ORACLE_IPFS | URL for IPFS node | string | `""` |
  | env.ORACLE_SUBGRAPH | URL for Oracle Subgraph | string | `""` |
- | env.REWARDS_MANAGER_CONTRACT | The address of the Rewards Manager contract | string | `""` |
  | env.RPC_URL | URL for the JSON-RPC endpoint | string | `""` |
  | env.RUST_LOG | RUST_LOG level | string | `"info"` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |

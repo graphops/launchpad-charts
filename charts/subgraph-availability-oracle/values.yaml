@@ -73,7 +73,7 @@ image:
 
 env:
   # -- The address of the Rewards Manager contract
-  REWARDS_MANAGER_CONTRACT: ""
+  # REWARDS_MANAGER_CONTRACT: ""
   # -- URL for the JSON-RPC endpoint
   RPC_URL: ""
   # -- URL for IPFS node
