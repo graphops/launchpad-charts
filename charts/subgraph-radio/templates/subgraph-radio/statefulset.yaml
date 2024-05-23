@@ -123,7 +123,7 @@ spec:
               value: "7700"
           {{- with $values.env }}
           {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
+          {{- if (and $val (not (kindIs "invalid" $val))) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
