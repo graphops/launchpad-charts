@@ -147,3 +147,6 @@ heimdall:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
+
+  # -- Enable a readiness probe that checks if heimdall is synced
+  readyAfterSync: false

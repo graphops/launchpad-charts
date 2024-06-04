@@ -75,6 +75,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |
+ | heimdall.readyAfterSync | Enable a readiness probe that checks if heimdall is synced | bool | `false` |
  | heimdall.resources |  | object | `{}` |
  | heimdall.service.ports.http-metrics |  | int | `26660` |
  | heimdall.service.ports.http-rest |  | int | `1317` |
