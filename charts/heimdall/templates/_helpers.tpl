@@ -103,6 +103,12 @@ Generate the array of options for heimdall
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}
 {{- $args = concat $args (list (print "--log_level=" ( print .logLevel | quote ) )) }}
 {{- $args = concat $args (list (print "--logs-type=" ( print .logsType | quote ) )) }}
+{{- if .borRpcUrl }}
+{{- $args = concat $args (list (print "--bor_rpc_url=" ( print .borRpcUrl | quote ) )) }}
+{{- end }}
+{{- if .ethRpcUrl }}
+{{- $args = concat $args (list (print "--eth_rpc_url=" ( print .ethRpcUrl | quote ) )) }}
+{{- end }}
 {{- $args = concat $args .extraArgs }}
 {{- end }}
 {{ dict "computedArgs" $args | toJson }}

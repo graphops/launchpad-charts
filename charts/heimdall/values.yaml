@@ -56,6 +56,10 @@ heimdall:
     name: ""
     # -- CORS Allowed Origins
     corsAllowedOrigins: '["*"]'
+    # -- Bor RPC address
+    borRpcUrl: ""
+    # -- Ethereum RPC address
+    ethRpcUrl: ""
     # -- Log level setup
     logLevel: "main:info,state:info,*:error"
     # -- Logs format
