@@ -50,3 +50,28 @@ spec:
     {{- include "heimdall.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 {{- end }}
+{{- if $values.p2pNodePort.enabled }}
+{{- $port := $values.p2pNodePort.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}-p2p-0
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    pod: {{ include "heimdall.fullname" . }}-{{ $componentName }}-0
+    type: p2p # this label is used by the initContainer to select this service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: tcp-p2p
+      port: {{ $port }}
+      protocol: TCP
+      targetPort: tcp-p2p
+      nodePort: {{ $port }}
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "heimdall.fullname" $ }}-{{ $componentName }}-0"
+{{- end }}
