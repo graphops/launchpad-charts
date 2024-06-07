@@ -58,12 +58,6 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: "1"
-  # -- Enable creation of Grafana Data Sources for each Graph Node store using an init container
-  datasources: false
-  # -- Must match `sidecar.datasources.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
-  datasourcesSecretLabel: grafana_datasource
-  # -- Must match `sidecar.datasources.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
-  datasourcesSecretLabelValue: "1"
 
 serviceAccount:
   # -- Specifies whether a service account should be created
