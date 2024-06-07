@@ -1,29 +1,11 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    },
-    {
-      "name": "DS_LOKI",
-      "label": "Loki",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "loki",
-      "pluginName": "Loki"
-    }
-  ],
   "__elements": {},
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": ""
+      "version": "9.5.17"
     },
     {
       "type": "panel",
@@ -137,7 +119,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
@@ -213,7 +195,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
@@ -287,7 +269,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
@@ -371,6 +353,7 @@
             "type": "loki",
             "uid": "${DS_LOKI}"
           },
+          "editorMode": "code",
           "expr": "{pod=\"$pod\"}",
           "queryType": "range",
           "refId": "A"
@@ -403,7 +386,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -417,7 +399,6 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -439,8 +420,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -616,7 +596,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -630,7 +609,6 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -652,8 +630,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -755,7 +732,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -769,7 +745,6 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -793,8 +768,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -847,43 +821,6 @@
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {
-          "priority": "high"
-        },
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "keep_state",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Network: Availability Oracle is down",
-        "noDataState": "alerting",
-        "notifications": []
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -894,7 +831,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -908,7 +844,6 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -932,8 +867,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "transparent",
@@ -996,7 +930,6 @@
             "mode": "palette-classic"
           },
           "custom": {
-            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1010,7 +943,6 @@
               "tooltip": false,
               "viz": false
             },
-            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1034,8 +966,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1103,22 +1034,40 @@
   ],
   "refresh": "",
   "revision": 1,
-  "schemaVersion": 39,
+  "schemaVersion": 38,
+  "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
           "selected": false,
-          "text": "Prometheus",
+          "text": "prometheus",
           "value": "prometheus"
         },
         "hide": 0,
         "includeAll": false,
         "multi": false,
-        "name": "data_source",
+        "name": "DS_PROMETHEUS",
         "options": [],
         "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "loki",
+          "value": "loki"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_LOKI",
+        "options": [],
+        "query": "loki",
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
