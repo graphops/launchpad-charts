@@ -14,6 +14,7 @@ spec:
       {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 6 }}
   endpoints:
   - port: http-metrics
+    path: /
     {{- with .Values.prometheus.serviceMonitors.interval }}
     interval: {{ . }}
     {{- end }}
