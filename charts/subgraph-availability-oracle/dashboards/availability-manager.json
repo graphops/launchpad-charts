@@ -1,4 +1,43 @@
 {
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.5.17"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -25,14 +64,14 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 13,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -80,12 +119,12 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -107,7 +146,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -156,12 +195,12 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "disableTextWrap": false,
           "editorMode": "code",
@@ -183,7 +222,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -230,12 +269,12 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "",
+      "pluginVersion": "9.5.17",
       "targets": [
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -252,7 +291,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "EykLyXuMz"
+        "uid": "${DS_LOKI}"
       },
       "gridPos": {
         "h": 14,
@@ -275,10 +314,10 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "6dcf1464-00e7-496c-bb40-2e37c37fb954"
+            "uid": "${DS_LOKI}"
           },
           "editorMode": "code",
-          "expr": "{app=\"$pod\"}  |= `ERRO`",
+          "expr": "{pod=\"$pod\"} |~ \"(ERRO|no backends available for method)\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -289,7 +328,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "EykLyXuMz"
+        "uid": "${DS_LOKI}"
       },
       "gridPos": {
         "h": 14,
@@ -312,7 +351,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "EykLyXuMz"
+            "uid": "${DS_LOKI}"
           },
           "editorMode": "code",
           "expr": "{pod=\"$pod\"}",
@@ -320,7 +359,7 @@
           "refId": "A"
         }
       ],
-      "title": "Logs (hover and click \"x\" to go to explorer)",
+      "title": "All logs",
       "type": "logs"
     },
     {
@@ -339,7 +378,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -381,8 +420,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -463,7 +501,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -477,7 +515,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -491,7 +529,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -505,7 +543,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "increase(reconcile_runs_total{pod=\"$pod\"}[1m])",
@@ -518,7 +556,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "increase(reconcile_runs_ok{pod=\"$pod\"}[1m])",
@@ -531,7 +569,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": false,
@@ -550,7 +588,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -592,8 +630,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -628,7 +665,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -642,7 +679,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -656,7 +693,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "increase(ipfs_requests_total{pod=\"$pod\"}[1m])",
@@ -669,7 +706,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "increase(ipfs_cache_hits{pod=\"$pod\"}[1m])",
@@ -687,7 +724,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -731,8 +768,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -769,7 +805,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -785,46 +821,9 @@
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {
-          "priority": "high"
-        },
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                1
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "keep_state",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Network: Availability Oracle is down",
-        "noDataState": "alerting",
-        "notifications": []
-      },
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -868,8 +867,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "transparent",
@@ -906,7 +904,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -924,7 +922,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "Prometheus"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -968,8 +966,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1006,7 +1003,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "exemplar": true,
@@ -1020,7 +1017,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "Prometheus"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "increase(denied_subgraphs_total{pod=\"$pod\"}[1m])",
@@ -1051,7 +1048,7 @@
         "hide": 0,
         "includeAll": false,
         "multi": false,
-        "name": "data_source",
+        "name": "DS_PROMETHEUS",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
@@ -1062,12 +1059,25 @@
       {
         "current": {
           "selected": false,
-          "text": "sao-subgraph-availability-oracle-0",
-          "value": "sao-subgraph-availability-oracle-0"
+          "text": "loki",
+          "value": "loki"
         },
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_LOKI",
+        "options": [],
+        "query": "loki",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "Prometheus"
+          "uid": "${DS_PROMETHEUS}"
         },
         "definition": "label_values(reconcile_runs_total{container=\"subgraph-availability-oracle\"},pod)",
         "hide": 0,
@@ -1093,8 +1103,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Availability Oracle",
+  "title": "Subgraph Availability Oracle",
   "uid": "",
-  "version": 15,
+  "version": 1,
   "weekStart": ""
 }
