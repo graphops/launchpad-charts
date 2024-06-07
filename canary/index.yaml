@@ -5556,6 +5556,17 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/resource-injector-0.1.0/resource-injector-0.1.0.tgz
       version: 0.1.0
+  subgraph-availability-oracle:
+    - apiVersion: v2
+      appVersion: latest
+      created: "2024-06-07T15:01:15Z"
+      description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
+      digest: 232435e81631180db40b95c4805e74039b98cbb695f3488001b1a98df2e936f3
+      name: subgraph-availability-oracle
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-availability-oracle-0.1.0/subgraph-availability-oracle-0.1.0.tgz
+      version: 0.1.0
   subgraph-radio:
     - apiVersion: v2
       appVersion: 1.0.6
@@ -6017,4 +6028,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-06-07T15:04:13.798200856Z"
+generated: "2024-06-07T15:08:49.55249889Z"
