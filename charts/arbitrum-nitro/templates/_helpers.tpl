@@ -76,6 +76,7 @@ Generate the array of options for nitro
 {{- $args := list
 "--persistent.chain=/storage/data"
 "--persistent.global-config=/storage"
+"--validation.wasm.allowed-wasm-module-roots=/home/user/nitro-legacy/machines,/home/user/target/machines"
 }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainUrl)) }}
