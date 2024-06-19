@@ -1,0 +1,140 @@
+{{- $values := .Values.grpc }}
+{{- $componentName := "grpc" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+{{- $configHash := "" }}
+{{- if $values.configMap.enabled }}
+
+{{/* Use the helper to merge additional flags and construct the template variables */}}
+{{- $configToml := include "firehose-evm.mergeConfig" ( merge ( deepCopy .Values ) ( dict "componentName" $componentName ) ) }}
+{{- $configHash = sha256sum $configToml }}
+
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  config.yaml: |-
+    start:
+      args:
+        - firehose
+      flags:
+{{- $configToml | trim | nindent 8 }}
+{{/* END ConfigMap */}}
+{{- end }}
+
+{{/* Now onto the actual Deployment for grpc */}}
+
+{{- $env := merge .Values.common.env $values.env }}
+{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
+
+{{/* START Deployment */}}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+  namespace: fh-eth-mainnet
+spec:
+  selector:
+    matchLabels:
+      {{- include "firehose-evm.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  serviceName: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicas }}
+  template:
+    metadata:
+      annotations:
+      {{- with $values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.configMap.enabled }}
+        checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
+      {{- else if not .Values.podAnnotations }}
+        # Add an empty line to ensure annotations block is created if it does not exist
+        {}
+      {{- end }}
+      labels:
+        {{- include "firehose-evm.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "firehose-evm.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "start"
+            - "-c"
+            - "/config/config.yaml"
+            {{- with $values.extraArgs }}
+              {{- toYaml (. | default list) | nindent 12 }}
+            {{- end }}
+          ports:
+          {{- range $port := $values.service.ports }}
+          - name: {{ $port.name }}
+            containerPort: {{ $port.containerPort }}
+            protocol: {{ $port.protocol | default "TCP" }}
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with $env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: grpc
+              mountPath: "/var/lib/fireeth"
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: grpc
+          emptyDir: {}
+        - name: config
+          configMap:
+            {{- if .Values.grpc.configMap.enabled }}
+            name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+            {{- else }}
+            name: {{ .Values.grpc.existingConfigMap }}
+            {{- end }}
+{{- end }}
+{{/* END Deployment */}}

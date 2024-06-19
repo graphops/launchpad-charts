@@ -1,0 +1,77 @@
+{{- $values := $.Values.reader }}
+{{- $componentName := "reader" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
+  namespace: fh-eth-mainnet
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  clusterIP: None # Headless service
+  ports:
+  {{- range $port := $values.service.ports }}
+    - port: {{ $port.containerPort }} # the port we expose on the Service, user configurable
+      targetPort: {{ $port.name }} # the name of the port on the container that we are routing to
+      protocol: {{ $port.protocol | default "TCP" }}
+      name: {{ $port.name }}
+  {{- end }}
+  selector:
+    {{- include "firehose-evm.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  namespace: fh-eth-mainnet
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $port := $values.service.ports }}
+    - port: {{ $port.containerPort }} # the port we expose on the Service, user configurable
+      targetPort: {{ $port.name }} # the name of the port on the container that we are routing to
+      protocol: {{ $port.protocol | default "TCP" }}
+      name: {{ $port.name }}
+  {{- end }}
+  selector:
+    {{- include "firehose-evm.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- if $values.p2pNodePort.enabled }}
+{{- $port := $values.p2pNodePort.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-p2p-0
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    pod: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-0
+    type: p2p # this label is used by the initContainer to select this service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: tcp-p2p
+      port: {{ include "reader.p2pPort" $values }}
+      protocol: TCP
+      targetPort: eth66-udp-p2p
+      nodePort: {{ $port }}
+    - name: udp-p2p
+      port: {{ include "reader.p2pPort" $values }}
+      protocol: UDP
+      targetPort: eth66-tcp-p2p
+      nodePort: {{ $port }}
+  selector:
+    {{- include "firehose-evm.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "firehose-evm.fullname" $ }}-{{ $componentName }}-0"
+{{- end }}
+{{- end }}

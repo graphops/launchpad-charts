@@ -1,0 +1,220 @@
+{{- $values := .Values.reader }}
+{{- $componentName := "reader" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+{{- $configHash := "" }}
+{{- if $values.configMap.enabled }}
+
+{{/* Use the helper to merge additional flags and construct the template variables */}}
+{{- $configToml := include "firehose-evm.mergeConfig" ( merge ( deepCopy .Values ) ( dict "componentName" $componentName ) ) -}}
+{{- $configHash = sha256sum $configToml }}
+{{- $readerConfig := include "firehose-evm.readerArgs" $values }}
+
+
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  config.yaml: |-
+    start:
+      args:
+        - reader-node
+      flags:
+{{- $configToml | trim | nindent 8 }}
+        reader-node-arguments: |
+{{- $readerConfig | nindent 10 }}
+{{- end }}
+{{/* END ConfigMap */}}
+
+{{/* Now onto the actual Deployment for grpc */}}
+
+{{- $env := merge .Values.common.env $values.env }}
+{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
+
+{{/* START Deployment */}}
+---
+
+{{/* Now onto the actual Statefulset for indexer */}}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "firehose-evm.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
+{{- $env := merge .Values.common.env $values.env }}
+{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
+
+{{/* START StatefulSet */}}
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+  namespace: fh-eth-mainnet
+spec:
+  selector:
+    matchLabels:
+      {{- include "firehose-evm.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  serviceName: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicas }}
+  volumeClaimTemplates:
+    - metadata:
+        name: reader
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+    - metadata:
+        name: reader-node
+      spec:
+        {{- toYaml $values.reader_node.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "firehose-evm.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "firehose-evm.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      initContainers:
+      {{- if $values.p2pNodePort.enabled }}
+        - name: init-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          command:
+            - sh
+            - -c
+            - >
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-p2p-0 -o jsonpath='{.spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "start"
+            - "-c"
+            - "/config/config.yaml"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/local/bin/eth-maintenance"]
+          ports:
+          {{- range $port := $values.service.ports }}
+          - name: {{ $port.name }}
+            containerPort: {{ $port.containerPort }}
+            protocol: {{ $port.protocol | default "TCP" }}
+          {{- end }}
+          {{- if $values.p2pNodePort.enabled }}
+          - name: eth66-udp-p2p
+            containerPort: {{ include "reader.p2pPort" $values }}
+            protocol: UDP
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with $env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- with $secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+
+          volumeMounts:
+            - name: reader
+              mountPath: "/var/lib/fireeth"
+            - name: reader-node
+              mountPath: "/var/lib/geth"
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+      volumes:
+        - name: reader
+          persistentVolumeClaim:
+            claimName: reader
+        - name: reader-node
+          persistentVolumeClaim:
+            claimName: reader-node
+        - name: config
+          configMap:
+            {{- if .Values.indexer.configMap.enabled }}
+            name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+            {{- else }}
+            name: {{ .Values.indexer.existingConfigMap }}
+            {{- end }}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+{{- end }}
+{{/* END StatefulSet */}}

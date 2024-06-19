@@ -1,0 +1,37 @@
+{{- $values := .Values.grpc }}
+{{- $componentName := "grpc" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+{{- if $values.prometheus.serviceMonitors.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  jobLabel: "{{ .Release.Name }}"
+  selector:
+    matchLabels:
+      {{- include "firehose-evm.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  endpoints:
+  - port: metrics-fh
+    path: /metrics
+    {{- with $values.prometheus.serviceMonitors.interval }}
+    interval: {{ . }}
+    {{- end }}
+    {{- with $values.prometheus.serviceMonitors.scrapeTimeout }}
+    scrapeTimeout: {{ . }}
+    {{- end }}
+    honorLabels: true
+    {{- if $values.prometheus.serviceMonitors.relabelings }}
+    relabelings:
+    {{- toYaml $values.prometheus.serviceMonitors.relabelings | nindent 8 }}
+    {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
