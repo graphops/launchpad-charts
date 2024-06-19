@@ -2,7 +2,7 @@
 
 Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.0](https://img.shields.io/badge/Version-0.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.6.0-geth-v1.13.15-fh2.4](https://img.shields.io/badge/AppVersion-v2.6.0--geth--v1.13.15--fh2.4-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.0](https://img.shields.io/badge/Version-0.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.6.2-geth-v1.13.15-fh2.4](https://img.shields.io/badge/AppVersion-v2.6.2--geth--v1.13.15--fh2.4-informational?style=flat-square)
 
 ## Introduction
 

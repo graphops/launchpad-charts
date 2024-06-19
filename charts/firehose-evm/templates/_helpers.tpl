@@ -88,7 +88,7 @@ This helper merges additional flags into the main configuration and constructs t
 {{- define "firehose-evm.readerArgs" -}}
 {{- $values := . -}}
 {{- $args := list
-"--authrpc.port=8547"
+"--authrpc.port=8551"
 "--authrpc.jwtsecret=/jwt/jwt.hex"
 "--authrpc.addr=0.0.0.0"
 "--authrpc.vhosts='*'"

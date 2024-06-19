@@ -22,4 +22,4 @@ version: 0.0.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=ghcr.io/streamingfast/firehose-ethereum
-appVersion: "v2.6.0-geth-v1.13.15-fh2.4"  # "v1.4.18-geth-v1.13.2-fh2.3"
+appVersion: "v2.6.2-geth-v1.13.15-fh2.4" 
