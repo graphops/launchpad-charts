@@ -2,7 +2,7 @@
 
 Deploy a Subgraph Availability Oracle into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: latest](https://img.shields.io/badge/AppVersion-latest-informational?style=flat-square)
 
 ## Introduction
 
@@ -54,6 +54,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | image | Image for subgraph-radio | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/availability-oracle","tag":""}` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
+ | livenessProbe | Define livenessProbe as needed | list | `[]` |
  | nameOverride |  | string | `""` |
  | nodeSelector |  | object | `{}` |
  | podAnnotations | Annotations for the `Pod` | object | `{}` |
@@ -66,6 +67,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
  | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
  | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
+ | readinessProbe | Define readinessProbe as needed | list | `[]` |
  | resources |  | object | `{}` |
  | secretEnv.ORACLE_SIGNING_KEY.key | Name of the data key in the secret that contains your Oracle Secret Key | string | `nil` |
  | secretEnv.ORACLE_SIGNING_KEY.secretName | Name of the secret that contains your Oracle Signing Key | string | `nil` |
