@@ -107,6 +107,12 @@ secretEnv:
 # -- Additional CLI arguments to pass to `indexer-agent`
 extraArgs: []
 
+# -- Define livenessProbe as needed
+livenessProbe: []
+
+# -- Define readinessProbe as needed
+readinessProbe: []
+
 # Increasing the grace termination period prevents Kubernetes
 # from killing the node process prematurely. Premature shutdown
 # can lead to data integrity issues
