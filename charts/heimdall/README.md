@@ -71,7 +71,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | heimdall.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | heimdall.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | heimdall.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
+ | heimdall.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.5.7"` |
  | heimdall.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | heimdall.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | heimdall.podSecurityContext | Pod-wide security context | object | `{"runAsNonRoot":false}` |
