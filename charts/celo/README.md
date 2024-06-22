@@ -70,7 +70,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | celo.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | celo.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | celo.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
+ | celo.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.0"` |
  | celo.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | celo.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
