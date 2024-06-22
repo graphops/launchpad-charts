@@ -123,7 +123,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nimbus.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | nimbus.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
+ | nimbus.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.21.11"` |
  | nimbus.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |

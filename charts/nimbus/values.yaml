@@ -166,7 +166,7 @@ nimbus:
         # -- Container image to fetch nodeport information
         repository: lachlanevenson/k8s-kubectl
         # -- Container tag
-        tag: v1.25.4
+        tag: v1.21.11
         # -- Container pull policy
         pullPolicy: IfNotPresent
 
