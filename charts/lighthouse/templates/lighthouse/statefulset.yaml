@@ -149,7 +149,7 @@ spec:
               {{- if $jwtEnabled }}
                 --execution-jwt=/jwt/jwt.hex \
               {{- end }}
-                --metrics=true \
+                --metrics \
                 --metrics-address=0.0.0.0 \
                 --metrics-port={{ index $values.service.ports "http-metrics" }} \
               {{- range $arg := $values.extraArgs }}
