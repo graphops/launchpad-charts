@@ -91,16 +91,12 @@ This helper merges additional flags into the main configuration and constructs t
 "--authrpc.port=8551"
 "--authrpc.jwtsecret=/jwt/jwt.hex"
 "--authrpc.addr=0.0.0.0"
-"--authrpc.vhosts='*'"
+"--authrpc.vhosts=*"
 "--datadir=/var/lib/geth"
 "--firehose-enabled"
 "--http"
-"--http.vhosts='*'"
+"--http.vhosts=*"
 }}
-{{- if .p2pNodePort.enabled }}
-{{- $args = concat $args (list (print "--port=" .p2pNodePort.port )) }}
-{{- $args = concat $args (list (print "--discovery.port=" .p2pNodePort.port )) }}
-{{- end }}
 {{- with .readerConfig }}
 {{- $args = concat $args (list (print "--syncmode=" .syncMode)) }}
 {{- $args = concat $args (list (print "--networkid=" .networkId)) }}
@@ -111,6 +107,13 @@ This helper merges additional flags into the main configuration and constructs t
 {{- end }}
 {{- if not .snapshot.enabled }}
 {{- $args := list "--snapshot=" "false" }}
+{{- end }}
+{{- if $values.p2pNodePort.enabled }}
+{{- $args = concat $args (list
+"--port=EXTERNAL_PORT" 
+"--discovery.port=EXTERNAL_PORT"
+"--nat=extip:EXTERNAL_IP"
+) }}
 {{- end }}
 {{- $args = concat $args (splitList " " .extraArgs) }}
 {{- end }}

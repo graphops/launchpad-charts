@@ -121,12 +121,16 @@ spec:
               export EXTERNAL_PORT=$(kubectl get services {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-p2p-0 -o jsonpath='{.spec.ports[0].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
               export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
-              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
-              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
-              cat /env/init-nodeport;
+              cp /config/config.yaml /etc/config/config.yaml;
+              sed -i "s|EXTERNAL_PORT|\"$EXTERNAL_PORT\"|g" /etc/config/config.yaml;
+              sed -i "s|EXTERNAL_IP|$EXTERNAL_IP|g" /etc/config/config.yaml;
+              cat /etc/config/config.yaml;
           volumeMounts:
-            - name: env-nodeport
-              mountPath: /env
+            - name: config
+              mountPath: /etc/config
+            - name: configmap
+              mountPath: /config
+              readOnly: true
       {{- end }}
       containers:
         - name: {{ $componentName }}
@@ -140,7 +144,7 @@ spec:
           args:
             - "start"
             - "-c"
-            - "/config/config.yaml"
+            - "/etc/config/config.yaml"
           lifecycle:
             preStop:
               exec:
@@ -187,9 +191,10 @@ spec:
             - name: jwt
               mountPath: /jwt
             {{- end }}
+            {{- if $values.p2pNodePort.enabled }}
             - name: config
-              mountPath: "/config"
-              readOnly: true
+              mountPath: /etc/config
+            {{- end }}
       volumes:
         - name: reader
           persistentVolumeClaim:
@@ -197,7 +202,7 @@ spec:
         - name: reader-node
           persistentVolumeClaim:
             claimName: reader-node
-        - name: config
+        - name: configmap
           configMap:
             {{- if .Values.indexer.configMap.enabled }}
             name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
@@ -213,7 +218,7 @@ spec:
                 path: jwt.hex
       {{- end }}
       {{- if $values.p2pNodePort.enabled }}
-        - name: env-nodeport
+        - name: config
           emptyDir: {}
       {{- end }}
 {{- end }}
