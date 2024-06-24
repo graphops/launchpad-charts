@@ -74,6 +74,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.0.2-9efbc16
+      created: "2024-06-24T00:33:52Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: c037ff3e359c9f1e33c83be8dececae53867430a07701e15b9aaf5d9edd1ee6e
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.4.1/arbitrum-nitro-0.4.1.tgz
+      version: 0.4.1
+    - apiVersion: v2
       appVersion: v3.0.0-e6f81cb
       created: "2024-06-10T23:34:49Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -1333,6 +1343,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v5.2.0
+      created: "2024-06-23T21:54:06Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: e822da65ee898b684e1b43dcca4e1568a75022ae38169e768658434551738225
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.7/lighthouse-0.5.7.tgz
+      version: 0.5.7
+    - apiVersion: v2
       appVersion: v5.1.3
       created: "2024-04-02T01:23:40Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -2398,4 +2418,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-06-20T00:53:43.702707407Z"
+generated: "2024-06-24T00:38:17.710935584Z"
