@@ -2,7 +2,7 @@
 
 Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.35.1](https://img.shields.io/badge/AppVersion-v0.35.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.3](https://img.shields.io/badge/Version-0.5.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.35.1](https://img.shields.io/badge/AppVersion-v0.35.1-informational?style=flat-square)
 
 ## Introduction
 
@@ -296,6 +296,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
  | prometheus.serviceMonitors.labels |  | object | `{}` |
+ | prometheus.serviceMonitors.metricRelabelings |  | list | `[]` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
  | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
