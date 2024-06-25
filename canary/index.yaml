@@ -185,16 +185,6 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.0.2-9efbc16
-      created: "2024-06-25T03:04:32Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: 7673d4a63a20043f36b58698bfa94f25fae69f3063dac6d198ed44f42c054d7a
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.4.2-canary.2/arbitrum-nitro-0.4.2-canary.2.tgz
-      version: 0.4.2-canary.2
-    - apiVersion: v2
-      appVersion: v3.0.2-9efbc16
       created: "2024-06-24T09:34:04Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 73427989ac5e508a1a3f045f0cb61780d41e7d79a236ed58634245eaf68d2b75
@@ -1226,16 +1216,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
-    - apiVersion: v2
-      appVersion: v2.59.1
-      created: "2024-06-25T03:04:32Z"
-      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
-      digest: 3aa6c44ba4929318ad9674f58123a6a0cd24a58b68d0279d44478e8c6beca9d6
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.2-canary.1/erigon-0.10.2-canary.1.tgz
-      version: 0.10.2-canary.1
     - apiVersion: v2
       appVersion: v2.60.1
       created: "2024-06-05T07:54:55Z"
@@ -2711,26 +2691,6 @@ entries:
   graph-node:
     - apiVersion: v2
       appVersion: v0.35.1
-      created: "2024-06-25T03:04:32Z"
-      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
-      digest: b37121c694639a8700822b384cd49cb1d6c0c69a8d5ff6bc50354ff0e4c57090
-      name: graph-node
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.5.3-canary.2/graph-node-0.5.3-canary.2.tgz
-      version: 0.5.3-canary.2
-    - apiVersion: v2
-      appVersion: v0.35.1
-      created: "2024-06-24T09:34:04Z"
-      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
-      digest: e5659008d4140355a7c4ea03ac07ff4c876cb3766882c67093d510f845afcfaa
-      name: graph-node
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.5.3-canary.1/graph-node-0.5.3-canary.1.tgz
-      version: 0.5.3-canary.1
-    - apiVersion: v2
-      appVersion: v0.35.1
       created: "2024-06-23T22:16:23Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
       digest: 31eb559052d60f824424629693d126b4dddf16eec6388cd9fc39e751e3e523d2
@@ -3552,26 +3512,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
-    - apiVersion: v2
-      appVersion: v5.2.0
-      created: "2024-06-25T03:04:32Z"
-      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
-      digest: 711e832b55e8167596e564e00fc7b22168c7e8862cef0ac245c03ec5528d17c2
-      name: lighthouse
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.8-canary.2/lighthouse-0.5.8-canary.2.tgz
-      version: 0.5.8-canary.2
-    - apiVersion: v2
-      appVersion: v5.2.0
-      created: "2024-06-24T09:34:04Z"
-      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
-      digest: 18ea86d24a31fadc454ebac4753eb47bacf99ae62de3102ca870780e48da098e
-      name: lighthouse
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.8-canary.1/lighthouse-0.5.8-canary.1.tgz
-      version: 0.5.8-canary.1
     - apiVersion: v2
       appVersion: v5.2.0
       created: "2024-06-23T21:54:06Z"
@@ -4585,16 +4525,6 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.14-canary.3/nimbus-0.5.14-canary.3.tgz
       version: 0.5.14-canary.3
-    - apiVersion: v2
-      appVersion: multiarch-v24.5.1
-      created: "2024-06-24T09:03:56Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: 5385cc8a805e2bcb6aa882e1d5ae93bb9a38dc6ae05aff599e795c2fdc1620da
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.14-canary.2/nimbus-0.5.14-canary.2.tgz
-      version: 0.5.14-canary.2
     - apiVersion: v2
       appVersion: multiarch-v24.5.1
       created: "2024-05-27T23:49:38Z"
@@ -6348,4 +6278,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-06-25T03:06:55.900085548Z"
+generated: "2024-06-25T15:03:02.058096525Z"
