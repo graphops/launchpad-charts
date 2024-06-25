@@ -46,6 +46,7 @@ prometheus:
     interval:
     scrapeTimeout:
     relabelings: []
+    metricRelabelings: []
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
