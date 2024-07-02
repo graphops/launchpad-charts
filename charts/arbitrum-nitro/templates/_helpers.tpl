@@ -65,10 +65,6 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "arbitrum-nitro.replicas" -}}
-{{- default 1 .replicaCount  }}
-{{- end -}}
-
 {{/*
 Generate the array of options for nitro
  */}}
@@ -97,3 +93,19 @@ Generate the array of options for nitro
 {{- end }}
 {{ dict "computedArgs" $args | toJson }}
 {{- end }}
+
+{{- define "arbitrum-nitro.p2pPort" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print .p2pNodePort.port }}
+{{- else }}
+{{- printf "30303" -}}
+{{- end }}
+{{- end -}}
+
+{{- define "arbitrum-nitro.replicas" -}}
+{{- if .p2pNodePort.enabled }}
+{{- print 1 }}
+{{ else }}
+{{- default 1 .replicaCount  }}
+{{- end}}
+{{- end -}}

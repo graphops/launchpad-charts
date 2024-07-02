@@ -111,6 +111,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
+ | nitro.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
+ | nitro.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | nitro.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
+ | nitro.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
+ | nitro.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nitro.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nitro.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nitro.resources |  | object | `{}` |
