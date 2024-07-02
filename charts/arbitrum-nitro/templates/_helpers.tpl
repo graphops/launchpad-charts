@@ -74,6 +74,9 @@ Generate the array of options for nitro
 "--persistent.global-config=/storage"
 "--validation.wasm.allowed-wasm-module-roots=/home/user/nitro-legacy/machines,/home/user/target/machines"
 }}
+{{- if .Values.nitro.p2pNodePort.enabled }}
+{{- $args = concat $args (list (print "--p2p.listen-addr=" ":${EXTERNAL_PORT}")) }}
+{{- end }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainUrl)) }}
 {{- $args = concat $args (list (print "--parent-chain.blob-client.beacon-url=" .parentChainBeaconUrl)) }}

@@ -94,8 +94,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nameOverride |  | string | `""` |
  | nitro.affinity |  | object | `{}` |
  | nitro.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple arbitrum instances on the same host | bool | `true` |
- | nitro.config | Nitro configuration parameters | object | `{"chain":42161,"classicUrl":null,"defaultArgs":["--execution.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainBeaconUrl":"CHANGE_ME_BEACON_URL","parentChainUrl":"CHANGE_ME_RPC_URL"}` |
- | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `42161` |
+ | nitro.config | Nitro configuration parameters | object | `{"chain":421614,"classicUrl":null,"defaultArgs":["--execution.caching.archive"],"extraArgs":[],"httpRpc":{"addr":"0.0.0.0","api":"net,web3,eth,debug","cors":"*","vhosts":"*"},"metrics":{"addr":"0.0.0.0","enabled":true},"parentChainBeaconUrl":"CHANGE_ME_BEACON_URL","parentChainUrl":"CHANGE_ME_RPC_URL"}` |
+ | nitro.config.chain | Chain ID, 42161 for Arbitrum One | int | `421614` |
  | nitro.config.classicUrl | RPC Url to Arbitrum Classic Archive node if serving classic blocks | string | `nil` |
  | nitro.config.defaultArgs | Enabled default arguments on the chart | list | `["--execution.caching.archive"]` |
  | nitro.config.extraArgs | Additional CLI arguments to pass to `nitro` | list | `[]` |
@@ -107,11 +107,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.config.metrics | Metrics parameters | object | `{"addr":"0.0.0.0","enabled":true}` |
  | nitro.config.metrics.addr | Listen address | string | `"0.0.0.0"` |
  | nitro.config.metrics.enabled | Enable metrics | bool | `true` |
- | nitro.config.parentChainBeaconUrl | Beacon URL to L1 chain (ethereum) | string | `"CHANGE_ME_BEACON_URL"` |
  | nitro.config.parentChainUrl | RPC URL to L1 chain (ethereum) | string | `"CHANGE_ME_RPC_URL"` |
  | nitro.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nitro.nodeSelector |  | object | `{}` |
- | nitro.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
+ | nitro.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nitro.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nitro.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | nitro.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
@@ -132,10 +131,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nitro.service.type |  | string | `"ClusterIP"` |
  | nitro.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | nitro.tolerations |  | list | `[]` |
- | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"8Ti"}},"storageClassName":null}` |
- | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"8Ti"` |
- | nitro.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `nil` |
- | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
+ | nitro.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"20Gi"}},"storageClassName":"openebs-zfs-localpv-compressed-8k"}` |
+ | nitro.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"20Gi"` |
+ | nitro.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `"openebs-zfs-localpv-compressed-8k"` |
+ | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `true` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |

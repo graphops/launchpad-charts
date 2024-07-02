@@ -129,6 +129,9 @@ spec:
             - -ac
             - |
               set -ex;
+              {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+              {{- end }}
               exec nitro \
                 {{- range $val := initial $nitroArgs }}
                 {{ $val }} \

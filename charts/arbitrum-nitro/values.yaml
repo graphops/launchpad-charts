@@ -53,7 +53,7 @@ rbac:
 prometheus:
   serviceMonitors:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-    enabled: false
+    enabled: true
     labels: {}
     interval:
     scrapeTimeout:
@@ -71,10 +71,10 @@ nitro:
   # -- Nitro configuration parameters
   config:
     # -- Chain ID, 42161 for Arbitrum One
-    chain: 42161
+    chain: 421614
     # -- RPC URL to L1 chain (ethereum)
     parentChainUrl: "CHANGE_ME_RPC_URL"
-    # -- Beacon URL to L1 chain (ethereum)
+    # # -- Beacon URL to L1 chain (ethereum)
     parentChainBeaconUrl: "CHANGE_ME_BEACON_URL"
     # -- RPC Url to Arbitrum Classic Archive node if serving classic blocks
     classicUrl: null
@@ -109,11 +109,11 @@ nitro:
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
     # -- The storage class to use when provisioning a persistent volume for arbitrum
-    storageClassName: 
+    storageClassName: openebs-zfs-localpv-compressed-8k
     resources:
       requests:
         # -- The amount of disk space to provision for arbitrum
-        storage: 8Ti
+        storage: 20Gi
 
   restoreSnapshot:
     # -- Enable initialising arbitrum state from a remote snapshot
@@ -184,7 +184,7 @@ nitro:
 
   p2pNodePort:
     # -- Expose P2P port via NodePort
-    enabled: true
+    enabled: false
     # -- NodePort to be used. Must be unique.
     port: 31000
     initContainer:
