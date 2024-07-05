@@ -74,6 +74,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.0.3-3ecd01e
+      created: "2024-07-05T17:29:19Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: de9e06d44788df00e3fcf58a7fa1371bc4835d924d3af68717375986d3c09733
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.4.2/arbitrum-nitro-0.4.2.tgz
+      version: 0.4.2
+    - apiVersion: v2
       appVersion: v3.0.2-9efbc16
       created: "2024-06-24T00:33:52Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -326,6 +336,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.60.2
+      created: "2024-07-05T16:49:56Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 270135dfb022858fcbeffee5baf105f7e0371725405dd6322a4713173e70c1ae
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.2/erigon-0.10.2.tgz
+      version: 0.10.2
     - apiVersion: v2
       appVersion: v2.60.1
       created: "2024-06-05T07:54:55Z"
@@ -909,6 +929,16 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      appVersion: v0.21.3
+      created: "2024-07-05T17:58:57Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 733c3a54bef72a9f55970bf79b09fd949104ef197ec8b0741b151e1789dcf09c
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.6/graph-network-indexer-0.2.6.tgz
+      version: 0.2.6
+    - apiVersion: v2
       appVersion: v0.21.2
       created: "2024-01-22T23:45:54Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -1362,6 +1392,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
+    - apiVersion: v2
+      appVersion: v5.2.1
+      created: "2024-07-05T17:53:24Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 2a80b353a00b23595f7857e50f3c06a0038fac70a7b344bff371fe348060ba15
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.8/lighthouse-0.5.8.tgz
+      version: 0.5.8
     - apiVersion: v2
       appVersion: v5.2.0
       created: "2024-06-23T21:54:06Z"
@@ -2458,4 +2498,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-07-01T17:49:31.83552206Z"
+generated: "2024-07-05T18:03:25.430664673Z"
