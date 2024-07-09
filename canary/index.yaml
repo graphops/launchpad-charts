@@ -185,16 +185,6 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.0.3-3ecd01e
-      created: "2024-07-08T14:35:16Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: 2b56e2e9c80027fc78b4169badfddae75d592fb03ef260910ad259f2ba657862
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.4.3-canary.1/arbitrum-nitro-0.4.3-canary.1.tgz
-      version: 0.4.3-canary.1
-    - apiVersion: v2
-      appVersion: v3.0.3-3ecd01e
       created: "2024-07-05T17:29:19Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: de9e06d44788df00e3fcf58a7fa1371bc4835d924d3af68717375986d3c09733
@@ -2490,16 +2480,6 @@ entries:
   graph-network-indexer:
     - apiVersion: v2
       appVersion: v0.21.3
-      created: "2024-07-08T14:35:16Z"
-      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
-      digest: 00896551664cb33804bed93586697bd02052092445b149f514c8251cd5097201
-      name: graph-network-indexer
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.7-canary.1/graph-network-indexer-0.2.7-canary.1.tgz
-      version: 0.2.7-canary.1
-    - apiVersion: v2
-      appVersion: v0.21.3
       created: "2024-07-05T17:58:57Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 733c3a54bef72a9f55970bf79b09fd949104ef197ec8b0741b151e1789dcf09c
@@ -3632,16 +3612,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
-    - apiVersion: v2
-      appVersion: v5.2.1
-      created: "2024-07-08T14:35:16Z"
-      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
-      digest: a41c8f2edea03b338925cc2516fe0cab5529ab245ba0fe6a308c5f35af80dc27
-      name: lighthouse
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.9-canary.1/lighthouse-0.5.9-canary.1.tgz
-      version: 0.5.9-canary.1
     - apiVersion: v2
       appVersion: v5.2.1
       created: "2024-07-05T17:53:24Z"
@@ -6478,4 +6448,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-07-08T14:43:14.670688446Z"
+generated: "2024-07-09T15:10:22.51963809Z"
