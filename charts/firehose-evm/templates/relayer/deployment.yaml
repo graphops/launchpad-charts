@@ -42,7 +42,7 @@ metadata:
   labels:
     {{- include "firehose-evm.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-  namespace: fh-eth-mainnet
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
