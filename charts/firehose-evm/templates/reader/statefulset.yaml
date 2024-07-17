@@ -11,7 +11,7 @@
 {{- $readerConfig := include "firehose-evm.readerArgs" $values }}
 
 
-{{/* START ConfigMap */}}
+{{/* START Reader ConfigMap */}}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -30,15 +30,7 @@ data:
         reader-node-arguments: |
 {{- $readerConfig | nindent 10 }}
 {{- end }}
-{{/* END ConfigMap */}}
-
-{{/* Now onto the actual Deployment for grpc */}}
-
-{{- $env := merge .Values.common.env $values.env }}
-{{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
-
-{{/* START Deployment */}}
----
+{{/* END Reader ConfigMap */}}
 
 {{/* Now onto the actual Statefulset for indexer */}}
 
@@ -59,7 +51,7 @@ metadata:
   labels:
     {{- include "firehose-evm.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-  namespace: fh-eth-mainnet
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -78,9 +70,15 @@ spec:
         {{- toYaml $values.reader_node.volumeClaimSpec | nindent 8 }}
   template:
     metadata:
-      {{- with $values.podAnnotations }}
       annotations:
+      {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.configMap.enabled }}
+        checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
+      {{- else if not .Values.podAnnotations }}
+        # Add an empty line to ensure annotations block is created if it does not exist
+        {}
       {{- end }}
       labels:
         {{- include "firehose-evm.selectorLabels" . | nindent 8 }}
@@ -97,6 +95,44 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       initContainers:
+      {{- if $values.initSnapshot.enabled }}
+        - name: init-snapshot
+          image: rclone/rclone:1.67.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command:
+            - sh
+            - -c
+            - |
+              set -ex;
+              # Check if /data/geth has data in it
+              if [ "$(ls -A /data/geth)" ]; then
+                echo "Data already exists in /data/geth. Skipping rclone copy.";
+              else
+                # Perform the rclone copy if /data/geth is empty
+                if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} /data/geth/; then
+                  echo "rclone copy failed";
+                  exit 1;
+                fi;
+
+                # Find the tar file (assuming there is only one) and extract it;
+                echo $?;
+                TAR_FILE=$(ls /var/lib/geth/*.tar.zst);
+                tar -xzvf "$TAR_FILE" -C /var/lib/geth;
+                rm "$TAR_FILE";
+              fi;
+
+          env:
+            - name: SNAPSHOT_REMOTE_LOCATION
+              value: "dropbox:eth-snapshot/2024-06-27-11-eth-sfdm38-geth.tar.zst"
+          volumeMounts:
+          - name: rclone-config
+            mountPath: /config/rclone
+            subPath: rclone.conf
+          - name: reader-node
+            mountPath: "/var/lib/geth"
+      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
@@ -142,9 +178,15 @@ spec:
               drop:
                 - ALL
           args:
+            {{- if $values.p2pNodePort.enabled }}
             - "start"
             - "-c"
             - "/etc/config/config.yaml"
+            {{- else }}
+            - "start"
+            - "-c"
+            - "/config/config.yaml"
+            {{- end }}
           lifecycle:
             preStop:
               exec:
@@ -181,12 +223,14 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
-
           volumeMounts:
             - name: reader
               mountPath: "/var/lib/fireeth"
             - name: reader-node
               mountPath: "/var/lib/geth"
+            - name: configmap
+              mountPath: /config
+              readOnly: true
             {{- if $jwtEnabled }}
             - name: jwt
               mountPath: /jwt
@@ -209,6 +253,11 @@ spec:
             {{- else }}
             name: {{ .Values.indexer.existingConfigMap }}
             {{- end }}
+      {{- if $values.initSnapshot.enabled }}
+        - name: rclone-config
+          secret:
+            secretName: rclone-config-secret
+      {{- end }}
       {{- if $jwtEnabled }}
         - name: jwt
           secret:

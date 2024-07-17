@@ -73,6 +73,7 @@ common:
     FIREETH_COMMON_LIVE_BLOCKS_ADDR: "relayer:10014"
     FIREETH_COMMON_CHAIN_ID: "1"
     FIREETH_COMMON_NETWORK_ID: "1"
+    MANAGER_API_PORT: "10011"
 
   # -- Environment variable defaults that come from secret
   secretEnv:
@@ -188,6 +189,9 @@ reader:
         # -- The amount of disk space to provision
         storage: 50Gi
 
+  initSnapshot:
+    enabled: true
+
   service:
     type: ClusterIP
     ports:
@@ -230,7 +234,7 @@ reader:
       resources:
         requests:
           # -- The amount of disk space to provision
-          storage: 3Ti
+          storage: 1.5Ti
 
   # -- Image for firehose-evm
   image:

@@ -92,7 +92,7 @@ This helper merges additional flags into the main configuration and constructs t
 "--authrpc.jwtsecret=/jwt/jwt.hex"
 "--authrpc.addr=0.0.0.0"
 "--authrpc.vhosts=*"
-"--datadir=/var/lib/geth"
+"--datadir="
 "--firehose-enabled"
 "--http"
 "--http.vhosts=*"

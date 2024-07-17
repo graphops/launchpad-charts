@@ -42,6 +42,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | common.env.FIREETH_COMMON_NETWORK_ID |  | string | `"1"` |
  | common.env.FIREETH_GLOBAL_DATA_DIR |  | string | `"/var/lib/fireeth"` |
  | common.env.FIREETH_GLOBAL_LOG_TO_FILE |  | string | `"false"` |
+ | common.env.MANAGER_API_PORT |  | string | `"10011"` |
  | common.secretEnv | Environment variable defaults that come from secret | object | `{"AWS_ACCESS_KEY_ID":{"key":null,"secretName":null},"AWS_SECRET_ACCESS_KEY":{"key":null,"secretName":null},"FIREETH_COMMON_FORKED_BLOCKS_STORE_URL":{"key":null,"secretName":null},"FIREETH_COMMON_INDEX_STORE_URL":{"key":null,"secretName":null},"FIREETH_COMMON_MERGED_BLOCKS_STORE_URL":{"key":null,"secretName":null},"FIREETH_COMMON_ONE_BLOCK_STORE_URL":{"key":null,"secretName":null}}` |
  | common.secretEnv.AWS_ACCESS_KEY_ID.key | Name of the data key in the secret that contains your S3 bucket url of your index store | string | `nil` |
  | common.secretEnv.AWS_ACCESS_KEY_ID.secretName | Name of the secret that contains your S3 bucket url of your index store | string | `nil` |
@@ -184,6 +185,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | reader.image | Image for firehose-evm | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":""}` |
  | reader.image.tag | Overrides the image tag | string | Chart.appVersion |
  | reader.imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
+ | reader.initSnapshot.enabled |  | bool | `true` |
  | reader.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":"1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480"}` |
  | reader.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
  | reader.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
@@ -213,7 +215,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | reader.readerConfig.snapshot.enabled |  | bool | `true` |
  | reader.readerConfig.syncMode |  | string | `"full"` |
  | reader.reader_node.volumeClaimSpec.accessModes[0] |  | string | `"ReadWriteOnce"` |
- | reader.reader_node.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"3Ti"` |
+ | reader.reader_node.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"1.5Ti"` |
  | reader.reader_node.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `"openebs-zfs-localpv-compressed-8k"` |
  | reader.replicas |  | int | `1` |
  | reader.resources |  | object | `{}` |
