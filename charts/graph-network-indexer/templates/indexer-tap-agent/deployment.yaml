@@ -1,5 +1,5 @@
-{{- $values := $.Values.indexerService }}
-{{- $componentName := "service" }}
+{{- $values := $.Values.indexerTapAgent }}
+{{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{- $configTemplate := $values.configTemplate }}
 {{- $configToml := print (tpl $configTemplate $) }}
@@ -91,7 +91,7 @@ spec:
           {{- end }}
           {{- end }}
           command:
-          - /usr/local/bin/service
+          - /usr/local/bin/indexer-tap-agent
           - --config=/config/config.toml
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}

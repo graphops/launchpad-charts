@@ -27,11 +27,7 @@ metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
   {{- if $values.service.topologyAwareRouting.enabled }}
   annotations:
-    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
-    service.kubernetes.io/topology-mode: "auto"
-    {{- else }}
     service.kubernetes.io/topology-aware-hints: "auto"
-    {{- end }}
   {{- end }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
