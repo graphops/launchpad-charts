@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.7](https://img.shields.io/badge/Version-0.2.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.21.4](https://img.shields.io/badge/AppVersion-v0.21.4-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0-rc.4](https://img.shields.io/badge/AppVersion-v1.0.0--rc.4-informational?style=flat-square)
 
 ## Introduction
 
@@ -58,8 +58,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.config.public-indexer-url | Public HTTPS URL of your indexer-service query endpoint | required | `nil` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
- | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":""}` |
- | indexerAgent.image.tag | Overrides the image tag | string | Chart.appVersion |
+ | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.21.3"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -71,7 +70,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
- | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"network-subgraph-endpoint":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null},"env":{},"secretEnv":{}}` |
+ | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"network-subgraph-endpoint":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null},"configTemplate":"WARNING: This shows all the possible configuration options. Make sure you know what\n#           you are doing.\n#           Prefer starting with `minimal-config-example.toml`.\n#\n# All the optional values (missing from the minimal config) are set to the current\n# default values.\n# You will have to change *most* the values below to match your setup.\n#\n# Some of the config below are global graph network values, which you can find here:\n# https://github.com/graphprotocol/indexer/tree/main/docs/networks\n#\n# Pro tip: if you need to load some values from the environment into this config, you\n# can overwrite with environment variables. For example, the following can be replaced\n# by [PREFIX]_DATABASE_POSTGRESURL, where PREFIX can be `INDEXER_SERVICE` or `TAP_AGENT`:\n#\n# [database]\n# postgres_url = \"postgresql://indexer:${POSTGRES_PASSWORD}@postgres:5432/indexer_components_0\"\n\n[indexer]\nindexer_address = \"{{ .Values.indexerDefaults.config['indexer-address'] \| default \"0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\" }}\"\noperator_mnemonic = \"{{ .Values.indexerDefaults.config.mnemonic \| default \"some cool words that turn into money\" }}\"\n\n[metrics]\nport = {{ .Values.metrics.port \| default 7602 }}\n\n[database]\npostgres_url = \"postgresql://{{ .Values.indexerDefaults.config['postgres-username'] \| default \"username\" }}:{{ .Values.indexerDefaults.config['postgres-password'] \| default \"password\" }}@{{ .Values.indexerDefaults.config['postgres-host'] \| default \"postgres-agent\" }}:{{ .Values.indexerDefaults.config['postgres-port'] \| default 5432 }}/{{ .Values.indexerDefaults.config['postgres-database'] \| default \"agent_db\" }}\"\npostgres_url = \"postgresql://{{ env \"POSTGRES_USERNAME\" }}:{{ env \"POSTGRES_PASSWORD\" }}@{{ .Values.indexerDefaults.config['postgres-host'] \| default \"postgres-agent\" }}:{{ .Values.indexerDefaults.config['postgres-port'] \| default 5432 }}/{{ .Values.indexerDefaults.config['postgres-database'] \| default \"agent_db\" }}\"\n\n[graph_node]\nquery_url = \"{{ .Values.indexerDefaults.config['graph-node-query-endpoint'] \| default \"http://query-node-0:8000\" }}\"\nstatus_url = \"{{ .Values.indexerDefaults.config['graph-node-status-endpoint'] \| default \"http://index-node-0:8030/graphql\" }}\"\n\n[subgraphs.network]\nquery_url = \"{{ .Values.indexerDefaults.config['network-subgraph-endpoint'] \| default \"https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/3xQHhMudr1oh69ut36G2mbzpYmYxwqCeU6wwqyCDCnqV\" }}\"\nsyncing_interval_secs = {{ .Values.indexerDefaults.config.subgraphs.network.syncingIntervalSecs \| default 60 }}\nrecently_closed_allocation_buffer_secs = {{ .Values.indexerDefaults.config.subgraphs.network.recentlyClosedAllocationBufferSecs \| default 100 }}\n\n[subgraphs.escrow]\nquery_url = \"{{ .Values.indexerDefaults.config.subgraphs.escrow.queryUrl \| default \"https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD\" }}\"\nsyncing_interval_secs = {{ .Values.subgraphs.escrow.syncingIntervalSecs \| default 60 }}\n\n[blockchain]\nchain_id = {{ .Values.indexerDefaults.config.blockchain.chainId \| default 421614 }}\nreceipts_verifier_address = \"{{ .Values.indexerDefaults.config.blockchain.receiptsVerifierAddress \| default \"0xfC24cE7a4428A6B89B52645243662A02BA734ECF\" }}\"\n\n##############################################\n# Specific configurations to indexer-service #\n##############################################\n[service]\nhost_and_port = \"{{ .Values.indexerDefaults.config.service.hostAndPort \| default \"0.0.0.0:7600\" }}\"\nurl_prefix = \"{{ .Values.indexerDefaults.config.service.urlPrefix \| default \"/\" }}\"\nserve_network_subgraph = {{ .Values.indexerDefaults.config.service.serveNetworkSubgraph \| default false }}\nserve_escrow_subgraph = {{ .Values.indexerDefaults.config.service.serveEscrowSubgraph \| default false }}\n\n[service.tap]\nmax_receipt_value_grt = \"{{ .Values.indexerDefaults.config.service.tap.maxReceiptValueGrt \| default \"0.001\" }}\"\n\n########################################\n# Specific configurations to tap-agent #\n########################################\n[tap]\nmax_amount_willing_to_lose_grt = \"{{ .Values.indexerDefaults.config.tap.maxAmountWillingToLoseGrt \| default \"0.03\" }}\"\n\n[tap.rav_request]\ntrigger_value_divisor = {{ .Values.indexerDefaults.config.tap.ravRequest.triggerValueDivisor \| default 3 }}\ntimestamp_buffer_secs = {{ .Values.indexerDefaults.config.tap.ravRequest.timestampBufferSecs \| default 60 }}\nrequest_timeout_secs = {{ .Values.indexerDefaults.config.tap.ravRequest.requestTimeoutSecs \| default 5 }}\nmax_receipts_per_request = {{ .Values.indexerDefaults.config.tap.ravRequest.maxReceiptsPerRequest \| default 1000 }}\n\n[tap.sender_aggregator_endpoints]\n{{- range $key, $value := .Values.indexerDefaults.config.tap.senderAggregatorEndpoints }}\n{{ $key }} = \"{{ $value }}\"\n{{- end }}\n","env":{},"secretEnv":{"secretEnv":{"INDEXER_OPERATOR_MNEMONIC":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGPASSWORD":{"key":null,"secretName":null},"PRIMARY_SUBGRAPH_DATA_PGUSER":{"key":null,"secretName":null}}}}` |
  | indexerDefaults.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-query-endpoint":null,"graph-node-status-endpoint":null,"indexer-address":null,"mnemonic":null,"network-subgraph-endpoint":null,"postgres-database":"indexer","postgres-host":null,"postgres-password":null,"postgres-port":5432,"postgres-username":null}` |
  | indexerDefaults.config.ethereum | URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli) | required | `nil` |
  | indexerDefaults.config.ethereum-network | Name of the network that you have specified a node URL for in `ethereum` | string | `"mainnet"` |
@@ -85,10 +84,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerDefaults.config.postgres-password | Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable. | not recommended | `nil` |
  | indexerDefaults.config.postgres-port | Port that Postgres is available on | int | `5432` |
  | indexerDefaults.config.postgres-username | Specify a plain text username to authenticate with Postgres | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.INDEXER_OPERATOR_MNEMONIC.key | Name of the data key in the secret that contains your Operator mnemonic | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.INDEXER_OPERATOR_MNEMONIC.secretName | Name of the secret that contains your Operator mnemonic | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.key | Name of the data key in the secret that contains your PG password | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.PRIMARY_SUBGRAPH_DATA_PGPASSWORD.secretName | Name of the secret that contains your PG password | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.key | Name of the data key in the secret that contains your PG username | string | `nil` |
+ | indexerDefaults.secretEnv.secretEnv.PRIMARY_SUBGRAPH_DATA_PGUSER.secretName | Name of the secret that contains your PG username | string | `nil` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerService.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"client-signer-address":null}` |
- | indexerService.config.client-signer-address | The address of the signer for vouchers (see https://github.com/graphprotocol/indexer/blob/main/docs/networks.md) | required | `nil` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service","tag":""}` |
@@ -105,6 +108,24 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.service.type |  | string | `"ClusterIP"` |
  | indexerService.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerService.tolerations |  | list | `[]` |
+ | indexerTapAgent.affinity |  | object | `{}` |
+ | indexerTapAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
+ | indexerTapAgent.env |  | object | `{}` |
+ | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
+ | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":""}` |
+ | indexerTapAgent.image.tag | Overrides the image tag | string | Chart.appVersion |
+ | indexerTapAgent.nodeSelector |  | object | `{}` |
+ | indexerTapAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
+ | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | indexerTapAgent.replicas | Number of replicas to run | int | `1` |
+ | indexerTapAgent.resources |  | object | `{}` |
+ | indexerTapAgent.secretEnv |  | object | `{}` |
+ | indexerTapAgent.service.ports.http-metrics | Service Port to expose Metrics on | int | `7300` |
+ | indexerTapAgent.service.ports.http-queryapi | Service Port to expose Query API on | int | `7600` |
+ | indexerTapAgent.service.topologyAwareRouting.enabled |  | bool | `false` |
+ | indexerTapAgent.service.type |  | string | `"ClusterIP"` |
+ | indexerTapAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
+ | indexerTapAgent.tolerations |  | list | `[]` |
  | nameOverride |  | string | `""` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |

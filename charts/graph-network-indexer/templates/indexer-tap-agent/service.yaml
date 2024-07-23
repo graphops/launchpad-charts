@@ -1,5 +1,5 @@
-{{- $values := $.Values.indexerService }}
-{{- $componentName := "service" }}
+{{- $values := $.Values.indexerTapAgent }}
+{{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
 kind: Service

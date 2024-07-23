@@ -27,6 +27,13 @@
         "matchStrings": [
           "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)\""
         ]
+      },
+      {
+        "datasourceTemplate": "docker",
+        "fileMatch": ["^charts/.*/values\\.yaml$"],
+        "matchStrings": [
+          "image:\\s*repository:\\s*\"(?<depName>[^\"]+)\"\\s*tag:\\s*\"(?<currentValue>[^\"]+)\""
+        ]
       }
     ],
 
@@ -38,11 +45,18 @@
         "allowedVersions": "<2000"
       },
       {
+        "matchPackageNames": ["lachlanevenson/k8s-kubectl"],
+        "matchPaths": ["charts/**/values.yaml"],
+        "groupName": "InitContainer image",
+        "commitMessageTopic": "Update InitContainer image"
+      },
+      {
         "matchPackageNames": ["statusim/nimbus-eth2"],
         "versioning": "regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
       },
       {
-        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service"],
+        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-agent"],
+        "matchPaths": ["charts/graph-network-indexer/values.yaml"]
         "allowedVersions": "!/\\-alpha.*$/",
         "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
       },

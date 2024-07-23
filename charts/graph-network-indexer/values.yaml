@@ -61,21 +61,111 @@ indexerDefaults:
     mnemonic: null
     # -- (required) An endpoint to query the network subgraph
     network-subgraph-endpoint: null
+  configTemplate: |
+    WARNING: This shows all the possible configuration options. Make sure you know what
+    #           you are doing.
+    #           Prefer starting with `minimal-config-example.toml`.
+    #
+    # All the optional values (missing from the minimal config) are set to the current
+    # default values.
+    # You will have to change *most* the values below to match your setup.
+    #
+    # Some of the config below are global graph network values, which you can find here:
+    # https://github.com/graphprotocol/indexer/tree/main/docs/networks
+    #
+    # Pro tip: if you need to load some values from the environment into this config, you
+    # can overwrite with environment variables. For example, the following can be replaced
+    # by [PREFIX]_DATABASE_POSTGRESURL, where PREFIX can be `INDEXER_SERVICE` or `TAP_AGENT`:
+    #
+    # [database]
+    # postgres_url = "postgresql://indexer:${POSTGRES_PASSWORD}@postgres:5432/indexer_components_0"
+
+    [indexer]
+    indexer_address = "{{ .Values.indexerDefaults.config['indexer-address'] | default "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }}"
+    operator_mnemonic = "{{ .Values.indexerDefaults.config.mnemonic | default "some cool words that turn into money" }}"
+
+    [metrics]
+    port = {{ .Values.metrics.port | default 7602 }}
+
+    [database]
+    postgres_url = "postgresql://{{ .Values.indexerDefaults.config['postgres-username'] | default "username" }}:{{ .Values.indexerDefaults.config['postgres-password'] | default "password" }}@{{ .Values.indexerDefaults.config['postgres-host'] | default "postgres-agent" }}:{{ .Values.indexerDefaults.config['postgres-port'] | default 5432 }}/{{ .Values.indexerDefaults.config['postgres-database'] | default "agent_db" }}"
+    postgres_url = "postgresql://{{ env "POSTGRES_USERNAME" }}:{{ env "POSTGRES_PASSWORD" }}@{{ .Values.indexerDefaults.config['postgres-host'] | default "postgres-agent" }}:{{ .Values.indexerDefaults.config['postgres-port'] | default 5432 }}/{{ .Values.indexerDefaults.config['postgres-database'] | default "agent_db" }}"
+
+    [graph_node]
+    query_url = "{{ .Values.indexerDefaults.config['graph-node-query-endpoint'] | default "http://query-node-0:8000" }}"
+    status_url = "{{ .Values.indexerDefaults.config['graph-node-status-endpoint'] | default "http://index-node-0:8030/graphql" }}"
+
+    [subgraphs.network]
+    query_url = "{{ .Values.indexerDefaults.config['network-subgraph-endpoint'] | default "https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/3xQHhMudr1oh69ut36G2mbzpYmYxwqCeU6wwqyCDCnqV" }}"
+    syncing_interval_secs = {{ .Values.indexerDefaults.config.subgraphs.network.syncingIntervalSecs | default 60 }}
+    recently_closed_allocation_buffer_secs = {{ .Values.indexerDefaults.config.subgraphs.network.recentlyClosedAllocationBufferSecs | default 100 }}
+
+    [subgraphs.escrow]
+    query_url = "{{ .Values.indexerDefaults.config.subgraphs.escrow.queryUrl | default "https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD" }}"
+    syncing_interval_secs = {{ .Values.subgraphs.escrow.syncingIntervalSecs | default 60 }}
+
+    [blockchain]
+    chain_id = {{ .Values.indexerDefaults.config.blockchain.chainId | default 421614 }}
+    receipts_verifier_address = "{{ .Values.indexerDefaults.config.blockchain.receiptsVerifierAddress | default "0xfC24cE7a4428A6B89B52645243662A02BA734ECF" }}"
+
+    ##############################################
+    # Specific configurations to indexer-service #
+    ##############################################
+    [service]
+    host_and_port = "{{ .Values.indexerDefaults.config.service.hostAndPort | default "0.0.0.0:7600" }}"
+    url_prefix = "{{ .Values.indexerDefaults.config.service.urlPrefix | default "/" }}"
+    serve_network_subgraph = {{ .Values.indexerDefaults.config.service.serveNetworkSubgraph | default false }}
+    serve_escrow_subgraph = {{ .Values.indexerDefaults.config.service.serveEscrowSubgraph | default false }}
+
+    [service.tap]
+    max_receipt_value_grt = "{{ .Values.indexerDefaults.config.service.tap.maxReceiptValueGrt | default "0.001" }}"
+
+    ########################################
+    # Specific configurations to tap-agent #
+    ########################################
+    [tap]
+    max_amount_willing_to_lose_grt = "{{ .Values.indexerDefaults.config.tap.maxAmountWillingToLoseGrt | default "0.03" }}"
+
+    [tap.rav_request]
+    trigger_value_divisor = {{ .Values.indexerDefaults.config.tap.ravRequest.triggerValueDivisor | default 3 }}
+    timestamp_buffer_secs = {{ .Values.indexerDefaults.config.tap.ravRequest.timestampBufferSecs | default 60 }}
+    request_timeout_secs = {{ .Values.indexerDefaults.config.tap.ravRequest.requestTimeoutSecs | default 5 }}
+    max_receipts_per_request = {{ .Values.indexerDefaults.config.tap.ravRequest.maxReceiptsPerRequest | default 1000 }}
+
+    [tap.sender_aggregator_endpoints]
+    {{- range $key, $value := .Values.indexerDefaults.config.tap.senderAggregatorEndpoints }}
+    {{ $key }} = "{{ $value }}"
+    {{- end }}
+
+
 
   env: {}
 
-  secretEnv: {}
-    # mnemonic
-    # postgres auth
+  secretEnv: 
+    secretEnv:
+      PRIMARY_SUBGRAPH_DATA_PGUSER:
+        # -- Name of the secret that contains your PG username
+        secretName:
+        # -- Name of the data key in the secret that contains your PG username
+        key:
+      PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
+        # -- Name of the secret that contains your PG password
+        secretName:
+        # -- Name of the data key in the secret that contains your PG password
+        key:
+      INDEXER_OPERATOR_MNEMONIC:
+        # -- Name of the secret that contains your Operator mnemonic
+        secretName:
+        # -- Name of the data key in the secret that contains your Operator mnemonic
+        key:
+
 
 indexerAgent:
   # -- Image for indexer-agent
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
+    tag: "v0.21.3"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
@@ -163,10 +253,75 @@ indexerService:
   # -- Number of replicas to run
   replicas: 1
 
-  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config:
-    # -- (required) The address of the signer for vouchers (see https://github.com/graphprotocol/indexer/blob/main/docs/networks.md)
-    client-signer-address: null
+  env: {}
+
+  secretEnv: {}
+
+  # -- Additional CLI arguments to pass to `indexer-service`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Query API on
+      http-queryapi: 7600
+      # -- Service Port to expose Metrics on
+      http-metrics: 7300
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+
+indexerTapAgent:
+  # -- Image for indexer-tap-agent
+  image:
+    repository: ghcr.io/graphprotocol/indexer-tap-agent
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  # -- Number of replicas to run
+  replicas: 1
 
   env: {}
 
@@ -224,3 +379,4 @@ indexerService:
     antiAffinityByHostname: true
 
   affinity: {}
+
