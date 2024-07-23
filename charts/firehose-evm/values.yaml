@@ -97,26 +97,18 @@ common:
       secretName:
       # -- Name of the data key in the secret that contains your S3 bucket url of your index store
       key:
-    AWS_ACCESS_KEY_ID:
-      # -- Name of the secret that contains your S3 bucket url of your index store
-      secretName:
-      # -- Name of the data key in the secret that contains your S3 bucket url of your index store
-      key:
-    AWS_SECRET_ACCESS_KEY:
-      # -- Name of the secret that contains your S3 bucket url of your index store
-      secretName:
-      # -- Name of the data key in the secret that contains your S3 bucket url of your index store
-      key:
 
 reader:
   enabled: true
+  # dir to be passed to reader-node-data-dir cli flag and all corresponding volumes
+  dataDir: "/var/lib/geth"
+  # dir to be passed to reader-node-path cli flag and all corresponding volumes
+  nodePath: "/usr/lib/geth"
   configMap:
     enabled: true
   config:
-    reader-node-data-dir: "/var/lib/geth"
     reader-node-grpc-listen-addr: ":10010"
     reader-node-manager-api-addr: ":10011"
-    reader-node-path: "/app/geth"
     metrics-listen-addr: ":9102"
   # configTemplate: |-
   #   {{- range $key, $value := .additionalFlags }}
@@ -191,6 +183,8 @@ reader:
 
   initSnapshot:
     enabled: true
+    env:
+      SNAPSHOT_REMOTE_LOCATION: "add_snapshot_location"
 
   service:
     type: ClusterIP
@@ -234,7 +228,7 @@ reader:
       resources:
         requests:
           # -- The amount of disk space to provision
-          storage: 1.5Ti
+          storage: 3Ti
 
   # -- Image for firehose-evm
   image:

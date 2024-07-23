@@ -10,7 +10,6 @@
 {{- $configHash = sha256sum $configToml }}
 {{- $readerConfig := include "firehose-evm.readerArgs" $values }}
 
-
 {{/* START Reader ConfigMap */}}
 ---
 apiVersion: v1
@@ -106,32 +105,36 @@ spec:
             - -c
             - |
               set -ex;
-              # Check if /data/geth has data in it
-              if [ "$(ls -A /data/geth)" ]; then
+              # Check if {{ $values.dataDir }} path has data in it
+              if [ "$(ls -A {{ $values.dataDir }})" ]; then
                 echo "Data already exists in /data/geth. Skipping rclone copy.";
               else
-                # Perform the rclone copy if /data/geth is empty
-                if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} /data/geth/; then
+                # Perform the rclone copy if {{ $values.dataDir }} path is empty
+                if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} {{ $values.dataDir }}/; then
                   echo "rclone copy failed";
                   exit 1;
                 fi;
 
                 # Find the tar file (assuming there is only one) and extract it;
                 echo $?;
-                TAR_FILE=$(ls /var/lib/geth/*.tar.zst);
-                tar -xzvf "$TAR_FILE" -C /var/lib/geth;
+                TAR_FILE=$(ls {{ $values.dataDir }}/*.tar.zst);
+                tar -xzvf "$TAR_FILE" -C {{ $values.dataDir }};
                 rm "$TAR_FILE";
               fi;
 
           env:
-            - name: SNAPSHOT_REMOTE_LOCATION
-              value: "dropbox:eth-snapshot/2024-06-27-11-eth-sfdm38-geth.tar.zst"
+          {{- with $values.initSnapshot.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
           volumeMounts:
           - name: rclone-config
             mountPath: /config/rclone
             subPath: rclone.conf
           - name: reader-node
-            mountPath: "/var/lib/geth"
+            mountPath: {{ $values.dataDir }}
       {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: init-nodeport
@@ -227,7 +230,7 @@ spec:
             - name: reader
               mountPath: "/var/lib/fireeth"
             - name: reader-node
-              mountPath: "/var/lib/geth"
+              mountPath: {{ $values.dataDir }}
             - name: configmap
               mountPath: /config
               readOnly: true
@@ -248,10 +251,10 @@ spec:
             claimName: reader-node
         - name: configmap
           configMap:
-            {{- if .Values.indexer.configMap.enabled }}
+            {{- if .Values.reader.configMap.enabled }}
             name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
             {{- else }}
-            name: {{ .Values.indexer.existingConfigMap }}
+            name: {{ .Values.reader.existingConfigMap }}
             {{- end }}
       {{- if $values.initSnapshot.enabled }}
         - name: rclone-config

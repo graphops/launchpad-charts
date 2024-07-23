@@ -79,9 +79,12 @@ This helper merges additional flags into the main configuration and constructs t
 {{- define "firehose-evm.mergeConfig" -}}
 {{- $values := . }}
 {{- $baseConfig := deepCopy $values.config }}
-{{- $componentName := index . .componentName  }}
-{{- $componentConfig := $componentName.config }}
+{{- $componentName := index . "componentName" }}
+{{- $componentConfig := index $values $componentName "config" }}
 {{- $mergedConfig := mustMerge $baseConfig $componentConfig }}
+{{- if eq $componentName "reader" }}
+  {{- $mergedConfig = mustMerge $mergedConfig (dict "reader-node-data-dir" $values.reader.dataDir "reader-node-path" $values.reader.nodePath ) }}
+{{- end }}
 {{- tpl $values.configTemplate $mergedConfig }}
 {{- end }}
 
@@ -92,7 +95,7 @@ This helper merges additional flags into the main configuration and constructs t
 "--authrpc.jwtsecret=/jwt/jwt.hex"
 "--authrpc.addr=0.0.0.0"
 "--authrpc.vhosts=*"
-"--datadir="
+"--datadir={node-data-dir}"
 "--firehose-enabled"
 "--http"
 "--http.vhosts=*"

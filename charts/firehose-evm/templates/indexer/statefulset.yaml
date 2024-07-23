@@ -33,6 +33,7 @@ data:
 {{- $env := merge .Values.common.env $values.env }}
 {{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
 
+
 {{/* START StatefulSet */}}
 ---
 
@@ -43,7 +44,7 @@ metadata:
   labels:
     {{- include "firehose-evm.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
-  namespace: fh-eth-mainnet
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
