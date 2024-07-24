@@ -1,22 +1,11 @@
 {{- $values := $.Values.indexerService }}
 {{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
-{{- $configTemplate := $values.configTemplate }}
+
+{{- $configTemplate := .Values.indexerDefaults.configTemplate }}
 {{- $configToml := print (tpl $configTemplate $) }}
 {{/* We use a hash of the configuration to automate restarts of dependents */}}
 {{- $graphNetworkConfigHash := $configToml | sha256sum }}
-{{/* START ConfigMap */}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
-  labels:
-    {{- include "graph-network-indexer.labels" . | nindent 4 }}
-data:
-  config.toml: |
-    {{ $configToml | nindent 4 }}
-{{/* END ConfigMap */}}
 {{/* START Deployment */}}
 ---
 apiVersion: apps/v1
@@ -57,7 +46,7 @@ spec:
         - name: config
           configMap:
             # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+            name: {{ include "graph-network-indexer.fullname" . }}-config
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
