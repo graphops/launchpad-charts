@@ -79,8 +79,8 @@ spec:
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       containers:
         - name: {{ $componentName }}
-          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ $values.image.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
