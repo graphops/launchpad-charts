@@ -12,3 +12,4 @@ We welcome and appreciate your contributions! Please see the [Contributor Guide]
 
 - [`graphops/launchpad-namespaces`](https://github.com/graphops/launchpad-namespaces)
 - [`graphops/launchpad-starter`](https://github.com/graphops/launchpad-starter)
+- [`graphops/launchpad-taskfiles`](https://github.com/graphops/launchpad-taskfiles)
