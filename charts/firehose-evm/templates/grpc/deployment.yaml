@@ -120,6 +120,10 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: grpc
               mountPath: "/var/lib/fireeth"

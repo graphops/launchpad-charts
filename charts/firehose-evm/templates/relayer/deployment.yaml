@@ -110,6 +110,10 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: relayer
               mountPath: "/var/lib/fireeth"
