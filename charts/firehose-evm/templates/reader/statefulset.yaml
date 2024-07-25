@@ -226,6 +226,10 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: reader
               mountPath: "/var/lib/fireeth"
