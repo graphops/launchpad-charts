@@ -120,8 +120,6 @@ reader:
 
   readerConfig:
     syncMode: "full"
-    # see list of chains at chainlist.org
-    networkId: "1"
     # improve geth performance by maintaining an internal snapshot
     snapshot: 
       enabled: true
