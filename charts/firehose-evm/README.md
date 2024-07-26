@@ -208,7 +208,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | reader.readerConfig.metrics.addr | Listen address | string | `"0.0.0.0"` |
  | reader.readerConfig.metrics.enabled | Enable metrics | bool | `true` |
  | reader.readerConfig.metrics.port | Metrics port | int | `6061` |
- | reader.readerConfig.networkId |  | string | `"1"` |
  | reader.readerConfig.snapshot.enabled |  | bool | `true` |
  | reader.readerConfig.syncMode |  | string | `"full"` |
  | reader.reader_node.volumeClaimSpec.accessModes[0] |  | string | `"ReadWriteOnce"` |
