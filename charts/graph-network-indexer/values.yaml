@@ -121,18 +121,18 @@ indexerDefaults:
       # postgres_url = "postgresql://indexer:${POSTGRES_PASSWORD}@postgres:5432/indexer_components_0"
 
       [indexer]
-      indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | default "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" }}
-      operator_mnemonic = {{ .Values.indexerDefaults.config.mnemonic | default "some cool words that turn into money" }}
+      indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | default "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" | quote }}
+      operator_mnemonic = "test"
 
       [metrics]
       port = {{ index .Values.indexerDefaults.configService "metrics-port" }}
 
-      [database]
-      postgres_url = "postgresql://{{ index .Values.indexerDefaults.config "postgres-username" }}:{{ index .Values.indexerDefaults.config "postgres-password" }}@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database"}}"
+      # [database]
+      # postgres_url = "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database"}}"
 
       [graph_node]
-      query_url = {{ index .Values.indexerDefaults.config "graph-node-query-endpoint" | default "http://query-node-0:8000" }}
-      status_url = {{ index .Values.indexerDefaults.config "graph-node-status-endpoint" | default "http://index-node-0:8030/graphql" }}
+      query_url = {{ index .Values.indexerDefaults.config "graph-node-query-endpoint" | default "http://query-node-0:8000" | quote }}
+      status_url = {{ index .Values.indexerDefaults.config "graph-node-status-endpoint" | default "http://index-node-0:8030/graphql" | quote }}
 
       [subgraphs.network]
       query_url = {{ index .Values.indexerDefaults.config "network-subgraph-endpoint" | default "https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/3xQHhMudr1oh69ut36G2mbzpYmYxwqCeU6wwqyCDCnqV" | quote }}
@@ -140,19 +140,19 @@ indexerDefaults:
       recently_closed_allocation_buffer_secs = {{ index .Values.indexerDefaults.configService "subgraphs-network-recently-closed-allocation-buffer-secs" }}
 
       [subgraphs.escrow]
-      query_url = {{ index .Values.indexerDefaults.configService "subgraphs-escrow-query-url" | default "https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD" }}
+      query_url = {{ index .Values.indexerDefaults.configService "subgraphs-escrow-query-url" | default "https://gateway-arbitrum.network.thegraph.com/api/supercoolAPIkey/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD" | quote }}
       syncing_interval_secs = {{ index .Values.indexerDefaults.configService "subgraphs-escrow-syncing-interval-secs" }}
 
       [blockchain]
       chain_id = {{ index .Values.indexerDefaults.configService "blockchain-chain-id" }}
-      receipts_verifier_address = {{ index .Values.indexerDefaults.configService "blockchain-receipts-verifier-address" | default "0xfC24cE7a4428A6B89B52645243662A02BA734ECF" }}
+      receipts_verifier_address = {{ index .Values.indexerDefaults.configService "blockchain-receipts-verifier-address" | default "0xfC24cE7a4428A6B89B52645243662A02BA734ECF" | quote }}
 
       ##############################################
       # Specific configurations to indexer-service #
       ##############################################
       [service]
-      host_and_port = {{ index .Values.indexerDefaults.configService "service-host-and-port" }}
-      url_prefix = {{ index .Values.indexerDefaults.configService "service-url-prefix" }}
+      host_and_port = {{ index .Values.indexerDefaults.configService "service-host-and-port" | quote }}
+      url_prefix = {{ index .Values.indexerDefaults.configService "service-url-prefix" | quote }}
       serve_network_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-network-subgraph" }}
       serve_escrow_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-escrow-subgraph" }}
 
@@ -173,30 +173,23 @@ indexerDefaults:
 
       [tap.sender_aggregator_endpoints]
       {{- range $key, $value := index .Values.indexerDefaults.configService "tap-sender-aggregator-endpoints" }}
-      {{ $key }} = "{{ $value }}"
+      {{ $key }} = {{ $value | quote }}
       {{- end }}
 
 
+  secretEnv:
+    POSTGRES_USERNAME:
+      secretName: 
+      key:
+    POSTGRES_PASSWORD:
+      secretName: 
+      key: 
+  env: 
+    POSTGRES_HOST: "pg-indexer-metadata"
+    POSTGRES_PORT: 5432
+    POSTGRES_DB: "indexer"
+    INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
 
-  env: {}
-
-  secretEnv: 
-    secretEnv:
-      PRIMARY_SUBGRAPH_DATA_PGUSER:
-        # -- Name of the secret that contains your PG username
-        secretName:
-        # -- Name of the data key in the secret that contains your PG username
-        key:
-      PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
-        # -- Name of the secret that contains your PG password
-        secretName:
-        # -- Name of the data key in the secret that contains your PG password
-        key:
-      INDEXER_OPERATOR_MNEMONIC:
-        # -- Name of the secret that contains your Operator mnemonic
-        secretName:
-        # -- Name of the data key in the secret that contains your Operator mnemonic
-        key:
 
 
 indexerAgent:
@@ -223,9 +216,9 @@ indexerAgent:
     # -- (optional) Query endpoint for syncing status of EBO and its contract state.
     epoch-subgraph-endpoint: null
 
-  env: {}
-
   secretEnv: {}
+
+  env: {}
 
   # -- Additional CLI arguments to pass to `indexer-agent`
   extraArgs: []
@@ -283,7 +276,7 @@ indexerAgent:
 indexerService:
   # -- Image for indexer-service
   image:
-    repository: ghcr.io/graphprotocol/indexer-service
+    repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion
@@ -292,9 +285,9 @@ indexerService:
   # -- Number of replicas to run
   replicas: 1
 
-  env: {}
-
   secretEnv: {}
+
+  env: {}
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
@@ -362,9 +355,9 @@ indexerTapAgent:
   # -- Number of replicas to run
   replicas: 1
 
-  env: {}
-
   secretEnv: {}
+
+  env: {}
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []

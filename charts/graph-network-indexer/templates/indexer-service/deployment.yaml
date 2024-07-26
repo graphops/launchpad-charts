@@ -61,14 +61,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
           {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
@@ -79,8 +71,17 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          
           command:
-          - /usr/local/bin/service
+          - /usr/local/bin/service 
           - --config=/config/config.toml
             {{- with $values.extraArgs }}
               {{- toYaml (. | default list) | nindent 12 }}
