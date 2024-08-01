@@ -2,7 +2,7 @@
 
 Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.3](https://img.shields.io/badge/Version-0.4.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.0-7d1d84c](https://img.shields.io/badge/AppVersion-v3.1.0--7d1d84c-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.4.4](https://img.shields.io/badge/Version-0.4.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.1.0-7d1d84c](https://img.shields.io/badge/AppVersion-v3.1.0--7d1d84c-informational?style=flat-square)
 
 ## Features
 
@@ -133,6 +133,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
  | prometheus.serviceMonitors.labels |  | object | `{}` |
+ | prometheus.serviceMonitors.metricRelabelings |  | list | `[]` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
  | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
