@@ -39,7 +39,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | common.env.FIREETH_COMMON_CHAIN_ID |  | string | `"1"` |
  | common.env.FIREETH_COMMON_LIVE_BLOCKS_ADDR |  | string | `"relayer:10014"` |
- | common.env.FIREETH_COMMON_NETWORK_ID |  | string | `"1"` |
  | common.env.FIREETH_GLOBAL_DATA_DIR |  | string | `"/var/lib/fireeth"` |
  | common.env.FIREETH_GLOBAL_LOG_TO_FILE |  | string | `"false"` |
  | common.env.MANAGER_API_PORT |  | string | `"10011"` |
