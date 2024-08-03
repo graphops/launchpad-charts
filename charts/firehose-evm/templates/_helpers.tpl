@@ -102,7 +102,6 @@ This helper merges additional flags into the main configuration and constructs t
 }}
 {{- with .readerConfig }}
 {{- $args = concat $args (list (print "--syncmode=" .syncMode)) }}
-{{- $args = concat $args (list (print "--networkid=" .networkId)) }}
 {{- $args = concat $args (list (print "--http.api=" .httpRpc.api)) }}
 {{- $args = concat $args (list (print "--http.addr=" .httpRpc.addr)) }}
 {{- if .metrics.enabled }}
