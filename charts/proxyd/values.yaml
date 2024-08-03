@@ -151,6 +151,7 @@ rpcMethodMappings:
   eth_estimateGas: main
   eth_getBlockByHash: main
   eth_getBlockByNumber: main
+  eth_getBlockReceipts: main
   eth_getTransactionByHash: main
   eth_getTransactionByBlockHashAndIndex: main
   eth_getTransactionByBlockNumberAndIndex: main
