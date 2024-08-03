@@ -22,4 +22,4 @@ version: 1.0.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=ghcr.io/graphprotocol/indexer-service-rs
-appVersion: "1.0.0-rc.4"
+appVersion: "sha-3982d0f"

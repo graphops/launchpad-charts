@@ -117,8 +117,8 @@ indexerDefaults:
       # can overwrite with environment variables. For example, the following can be replaced
       # by [PREFIX]_DATABASE_POSTGRESURL, where PREFIX can be `INDEXER_SERVICE` or `TAP_AGENT`:
       #
-      # [database]
-      # postgres_url = "postgresql://indexer:${POSTGRES_PASSWORD}@postgres:5432/indexer_components_0"
+      [database]
+      postgres_url = "postgres://test:test@pg-indexer-metadata:5432/indexer"
 
       [indexer]
       indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | default "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" | quote }}
@@ -126,9 +126,6 @@ indexerDefaults:
 
       [metrics]
       port = {{ index .Values.indexerDefaults.configService "metrics-port" }}
-
-      # [database]
-      # postgres_url = "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database"}}"
 
       [graph_node]
       query_url = {{ index .Values.indexerDefaults.config "graph-node-query-endpoint" | default "http://query-node-0:8000" | quote }}
@@ -178,18 +175,9 @@ indexerDefaults:
 
 
   secretEnv:
-    POSTGRES_USERNAME:
-      secretName: 
-      key:
-    POSTGRES_PASSWORD:
-      secretName: 
-      key: 
+    {}
   env: 
-    POSTGRES_HOST: "pg-indexer-metadata"
-    POSTGRES_PORT: 5432
-    POSTGRES_DB: "indexer"
-    INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
-
+    {}
 
 
 indexerAgent:
@@ -197,7 +185,7 @@ indexerAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    tag: "v0.21.3"
+    tag: "v0.21.4"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
@@ -285,9 +273,20 @@ indexerService:
   # -- Number of replicas to run
   replicas: 1
 
-  secretEnv: {}
+  secretEnv: 
+    INDEXER_SERVICE_POSTGRES_USERNAME:
+      secretName: 
+      key:
+    INDEXER_SERVICE_POSTGRES_PASSWORD:
+      secretName: 
+      key: 
 
-  env: {}
+  env: 
+    INDEXER_SERVICE_POSTGRES_HOST: "pg-indexer-metadata"
+    INDEXER_SERVICE_POSTGRES_PORT: 5432
+    INDEXER_SERVICE_POSTGRES_DATABASE: "indexer"
+    INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
@@ -355,9 +354,19 @@ indexerTapAgent:
   # -- Number of replicas to run
   replicas: 1
 
-  secretEnv: {}
+  secretEnv: 
+    INDEXER_SERVICE_POSTGRES_USERNAME:
+      secretName: 
+      key:
+    INDEXER_SERVICE_POSTGRES_PASSWORD:
+      secretName: 
+      key: 
 
-  env: {}
+  env: 
+    INDEXER_SERVICE_POSTGRES_HOST: "pg-indexer-metadata"
+    INDEXER_SERVICE_POSTGRES_PORT: 5432
+    INDEXER_SERVICE_POSTGRES_DATABASE: "indexer"
+    INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
