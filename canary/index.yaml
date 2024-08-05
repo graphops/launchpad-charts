@@ -5549,6 +5549,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.8.2
+      created: "2024-08-05T20:19:09Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 9f43fcc9c246d74b865fa87174ce2d97f84ba6ac48a8c4b3fa5dbace99358a40
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.5.6-canary.2/proxyd-0.5.6-canary.2.tgz
+      version: 0.5.6-canary.2
+    - apiVersion: v2
+      appVersion: v4.8.2
       created: "2024-08-05T11:05:29Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 0e7996c2fe28ab71cb02efa6352daba55ec63c4570b4d89282761a6751407d0d
@@ -6179,6 +6189,16 @@ entries:
   subgraph-availability-oracle:
     - apiVersion: v2
       appVersion: v1.0.0
+      created: "2024-08-05T17:03:23Z"
+      description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
+      digest: ee277bd8d997f5c3a1f1b816ab33aca4376840d2151fc728c8a22216a7fd8a5e
+      name: subgraph-availability-oracle
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-availability-oracle-0.6.0/subgraph-availability-oracle-0.6.0.tgz
+      version: 0.6.0
+    - apiVersion: v2
+      appVersion: v1.0.0
       created: "2024-08-05T05:28:09Z"
       description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
       digest: d7901b0882c89eb873a0aaf0aed18e2e9da19affcfb4b5fd354670cd8457f1b9
@@ -6688,4 +6708,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-08-05T17:10:53.485480939Z"
+generated: "2024-08-05T20:21:51.678724241Z"
