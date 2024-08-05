@@ -102,6 +102,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -204,6 +205,7 @@
           "showLegend": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -319,6 +321,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -434,6 +437,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -536,6 +540,7 @@
           "sortDesc": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -639,6 +644,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -741,6 +747,7 @@
           "sortDesc": false
         },
         "tooltip": {
+          "maxHeight": 600,
           "mode": "single",
           "sort": "none"
         }
@@ -764,13 +771,13 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 38,
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "eth-mainnet",
           "value": "eth-mainnet"
         },
@@ -778,7 +785,7 @@
           "type": "prometheus",
           "uid": "prometheus"
         },
-        "definition": "label_values(proxyd_backend_latest_block,namespace)",
+        "definition": "label_values(proxyd_rpc_requests_total,namespace)",
         "hide": 0,
         "includeAll": false,
         "label": "Namespace",
@@ -786,7 +793,8 @@
         "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(proxyd_backend_latest_block,namespace)",
+          "qryType": 1,
+          "query": "label_values(proxyd_rpc_requests_total,namespace)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
@@ -801,6 +809,7 @@
     "from": "now-6h",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "Proxyd JSON-RPC Overview",
