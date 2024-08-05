@@ -129,7 +129,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(increase(reconcile_runs_total{pod=\"$pod\"}[$__range]))",
+          "expr": "sum(increase(reconcile_runs_total{pod=\"$pod\", namespace=\"$namespace\"}[$__range]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": true,
@@ -205,7 +205,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(increase(reconcile_runs_err{pod=\"$pod\"}[$__range]))",
+          "expr": "sum(increase(reconcile_runs_err{pod=\"$pod\", namespace=\"$namespace\"}[$__range]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": true,
@@ -278,7 +278,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(increase(denied_subgraphs_total{pod=\"$pod\"}[$__range])) OR on() vector(0)",
+          "expr": "sum(increase(denied_subgraphs_total{pod=\"$pod\", namespace=\"$namespace\"}[$__range])) OR on() vector(0)",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -317,7 +317,7 @@
             "uid": "${DS_LOKI}"
           },
           "editorMode": "code",
-          "expr": "{pod=\"$pod\"} |~ \"(ERRO|no backends available for method)\"",
+          "expr": "{pod=\"$pod\",namespace=\"$namespace\"} |~ \"(ERRO|no backends available for method)\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -354,7 +354,7 @@
             "uid": "${DS_LOKI}"
           },
           "editorMode": "code",
-          "expr": "{pod=\"$pod\"}",
+          "expr": "{pod=\"$pod\", namespace=\"$namespace\"}",
           "queryType": "range",
           "refId": "A"
         }
@@ -505,7 +505,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(reconcile_runs_total{pod=\"$pod\"}[1m])",
+          "expr": "increase(reconcile_runs_total{pod=\"$pod\", namespace=\"$namespace\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "total runs",
@@ -669,7 +669,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(ipfs_cache_hits{pod=\"$pod\"}[1m])",
+          "expr": "increase(ipfs_cache_hits{pod=\"$pod\", namespace=\"$namespace\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "cache hits",
@@ -809,7 +809,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg_over_time(up{pod=\"$pod\"}[$__interval])",
+          "expr": "avg_over_time(up{pod=\"$pod\", namespace=\"$namespace\"}[$__interval])",
           "hide": false,
           "interval": "",
           "legendFormat": "total runs",
@@ -908,7 +908,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "up{pod=\"$pod\"}",
+          "expr": "up{pod=\"$pod\", namespace=\"$namespace\"}",
           "hide": false,
           "interval": "",
           "legendFormat": "total runs",
@@ -1007,7 +1007,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(denied_subgraphs_total{pod=\"$pod\"}[1m])",
+          "expr": "increase(denied_subgraphs_total{pod=\"$pod\", namespace=\"$namespace\"}[1m])",
           "hide": false,
           "interval": "",
           "legendFormat": "total runs",
@@ -1128,6 +1128,6 @@
   "timezone": "",
   "title": "Subgraph Availability Oracle",
   "uid": "",
-  "version": 1,
+  "version": 3,
   "weekStart": ""
 }
