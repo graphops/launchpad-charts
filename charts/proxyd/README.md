@@ -127,7 +127,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | backendConfigTemplate | TOML configuration for backend | string | `"# How long proxyd should wait for a backend response before timing out.\nresponse_timeout_seconds = 300\n# Maximum response size, in bytes, that proxyd will accept from a backend.\nmax_response_size_bytes = 10737420000 # 10 GiB\n# Maximum number of times proxyd will try a backend before giving up.\nmax_retries = 3\n# Number of seconds to wait before trying an unhealthy backend again.\nout_of_service_seconds = 10\n"` |
- | backendGroups.consensus_aware | Enable consensus awareness | bool | `true` |
+ | backendGroups.routing_strategy | Set the routing strategy (consensus_aware | multicall | fallback) | string | `"consensus_aware"` |
  | backends.example-backend | Example backend configuration, keep disabled | object | `{"enabled":false,"extraConfig":{},"groups":["main"],"rpcUrl":"http://your-node:8545","wsUrl":"ws://your-node:8545"}` |
  | backends.example-backend.enabled | Enable the backend | bool | `false` |
  | backends.example-backend.extraConfig | Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47)) | object | `{}` |
