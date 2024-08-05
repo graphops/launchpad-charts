@@ -77,7 +77,7 @@ image:
   pullPolicy: IfNotPresent
   # -- Overrides the image tag
   # @default -- Chart.appVersion
-  tag: ""
+  tag: "latest"
 
 env:
   # -- The address of the Rewards Manager contract
