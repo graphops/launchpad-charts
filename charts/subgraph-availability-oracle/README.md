@@ -2,7 +2,7 @@
 
 Deploy a Subgraph Availability Oracle into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v1.0.0](https://img.shields.io/badge/AppVersion-v1.0.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -47,6 +47,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | env.RUST_LOG | RUST_LOG level | string | `"info"` |
  | env.SUBGRAPH_AVAILABILITY_MANAGER_CONTRACT | The address of the subgraph availability manager contract | string | `""` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
+ | extraLabels |  | object | `{}` |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |

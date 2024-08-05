@@ -42,6 +42,8 @@ rbac:
       - "list"
       - "watch"
 
+extraLabels: {}
+
 prometheus:
   serviceMonitors:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))

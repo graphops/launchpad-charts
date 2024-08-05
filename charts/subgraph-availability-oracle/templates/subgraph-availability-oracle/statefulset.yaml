@@ -21,6 +21,9 @@ spec:
       {{- end }}
       labels:
         {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 8 }}
+        {{- with $values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:

@@ -16,15 +16,14 @@ kind: Service
 metadata:
   {{- if $values.service.topologyAwareRouting.enabled }}
   annotations:
-    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
-    service.kubernetes.io/topology-mode: "auto"
-    {{- else }}
     service.kubernetes.io/topology-aware-hints: "auto"
-    {{- end }}
   {{- end }}
   name: {{ include "subgraph-availability-oracle.fullname" . }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
+    {{- with $values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
 spec:
   type: {{ $values.service.type }}
