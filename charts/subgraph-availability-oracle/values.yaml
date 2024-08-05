@@ -42,6 +42,7 @@ rbac:
       - "list"
       - "watch"
 
+# -- Additional labels to add to all resources
 extraLabels: {}
 
 prometheus:

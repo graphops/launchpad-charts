@@ -47,7 +47,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | env.RUST_LOG | RUST_LOG level | string | `"info"` |
  | env.SUBGRAPH_AVAILABILITY_MANAGER_CONTRACT | The address of the subgraph availability manager contract | string | `""` |
  | extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
- | extraLabels |  | object | `{}` |
+ | extraLabels | Additional labels to add to all resources | object | `{}` |
  | fullnameOverride |  | string | `""` |
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
