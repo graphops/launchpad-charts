@@ -5,7 +5,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.5.17"
+      "version": ""
     },
     {
       "type": "panel",
@@ -119,7 +119,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "9.5.17",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -195,7 +195,7 @@
         "textMode": "value",
         "wideLayout": true
       },
-      "pluginVersion": "9.5.17",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -269,7 +269,7 @@
         "textMode": "auto",
         "wideLayout": true
       },
-      "pluginVersion": "9.5.17",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -1034,8 +1034,7 @@
   ],
   "refresh": "",
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [],
   "templating": {
     "list": [
@@ -1094,6 +1093,29 @@
         "skipUrlSync": false,
         "sort": 0,
         "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(reconcile_runs_total{container=\"subgraph-availability-oracle\"},namespace)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(reconcile_runs_total{container=\"subgraph-availability-oracle\"},namespace)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },
@@ -1101,6 +1123,7 @@
     "from": "now-15m",
     "to": "now"
   },
+  "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {},
   "timezone": "",
   "title": "Subgraph Availability Oracle",
