@@ -6,6 +6,9 @@ metadata:
   name: {{ include "subgraph-availability-oracle.fullname" . }}-dashboards
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
+    {{- with .Values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
 data:
 {{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
