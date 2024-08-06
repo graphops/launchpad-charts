@@ -7,6 +7,9 @@ metadata:
   name: {{ include "subgraph-availability-oracle.fullname" . }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
+    {{- with $values.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   serviceName: {{ include "subgraph-availability-oracle.fullname" . }}-headless
   replicas: 1 # Should only ever be one instance
@@ -21,6 +24,9 @@ spec:
       {{- end }}
       labels:
         {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 8 }}
+        {{- with $values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- with $values.imagePullSecrets }}
       imagePullSecrets:
