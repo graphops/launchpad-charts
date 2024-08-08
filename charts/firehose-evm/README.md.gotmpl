@@ -1,0 +1,34 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Introduction
+
+Firehose is a high-performance blockchain data extraction tool that captures, processes, and streams blockchain data in real-time, enabling efficient data analysis and integration for various applications. This chart can be used to deploy any [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) chain.
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
+- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
+- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

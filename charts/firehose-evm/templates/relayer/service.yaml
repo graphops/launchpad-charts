@@ -1,0 +1,26 @@
+{{- $values := $.Values.relayer }}
+{{- $componentName := "relayer" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $port := $values.service.ports }}
+    - port: {{ $port.containerPort }} # the port we expose on the Service, user configurable
+      targetPort: {{ $port.name }} # the name of the port on the container that we are routing to
+      protocol: {{ $port.protocol | default "TCP" }}
+      name: {{ $port.name }}
+  {{- end }}
+  selector:
+    {{- include "firehose-evm.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
