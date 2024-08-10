@@ -3,33 +3,11 @@
 {{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 {{- $configHash := "" }}
-{{- if $values.configMap.enabled }}
 
 {{/* Use the helper to merge additional flags and construct the template variables */}}
 {{- $configToml := include "firehose-evm.mergeConfig" ( merge ( deepCopy .Values ) ( dict "componentName" $componentName ) ) -}}
 {{- $configHash = sha256sum $configToml }}
 {{- $readerConfig := include "firehose-evm.readerArgs" $values }}
-
-{{/* START Reader ConfigMap */}}
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
-  labels:
-    {{- include "firehose-evm.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
-data:
-  config.yaml: |-
-    start:
-      args:
-        - reader-node
-      flags:
-{{- $configToml | trim | nindent 8 }}
-        reader-node-arguments: |
-{{- $readerConfig | nindent 10 }}
-{{- end }}
-{{/* END Reader ConfigMap */}}
 
 {{/* Now onto the actual Statefulset for indexer */}}
 
@@ -105,22 +83,44 @@ spec:
             - -c
             - |
               set -ex;
+
+              # Define variables
+              STAMP="{{ $values.dataDir }}/._download.stamp"
+              SNAPSHOT_LOCATION="${SNAPSHOT_REMOTE_LOCATION}"
+              
+              # Check if STAMP file exists and matches the current SNAPSHOT_LOCATION
+              if [[ -f "${STAMP}" && "$(cat "${STAMP}")" = "${SNAPSHOT_LOCATION}" ]]; then
+                echo "Snapshot has not changed. Skipping download.";
+                exit 0;
+              fi
+
               # Check if {{ $values.dataDir }} path has data in it
               if [ "$(ls -A {{ $values.dataDir }})" ]; then
-                echo "Data already exists in /data/geth. Skipping rclone copy.";
-              else
-                # Perform the rclone copy if {{ $values.dataDir }} path is empty
-                if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} {{ $values.dataDir }}/; then
-                  echo "rclone copy failed";
-                  exit 1;
-                fi;
+                echo "Data already exists in {{ $values.dataDir }}. Checking if snapshot needs to be updated.";
+              fi
 
-                # Find the tar file (assuming there is only one) and extract it;
-                echo $?;
-                TAR_FILE=$(ls {{ $values.dataDir }}/*.tar.zst);
-                tar -xzvf "$TAR_FILE" -C {{ $values.dataDir }};
-                rm "$TAR_FILE";
+              # Perform the rclone copy
+              if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} {{ $values.dataDir }}/; then
+                echo "rclone copy failed";
+                exit 1;
               fi;
+
+              # Find the tar file (assuming there is only one) and extract it;
+              TAR_FILE=$(ls {{ $values.dataDir }}/*.tar.zst);
+              TMP_DIR="{{ $values.dataDir }}/._tmp_extract"
+              mkdir -p "$TMP_DIR"
+
+              if tar -xzvf "$TAR_FILE" -C "$TMP_DIR"; then
+                mv "$TMP_DIR"/* "{{ $values.dataDir }}/"
+                rm -rf "$TMP_DIR"
+              else
+                echo "Extraction failed. Cleaning up..."
+                rm -rf "$TMP_DIR"
+                exit 1
+              fi
+
+              # Record the current SNAPSHOT_LOCATION in the STAMP file
+              echo "${SNAPSHOT_LOCATION}" > "${STAMP}";
 
           env:
           {{- with $values.initSnapshot.env }}
