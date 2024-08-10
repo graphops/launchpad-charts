@@ -1,0 +1,28 @@
+{{- $values := .Values.reader }}
+{{- $componentName := "reader" }}
+{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+{{- $configHash := "" }}
+
+{{/* Use the helper to merge additional flags and construct the template variables */}}
+{{- $configToml := include "firehose-evm.mergeConfig" ( merge ( deepCopy .Values ) ( dict "componentName" $componentName ) ) -}}
+{{- $configHash = sha256sum $configToml }}
+{{- $readerConfig := include "firehose-evm.readerArgs" $values }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  config.yaml: |-
+    start:
+      args:
+        - reader-node
+      flags:
+{{- $configToml | trim | nindent 8 }}
+        reader-node-arguments: |
+{{- $readerConfig | nindent 10 }}
+{{- end }}
