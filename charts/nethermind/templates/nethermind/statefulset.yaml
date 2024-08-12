@@ -143,6 +143,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
           command:
             - sh
             - -c
@@ -150,7 +152,21 @@ spec:
               set -ex;
               export EXTERNAL_PORT=$(kubectl get services {{ include "nethermind.fullname" . }}-{{ $componentName }}-p2p-0 -o jsonpath='{.spec.ports[0].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
-              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              until [ ! -z "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    EXTERNAL_IP=$(curl --silent --max-time 5 $SITE);
+                    if [ ! -z "$EXTERNAL_IP" ]; then
+                      break;
+                    fi;
+                  else
+                    break;
+                  fi;
+                done;
+                [ -z "$EXTERNAL_IP" ] && sleep 1;
+              done;
+              export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
               echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;

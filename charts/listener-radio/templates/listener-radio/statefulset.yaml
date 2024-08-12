@@ -58,6 +58,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
           command:
             - sh
             - -c
@@ -66,7 +68,21 @@ spec:
               export EXTERNAL_PORT_WAKU=$(kubectl get services {{ include "listener-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="waku-port")].nodePort}');
               export EXTERNAL_PORT_DISCV5=$(kubectl get services {{ include "listener-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="discv5-port")].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
-              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              until [ ! -z "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    EXTERNAL_IP=$(curl --silent --max-time 5 $SITE);
+                    if [ ! -z "$EXTERNAL_IP" ]; then
+                      break;
+                    fi;
+                  else
+                    break;
+                  fi;
+                done;
+                [ -z "$EXTERNAL_IP" ] && sleep 1;
+              done;
+              export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
               echo "EXTERNAL_PORT_WAKU=$EXTERNAL_PORT_WAKU" >  /env/init-nodeport;
               echo "EXTERNAL_PORT_DISCV5=$EXTERNAL_PORT_DISCV5" >>  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
