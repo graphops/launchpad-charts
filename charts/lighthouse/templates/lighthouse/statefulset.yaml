@@ -83,12 +83,28 @@ spec:
           command:
             - sh
             - -c
-            - |
+            - >
               set -ex;
-              #export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
-              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              until [ -n "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    # Attempt to retrieve the external IP using the current site
+                    EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+                    # If a valid IP is retrieved, exit the loop
+                    if [ -n "$EXTERNAL_IP" ]; then
+                      break
+                    fi
+                  fi
+                done
+                # Sleep for a second before retrying if EXTERNAL_IP is still not set
+                if [ -z "$EXTERNAL_IP" ]; then
+                  sleep 1
+                fi
+              done
+              export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
               echo "EXTERNAL_IP=$EXTERNAL_IP"     > /env/init-external-endpoint;
-              cat /env/init-external-endpoint;
+              cat /env/init-nodeport;
           volumeMounts:
             - name: env-external-endpoint
               mountPath: /env
