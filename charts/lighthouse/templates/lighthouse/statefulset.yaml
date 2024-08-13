@@ -104,7 +104,7 @@ spec:
               done
               export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
               echo "EXTERNAL_IP=$EXTERNAL_IP"     > /env/init-external-endpoint;
-              cat /env/init-nodeport;
+              cat /env/init-external-endpoint;
           volumeMounts:
             - name: env-external-endpoint
               mountPath: /env
