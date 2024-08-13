@@ -49,8 +49,8 @@ jobs:
       - name: Yarn install
         run: |
           set -x -e
-
-          yarn install
+          corepack enable
+          corepack yarn install
 
       - name: Get chart name
         id: chart_name
@@ -68,7 +68,7 @@ jobs:
           export GIT_CLIFF__GIT__TAG_PATTERN="$CHART-*"
           GIT_CLIFF__GIT__IGNORE_TAGS="$CHART-v?[0-9]+.[0-9]+.[0-9]+-.*"
 
-          yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" --strip all -l -t "${{ needs.init.outputs.tag }}" -o "RELEASE-NOTES.md"
+          corepack yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" --strip all -l -t "${{ needs.init.outputs.tag }}" -o "RELEASE-NOTES.md"
 
       - uses: actions/upload-artifact@v3
         with:
