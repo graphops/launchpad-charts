@@ -150,7 +150,7 @@ spec:
             - -c
             - |
               set -ex;
-              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.spec.ports[0].nodePort}');
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
               until [ -n "$EXTERNAL_IP" ]; do
                 for SITE in $SITES; do
