@@ -80,6 +80,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
           command:
             - sh
             - -c
