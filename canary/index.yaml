@@ -1308,6 +1308,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v2.60.6
+      created: "2024-08-14T14:56:11Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 18edc806cd1dd721fce4353834c343c60d605bf0b2e5eae0f34f4dd7167f5e97
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.5-canary.4/erigon-0.10.5-canary.4.tgz
+      version: 0.10.5-canary.4
+    - apiVersion: v2
+      appVersion: v2.60.6
       created: "2024-08-14T13:49:50Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 40d8f412c2f88a6395a7437fe914c9f001e62b3c151a4e8dadf980615f9db93f
@@ -3804,6 +3814,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v5.3.0
+      created: "2024-08-14T14:56:28Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 709a33de68e7fcf0d6149bec0683b41f656de2299f329704b227adf2c19890bb
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.9-canary.3/lighthouse-0.5.9-canary.3.tgz
+      version: 0.5.9-canary.3
+    - apiVersion: v2
+      appVersion: v5.3.0
       created: "2024-08-14T13:44:05Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: e8463adfa9704473a085bfc04b237fb2b8ed3dc62e1fd050ee8910cf84b5f09f
@@ -4877,6 +4897,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v24.7.0
+      created: "2024-08-14T14:53:44Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 676da5b3061297374147b7c1b4d2992ffb415d4dca74743e4c34194f2dff2aac
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.16-canary.2/nimbus-0.5.16-canary.2.tgz
+      version: 0.5.16-canary.2
+    - apiVersion: v2
+      appVersion: multiarch-v24.7.0
       created: "2024-08-14T13:21:45Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 08ccbe6faa6f590988804674dc54029925885af855c95087a0828cd36eac2ccf
@@ -5617,6 +5647,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.8.3
+      created: "2024-08-14T14:56:19Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 6d6d60e5f73979bbf402b1abb00d3637ebe36d94d44e74dc837d4f19e6c5cfa2
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.1-canary.3/proxyd-0.6.1-canary.3.tgz
+      version: 0.6.1-canary.3
     - apiVersion: v2
       appVersion: v4.8.3
       created: "2024-08-14T13:50:01Z"
@@ -6838,4 +6878,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-08-14T13:57:52.119856201Z"
+generated: "2024-08-14T14:58:48.085720708Z"
