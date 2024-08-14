@@ -53,6 +53,8 @@ metadata:
     {{- include "lighthouse.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
     serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+    pod: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-0
+    type: p2p # this label is used by the initContainer to select this service
 spec:
   type: {{ $values.service.type }}
   ports:
