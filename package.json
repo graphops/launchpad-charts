@@ -5,13 +5,14 @@
   "license": "Apache 2",
   "private": true,
   "devDependencies": {
-    "@commitlint/cli": "^16.2.3",
-    "@commitlint/config-conventional": "^16.2.1",
-    "git-cliff": "^1.2.0",
-    "husky": "^8.0.3"
+    "@commitlint/cli": "^19.4.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "git-cliff": "^2.4.0",
+    "husky": "^9.1.4"
   },
   "scripts": {
     "prepare": "husky install",
     "lint": "./scripts/lint.sh"
-  }
+  },
+  "packageManager": "yarn@3.6.0+sha256.6da0a4bdb4de78399dd577ff72273ca46152c61399574ffc8e9a5a3c36eab270"
 }

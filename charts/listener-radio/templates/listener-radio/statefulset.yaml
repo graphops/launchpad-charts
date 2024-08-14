@@ -58,15 +58,33 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
           command:
             - sh
             - -c
-            - >
+            - |
               set -ex;
-              export EXTERNAL_PORT_WAKU=$(kubectl get services {{ include "listener-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="waku-port")].nodePort}');
-              export EXTERNAL_PORT_DISCV5=$(kubectl get services {{ include "listener-radio.fullname" . }}-p2p-0 -o=jsonpath='{.spec.ports[?(@.name=="discv5-port")].nodePort}');
+              export EXTERNAL_PORT_WAKU=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o=jsonpath='{.spec.ports[?(@.name=="waku-port")].nodePort}');
+              export EXTERNAL_PORT_DISCV5=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o=jsonpath='{.spec.ports[?(@.name=="discv5-port")].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
-              export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+              until [ -n "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    # Attempt to retrieve the external IP using the current site
+                    EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+                    # If a valid IP is retrieved, exit the loop
+                    if [ -n "$EXTERNAL_IP" ]; then
+                      break
+                    fi
+                  fi
+                done
+                # Sleep for a second before retrying if EXTERNAL_IP is still not set
+                if [ -z "$EXTERNAL_IP" ]; then
+                  sleep 1
+                fi
+              done
+              export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
               echo "EXTERNAL_PORT_WAKU=$EXTERNAL_PORT_WAKU" >  /env/init-nodeport;
               echo "EXTERNAL_PORT_DISCV5=$EXTERNAL_PORT_DISCV5" >>  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
