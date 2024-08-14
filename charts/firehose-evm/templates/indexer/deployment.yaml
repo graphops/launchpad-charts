@@ -1,5 +1,5 @@
-{{- $values := .Values.merger }}
-{{- $componentName := "merger" }}
+{{- $values := $.Values.indexer }}
+{{- $componentName := "indexer" }}
 {{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 {{- $configHash := "" }}
@@ -8,16 +8,16 @@
 {{- $configToml := include "firehose-evm.mergeConfig" ( merge ( deepCopy .Values ) ( dict "componentName" $componentName ) ) -}}
 {{- $configHash = sha256sum $configToml }}
 
-{{/* Now onto the actual Statefulset for merger */}}
+{{/* Now onto the actual Deployment for indexer */}}
 
 {{- $env := merge .Values.common.env $values.env }}
 {{- $secretEnv := merge .Values.common.secretEnv $values.secretEnv }}
 
-{{/* START StatefulSet */}}
+{{/* START Deployment */}}
 ---
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
   labels:
@@ -30,12 +30,7 @@ spec:
       {{- include "firehose-evm.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
   serviceName: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
-  replicas: 1
-  volumeClaimTemplates:
-    - metadata:
-        name: merger
-      spec:
-        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  replicas: {{ $values.replicas }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -58,8 +53,8 @@ spec:
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
       containers:
         - name: {{ $componentName }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
             capabilities:
@@ -101,21 +96,16 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: merger
+            - name: indexer
               mountPath: "/var/lib/fireeth"
             - name: config
               mountPath: "/config"
               readOnly: true
       volumes:
-        - name: merger
-          persistentVolumeClaim:
-            claimName: merger
+        - name: indexer
+          emptyDir: {}
         - name: config
           configMap:
-            {{- if .Values.indexer.configMap.enabled }}
             name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
-            {{- else }}
-            name: {{ .Values.indexer.existingConfigMap }}
-            {{- end }}
 {{- end }}
-{{/* END StatefulSet */}}
+{{/* END Deployment */}}

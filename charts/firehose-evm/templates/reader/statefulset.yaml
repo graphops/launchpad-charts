@@ -82,12 +82,12 @@ spec:
             - sh
             - -c
             - |
-              set -ex;
+              set -x;
 
               # Define variables
               STAMP="{{ $values.dataDir }}/._download.stamp"
               SNAPSHOT_LOCATION="${SNAPSHOT_REMOTE_LOCATION}"
-              
+              echo $SNAPSHOT_LOCATIONS
               # Check if STAMP file exists and matches the current SNAPSHOT_LOCATION
               if [[ -f "${STAMP}" && "$(cat "${STAMP}")" = "${SNAPSHOT_LOCATION}" ]]; then
                 echo "Snapshot has not changed. Skipping download.";
@@ -100,27 +100,23 @@ spec:
               fi
 
               # Perform the rclone copy
-              if ! rclone -v --progress --checkers 16 --transfers 16 --s3-chunk-size 16M --config /config/rclone copy ${SNAPSHOT_REMOTE_LOCATION} {{ $values.dataDir }}/; then
+              if ! rclone -v --progress --checkers 32 --transfers 32 --multi-thread-streams 16 --fast-list --s3-chunk-size 64M  --config /config/rclone copy ${SNAPSHOT_LOCATION} {{ $values.dataDir }}/; then
                 echo "rclone copy failed";
                 exit 1;
               fi;
+                # Find the tar file (assuming there is only one) and extract it;
+                TAR_FILE=$(ls {{ $values.dataDir }}/*.tar.zst);
+                if ! tar -xzvf "$TAR_FILE" -C {{ $values.dataDir }}; then
+                  echo "Tar extraction failed. Entering sleep to allow manual intervention."
+                  echo "You can now enter the container and attempt extraction manually."
+                  echo "The tar file is located at: $TAR_FILE"
+                  sleep 6000
+                fi
+                rm "$TAR_FILE";
 
-              # Find the tar file (assuming there is only one) and extract it;
-              TAR_FILE=$(ls {{ $values.dataDir }}/*.tar.zst);
-              TMP_DIR="{{ $values.dataDir }}/._tmp_extract"
-              mkdir -p "$TMP_DIR"
-
-              if tar -xzvf "$TAR_FILE" -C "$TMP_DIR"; then
-                mv "$TMP_DIR"/* "{{ $values.dataDir }}/"
-                rm -rf "$TMP_DIR"
-              else
-                echo "Extraction failed. Cleaning up..."
-                rm -rf "$TMP_DIR"
-                exit 1
-              fi
-
-              # Record the current SNAPSHOT_LOCATION in the STAMP file
-              echo "${SNAPSHOT_LOCATION}" > "${STAMP}";
+                # Record the current SNAPSHOT_LOCATION in the STAMP file
+                echo "${SNAPSHOT_LOCATION}" > "${STAMP}";
+              fi;
 
           env:
           {{- with $values.initSnapshot.env }}

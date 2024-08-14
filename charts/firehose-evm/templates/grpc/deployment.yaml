@@ -112,10 +112,6 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            {{- if .Values.grpc.configMap.enabled }}
             name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
-            {{- else }}
-            name: {{ .Values.grpc.existingConfigMap }}
-            {{- end }}
 {{- end }}
 {{/* END Deployment */}}
