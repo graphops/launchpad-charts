@@ -3824,6 +3824,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v5.3.0
+      created: "2024-08-15T17:25:27Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 8c26e01aa5feb1d915da9cc9f008d9dd4810cfb51254894adfcc7b6a3b26a1b0
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.9/lighthouse-0.5.9.tgz
+      version: 0.5.9
+    - apiVersion: v2
+      appVersion: v5.3.0
       created: "2024-08-14T18:40:56Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 41589bde748166a823eb0bf40c565eb362a2d83f5593bf5dd31a477f8c668375
@@ -5679,6 +5689,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.8.3
+      created: "2024-08-15T17:35:41Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 0cdf356c04483ae85a050eda74bca0fe07beab5c597ee98afa55f77cfb983f63
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.1-canary.4/proxyd-0.6.1-canary.4.tgz
+      version: 0.6.1-canary.4
+    - apiVersion: v2
+      appVersion: v4.8.3
       created: "2024-08-14T14:56:19Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 6d6d60e5f73979bbf402b1abb00d3637ebe36d94d44e74dc837d4f19e6c5cfa2
@@ -6908,4 +6928,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-08-15T17:36:21.541038556Z"
+generated: "2024-08-15T17:38:17.897052606Z"
