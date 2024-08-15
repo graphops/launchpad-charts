@@ -1117,6 +1117,16 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.4
+      created: "2024-08-15T20:59:21Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: 7044dcc7c3ab3b0caa4a39c1ff49eb38ec8abce22188b192464ab93344815ebb
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.5/celo-0.1.5.tgz
+      version: 0.1.5
+    - apiVersion: v2
+      appVersion: 1.8.4
       created: "2024-04-24T11:39:03Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 6c310836dc8366fa59da3d9e3c2ad90e735dfcaa1c3eef838a75966a3b9fca47
@@ -4465,6 +4475,16 @@ entries:
   listener-radio:
     - apiVersion: v2
       appVersion: 0.0.4
+      created: "2024-08-15T20:58:40Z"
+      description: Deploy a Graphcast Listener Radio into your Kubernetes stack
+      digest: 5a8ada7672d1d470c38da8cd1be6f12ac46931d6f4ad3806abe38eb6e8c1faa6
+      name: listener-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.2.5/listener-radio-0.2.5.tgz
+      version: 0.2.5
+    - apiVersion: v2
+      appVersion: 0.0.4
       created: "2024-04-01T13:03:31Z"
       description: Deploy a Graphcast Listener Radio into your Kubernetes stack
       digest: 67de8971bb53d43c14b145268460b334cd7ed7c57570698935d4a8131d864d2b
@@ -6968,4 +6988,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-08-15T21:58:29.151512762Z"
+generated: "2024-08-15T22:00:42.708246765Z"
