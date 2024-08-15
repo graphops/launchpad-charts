@@ -1308,6 +1308,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v2.60.6
+      created: "2024-08-15T17:33:39Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 94648a51a8915b3a1ee8901ef12219835b0a6352f6f28ad18a2994f436a646a1
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.5/erigon-0.10.5.tgz
+      version: 0.10.5
+    - apiVersion: v2
+      appVersion: v2.60.6
       created: "2024-08-15T17:32:35Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 3607581cbca341ab3ee709118290e53c13f974d3918247c839fcbf477a1b7635
@@ -5689,6 +5699,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.8.3
+      created: "2024-08-15T17:36:00Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: b7176bee19a81cb03ab008bb402b4c5219cadfb3e4d4815d2d744bf50c096d46
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.1/proxyd-0.6.1.tgz
+      version: 0.6.1
+    - apiVersion: v2
+      appVersion: v4.8.3
       created: "2024-08-15T17:35:41Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 0cdf356c04483ae85a050eda74bca0fe07beab5c597ee98afa55f77cfb983f63
@@ -6928,4 +6948,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-08-15T17:40:10.006100954Z"
+generated: "2024-08-15T17:50:25.245694272Z"
