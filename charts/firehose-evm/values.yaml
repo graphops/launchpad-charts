@@ -1,153 +1,441 @@
 # Default values for firehose-evm.
 # This is a YAML-formatted file.
 
-
-serviceAccount:
-  # -- Specifies whether a service account should be created
-  create: true
-  # -- Annotations to add to the service account
+global:
+  nameOverride: ""
+  fullnameOverride: ""
+  # -- Global labels added to all resources
+  labels: {}
+  # -- Global annotations added to all resources
   annotations: {}
-  # -- The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-rbac:
-  # -- Specifies whether RBAC resources are to be created
-  create: true
-  # -- Required ClusterRole rules
-  # @default -- See `values.yaml`
-  clusterRules:
-     # Required to obtain the nodes external IP
-    - apiGroups: [""]
-      resources:
-      - "nodes"
-      verbs:
-      - "get"
-      - "list"
-      - "watch"
-  # -- Required ClusterRole rules
-  # @default -- See `values.yaml`
-  rules:
-    # Required to get information about the serices nodePort.
-    - apiGroups: [""]
-      resources:
-      - "services"
-      verbs:
-      - "get"
-      - "list"
-      - "watch"
-
-# -- Image for firehose-evm
-image:
-  repository: ghcr.io/streamingfast/firehose-ethereum
-  pullPolicy: IfNotPresent
-  # -- Overrides the image tag
-  # @default -- Chart.appVersion
-  tag: ""
-
-prometheus:
-  serviceMonitors:
-    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-    enabled: false
-    labels: {}
-    interval:
-    scrapeTimeout:
-    relabelings: []
-
-#TODO
-config:
-  data-dir: "/var/lib/fireeth"
-  metrics-listen-addr: ":9102"
-  common-index-block-sizes: 10000
-  firehose-rate-limit-bucket-size: 20
-  firehose-rate-limit-bucket-fill-rate: 1s
-configTemplate: |-
-  {{- range $key, $value := . }}
-  {{ $key }}: "{{ $value }}"
-  {{- end }}
 
 common:
+  # -- Image configuration for firehose-evm
+  image:
+    # -- Docker image repository
+    repository: "ghcr.io/streamingfast/firehose-ethereum"
+    # -- Image pull policy
+    pullPolicy: "IfNotPresent"
+    # -- Overrides the image reference using a tag
+    # digest takes precedence over tag if both are set
+    tag: "v2.6.7-geth-v1.13.15-fh2.4"
+    # -- Overrides the image reference using a specific digest
+    digest: ""
+
+  # -- Pull secrets required to fetch images
+  imagePullSecrets: []
+
+  # -- Service configuration
+  service:
+    enabled: true
+    # -- Service type
+    type: "ClusterIP"
+    # -- Service ports configuration
+    ports:
+      metrics-fh:
+        port: 9102
+        protocol: "TCP"
+      node-mgr:
+        port: 10011
+        protocol: "TCP"
+    # -- Additional service labels
+    labels: {}
+    # -- Additional service annotations
+    annotations: {}
+
+  # -- Init containers configuration
+  initContainers: {}
+
+  # -- Persistence configuration
+  persistence:
+    # -- Enable persistent storage
+    enabled: true
+    # -- Access modes for the persistent volume
+    accessModes: 
+      - "ReadWriteOnce"
+    # -- Storage class name
+    storageClassName: "openebs-zfs-localpv-compressed-128k"
+    # -- Size of the persistent volume
+    size: "50Gi"
+
+  # -- Environment variables
   env:
     FIREETH_GLOBAL_LOG_TO_FILE: "false"
     FIREETH_GLOBAL_DATA_DIR: "/var/lib/fireeth"
     FIREETH_COMMON_LIVE_BLOCKS_ADDR: "relayer:10014"
     MANAGER_API_PORT: "10011"
 
-  # -- Environment variable defaults that come from secret
-  secretEnv:
+  # -- Environment variables from secrets
+  envFromSecret:
     FIREETH_COMMON_ONE_BLOCK_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing one blocks 
-      secretName:
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing one blocks 
-      key:
+      # -- Name of the secret that contains your S3 bucket url for storing one blocks
+      secretName: ""
+      # -- Name of the data key in the secret that contains your S3 bucket url for storing one blocks
+      key: ""
     FIREETH_COMMON_MERGED_BLOCKS_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing merged blocks 
-      secretName:
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing merged blocks 
-      key:
+      # -- Name of the secret that contains your S3 bucket url for storing merged blocks
+      secretName: ""
+      # -- Name of the data key in the secret that contains your S3 bucket url for storing merged blocks
+      key: ""
     FIREETH_COMMON_FORKED_BLOCKS_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing forked blocks 
-      secretName:
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing forked blocks 
-      key:
+      # -- Name of the secret that contains your S3 bucket url for storing forked blocks
+      secretName: ""
+      # -- Name of the data key in the secret that contains your S3 bucket url for storing forked blocks
+      key: ""
     FIREETH_COMMON_INDEX_STORE_URL:
       # -- Name of the secret that contains your S3 bucket url of your index store
-      secretName:
+      secretName: ""
       # -- Name of the data key in the secret that contains your S3 bucket url of your index store
-      key:
+      key: ""
 
-reader:
-  enabled: true
-  # dir to be passed to reader-node-data-dir cli flag and all corresponding volumes
-  dataDir: "/var/lib/geth"
-  # dir to be passed to reader-node-path cli flag and all corresponding volumes
-  nodePath: "/usr/lib/geth"
-  configMap:
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
     enabled: true
-  config:
-    reader-node-grpc-listen-addr: ":10010"
-    reader-node-manager-api-addr: ":10011"
-    metrics-listen-addr: ":9102"
-  # configTemplate: |-
-  #   {{- range $key, $value := .additionalFlags }}
-  #   {{ $key }}: "{{ $value }}"
-  #   {{- end }}
+    spec:
+      # Endpoint overrides, keyed by port name
+      endpoints:
+        metrics-fh:
+          # Override or add any endpoint-specific fields
+          interval: "60s"
+          scrapeTimeout: "10s"
+          honorLabels: true
+          # ... any other endpoint-specific fields
+      # Any other top-level ServiceMonitor spec fields
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- Labels to add to the service account
+    labels: {}
+    rbac:
+      create: true
+      rules: []
+      clusterWide: false
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Component level annotations (templated)
+  annotations: {}
+  # -- Component level labels (templated)
+  labels:
+    app.kubernetes.io/component: '{{ .componentName }}'
+    app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
+    version.firehose.graphops.xyz/fireeth: "2.6.7"
+    version.firehose.graphops.xyz/node: "1.13.15"
+    version.firehose.graphops.xyz/protocol: "2.4"
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+    capabilities:
+      drop:
+        - ALL
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  # -- Node selector configuration
+  nodeSelector: {}
+
+  # -- Tolerations configuration
+  tolerations: []
+
+  # -- Affinity configuration
+  affinity: {}
+
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
+
+  # -- Lifecycle hooks
+  lifecycle: {}
+    # postStart:
+    #   exec:
+    #     command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+    # preStop:
+    #   exec:
+    #     command: ["/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1; done"]
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget:
+    enabled: false
+    # minAvailable: 1
+    # or
+    # maxUnavailable: 25%
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler:
+    enabled: false
+    # example:
+    # minReplicas: 2
+    # maxReplicas: 10
+    # metrics:
+    #   - type: "Resource"
+    #     resource:
+    #       name: "cpu"
+    #       targetAverageUtilization: 80
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+    # example:
+    #   sidecar1:
+    #     image: nginx:latest
+    #     ports:
+    #       - containerPort: 80
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+    # - name: extra-volume
+    #   emptyDir: {}
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+    # {{ .componentName }}: # Name of the container to add the volume mount to
+    #   - name: extra-volume
+    #     mountPath: /mnt/extra-volume
+
+  # -- Firehose-specific configuration
+  fireeth:
+    metrics:
+      enabled: true
+      addr: "0.0.0.0"
+      port: 9102
+    pprof:
+      enabled: false
+      addr: "localhost"
+      port: 6060
+    config:
+      data-dir: "/var/lib/fireeth"
+      metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
+      common-index-block-sizes: 10000
+      firehose-rate-limit-bucket-size: 20
+      firehose-rate-limit-bucket-fill-rate: "1s"
+    args:
+      start: "__none"
+      -c: "/config/config.yaml"
+    argsOrder:
+      - "start"
+      - "-c"
+
+grpc:
+  enabled: true
+
+  # -- Image configuration for firehose-evm
+  image: {}
+
+  # -- Pull secrets required to fetch images
+  imagePullSecrets: []
+
+  # -- Service configuration
+  service:
+    type: ClusterIP
+    ports:
+      - name: grpc
+        containerPort: 10015
+        protocol: TCP
+      - name: metrics-fh
+        containerPort: 9102
+        protocol: TCP
+
+  # -- Init containers configuration
+  initContainers: {}
+
+  # -- Persistence configuration
+  persistence: {}
+
+  # -- Environment variables
+  env: {}
+
+  # -- Environment variables from secrets
+  secretEnv: {}
+
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor: {}
+
+  # -- Service account configuration
+  serviceAccount: {}
+
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: {}
+
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  # -- Node selector configuration
+  nodeSelector: {}
+
+  # -- Tolerations configuration
+  tolerations: []
+
+  # -- Affinity configuration
+  affinity: {}
+
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
+
+  # -- Lifecycle hooks
+  lifecycle: {}
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler: {}
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+
+  # -- Firehose-specific configuration
+  fireeth:
+    config:
+      firehose-grpc-listen-addr: ":10015"
+
+  # GRPC-specific configurations
   replicas: 1
   nameOverride: ""
   fullnameOverride: ""
+  existingConfigMap: ""
+  configMap:
+    enabled: true
 
-  readerConfig:
-    syncMode: "full"
-    # improve geth performance by maintaining an internal snapshot
-    snapshot: 
-      enabled: true
-    # -- RPC config parameters
-    httpRpc:
-      # -- Enable HTTP-RPC server
-      enabled: true
-      # -- Enabled APIs
-      api: net,web3,eth,debug
-      # -- Listen address
-      addr: 0.0.0.0
-      # -- Allowed vhosts
-      vhosts: "*"
-      # -- Allowed CORS domains
-      # cors: "*"
-    # -- Metrics parameters
-    metrics:
-      # -- Enable metrics
-      enabled: true
-      # -- Listen address
-      addr: 0.0.0.0
-      # -- Metrics port
-      port: 6061
+reader-node:
+  enabled: false
 
-    # -- Additional CLI arguments to pass to `reader-node`
-    extraArgs: ""
+  # -- Image configuration for firehose-evm
+  image:
+    repository: ghcr.io/streamingfast/firehose-ethereum
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
 
-  # -- Pull secrets required to fetch the Image
+  # -- Pull secrets required to fetch images
   imagePullSecrets: []
 
+  # -- Service configuration
+  service:
+    type: ClusterIP
+    ports:
+      reader-grpc:
+        port: 10010
+        protocol: TCP
+      metrics-geth:
+        port: 6061
+        protocol: TCP
+      node-mgr:
+        port: 10011
+        protocol: TCP
+      geth-auth:
+        port: 8551
+        protocol: TCP
+
+  # -- Init containers configuration
+  initContainers:
+    10-init-nodeport:
+      image: lachlanevenson/k8s-kubectl:v1.25.4
+      imagePullPolicy: IfNotPresent
+      resources: {}
+      __condition: '{{ .Pod.p2p.enabled }}'
+    20-init-snapshot:
+      image: rclone/rclone:1.67.0
+      imagePullPolicy: IfNotPresent
+      resources: {}
+      __condition: '{{ .Pod.initSnapshot.enabled }}'
+
+  # -- Persistence configuration
+  persistence:
+    reader_node:
+      # -- Access modes for the persistent volume
+      accessModes: ["ReadWriteOnce"]
+      # -- The storage class to use when provisioning a persistent volume
+      storageClassName: openebs-zfs-localpv-compressed-8k
+      resources:
+        requests:
+          # -- The amount of disk space to provision
+          storage: 3Ti
+
+  # -- Environment variables
+  env:
+    FIREETH_READER_NODE_LOG_TO_ZAP: "false"
+
+  # -- Environment variables from secrets
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your password
+    #   key:
+
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor: {}
+
+  # -- Service account configuration
   serviceAccount:
     # -- Specifies whether a service account should be created
     create: true
@@ -168,45 +456,144 @@ reader:
     # -- Use this literal value for the JWT
     fromLiteral: 1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480
 
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume
-    storageClassName: openebs-zfs-localpv-compressed-128k
-    resources:
-      requests:
-        # -- The amount of disk space to provision
-        storage: 50Gi
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels: {}
+
+  # -- Pod-wide security context
+  podSecurityContext: {}
+
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  # -- Node selector configuration
+  nodeSelector: {}
+
+  # -- Tolerations configuration
+  tolerations: []
+
+  # -- Affinity configuration
+  affinity: {}
+
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
+
+  # -- Lifecycle hooks
+  lifecycle:
+    preStop:
+      exec:
+        command: ["/usr/local/bin/eth-maintenance"]
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler: {}
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+
+  # -- Firehose-specific configuration
+  fireeth: {}
+
+  # Additional reader-node specific configurations
+  p2p:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    type: NodePort
+    # -- NodePort to be used. Must be unique.
+    port: 32310
+
+  dataDir: "/var/lib/geth"
+  nodePath: "/usr/lib/geth"
+  configMap:
+    enabled: true
+  config:
+    reader-node-grpc-listen-addr: ":10010"
+    reader-node-manager-api-addr: ":10011"
+    reader-node-data-dir: "/var/lib/geth"
+    reader-node-path: "/app/geth"
+
+  replicas: 1
+  nameOverride: ""
+  fullnameOverride: ""
+
+  node:
+    metrics:
+      __enabled: false
+      addr: 0.0.0.0
+      port: 6061
+    args:
+      __prefix: "--"
+      syncmode: "full"
+      snapshot: "true"
+      http:
+        __self: "somevalue"
+        api: net,web3,eth,debug
+        addr: 0.0.0.0
+        vhosts: "*"
+      metrics:
+        __self: "__none"
+        addr: "${NODE_DEPLOYMENT_METRICS_ADDR}"
+        port: "${NODE_DEPLOYMENT_METRICS_PORT}"
+      authrpc:
+        port: 8551
+        jwtsecret: /jwt/jwt.hex
+        addr: 0.0.0.0
+        vhosts: '*'
+      datadir: "{node-data-dir}"
+      firehose-enabled:
+        __self: "__none"
+      port: EXTERNAL_PORT
+      discovery:
+        port: EXTERNAL_PORT
+      nat: "extip:EXTERNAL_IP"
+      sepolia:
+        __self: "__none"
+      networkid: 11155111
+      txlookuplimit: 1000
+      cache: 8192
+      maxpeers: 100
 
   initSnapshot:
-    enabled: true
+    enabled: false
     env:
       SNAPSHOT_REMOTE_LOCATION: "add_snapshot_location"
-
-  service:
-    type: ClusterIP
-    ports:
-    - name: reader-grpc
-      containerPort: 10010
-      protocol: TCP
-    - name: metrics-fh
-      containerPort: 9102
-      protocol: TCP
-    - name: metrics-geth
-      containerPort: 6061
-      protocol: TCP
-    - name: node-mgr
-      containerPort: 10011
-      protocol: TCP
-    - name: geth-auth
-      containerPort: 8551
-      protocol: TCP 
 
   p2pNodePort:
     # -- Expose P2P port via NodePort
     enabled: true
     # -- NodePort to be used. Must be unique.
     port: 32310
-    # do we need this initcontainer approach?
     initContainer:
       image:
         # -- Container image to fetch nodeport information
@@ -216,17 +603,10 @@ reader:
         # -- Container pull policy
         pullPolicy: IfNotPresent
 
-  reader_node:
-    volumeClaimSpec:
-      accessModes: ["ReadWriteOnce"]
-      # -- The storage class to use when provisioning a persistent volume
-      storageClassName: openebs-zfs-localpv-compressed-8k
-      resources:
-        requests:
-          # -- The amount of disk space to provision
-          storage: 3Ti
+relayer:
+  enabled: false
 
-  # -- Image for firehose-evm
+  # -- Image configuration for firehose-evm
   image:
     repository: ghcr.io/streamingfast/firehose-ethereum
     pullPolicy: IfNotPresent
@@ -234,97 +614,10 @@ reader:
     # @default -- Chart.appVersion
     tag: ""
 
-  env:
-    FIREETH_READER_NODE_LOG_TO_ZAP: "false"
-    
-  secretEnv: {}
-    # PRIVATE_KEY:
-    #   # -- Name of the secret that contains your password
-    #   secretName:
-    #   # -- Name of the data key in the secret that contains your password
-    #   key:
-
-
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
-
-  # Increasing the grace termination period prevents Kubernetes
-  # from killing the node process prematurely. Premature shutdown
-  # can lead to data integrity issues
-  # -- Amount of time to wait before force-killing the process
-  terminationGracePeriodSeconds: 10
-
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- Pod-wide security context
-  podSecurityContext: {}
-
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-  prometheus:
-    serviceMonitors:
-      enabled: true
-
-relayer:
-  enabled: true
-  configMap:
-    enabled: true
-  config:
-    relayer-source: "reader:10010"
-    relayer-grpc-listen-addr: ":10014"
-    relayer-max-source-latency: 1h
-  
-  replicas: 1
-  nameOverride: ""
-  fullnameOverride: ""
-
-  # -- Pull secrets required to fetch the Image
+  # -- Pull secrets required to fetch images
   imagePullSecrets: []
 
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume
-    storageClassName: openebs-zfs-localpv-compressed-128k
-    resources:
-      requests:
-        # -- The amount of disk space to provision
-        storage: 50Gi
-
-  # -- Image for firehose-evm
-  image:
-    repository: ghcr.io/streamingfast/firehose-ethereum
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
-
+  # -- Service configuration
   service:
     type: ClusterIP
     ports:
@@ -334,12 +627,24 @@ relayer:
     - name: metrics-fh
       containerPort: 9102
       protocol: TCP
-  
-  prometheus:
-    serviceMonitors:
-      enabled: true
+
+  # -- Init containers configuration
+  initContainers: {}
+
+  # -- Persistence configuration
+  persistence:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  # -- Environment variables
   env: {}
-  
+
+  # -- Environment variables from secrets
   secretEnv: {}
     # PRIVATE_KEY:
     #   # -- Name of the secret that contains your PG password
@@ -347,9 +652,22 @@ relayer:
     #   # -- Name of the data key in the secret that contains your PG password
     #   key:
 
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
 
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    enabled: true
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -357,12 +675,19 @@ relayer:
   # -- Amount of time to wait before force-killing the process
   terminationGracePeriodSeconds: 10
 
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels: {}
 
   # -- Pod-wide security context
   podSecurityContext: {}
 
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -377,43 +702,58 @@ relayer:
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
 
+  # -- Node selector configuration
   nodeSelector: {}
 
+  # -- Tolerations configuration
   tolerations: []
 
+  # -- Affinity configuration
   affinity: {}
 
-merger:
-  enabled: true
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
+
+  # -- Lifecycle hooks
+  lifecycle: {}
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler: {}
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+
+  # -- Firehose-specific configuration
+  fireeth: {}
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Relayer-specific configurations
   configMap:
     enabled: true
   config:
-    merger-grpc-listen-addr: ":10012"
+    relayer-source: "reader:10010"
+    relayer-grpc-listen-addr: ":10014"
+    relayer-max-source-latency: 1h
+
+  replicas: 1
   nameOverride: ""
   fullnameOverride: ""
 
-  # -- Pull secrets required to fetch the Image
-  imagePullSecrets: []
+merger:
+  enabled: false
 
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume
-    storageClassName: openebs-zfs-localpv-compressed-128k
-    resources:
-      requests:
-        # -- The amount of disk space to provision
-        storage: 50Gi
-
-  # -- Image for firehose-evm
+  # -- Image configuration for firehose-evm
   image:
     repository: ghcr.io/streamingfast/firehose-ethereum
     pullPolicy: IfNotPresent
@@ -421,6 +761,10 @@ merger:
     # @default -- Chart.appVersion
     tag: ""
 
+  # -- Pull secrets required to fetch images
+  imagePullSecrets: []
+
+  # -- Service configuration
   service:
     type: ClusterIP
     ports:
@@ -431,12 +775,23 @@ merger:
       containerPort: 9102
       protocol: TCP
 
+  # -- Init containers configuration
+  initContainers: {}
+
+  # -- Persistence configuration
+  persistence:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume
+    storageClassName: openebs-zfs-localpv-compressed-128k
+    resources:
+      requests:
+        # -- The amount of disk space to provision
+        storage: 50Gi
+
+  # -- Environment variables
   env: {}
 
-  prometheus:
-    serviceMonitors:
-      enabled: true
-
+  # -- Environment variables from secrets
   secretEnv: {}
     # PRIVATE_KEY:
     #   # -- Name of the secret that contains your PG password
@@ -444,9 +799,22 @@ merger:
     #   # -- Name of the data key in the secret that contains your PG password
     #   key:
 
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
 
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    enabled: true
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -454,12 +822,19 @@ merger:
   # -- Amount of time to wait before force-killing the process
   terminationGracePeriodSeconds: 10
 
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels: {}
 
   # -- Pod-wide security context
   podSecurityContext: {}
 
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -474,45 +849,54 @@ merger:
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
 
+  # -- Node selector configuration
   nodeSelector: {}
 
+  # -- Tolerations configuration
   tolerations: []
 
+  # -- Affinity configuration
   affinity: {}
 
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
 
-indexer:
-  enabled: true
+  # -- Lifecycle hooks
+  lifecycle: {}
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler: {}
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+
+  # -- Firehose-specific configuration
+  fireeth: {}
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Merger-specific configurations
   configMap:
     enabled: true
   config:
-    index-builder-grpc-listen-addr: ":10009"
-    index-builder-index-size: "1000"  
+    merger-grpc-listen-addr: ":10012"
   nameOverride: ""
   fullnameOverride: ""
 
-  # -- Pull secrets required to fetch the Image
-  imagePullSecrets: []
+index-builder:
+  enabled: false
 
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  volumeClaimSpec:
-    accessModes: ["ReadWriteOnce"]
-    # -- The storage class to use when provisioning a persistent volume
-    storageClassName: openebs-zfs-localpv-compressed-128k
-    resources:
-      requests:
-        # -- The amount of disk space to provision
-        storage: 50Gi
-
-  # -- Image for firehose-evm
+  # -- Image configuration for firehose-evm
   image:
     repository: ghcr.io/streamingfast/firehose-ethereum
     pullPolicy: IfNotPresent
@@ -520,6 +904,10 @@ indexer:
     # @default -- Chart.appVersion
     tag: ""
 
+  # -- Pull secrets required to fetch images
+  imagePullSecrets: []
+
+  # -- Service configuration
   service:
     type: ClusterIP
     ports:
@@ -530,71 +918,11 @@ indexer:
       containerPort: 9102
       protocol: TCP
 
-  env: {}
+  # -- Init containers configuration
+  initContainers: {}
 
-  prometheus:
-    serviceMonitors:
-      enabled: true
-
-  secretEnv: {}
-    # PRIVATE_KEY:
-    #   # -- Name of the secret that contains your PG password
-    #   secretName:
-    #   # -- Name of the data key in the secret that contains your PG password
-    #   key:
-
-
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
-
-  # Increasing the grace termination period prevents Kubernetes
-  # from killing the node process prematurely. Premature shutdown
-  # can lead to data integrity issues
-  # -- Amount of time to wait before force-killing the process
-  terminationGracePeriodSeconds: 10
-
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
-
-  # -- Pod-wide security context
-  podSecurityContext: {}
-
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-    #   ephemeral-storage: 100Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-
-grpc:
-  enabled: true
-  existingConfigMap: ""
-  configMap:
-    enabled: true
-  config:
-    firehose-grpc-listen-addr: ":10015"
-  replicas: 1
-  nameOverride: ""
-  fullnameOverride: ""
-
-  # -- Pull secrets required to fetch the Image
-  imagePullSecrets: []
-
-  volumeClaimSpec:
+  # -- Persistence configuration
+  persistence:
     accessModes: ["ReadWriteOnce"]
     # -- The storage class to use when provisioning a persistent volume
     storageClassName: openebs-zfs-localpv-compressed-128k
@@ -603,6 +931,25 @@ grpc:
         # -- The amount of disk space to provision
         storage: 50Gi
 
+  # -- Environment variables
+  env: {}
+
+  # -- Environment variables from secrets
+  secretEnv: {}
+    # PRIVATE_KEY:
+    #   # -- Name of the secret that contains your PG password
+    #   secretName:
+    #   # -- Name of the data key in the secret that contains your PG password
+    #   key:
+
+  # -- Environment variables from ConfigMaps
+  envFromConfigmap: {}
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    enabled: true
+
+  # -- Service account configuration
   serviceAccount:
     # -- Specifies whether a service account should be created
     create: true
@@ -612,53 +959,25 @@ grpc:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-  # -- Image for firehose-evm
-  image:
-    repository: ghcr.io/streamingfast/firehose-ethereum
-    pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
-
-  service:
-    type: ClusterIP
-    ports:
-      - name: grpc
-        containerPort: 10015
-        protocol: TCP
-      - name: metrics-fh
-        containerPort: 9102
-        protocol: TCP
-
-  env: {}
-
-  prometheus:
-    serviceMonitors:
-      enabled: true
-
-  secretEnv: {}
-    # PRIVATE_KEY:
-    #   # -- Name of the secret that contains your PG password
-    #   secretName:
-    #   # -- Name of the data key in the secret that contains your PG password
-    #   key:
-
-
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
-
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
   # can lead to data integrity issues
   # -- Amount of time to wait before force-killing the process
   terminationGracePeriodSeconds: 10
 
-  # -- Annotations for the `Pod`
-  podAnnotations: {}
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels: {}
 
   # -- Pod-wide security context
   podSecurityContext: {}
 
+  # -- Container level security context overrides
+  securityContext: {}
+
+  # -- Resource requests and limits
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
@@ -673,10 +992,54 @@ grpc:
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
 
+  # -- Node selector configuration
   nodeSelector: {}
 
+  # -- Tolerations configuration
   tolerations: []
 
+  # -- Affinity configuration
   affinity: {}
 
+  # -- Topology spread constraints
+  topologySpreadConstraints: []
 
+  # -- Lifecycle hooks
+  lifecycle: {}
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler: {}
+
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+
+  # -- Extra volumes to add to the pod (templated)
+  extraVolumes: []
+
+  # Extra volume mounts to add to containers (templated)
+  extraVolumeMounts: {}
+
+  # -- Firehose-specific configuration
+  fireeth: {}
+
+  # -- Additional CLI arguments to pass to `indexer-agent`
+  extraArgs: []
+
+  # Index-builder specific configurations
+  configMap:
+    enabled: true
+  config:
+    index-builder-grpc-listen-addr: ":10009"
+    index-builder-index-size: "1000"
+  nameOverride: ""
+  fullnameOverride: ""
+
+
+### - only objectStorage: PVCs maybe later
+### - leaving open, maybe in the future we actually have more than one deployment mode
+### - someday maybe, ahve CI/CD ->
+
+###

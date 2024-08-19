@@ -1,0 +1,25 @@
+{{- $componentName := "merger" -}}
+{{- $componentValues := deepCopy (index $.Values $componentName) -}}
+{{- $commonValues := deepCopy $.Values.common -}}
+{{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
+
+{{- if and $values.enabled $values.horizontalPodAutoscaler.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "firehose-evm.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
+  minReplicas: {{ $values.horizontalPodAutoscaler.minReplicas }}
+  maxReplicas: {{ $values.horizontalPodAutoscaler.maxReplicas }}
+  metrics:
+    {{- with $values.horizontalPodAutoscaler.metrics }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}

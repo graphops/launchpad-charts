@@ -1,8 +1,9 @@
-{{- $values := $.Values.indexer }}
-{{- $componentName := "indexer" }}
-{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
-{{- if $values.enabled }}
----
+{{- $componentName := "reader-node" -}}
+{{- $componentValues := deepCopy (index $.Values $componentName) -}}
+{{- $commonValues := deepCopy $.Values.common -}}
+{{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
+
+{{- if and $values.enabled $values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,7 +11,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "firehose-evm.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
 spec:
   type: {{ $values.service.type }}
   ports:
@@ -22,5 +22,4 @@ spec:
   {{- end }}
   selector:
     {{- include "firehose-evm.selectorLabels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
 {{- end }}

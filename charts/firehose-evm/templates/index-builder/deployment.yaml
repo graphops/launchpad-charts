@@ -1,4 +1,4 @@
-{{- $componentName := "merger"}}
+{{- $componentName := "index-builder"}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
 {{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
@@ -159,13 +159,13 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: merger
+            - name: grpc
               mountPath: "/var/lib/fireeth"
             - name: config
               mountPath: "/config"
               readOnly: true
       volumes:
-        - name: merger
+        - name: grpc
           emptyDir: {}
         - name: config
           configMap:

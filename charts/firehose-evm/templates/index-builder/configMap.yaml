@@ -1,15 +1,12 @@
-{{- $values := $.Values.relayer }}
-{{- $componentName := "relayer" }}
+{{- $componentName := "index-builder"}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
 {{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
 {{- $templateContext := dict "Root" $ "Pod" $values "componentName" $componentName }}
 {{- $configToml := include "firehose-evm.generateConfigmap" ( deepCopy $templateContext ) }}
 {{- $configHash := sha256sum $configToml }}
+
 {{- if $values.enabled }}
-
-{{/* Use the helper to merge additional flags and construct the template variables */}}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,9 +15,5 @@ metadata:
     {{- include "firehose-evm.labels" . | nindent 4 }}
 data:
   config.yaml: |-
-    start:
-      args:
-        - relayer
-      flags:
-{{- $configToml | trim | nindent 8 }}
-{{- end }}
+    {{- $configToml | trim | nindent 4 }}
+{{-  end }}

@@ -1,18 +1,19 @@
-{{- $componentName := "merger"}}
+{{- $componentName := "reader-node" -}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
 {{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
 {{- $templateContext := dict "Root" $ "Pod" $values "componentName" $componentName }}
 {{- $configToml := include "firehose-evm.generateConfigmap" $templateContext }}
 {{- $configHash := sha256sum $configToml }}
-{{- $args := include "generateArgs" (dict "object" $values.fireeth.args "order" $values.fireeth.argsOrder ) -}}
-
 {{- if $values.enabled }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "firehose-evm.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
-  {{- with $values }}
   labels:
   {{- $labels := include "firehose-evm.allLabels" (dict "Root" $ "Pod" $values "componentName" $componentName "annotations") | fromYaml }}
   {{- range $key, $value := $labels }}
@@ -31,6 +32,15 @@ spec:
     {{- end }}
   serviceName: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
   replicas: {{ $values.replicas }}
+  volumeClaimTemplates:
+    - metadata:
+        name: reader
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+    - metadata:
+        name: reader-node
+      spec:
+        {{- toYaml $values.reader_node.volumeClaimSpec | nindent 8 }}
   template:
     metadata:
       {{- with $values }}
@@ -107,20 +117,36 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           args:
-            {{ $args | nindent 12 }}
+            {{- if $values.p2pNodePort.enabled }}
+            - "start"
+            - "-c"
+            - "/etc/config/config.yaml"
+            {{- else }}
             - "start"
             - "-c"
             - "/config/config.yaml"
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
             {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/local/bin/eth-maintenance"]
           ports:
           {{- range $name, $port := $values.service.ports }}
           - name: {{ $name }}
             containerPort: {{ $port.port }}
             protocol: {{ $port.protocol | default "TCP" }}
           {{- end }}
+          {{- if $values.p2pNodePort.enabled }}
+          - name: eth66-udp-p2p
+            containerPort: {{ include "reader.p2pPort" $values }}
+            protocol: UDP
+          {{- end }}
           env:
+            {{- $envVars := include "objectToEnvVarsList" (dict "object" $values.nodeDeployment "prefix" "NODE_DEPLOYMENT") | fromJson -}}
+            {{- range $envVars }}
+            - name: {{ .name | quote }}
+              value: {{ .value | quote }}
+            {{- end }}
             - name: POD_NAME
               valueFrom:
                 fieldRef:
@@ -159,17 +185,52 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: merger
+            - name: reader
               mountPath: "/var/lib/fireeth"
-            - name: config
-              mountPath: "/config"
+            - name: reader-node
+              mountPath: {{ $values.dataDir }}
+            - name: configmap
+              mountPath: /config
               readOnly: true
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            {{- if $values.p2pNodePort.enabled }}
+            - name: config
+              mountPath: /etc/config
+            {{- end }}
       volumes:
-        - name: merger
-          emptyDir: {}
-        - name: config
+        - name: reader
+          persistentVolumeClaim:
+            claimName: reader
+        - name: reader-node
+          persistentVolumeClaim:
+            claimName: reader-node
+        - name: configmap
           configMap:
-            name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
+            # {x{- if .Values.reader.configMap.enabled }x}
+            # name: {x{ include "firehose-evm.fullname" . }x}-{x{ $componentName }x}-config
+            # {x{- else }x}
+            name: {{ $values.existingConfigMap }}
+            # {x{- end }x}
+      {{- if $values.initSnapshot.enabled }}
+        - name: rclone-config
+          secret:
+            secretName: rclone-config-secret
+      {{- end }}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: config
+          emptyDir: {}
+      {{- end }}
         {{- with $values.extraVolumes }}
         {{- tpl (toYaml .) (deepCopy $templateContext) | nindent 8 }}
         {{- end }}

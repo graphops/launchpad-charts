@@ -1,6 +1,5 @@
 {{- $values := .Values.relayer }}
 {{- $componentName := "relayer" }}
-{{- $componentLabel := include "firehose-evm.componentLabelFor" $componentName }}
 {{- if $values.enabled }}
 {{- if $values.prometheus.serviceMonitors.enabled }}
 apiVersion: monitoring.coreos.com/v1
@@ -9,13 +8,11 @@ metadata:
   name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
   labels:
     {{- include "firehose-evm.labels" . | nindent 4 }}
-    {{- $componentLabel | nindent 4 }}
 spec:
   jobLabel: "{{ .Release.Name }}"
   selector:
     matchLabels:
       {{- include "firehose-evm.selectorLabels" . | nindent 6 }}
-      {{- $componentLabel | nindent 6 }}
   endpoints:
   - port: metrics-fh
     path: /metrics

@@ -1,4 +1,4 @@
-{{- $componentName := "grpc" -}}
+{{- $componentName := "index-builder" -}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
 {{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
