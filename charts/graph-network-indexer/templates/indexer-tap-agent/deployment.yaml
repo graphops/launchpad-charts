@@ -43,11 +43,34 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      volumes:
-        - name: config
-          configMap:
-            # Provide the name of the ConfigMap you want to mount.
-            name: {{ include "graph-network-indexer.fullname" . }}-config
+      initContainers:
+        - name: envsubst
+          imagePullPolicy: IfNotPresent
+          image: bhgedigital/envsubst
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -ex;
+              envsubst < /var/lib/indexer-rs-template/config.toml > /etc/indexer-rs/config.toml;
+              cat /etc/indexer-rs/config.toml;
+          env:
+            {{- $secretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
+            {{- if $secretEnv }}
+            {{- range $key, $val := $secretEnv }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - name: config-template
+              mountPath: /var/lib/indexer-rs-template
+            - name: config
+              mountPath: /etc/indexer-rs
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -62,16 +85,18 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := .}}
+          {{- if or $.Values.indexerDefaults.env $values.env }}
+          {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
+          {{- range $key, $val := $mergedEnv }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           {{- end }}
-          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-          {{- range $key, $val := .}}
+          {{- if or $.Values.indexerDefaults.secretEnv $values.secretEnv }}
+          {{- $mergedSecretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
+          {{- range $key, $val := $mergedSecretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -82,10 +107,10 @@ spec:
           {{- end }}
           command:
           - /usr/local/bin/indexer-tap-agent
-          - --config=/config/config.toml
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+          - --config=/etc/indexer-rs/config.toml
+          {{- with $values.extraArgs }}
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
           ports:
             - name: http-queryapi
               containerPort: 7600
@@ -95,7 +120,7 @@ spec:
               protocol: TCP
           volumeMounts:
           - name: config
-            mountPath: "/config"
+            mountPath: "/etc/indexer-rs"
             readOnly: true
           readinessProbe:
             httpGet:
@@ -104,6 +129,12 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      volumes:
+        - name: config-template
+          configMap:
+            name: {{ include "graph-network-indexer.fullname" . }}-config
+        - name: config
+          emptyDir: {}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
