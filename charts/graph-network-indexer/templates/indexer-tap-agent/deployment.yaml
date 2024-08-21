@@ -87,7 +87,7 @@ spec:
                   fieldPath: metadata.name
           {{- if or $.Values.indexerDefaults.env $values.env }}
           {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
-          {{- range $key, $val := $mergedEnv }}
+          {{- range $key, $val := ( omit $mergedEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
@@ -96,7 +96,7 @@ spec:
           {{- end }}
           {{- if or $.Values.indexerDefaults.secretEnv $values.secretEnv }}
           {{- $mergedSecretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
-          {{- range $key, $val := $mergedSecretEnv }}
+          {{- range $key, $val := ( omit $mergedSecretEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -105,6 +105,8 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+            - name: INDEXER_SERVICE_DATABASE__POSTGRES_URL
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database" }}'          
           command:
           - /usr/local/bin/indexer-tap-agent
           - --config=/etc/indexer-rs/config.toml

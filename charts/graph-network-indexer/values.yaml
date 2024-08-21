@@ -24,6 +24,7 @@ prometheus:
     interval:
     scrapeTimeout:
     relabelings: []
+    metricRelabelings: []
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
@@ -102,7 +103,7 @@ indexerDefaults:
 
 
   configTemplate: |
-      # WARNING: This shows all the possible configuration options. Make sure you know what
+      # WARNING:  This shows all the possible configuration options. Make sure you know what
       #           you are doing.
       #           Prefer starting with `minimal-config-example.toml`.
       #
@@ -113,20 +114,31 @@ indexerDefaults:
       # Some of the config below are global graph network values, which you can find here:
       # https://github.com/graphprotocol/indexer/tree/main/docs/networks
       #
-      # Pro tip: if you need to load some values from the environment into this config, you
-      # can overwrite with environment variables. For example, the following can be replaced
-      # by [PREFIX]_DATABASE_POSTGRESURL, where PREFIX can be `INDEXER_SERVICE` or `TAP_AGENT`:
+      # This configmap was constructed using flags under indexerDefaults.configService or indexerDefaults.config,
+      # but all values can also be overwritten with environment variables.
       #
+      # If you want to supply some or all of the configuration below using environment variables,
+      # use the prefix "INDEXER_SERVICE" or "TAP_AGENT" for indexer-service or tap-agent, respectively,
+      # followed by the name of the field, using double underscores "__" for nesting. Example:
+      #
+      #       INDEXER_SERVICE_SUBGRAPHS__NETWORK__QUERY_URL = [...]
+      #
+      #   For
+      #
+      #       [subgraphs.network]
+      #       query_url = [...]
 
       [indexer]
       indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | quote }}
-      operator_mnemonic = "${INDEXER_MNEMONIC}"
+      # We are commenting this out because we are using the secretEnvs to construct the mnemonic and use INDEXER_MNEMONIC as the environment variable instead
+      # operator_mnemonic = "your_mnemonic"
 
-      [database]
-      # The URL of the Postgres database used for the indexer components. The same database
-      # that is used by the `indexer-agent`. It is expected that `indexer-agent` will create
-      # the necessary tables.
-      postgres_url = "postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@{{ index .Values.indexerDefaults.config "postgres-host" }}:5432/{{ index .Values.indexerDefaults.config "postgres-database" }}"
+      # [database]
+      # # The URL of the Postgres database used for the indexer components. The same database
+      # # that is used by the `indexer-agent`. It is expected that `indexer-agent` will create
+      # # the necessary tables.
+      # We are commenting this out because we are using the secretEnvs to construct the postgres url and use INDEXER_SERVICE_DATABASE__POSTGRES_URL as the environment variable instead
+      # postgres_url = "postgres://valid_username:valid_password@valid_postgres_host:5432/valid_postgres_database"
 
       [metrics]
       port = {{ index .Values.indexerDefaults.configService "metrics-port" }}
@@ -179,7 +191,13 @@ indexerDefaults:
 
 
   secretEnv:
-    {}
+    POSTGRES_USERNAME:
+      secretName: test-secret
+      key: test
+    POSTGRES_PASSWORD:
+      secretName: test-secret
+      key: test
+
   env: 
     {}
 
@@ -277,19 +295,9 @@ indexerService:
   # -- Number of replicas to run
   replicas: 1
 
-  # secretEnv: 
-  #   INDEXER_SERVICE_POSTGRES_USERNAME:
-  #     secretName: 
-  #     key:
-  #   INDEXER_SERVICE_POSTGRES_PASSWORD:
-  #     secretName: 
-  #     key: 
+  secretEnv: {}
 
-  env: 
-    INDEXER_SERVICE_POSTGRES_HOST: "pg-indexer-metadata"
-    INDEXER_SERVICE_POSTGRES_PORT: 5432
-    INDEXER_SERVICE_POSTGRES_DATABASE: "indexer"
-    # INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
+  env: {}
 
 
   # -- Additional CLI arguments to pass to `indexer-service`

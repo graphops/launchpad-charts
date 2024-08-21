@@ -83,16 +83,19 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := . }}
+          {{- if or $.Values.indexerDefaults.env $values.env }}
+          {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
+          {{- range $key, $val := ( omit $mergedEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           {{- end }}
-          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-          {{- range $key, $val := . }}
+          {{- if or $.Values.indexerDefaults.secretEnv $values.secretEnv }}
+          {{- $mergedSecretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
+          {{- range $key, $val := ( omit $mergedSecretEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
+          {{- if and $val $val.secretName $val.key }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -101,6 +104,9 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
+          {{- end }}
+            - name: INDEXER_SERVICE_DATABASE__POSTGRES_URL
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database" }}'
           command:
           - /usr/local/bin/service
           - --config=/etc/indexer-rs/config.toml
