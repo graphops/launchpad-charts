@@ -114,9 +114,6 @@ indexerDefaults:
       # Some of the config below are global graph network values, which you can find here:
       # https://github.com/graphprotocol/indexer/tree/main/docs/networks
       #
-      # This configmap was constructed using flags under indexerDefaults.configService or indexerDefaults.config,
-      # but all values can also be overwritten with environment variables.
-      #
       # If you want to supply some or all of the configuration below using environment variables,
       # use the prefix "INDEXER_SERVICE" or "TAP_AGENT" for indexer-service or tap-agent, respectively,
       # followed by the name of the field, using double underscores "__" for nesting. Example:
@@ -130,8 +127,8 @@ indexerDefaults:
 
       [indexer]
       indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | quote }}
-      # We are commenting this out because we are using the secretEnvs to construct the mnemonic and use INDEXER_MNEMONIC as the environment variable instead
-      # operator_mnemonic = "your_mnemonic"
+      # We are commenting this example mnemonic because the operator mnemonic should come from the INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC environment variable instead
+      # operator_mnemonic = "anchor zebra vocal chair sample grape inmate loyal window harbor glue teach symbol brown prefer soup spice waste visit reform concert venue silk turtle"
 
       # [database]
       # # The URL of the Postgres database used for the indexer components. The same database
@@ -378,7 +375,6 @@ indexerTapAgent:
     INDEXER_SERVICE_POSTGRES_HOST: "pg-indexer-metadata"
     INDEXER_SERVICE_POSTGRES_PORT: 5432
     INDEXER_SERVICE_POSTGRES_DATABASE: "indexer"
-    INDEXER_SERVICE_DATABASE: "postgresql://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []

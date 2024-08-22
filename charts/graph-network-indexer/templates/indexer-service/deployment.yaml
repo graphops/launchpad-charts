@@ -42,33 +42,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if $values.initContainers }}
       initContainers:
-        - name: envsubst
-          imagePullPolicy: IfNotPresent
-          image: bhgedigital/envsubst
-          command:
-            - /bin/sh
-            - -c
-            - |
-              set -ex;
-              envsubst < /var/lib/indexer-rs-template/config.toml > /etc/indexer-rs/config.toml;
-              cat /etc/indexer-rs/config.toml;
-          env:
-            {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-            {{- range $key, $val := . }}
-            - name: {{ $key | quote }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $val.secretName | quote }}
-                  key: {{ $val.key | quote }}
-                  optional: false
-            {{- end }}
-            {{- end }}
-          volumeMounts:
-            - name: config-template
-              mountPath: /var/lib/indexer-rs-template
-            - name: config
-              mountPath: /etc/indexer-rs
+        {{- toYaml $values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -132,11 +109,13 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: config-template
+        - name: config
           configMap:
             name: {{ include "graph-network-indexer.fullname" . }}-config
-        - name: config
+        {{- if $values.initContainers }}
+        - name: init-data
           emptyDir: {}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

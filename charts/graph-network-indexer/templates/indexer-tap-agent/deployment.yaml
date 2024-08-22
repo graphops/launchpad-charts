@@ -43,34 +43,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if $values.initContainers }}
       initContainers:
-        - name: envsubst
-          imagePullPolicy: IfNotPresent
-          image: bhgedigital/envsubst
-          command:
-            - /bin/sh
-            - -c
-            - |
-              set -ex;
-              envsubst < /var/lib/indexer-rs-template/config.toml > /etc/indexer-rs/config.toml;
-              cat /etc/indexer-rs/config.toml;
-          env:
-            {{- $secretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
-            {{- if $secretEnv }}
-            {{- range $key, $val := $secretEnv }}
-            - name: {{ $key | quote }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $val.secretName | quote }}
-                  key: {{ $val.key | quote }}
-                  optional: false
-            {{- end }}
-            {{- end }}
-          volumeMounts:
-            - name: config-template
-              mountPath: /var/lib/indexer-rs-template
-            - name: config
-              mountPath: /etc/indexer-rs
+        {{- toYaml $values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -87,7 +63,7 @@ spec:
                   fieldPath: metadata.name
           {{- if or $.Values.indexerDefaults.env $values.env }}
           {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
-          {{- range $key, $val := ( omit $mergedEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
+          {{- range $key, $val := ( omit $mergedEnv "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
@@ -96,7 +72,7 @@ spec:
           {{- end }}
           {{- if or $.Values.indexerDefaults.secretEnv $values.secretEnv }}
           {{- $mergedSecretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
-          {{- range $key, $val := ( omit $mergedSecretEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
+          {{- range $key, $val := ( omit $mergedSecretEnv "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -105,7 +81,7 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
-            - name: INDEXER_SERVICE_DATABASE__POSTGRES_URL
+            - name: TAP_AGENT_DATABASE__POSTGRES_URL
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index .Values.indexerDefaults.config "postgres-host" }}:{{ index .Values.indexerDefaults.config "postgres-port" }}/{{ index .Values.indexerDefaults.config "postgres-database" }}'          
           command:
           - /usr/local/bin/indexer-tap-agent
@@ -132,11 +108,13 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: config-template
+        - name: config
           configMap:
             name: {{ include "graph-network-indexer.fullname" . }}-config
-        - name: config
+        {{- if $values.initContainers }}
+        - name: init-data
           emptyDir: {}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
