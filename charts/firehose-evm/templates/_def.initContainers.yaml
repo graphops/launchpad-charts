@@ -1,0 +1,77 @@
+{{- define "def.chartInitContainers" -}}
+10-init-nodeport:
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+  env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+  command:
+    - sh
+    - -c
+    - |-
+      set -ex;
+      export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+      export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+      export EXTERNAL_IP=${EXTERNAL_IP:-$(curl --silent v4.ident.me)};
+      cp /config/config.yaml /etc/config/config.yaml;
+      sed -i "s|EXTERNAL_PORT|\"$EXTERNAL_PORT\"|g" /etc/config/config.yaml;
+      sed -i "s|EXTERNAL_IP|$EXTERNAL_IP|g" /etc/config/config.yaml;
+      cat /etc/config/config.yaml;
+  volumeMounts:
+    - name: config
+      mountPath: /etc/config
+    - name: configmap
+      mountPath: /config
+      readOnly: true
+20-init-snapshot:
+  securityContext:
+    privileged: true
+  command:
+    - sh
+    - -c
+    - |-
+      set -x;
+      STAMP=._download.stamp
+      SNAPSHOT_LOCATION="${SNAPSHOT_REMOTE_LOCATION}"
+      echo $SNAPSHOT_LOCATIONS
+      if [[ -f "${STAMP}" && "$(cat "${STAMP}")" = "${SNAPSHOT_LOCATION}" ]]; then
+        echo "Snapshot has not changed. Skipping download.";
+        exit 0;
+      fi
+      if [ "$(ls -A {{ .Pod.dataDir | default "" }})" ]; then
+        echo "Data already exists in {{ .Pod.dataDir | default "" }}. Checking if snapshot needs to be updated.";
+      fi
+      if ! rclone -v --progress --checkers 32 --transfers 32 --multi-thread-streams 16 --fast-list --s3-chunk-size 64M  --config /config/rclone copy ${SNAPSHOT_LOCATION} {{ .Pod.dataDir | default "" }}/; then
+        echo "rclone copy failed";
+        exit 1;
+      fi;
+      TAR_FILE=$(ls {{ .Pod.dataDir | default "" }}/*.tar.zst);
+      if ! tar -xzvf "$TAR_FILE" -C {{ .Pod.dataDir | default "" }}; then
+        echo "Tar extraction failed. Entering sleep to allow manual intervention."
+        echo "You can now enter the container and attempt extraction manually."
+        echo "The tar file is located at: $TAR_FILE"
+        sleep 6000
+      fi
+      rm "$TAR_FILE";
+      echo "${SNAPSHOT_LOCATION}" > "${STAMP}";
+  env:
+  {{- with ( dig "initSnapshot" "env" dict .Pod ) }}
+  {{- range $key, $val := . }}
+    - name: {{ $key }}
+      value: {{ $val | quote }}
+  {{- end }}
+  {{- end }}
+  volumeMounts:
+  - name: rclone-config
+    mountPath: /config/rclone
+    subPath: rclone.conf
+  - name: reader-node
+    mountPath: {{ .Pod.dataDir | default "" }}
+{{- end }}

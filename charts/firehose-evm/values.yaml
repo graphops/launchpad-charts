@@ -242,7 +242,8 @@ common:
       firehose-rate-limit-bucket-fill-rate: "1s"
     args:
       start: "__none"
-      -c: "/config/config.yaml"
+      -c: "__none"
+      /config/config.yaml: "__none"
     argsOrder:
       - "start"
       - "-c"
@@ -553,32 +554,24 @@ reader-node:
       addr: 0.0.0.0
       port: 6061
     args:
-      __prefix: "--"
       syncmode: "full"
       snapshot: "true"
-      http:
-        __self: "somevalue"
-        api: net,web3,eth,debug
-        addr: 0.0.0.0
-        vhosts: "*"
-      metrics:
-        __self: "__none"
-        addr: "${NODE_DEPLOYMENT_METRICS_ADDR}"
-        port: "${NODE_DEPLOYMENT_METRICS_PORT}"
-      authrpc:
-        port: 8551
-        jwtsecret: /jwt/jwt.hex
-        addr: 0.0.0.0
-        vhosts: '*'
+      http: "__none"
+      http.api: net,web3,eth,debug
+      http.addr: 0.0.0.0
+      http.vhosts: "*"
+      metrics.addr: "${NODE_DEPLOYMENT_METRICS_ADDR}"
+      metrics.port: "${NODE_DEPLOYMENT_METRICS_PORT}"
+      authrpc.port: 8551
+      authrpc.jwtsecret: /jwt/jwt.hex
+      authrpc.addr: 0.0.0.0
+      authrpc.vhosts: '*'
       datadir: "{node-data-dir}"
-      firehose-enabled:
-        __self: "__none"
+      firehose-enabled: "__none"
       port: EXTERNAL_PORT
-      discovery:
-        port: EXTERNAL_PORT
+      discovery.port: EXTERNAL_PORT
       nat: "extip:EXTERNAL_IP"
-      sepolia:
-        __self: "__none"
+      sepolia: "__none"
       networkid: 11155111
       txlookuplimit: 1000
       cache: 8192
@@ -735,9 +728,6 @@ relayer:
   # -- Firehose-specific configuration
   fireeth: {}
 
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
-
   # Relayer-specific configurations
   configMap:
     enabled: true
@@ -882,9 +872,6 @@ merger:
   # -- Firehose-specific configuration
   fireeth: {}
 
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
-
   # Merger-specific configurations
   configMap:
     enabled: true
@@ -1024,9 +1011,6 @@ index-builder:
 
   # -- Firehose-specific configuration
   fireeth: {}
-
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
 
   # Index-builder specific configurations
   configMap:

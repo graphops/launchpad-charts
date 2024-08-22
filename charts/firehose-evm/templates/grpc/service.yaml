@@ -1,7 +1,7 @@
 {{- $componentName := "grpc" -}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
-{{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
+{{- $values := fromYaml (include "utils.deepMerge" (list $commonValues $componentValues)) -}}
 
 {{- if and $values.enabled $values.service.enabled }}
 apiVersion: v1

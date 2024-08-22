@@ -1,7 +1,7 @@
 {{- $componentName := "grpc" -}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
-{{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
+{{- $values := fromYaml (include "utils.deepMerge" (list $commonValues $componentValues)) -}}
 {{- if and $values.enabled $values.serviceMonitor.enabled -}}
 {{- $defaultYaml := `
 {{- $componentName := "grpc" -}}
@@ -27,7 +27,7 @@ spec:
 ` -}}
 {{- $defaultServiceMonitor := fromYaml (tpl $defaultYaml .) -}}
 
-{{- $finalServiceMonitor := fromYaml (include "firehose-evm.serviceMonitorConfig" (list $defaultServiceMonitor $values.serviceMonitor)) -}}
+{{- $finalServiceMonitor := list $defaultServiceMonitor $values.serviceMonitor | include "firehose-evm.serviceMonitorConfig" -}}
 
-{{- toYaml $finalServiceMonitor -}}
+{{- $finalServiceMonitor -}}
 {{- end -}}

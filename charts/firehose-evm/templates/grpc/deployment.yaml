@@ -1,11 +1,13 @@
 {{- $componentName := "grpc"}}
 {{- $componentValues := deepCopy (index $.Values $componentName) -}}
 {{- $commonValues := deepCopy $.Values.common -}}
-{{- $values := fromYaml (include "firehose-evm.genericMerge" (list $commonValues $componentValues)) -}}
-{{- $templateContext := dict "Root" $ "Pod" $values "componentName" $componentName }}
-{{- $configToml := include "firehose-evm.generateConfigmap" $templateContext }}
+{{- $values := fromYaml (include "utils.deepMerge" (list $commonValues $componentValues)) -}}
+{{- $templateCtx := dict "Root" $ "Pod" $values "componentName" $componentName }}
+{{- $configToml := include "firehose-evm.generateConfigmap" $templateCtx }}
 {{- $configHash := sha256sum $configToml }}
-{{- $args := include "generateArgs" (dict "object" $values.fireeth.args "order" $values.fireeth.argsOrder ) -}}
+{{-
+$args := include "utils.generateArgsList" (dict "object" $values.fireeth.args "orderList" $values.fireeth.argsOrder "templateCtx" $templateCtx) | fromYamlArray
+-}}
 
 {{- if $values.enabled }}
 apiVersion: apps/v1
@@ -64,17 +66,16 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      {{- $initContainers := include "helpers.initContainers" (dict "rootCtx" $ "podCtx" $values) | fromYaml }}
-      {{- if $initContainers }}
-      initContainers:
-        {{- range $name, $container := $initContainers }}
-        - name: {{ $name }}
-          {{- toYaml $container | nindent 10 }}
-        {{- end }}
-      {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- $initContainers := include "resources.initContainers" $templateCtx | fromYamlArray }}
+      {{- if $initContainers }}
+      initContainers:
+      {{- range $initContainer := $initContainers }}
+      - {{ $initContainer | toYaml | nindent 8 | trim }}
+      {{- end }}
       {{- end }}
       {{- with $values.tolerations }}
       tolerations:
@@ -99,7 +100,7 @@ spec:
       containers:
         - name: {{ $componentName }}
           {{- with $values.image }}
-          image: {{ include "firehose-evm.fullImage" . | quote }}
+          image: {{ include "utils.getImage" . | quote }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
           {{- with $values.securityContext }}
@@ -107,13 +108,9 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           args:
-            {{ $args | nindent 12 }}
-            - "start"
-            - "-c"
-            - "/config/config.yaml"
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+          {{- range $arg := $args }}
+            - {{ $arg }}
+          {{- end }}
           ports:
           {{- range $name, $port := $values.service.ports }}
           - name: {{ $name }}
@@ -171,6 +168,6 @@ spec:
           configMap:
             name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
         {{- with $values.extraVolumes }}
-        {{- tpl (toYaml .) (deepCopy $templateContext) | nindent 8 }}
+        {{- tpl (toYaml .) (deepCopy $templateCtx) | nindent 8 }}
         {{- end }}
 {{- end }}

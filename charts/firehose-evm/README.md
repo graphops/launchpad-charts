@@ -53,7 +53,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | common.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
  | common.extraVolumeMounts |  | object | `{}` |
  | common.extraVolumes | Extra volumes to add to the pod (templated) | list | `[]` |
- | common.fireeth | Firehose-specific configuration | object | `{"args":{"-c":"/config/config.yaml","start":"__none"},"argsOrder":["start","-c"],"config":{"common-index-block-sizes":10000,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"localhost","enabled":false,"port":6060}}` |
+ | common.fireeth | Firehose-specific configuration | object | `{"args":{"-c":"__none","/config/config.yaml":"__none","start":"__none"},"argsOrder":["start","-c"],"config":{"common-index-block-sizes":10000,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"localhost","enabled":false,"port":6060}}` |
  | common.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false}` |
  | common.image | Image configuration for firehose-evm | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
  | common.image.digest | Overrides the image reference using a specific digest | string | `""` |
@@ -134,7 +134,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | index-builder.enabled |  | bool | `false` |
  | index-builder.env | Environment variables | object | `{}` |
  | index-builder.envFromConfigmap | Environment variables from ConfigMaps | object | `{}` |
- | index-builder.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | index-builder.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
  | index-builder.extraVolumeMounts |  | object | `{}` |
  | index-builder.extraVolumes | Extra volumes to add to the pod (templated) | list | `[]` |
@@ -173,7 +172,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | merger.enabled |  | bool | `false` |
  | merger.env | Environment variables | object | `{}` |
  | merger.envFromConfigmap | Environment variables from ConfigMaps | object | `{}` |
- | merger.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | merger.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
  | merger.extraVolumeMounts |  | object | `{}` |
  | merger.extraVolumes | Extra volumes to add to the pod (templated) | list | `[]` |
@@ -236,27 +234,25 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | reader-node.labels | Component level labels (templated) | object | `{}` |
  | reader-node.lifecycle | Lifecycle hooks | object | `{"preStop":{"exec":{"command":["/usr/local/bin/eth-maintenance"]}}}` |
  | reader-node.nameOverride |  | string | `""` |
- | reader-node.node.args.__prefix |  | string | `"--"` |
- | reader-node.node.args.authrpc.addr |  | string | `"0.0.0.0"` |
- | reader-node.node.args.authrpc.jwtsecret |  | string | `"/jwt/jwt.hex"` |
- | reader-node.node.args.authrpc.port |  | int | `8551` |
- | reader-node.node.args.authrpc.vhosts |  | string | `"*"` |
+ | reader-node.node.args."authrpc.addr" |  | string | `"0.0.0.0"` |
+ | reader-node.node.args."authrpc.jwtsecret" |  | string | `"/jwt/jwt.hex"` |
+ | reader-node.node.args."authrpc.port" |  | int | `8551` |
+ | reader-node.node.args."authrpc.vhosts" |  | string | `"*"` |
+ | reader-node.node.args."discovery.port" |  | string | `"EXTERNAL_PORT"` |
+ | reader-node.node.args."http.addr" |  | string | `"0.0.0.0"` |
+ | reader-node.node.args."http.api" |  | string | `"net,web3,eth,debug"` |
+ | reader-node.node.args."http.vhosts" |  | string | `"*"` |
+ | reader-node.node.args."metrics.addr" |  | string | `"${NODE_DEPLOYMENT_METRICS_ADDR}"` |
+ | reader-node.node.args."metrics.port" |  | string | `"${NODE_DEPLOYMENT_METRICS_PORT}"` |
  | reader-node.node.args.cache |  | int | `8192` |
  | reader-node.node.args.datadir |  | string | `"{node-data-dir}"` |
- | reader-node.node.args.discovery.port |  | string | `"EXTERNAL_PORT"` |
- | reader-node.node.args.firehose-enabled.__self |  | string | `"__none"` |
- | reader-node.node.args.http.__self |  | string | `"somevalue"` |
- | reader-node.node.args.http.addr |  | string | `"0.0.0.0"` |
- | reader-node.node.args.http.api |  | string | `"net,web3,eth,debug"` |
- | reader-node.node.args.http.vhosts |  | string | `"*"` |
+ | reader-node.node.args.firehose-enabled |  | string | `"__none"` |
+ | reader-node.node.args.http |  | string | `"__none"` |
  | reader-node.node.args.maxpeers |  | int | `100` |
- | reader-node.node.args.metrics.__self |  | string | `"__none"` |
- | reader-node.node.args.metrics.addr |  | string | `"${NODE_DEPLOYMENT_METRICS_ADDR}"` |
- | reader-node.node.args.metrics.port |  | string | `"${NODE_DEPLOYMENT_METRICS_PORT}"` |
  | reader-node.node.args.nat |  | string | `"extip:EXTERNAL_IP"` |
  | reader-node.node.args.networkid |  | int | `11155111` |
  | reader-node.node.args.port |  | string | `"EXTERNAL_PORT"` |
- | reader-node.node.args.sepolia.__self |  | string | `"__none"` |
+ | reader-node.node.args.sepolia |  | string | `"__none"` |
  | reader-node.node.args.snapshot |  | string | `"true"` |
  | reader-node.node.args.syncmode |  | string | `"full"` |
  | reader-node.node.args.txlookuplimit |  | int | `1000` |
@@ -301,7 +297,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | relayer.enabled |  | bool | `false` |
  | relayer.env | Environment variables | object | `{}` |
  | relayer.envFromConfigmap | Environment variables from ConfigMaps | object | `{}` |
- | relayer.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | relayer.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
  | relayer.extraVolumeMounts |  | object | `{}` |
  | relayer.extraVolumes | Extra volumes to add to the pod (templated) | list | `[]` |
