@@ -23,9 +23,13 @@ metadata:
   name: {{ $serviceAccountName }}
   labels: {{- $labels | nindent 4 }}
   annotations:
+{{- if .preUpgradePod }}
+{{- if .preUpgradePod.enabled }}
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-10"
     "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
+{{- end }}
   {{- with $serviceAccountBlock.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -38,9 +42,13 @@ metadata:
   name: {{ $serviceAccountName }}-role
   labels: {{- $labels | nindent 4 }}
   annotations:
+{{- if .preUpgradePod }}
+{{- if .preUpgradePod.enabled }}
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-10"
     "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
+{{- end }}
 {{- with .rules }}
 rules: {{ toYaml . | nindent 2 }}
 {{- end }}
@@ -74,9 +82,13 @@ metadata:
   labels:
     {{- $labels | nindent 4 }}
   annotations:
+{{- if .preUpgradePod }}
+{{- if .preUpgradePod.enabled }}
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
+{{- end }}
 spec:
     {{- with $imagePullSecrets }}
       imagePullSecrets:
@@ -182,9 +194,13 @@ metadata:
   name: "{{ $fullComponentName }}-{{ $containerName }}-pre-upgrade-pod"
   labels: {{- $labels | nindent 4 }}
   annotations:
+{{- if .preUpgradePod }}
+{{- if .preUpgradePod.enabled }}
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
+{{- end }}
 spec:
     {{- with $imagePullSecrets }}
       imagePullSecrets: {{- toYaml . | nindent 8 }}

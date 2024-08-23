@@ -9,8 +9,12 @@ metadata:
   labels:
     {{- $labels | nindent 4 }}
   annotations:
+{{- if .preUpgradePod }}
+{{- if .preUpgradePod.enabled }}
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-10"
     "helm.sh/hook-delete-policy": before-hook-creation
+{{- end }}
+{{- end }}
 data: {{ toYaml $dict.data | nindent 2 }}
 {{- end }}
