@@ -979,6 +979,16 @@ entries:
   generic-app:
     - apiVersion: v2
       appVersion: generic-app
+      created: "2024-08-23T16:21:06Z"
+      description: A generic app chart
+      digest: b8b5ac7a9aff90ad356a1ac43ecacb717cdfbbfbb4176b28297ee25e6696ef84
+      name: generic-app
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.2/generic-app-0.1.2.tgz
+      version: 0.1.2
+    - apiVersion: v2
+      appVersion: generic-app
       created: "2023-10-11T21:01:14Z"
       description: A generic app chart
       digest: 99303050263b0bc7812fcc81f25ad0ece8d5ff1370729b2426d24303c0a3f832
@@ -2688,4 +2698,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-08-15T22:00:18.800408232Z"
+generated: "2024-08-23T16:24:32.316760014Z"
