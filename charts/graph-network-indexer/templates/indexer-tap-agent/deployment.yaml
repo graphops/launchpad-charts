@@ -100,9 +100,6 @@ spec:
           - name: config
             mountPath: "/etc/indexer-rs"
             readOnly: true
-          readinessProbe:
-            httpGet:
-              port: http-queryapi
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
