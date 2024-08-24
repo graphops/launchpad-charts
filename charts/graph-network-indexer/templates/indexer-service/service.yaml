@@ -15,12 +15,14 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  {{- range $portName, $portNumber := $values.service.ports }}
-    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
-      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
-      protocol: TCP
-      name: {{ $portName }}
-  {{- end }}
+  - port: {{ index $.Values.indexerDefaults.configService "service-port" }}
+    targetPort: http-queryapi
+    protocol: TCP
+    name: http-queryapi
+  - port: {{ index $.Values.indexerDefaults.configService "metrics-port" }}
+    targetPort: http-metrics
+    protocol: TCP
+    name: http-metrics
   selector:
     {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}

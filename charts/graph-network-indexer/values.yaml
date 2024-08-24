@@ -65,13 +65,15 @@ indexerDefaults:
 
   configService:
   
-    metrics-port: 7602
+    metrics-port: 7300
 
     subgraphs-network-syncing-interval-secs: 60
 
     subgraphs-network-recently-closed-allocation-buffer-secs: 100
 
-    service-host-and-port: "0.0.0.0:7600"
+    service-host: "0.0.0.0"
+
+    service-port: 7600
 
     blockchain-chain-id: 421614
 
@@ -161,7 +163,7 @@ indexerDefaults:
       # Specific configurations to indexer-service #
       ##############################################
       [service]
-      host_and_port = {{ index .Values.indexerDefaults.configService "service-host-and-port" | quote }}
+      host_and_port = {{ printf "%s:%d" (index .Values.indexerDefaults.configService "service-host") (int (index .Values.indexerDefaults.configService "service-port")) | quote }}
       url_prefix = {{ index .Values.indexerDefaults.configService "service-url-prefix" | quote }}
       serve_network_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-network-subgraph" }}
       serve_escrow_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-escrow-subgraph" }}
@@ -187,13 +189,7 @@ indexerDefaults:
       {{- end }}
 
 
-  secretEnv:
-    POSTGRES_USERNAME:
-      secretName: test-secret
-      key: test
-    POSTGRES_PASSWORD:
-      secretName: test-secret
-      key: test
+  secretEnv: {}
 
   env: 
     {}
@@ -320,11 +316,6 @@ indexerService:
     topologyAwareRouting:
       enabled: false
     type: ClusterIP
-    ports: # Valid keys are names of ports that are exposed by the Pod
-      # -- Service Port to expose Query API on
-      http-queryapi: 7600
-      # -- Service Port to expose Metrics on
-      http-metrics: 7300
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -363,19 +354,6 @@ indexerTapAgent:
   # -- Number of replicas to run
   replicas: 1
 
-  # secretEnv: 
-  #   INDEXER_SERVICE_POSTGRES_USERNAME:
-  #     secretName: 
-  #     key:
-  #   INDEXER_SERVICE_POSTGRES_PASSWORD:
-  #     secretName: 
-  #     key: 
-
-  env: 
-    INDEXER_SERVICE_POSTGRES_HOST: "pg-indexer-metadata"
-    INDEXER_SERVICE_POSTGRES_PORT: 5432
-    INDEXER_SERVICE_POSTGRES_DATABASE: "indexer"
-
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
 
@@ -399,11 +377,6 @@ indexerTapAgent:
     topologyAwareRouting:
       enabled: false
     type: ClusterIP
-    ports: # Valid keys are names of ports that are exposed by the Pod
-      # -- Service Port to expose Query API on
-      http-queryapi: 7600
-      # -- Service Port to expose Metrics on
-      http-metrics: 7300
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

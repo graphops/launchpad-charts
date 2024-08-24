@@ -61,9 +61,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- if or $.Values.indexerDefaults.env $values.env }}
-          {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
-          {{- range $key, $val := ( omit $mergedEnv "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
+          {{- $values := deepCopy $.Values.indexerDefaults | mustMergeOverwrite (deepCopy $.Values.indexerTapAgent) }}
+          {{- if $values.env }}
+          {{- range $key, $val := ( omit $values.env "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
@@ -78,7 +78,6 @@ spec:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
-                  optional: false
           {{- end }}
           {{- end }}
             - name: TAP_AGENT_DATABASE__POSTGRES_URL
@@ -91,10 +90,10 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: 7600
+              containerPort: {{ index .Values.indexerDefaults.configService "service-port" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 7300
+              containerPort: {{ index .Values.indexerDefaults.configService "metrics-port" }}
               protocol: TCP
           volumeMounts:
           - name: config

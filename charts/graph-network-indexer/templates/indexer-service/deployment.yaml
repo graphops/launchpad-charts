@@ -60,9 +60,9 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- if or $.Values.indexerDefaults.env $values.env }}
-          {{- $mergedEnv := merge (deepCopy $.Values.indexerDefaults.env) $values.env }}
-          {{- range $key, $val := ( omit $mergedEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
+          {{- $values := deepCopy $.Values.indexerDefaults | mustMergeOverwrite (deepCopy $values) }}
+          {{- if $values.env }}
+          {{- range $key, $val := ( omit $values.env "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
           {{- if not (kindIs "invalid" $val) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
@@ -72,14 +72,11 @@ spec:
           {{- if or $.Values.indexerDefaults.secretEnv $values.secretEnv }}
           {{- $mergedSecretEnv := merge (deepCopy (default dict $.Values.indexerDefaults.secretEnv)) (default dict $values.secretEnv) }}
           {{- range $key, $val := ( omit $mergedSecretEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
-          {{- if and $val $val.secretName $val.key }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
-                  optional: false
-          {{- end }}
           {{- end }}
           {{- end }}
             - name: INDEXER_SERVICE_DATABASE__POSTGRES_URL
@@ -92,10 +89,10 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: 7600
+              containerPort: {{ index .Values.indexerDefaults.configService "service-port" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 7300
+              containerPort: {{ index .Values.indexerDefaults.configService "metrics-port" }}
               protocol: TCP
           volumeMounts:
           - name: config
