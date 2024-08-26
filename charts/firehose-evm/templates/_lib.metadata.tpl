@@ -1,8 +1,8 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "firehose-evm.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "metadata.name" -}}
+{{- default .Root.Chart.Name .Root.Values.global.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
@@ -10,15 +10,20 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "firehose-evm.fullname" -}}
-{{- if .Values.fullnameOverride }}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- define "metadata.fullname" -}}
+{{- if not ( empty .Root.Values.global.fullnameOverride ) }}
+{{- .Root.Values.global.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := default .Chart.Name .Values.nameOverride }}
-{{- if contains $name .Release.Name }}
-{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- $name := "" }}
+{{- if not ( empty .Root.Values.global.nameOverride ) }}
+{{- $name = .Root.Values.global.nameOverride }}
 {{- else }}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- $name = .Root.Chart.Name }}
+{{- end }}
+{{- if contains $name .Root.Release.Name }}
+{{- .Root.Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Root.Release.Name $name | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -26,15 +31,15 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "firehose-evm.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- define "metadata.chart" -}}
+{{- printf "%s-%s" .Root.Chart.Name .Root.Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common annotations
 */}}
-{{- define "firehose-evm.annotations" -}}
-{{- with .Values.global.annotations }}
+{{- define "metadata.annotations" -}}
+{{- with .Root.Values.global.annotations }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
@@ -42,14 +47,14 @@ Common annotations
 {{/*
 Common labels
 */}}
-{{- define "firehose-evm.labels" -}}
-helm.sh/chart: {{ include "firehose-evm.chart" . }}
-{{ include "firehose-evm.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- define "metadata.labels" -}}
+helm.sh/chart: {{ include "metadata.chart" . }}
+{{ include "metadata.selectorLabels" . }}
+{{- if .Root.Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Root.Chart.AppVersion | quote }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- with .Values.global.labels }}
+app.kubernetes.io/managed-by: {{ .Root.Release.Service }}
+{{- with .Root.Values.global.labels }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
@@ -57,17 +62,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "firehose-evm.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "firehose-evm.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "metadata.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "metadata.name" . }}
+app.kubernetes.io/instance: {{ .Root.Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use for a specific component
 */}}
-{{- define "firehose-evm.serviceAccountName" -}}
+{{- define "metadata.serviceAccountName" -}}
 {{- if .Pod.serviceAccount.create -}}
-  {{- default (printf "%s-%s" (include "firehose-evm.fullname" .Root) .componentName) .Pod.serviceAccount.name -}}
+  {{- default (printf "%s-%s" (include "metadata.fullname" .) .componentName) .Pod.serviceAccount.name -}}
 {{- else -}}
   {{- default "default" .Pod.serviceAccount.name -}}
 {{- end -}}
@@ -76,16 +81,43 @@ Create the name of the service account to use for a specific component
 {{/*
 Create the name of the role or cluster role for a specific component
 */}}
-{{- define "firehose-evm.roleName" -}}
+{{- define "metadata.roleName" -}}
 {{- $rootCtx := .Root -}}
-{{- $componentName := .componentName -}}
-{{- printf "%s-%s-role" (include "firehose-evm.fullname" .Root) $componentName -}}
+{{- printf "%s-%s-role" (include "metadata.fullname" $) .componentName -}}
 {{- end }}
 
-{{- define "firehose-evm.allLabels" -}}
-{{- include "firehose-evm.mergeLabelsOrAnnotations" (dict "Root" .Root "Pod" .Pod "specific" .labels "componentName" .componentName "type" "labels") -}}
+{{- define "metadata.allLabels" -}}
+{{- include "metadata.mergeLabelsOrAnnotations" (dict "Root" .Root "Pod" .Pod "specific" .labels "componentName" .componentName "type" "labels") -}}
 {{- end -}}
 
-{{- define "firehose-evm.allAnnotations" -}}
-{{- include "firehose-evm.mergeLabelsOrAnnotations" (dict "Root" .Root "Pod" .Pod "specific" .annotations "componentName" .componentName "type" "annotations") -}}
+{{- define "metadata.allAnnotations" -}}
+{{- include "metadata.mergeLabelsOrAnnotations" (dict "Root" .Root "Pod" .Pod "specific" .annotations "componentName" .componentName "type" "annotations") -}}
+{{- end -}}
+
+{{- define "metadata.mergeLabelsOrAnnotations" -}}
+{{- $result := dict -}}
+{{- $root := .Root -}}
+{{- $pod := .Pod -}}
+{{- $specific := .specific | default dict -}}
+{{- $componentName := .componentName -}}
+{{- $isLabels := eq .type "labels" -}}
+
+{{- $global := index $root.Values.global (ternary "labels" "annotations" $isLabels) | default dict -}}
+{{- $component := index $pod (ternary "labels" "annotations" $isLabels) | default dict -}}
+
+{{- $result = include "utils.deepMerge" (list $result $global) | fromYaml -}}
+{{- $result = include "utils.deepMerge" (list $result $component) | fromYaml -}}
+
+{{- if kindIs "slice" $specific -}}
+  {{- range $specific -}}
+    {{- $result = include "utils.deepMerge" (list $result .) | fromYaml -}}
+  {{- end -}}
+{{- else -}}
+  {{- $result = include "utils.deepMerge" (list $result $specific) | fromYaml -}}
+{{- end -}}
+
+{{- $ctx := dict "Root" $root "Pod" $pod "componentName" $componentName -}}
+{{- $templated := tpl ($result | toYaml) $ctx | fromYaml -}}
+
+{{- $templated | toYaml -}}
 {{- end -}}

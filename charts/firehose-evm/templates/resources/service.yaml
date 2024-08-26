@@ -1,0 +1,54 @@
+{{- define "defaults.Service" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  namespace: {{ .Root.Release.Namespace }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+spec:
+  type: {{ .Pod.service.spec.type }}
+  ports:
+  {{- range $name, $spec := .Pod.service.spec.ports }}
+    - name: {{ $name }}
+      targetPort: {{ $spec.targetPort | default $name }} # the name of the port on the container that we are routing to
+      {{ $spec | toYaml | nindent 6 }}
+  {{- end }}
+  selector:
+    {{- include "metadata.selectorLabels" $ | nindent 4 }}
+{{- end }}
+
+{{- define "defaults.ServiceHeadless" }}
+metadata:
+  name: {{ printf "%s-headless" .__svc.metadata.name }}
+spec:
+  clusterIP: None
+{{- end }}
+
+{{- range $key, $componentValues := $.Values.firehosePods -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+
+{{- $values := deepCopy $templateCtx.Pod }}
+
+{{- $defaultService := include "defaults.Service" $templateCtx | fromYaml }}
+
+{{- $path := list (dict "path" "spec.ports" "indexKey" "name") }}
+{{- $finalService := ( list $defaultService (omit $values.service "enabled") $path ) | include "utils.smartMerge" | fromYaml }}
+
+{{- $templatedService := get (list $finalService $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
+
+{{- $__templateCtxHeadless := set (deepCopy $templateCtx) "__svc" $templatedService }}
+{{- $serviceHeadlessOverrides := tpl (include "defaults.ServiceHeadless" $__templateCtxHeadless) $templateCtx | fromYaml }}
+{{- $templatedServiceHeadless :=  mergeOverwrite (deepCopy $templatedService) $serviceHeadlessOverrides }}
+
+{{- if and $values.enabled $values.service.enabled }}
+---
+{{ $templatedService | toYaml }}
+{{- if $values.serviceHeadless }}
+---
+{{ $templatedServiceHeadless | toYaml }}
+{{- end -}}
+{{- end -}}
+{{- end -}}

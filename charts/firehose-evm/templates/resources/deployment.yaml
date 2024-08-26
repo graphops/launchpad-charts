@@ -1,118 +1,109 @@
-{{- $componentName := "grpc"}}
-{{- $componentValues := deepCopy (index $.Values $componentName) -}}
-{{- $commonValues := deepCopy $.Values.common -}}
-{{- $values := fromYaml (include "utils.deepMerge" (list $commonValues $componentValues)) -}}
-{{- $templateCtx := dict "Root" $ "Pod" $values "componentName" $componentName }}
-{{- $configToml := include "firehose-evm.generateConfigmap" $templateCtx }}
-{{- $configHash := sha256sum $configToml }}
-{{-
-$args := include "utils.generateArgsList" (dict "object" $values.fireeth.args "orderList" $values.fireeth.argsOrder "templateCtx" $templateCtx) | fromYamlArray
--}}
-
-{{- if $values.enabled }}
+{{- define "defaults.Deployment" }}
+{{- $configHash := "0xdeadbeef"}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}
-  {{- with $values }}
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  {{- with .Pod }}
   labels:
-  {{- $labels := include "firehose-evm.allLabels" (dict "Root" $ "Pod" $values "componentName" $componentName "annotations") | fromYaml }}
+  {{- $labels := include "metadata.allLabels" $ | fromYaml }}
   {{- range $key, $value := $labels }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
   {{- end }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ .Root.Release.Namespace }}
 spec:
   selector:
-    {{- with $values }}
+    {{- with .Pod }}
     matchLabels:
-    {{- $labels := include "firehose-evm.allLabels" (dict "Root" $ "Pod" $values "componentName" $componentName "annotations") | fromYaml }}
+    {{- $labels := include "metadata.allLabels" $ | fromYaml }}
     {{- range $key, $value := $labels }}
       {{ $key }}: {{ $value | quote }}
     {{- end }}
     {{- end }}
-  serviceName: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-headless
-  replicas: {{ $values.replicas }}
+  replicas: {{ .Pod.replicas }}
   template:
     metadata:
-      {{- with $values }}
+      {{- with .Pod }}
       annotations:
-      {{- $annotations := include "firehose-evm.allAnnotations" (dict "Root" $ "Pod" $values "componentName" $componentName "annotations" .annotations) | fromYaml }}
+      {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
       {{- range $key, $value := $annotations }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
-      {{- if $values.configMap.enabled }}
+      {{- if .configMap.enabled }}
         checksum/config.toml: {{ $configHash }} # this will automate restarts of Deployment Pods when config changes
       {{- else if not .annotations }}
         # Add an empty line to ensure annotations block is created if it does not exist
         {}
       {{- end }}
       {{- end }}
-      {{- with $values }}
+      {{- with .Pod }}
       labels:
-      {{- $labels := include "firehose-evm.allLabels" (dict "Root" $ "Pod" . "componentName" $componentName "annotations") | fromYaml }}
+      {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
       {{- range $key, $value := $labels }}
         {{ $key }}: {{ $value | quote }}
       {{- end }}
       {{- end }}
     spec:
-      {{- with $values.imagePullSecrets }}
+      {{- with .Pod.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "firehose-evm.serviceAccountName" (dict "Root" $ "Pod" $values "componentName" $componentName) }}
-      {{- with $values.podSecurityContext }}
+      serviceAccountName: {{ include "metadata.serviceAccountName" $ }}
+      {{- with .Pod.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      {{- with $values.nodeSelector }}
+      terminationGracePeriodSeconds: {{ .Pod.terminationGracePeriodSeconds | default "60" }}
+      {{- with .Pod.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- $initContainers := include "resources.initContainers" $templateCtx | fromYamlArray }}
+      {{- $initContainers := include "resources.initContainers" $ | fromYaml }}
       {{- if $initContainers }}
       initContainers:
-      {{- range $initContainer := $initContainers }}
-      - {{ $initContainer | toYaml | nindent 8 | trim }}
+      {{- range $name, $container := $initContainers }}
+      - name: {{ $name }}
+        {{- $container | toYaml | nindent 8 }}
       {{- end }}
       {{- end }}
-      {{- with $values.tolerations }}
+      {{- with .Pod.tolerations }}
       tolerations:
         {{- range $key, $value := . }}
         - key: {{ $key }}
           {{- toYaml $value | nindent 10 }}
         {{- end }}
       {{- end }}
-      {{- with $values.affinity }}
+      {{- with .Pod.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with $values.topologySpreadConstraints }}
+      {{- with .Pod.topologySpreadConstraints }}
       topologySpreadConstraints:
         {{- range $key, $value := . }}
         - {{- toYaml $value | nindent 10 }}
           labelSelector:
             matchLabels:
-              {{- include "firehose-evm.selectorLabels" $ | nindent 14 }}
+              {{- include "metadata.selectorLabels" $ | nindent 14 }}
         {{- end }}
       {{- end }}
       containers:
-        - name: {{ $componentName }}
-          {{- with $values.image }}
-          image: {{ include "utils.getImage" . | quote }}
+        - name: {{ .componentName }}
+          {{- with .Pod.image }}
+          image: {{ include "utils.getImage" $ | quote }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
-          {{- with $values.securityContext }}
+          {{- with .Pod.securityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- $args := include "utils.generateArgsList" ( dict "map" .Pod.fireeth.args "orderList" .Pod.fireeth.argsOrder "templateCtx" $ ) | fromYamlArray }}
           args:
           {{- range $arg := $args }}
             - {{ $arg }}
           {{- end }}
           ports:
-          {{- range $name, $port := $values.service.ports }}
+          {{- range $name, $port := .Pod.service.ports }}
           - name: {{ $name }}
             containerPort: {{ $port.port }}
             protocol: {{ $port.protocol | default "TCP" }}
@@ -122,13 +113,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with $values.env }}
+          {{- with .Pod.env }}
           {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
           {{- end }}
           {{- end }}
-          {{- with $values.envFromSecret }}
+          {{- with .Pod.envFromSecret }}
           {{- range $key, $value := . }}
             - name: {{ $key | quote }}
               valueFrom:
@@ -138,7 +129,7 @@ spec:
                   optional: false
           {{- end }}
           {{- end }}
-          {{- with $values.envFromConfigmap }}
+          {{- with .Pod.envFromConfigmap }}
           {{- range $key, $value := . }}
             - name: {{ $key | quote }}
               valueFrom:
@@ -147,11 +138,11 @@ spec:
                   key: {{ $value.key | quote }}
           {{- end }}
           {{- end }}
-          {{- with $values.resources }}
+          {{- with .Pod.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with $values.lifecycle }}
+          {{- with .Pod.lifecycle }}
           lifecycle:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -166,8 +157,24 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            name: {{ include "firehose-evm.fullname" . }}-{{ $componentName }}-config
-        {{- with $values.extraVolumes }}
-        {{- tpl (toYaml .) (deepCopy $templateCtx) | nindent 8 }}
+            name: {{ include "metadata.fullname" $ }}-{{ .componentName }}-config
+        {{- with .Pod.extraVolumes }}
+        {{- tpl (toYaml .) (deepCopy $) | nindent 8 }}
         {{- end }}
+{{- end }}
+
+{{- range $key, $componentValues := $.Values.firehosePods -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+
+{{- $values := deepCopy $templateCtx.Pod }}
+
+{{- $defaultDeployment := include "defaults.Deployment" $templateCtx | fromYaml }}
+
+{{- $templatedDeployment := get (list $defaultDeployment $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
+
+---
+DEBUG:
+{{ $defaultDeployment | toYaml }}
 {{- end }}

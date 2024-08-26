@@ -1,0 +1,41 @@
+{{- define "defaults.HorizontalPodAutoscaler" }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+  namespace: {{ .Root.Release.Namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ .Pod.kind }}
+    name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  {{- with .Pod.horizontalPodAutoscaler }}
+  {{- if .minReplicas }}
+  minReplicas: {{ .minReplicas }}
+  {{- end }}
+  {{- if .maxReplicas }}
+  minReplicas: {{ .maxReplicas }}
+  {{- end }}
+  metrics:
+    {{- toYaml ( .metrics | default list ) | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+
+{{- range $key, $componentValues := $.Values.firehosePods -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+
+{{- $values := deepCopy $templateCtx.Pod }}
+
+{{- $defaultHorizontalPodAutoscaler := include "defaults.HorizontalPodAutoscaler" $templateCtx | fromYaml }}
+
+
+{{- if and $values.enabled $values.horizontalPodAutoscaler.enabled }}
+---
+{{ $defaultHorizontalPodAutoscaler | toYaml }}
+{{- end }}
+{{- end }}

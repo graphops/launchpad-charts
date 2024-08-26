@@ -37,25 +37,31 @@ Uses digest if provided, otherwise uses tag. Requires repository.
 {{- $collection := deepCopy ( index . 0 ) -}}
 {{- $templateCtx := deepCopy ( index . 1 ) -}}
 
-{{/* Process the object */}}
+{{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
-  {{- tpl $collection $templateCtx -}}
+  {{/* this is to allow to preserve types other than strings */}}
+  {{- if contains "\n" $collection }}
+    {{- dict "result" ( tpl $collection $templateCtx ) | toYaml }}
+  {{- else }}
+    {{ $tempStr := printf "%s: %s" "result" ( $collection | trimAll "\"" | trimAll "'" ) }}
+    {{ tpl $tempStr $templateCtx }}
+  {{- end }}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" -}}
-    {{- $result = set $result $key $processedValue -}}
+    {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" | fromYaml -}}
+    {{- $result = set $result $key $processedValue.result -}}
   {{- end -}}
-  {{- $result | toYaml -}}
+  {{- dict "result" $result | toYaml -}}
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" -}}
-    {{- $result = append $result $processedValue -}}
+    {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" | fromYaml -}}
+    {{- $result = append $result $processedValue.result -}}
   {{- end -}}
-  {{- $result | toYaml -}}
+  {{- dict "result" $result | toYaml -}}
 {{- else -}}
-  {{- $collection -}}
+  {{- dict "result" $collection | toYaml -}}
 {{- end -}}
 
 {{- end -}}
@@ -73,42 +79,44 @@ Purpose:
   Ordered args come first, followed by remaining ones in the order provided by range.
 - Optionally evaluates templating on the resulting strings
 Parameters:
-- object: Dictionary of key-value pairs to convert to arguments
+- map: Dictionary of key-value pairs to convert to arguments
 - orderList: List of keys to determine argument order (optional, default: [])
-- <object>.__prefix: String to prepend to each key (optional, default: "")
-- <object>.__separator: String to separate key and value (optional, default: " ")
+- <map>.__prefix: String to prepend to each key (optional, default: "")
+- <map>.__separator: String to separate key and value (optional, default: " ")
 - templateCtx: Context for template evaluation. Only run if non-empty (optional, default: {})
 Usage example:
-  {{- $args := dict ".__prefix" "--" ".__separator" "=" "object" (dict "foo" "bar" "flag" "__none" "num" 42) "orderList" (list "flag" "foo") -}}
+  {{- $args := dict ".__prefix" "--" ".__separator" "=" "map" (dict "foo" "bar" "flag" "__none" "num" 42) "orderList" (list "flag" "foo") -}}
   {{- $result := include "utils.generateArgsList" $args | fromJson -}}
   Result: ["--flag", "--foo=bar", "--num=42"]
 */}}
-{{- $object := deepCopy .object -}}
+{{- $map := deepCopy .map -}}
 {{- $orderList := deepCopy ( .orderList | default list ) -}}
-{{- $prefix := deepCopy ( .__prefix | default "" ) -}}
-{{- $separator := deepCopy ( .__separator | default " " ) -}}
+{{- $prefix := deepCopy ( $map.__prefix | default "" ) -}}
+{{- $separator := deepCopy ( $map.__separator | default " " ) -}}
 {{- $templateCtx := deepCopy ( .templateCtx | default dict ) }}
 
 {{- $result := list -}}
 {{/* Process ordered arguments first */}}
 {{- range $key := $orderList -}}
-  {{- if hasKey $object $key -}}
-    {{- $value := index $object $key -}}
+  {{- if hasKey $map $key -}}
+    {{- $value := index $map $key -}}
     {{- if eq (printf "%v" $value) "__none" -}}
       {{- $result = append $result (printf "%s%s" $prefix $key) -}}
     {{- else -}}
       {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
     {{- end -}}
-    {{- $object = omit $object $key -}}
+    {{- $map = omit $map $key -}}
   {{- end -}}
 {{- end -}}
 
-{{/* Process remaining arguments in the order provided by range */}}
-{{- range $key, $value := $object -}}
-  {{- if eq (printf "%v" $value) "__none" -}}
-    {{- $result = append $result (printf "%s%s" $prefix $key) -}}
-  {{- else -}}
-    {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+{{/* Process remaining arguments excluding the internal "__" ones */}}
+{{- range $key, $value := $map -}}
+  {{- if not (hasPrefix "__" $key) -}}
+    {{- if eq (printf "%v" $value) "__none" -}}
+      {{- $result = append $result (printf "%s%s" $prefix $key) -}}
+    {{- else -}}
+      {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 
@@ -122,16 +130,16 @@ Usage example:
 
 {{- define "utils.deepMerge" -}}
 {{/*
-deepMerge: A versatile helper function for deep merging of multiple objects.
+deepMerge: A versatile helper function for deep merging of multiple maps.
 Purpose:
-- Performs a deep merge of two or more objects.
-- Accepts a variable number of input objects. Later objects in the input list take precedence over earlier ones.
-  (i.e., values from objects listed last will override those from objects listed first)
-- Removes keys set to null in higher-precedence objects.
-- Maintains empty maps and slices from higher-precedence objects.
+- Performs a deep merge of two or more maps.
+- Accepts a variable number of input maps. Later maps in the input list take precedence over earlier ones.
+  (i.e., values from maps listed last will override those from maps listed first)
+- Removes keys set to null in higher-precedence maps.
+- Maintains empty maps and slices from higher-precedence maps.
 Usage:
-- For two objects: list $obj1 $obj2 | include "utils.deepMerge"
-- For multiple objects: list $obj1 $obj2 $obj3 ... | include "utils.deepMerge"
+- For two maps: list $map1 $map2 | include "utils.deepMerge"
+- For multiple maps: list $map1 $map2 $map3 ... | include "utils.deepMerge"
 */ -}}
 {{- $length := len . -}}
 {{- if eq $length 0 -}}
@@ -142,7 +150,7 @@ Usage:
   {{- $last := index . (sub $length 1) -}}
   {{- $initial := slice . 0 (sub $length 1) | include "utils.deepMerge" | fromYaml -}}
 
-{{/* Merge two objects excluding keys set to null */}}
+{{/* Merge two maps excluding keys set to null */}}
   {{- $merged := dict -}}
 
   {{- range $key, $baseValue := $initial -}}
@@ -301,10 +309,10 @@ Example:
     {{- if eq $index $lastIndex -}}
       {{- $baseValue = index $baseValue $part -}}
       {{- $overrideValue = index $overrideValue $part -}}
-      {{- $currentMergedValue := index $mergedValue $part -}}
+      {{- $mergedValue = index $mergedValue $part -}}
 
-      {{- if and (kindIs "slice" $currentMergedValue) (kindIs "map" $overrideValue) -}}
-        {{- $newMergedValue := list $currentMergedValue $overrideValue $indexKey | include "utils.mergeMapWithList" | fromYaml -}}
+      {{- if and (kindIs "slice" $baseValue) (kindIs "map" $overrideValue) -}}
+        {{- $newMergedValue := list $baseValue $overrideValue $indexKey | include "utils.mergeMapWithList" | fromYamlArray -}}
 
         {{/* Update the merged value at the specified path */}}
         {{- $currentPath := $merged -}}
@@ -325,4 +333,22 @@ Example:
 {{- end -}}
 
 {{- $merged | toYaml -}}
+{{- end -}}
+
+{{- define "utils.getNestedValue" -}}
+{{- $path := splitList "." ( index . 1 ) -}}
+{{- $value := index . 0 -}}
+
+{{- if eq (first $path) "" -}}
+  {{- $path = rest $path -}}
+{{- end -}}
+{{- range $key := $path -}}
+  {{- if kindIs "map" $value -}}
+    {{- $value = index $value $key -}}
+  {{- else -}}
+    {{- $value = nil -}}
+    {{- break -}}
+  {{- end -}}
+{{- end -}}
+{{- $value | toYaml -}}
 {{- end -}}

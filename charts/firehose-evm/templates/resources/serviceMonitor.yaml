@@ -1,0 +1,40 @@
+{{- define "defaults.serviceMonitor" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "metadata.fullname" . }}-{{ .componentName }}
+  labels:
+    {{- include "metadata.labels" . | nindent 4 }}
+spec:
+  jobLabel: {{ .Root.Release.Name | quote }}
+  selector:
+    matchLabels:
+      {{- include "metadata.selectorLabels" . | nindent 6 }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Root.Release.Namespace }}
+  endpoints:
+    - port: metrics-fh
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
+{{- end }}
+
+{{- range $key, $componentValues := $.Values.firehosePods -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+
+{{- $values := deepCopy $templateCtx.Pod }}
+
+{{- $defaultServiceMonitor := include "defaults.serviceMonitor" $templateCtx | fromYaml }}
+{{- $path := list (dict "path" "spec.endpoints" "indexKey" "port") }}
+{{- $finalServiceMonitor := ( list $defaultServiceMonitor (omit $values.serviceMonitor "enabled") $path ) | include "utils.smartMerge" | fromYaml }}
+
+{{- $templatedServiceMonitor := get (list $finalServiceMonitor $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
+
+{{- if and $values.enabled $values.serviceMonitor.enabled }}
+---
+{{ $templatedServiceMonitor | toYaml }}
+{{- end -}}
+{{- end -}}
