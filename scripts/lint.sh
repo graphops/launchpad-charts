@@ -26,7 +26,7 @@ if [ -z "$CHART_FOLDER" ] || ! type helm > /dev/null; then
   usage
 fi
 
-CHART_PATH="$(dirname "$0")/../charts/$CHART_FOLDER"
+CHART_PATH="$(dirname -- "$0")/../charts/$CHART_FOLDER"
 
 TEMPLATE_OUTPUT="$(helm template "$CHART_PATH")"
 
