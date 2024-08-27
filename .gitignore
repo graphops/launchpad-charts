@@ -1,2 +1,4 @@
 node_modules
 .yarnrc.yml
+.yarn/*
+.pnp.*

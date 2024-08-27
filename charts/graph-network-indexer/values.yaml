@@ -99,7 +99,7 @@ indexerDefaults:
 
     tap-rav-request-request-timeout-secs: 5
 
-    tap-rav-request-max-receipts-per-request: 1000
+    tap-rav-request-max-receipts-per-request: 20
 
     tap-sender-aggregator-endpoints: []
 
