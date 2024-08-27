@@ -8,7 +8,7 @@ usage() {
   exit 1
 }
 
-readonly BASE_DIR="$(dirname -- "$0")"
+readonly BASE_DIR="$(dirname "$0")"
 readonly ROOT="$(realpath "$BASE_DIR/../")"
 readonly CHARTS_RELDIR="charts"
 
