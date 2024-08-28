@@ -1,0 +1,18 @@
+{{- $values := $.Values.indexerTapAgent }}
+{{- $componentName := "tap-agent" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+
+{{- $configTemplate := .Values.indexerDefaults.configTemplate }}
+{{- $configToml := print (tpl $configTemplate $) }}
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-config
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+data:
+  config.toml: |
+    {{ $configToml | nindent 4 }}
+{{/* END ConfigMap */}}
