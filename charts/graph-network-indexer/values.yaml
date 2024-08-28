@@ -93,7 +93,7 @@ indexerDefaults:
 
     tap-max-amount-willing-to-lose-grt: "0.03"
 
-    tap-rav-request-trigger-value-divisor: 3
+    tap-rav-request-trigger-value-divisor: 100
     
     tap-rav-request-timestamp-buffer-secs: 60
 
