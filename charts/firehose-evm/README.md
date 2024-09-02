@@ -168,7 +168,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.envFrom.SecretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing one blocks | string | `""` |
  | firehoseComponentDefaults.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
  | firehoseComponentDefaults.fireeth | Firehose-specific configuration | object | `{"args":{"-c":"/config/config.yaml","start":"__none"},"argsOrder":["start","-c"],"config":{"common-forked-blocks-store-url":null,"common-index-block-sizes":10000,"common-live-blocks-addr":"relayer:10014","common-merged-blocks-store-url":null,"common-one-block-store-url":null,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"log-to-file":false,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}","pprof-listen-addr":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"127.0.0.1","enabled":true,"port":6060},"services":[]}` |
- | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":true}` |
+ | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false}` |
  | firehoseComponentDefaults.image | Image configuration for firehose-evm | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
  | firehoseComponentDefaults.image.pullPolicy | Image pull policy | string | `"IfNotPresent"` |
@@ -180,11 +180,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.labels | Component level labels (templated) | object | `{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/part-of":"{{ .Root.Release.Name }}","version.firehose.graphops.xyz/fireeth":"2.6.7","version.firehose.graphops.xyz/node":"1.13.15","version.firehose.graphops.xyz/protocol":"2.4"}` |
  | firehoseComponentDefaults.lifecycle | Lifecycle hooks | object | `{}` |
  | firehoseComponentDefaults.nodeSelector | Node selector configuration | object | `{}` |
- | firehoseComponentDefaults.persistence | Persistence configuration | object | `{"accessModes":["ReadWriteOnce"],"enabled":false,"size":"50Gi","storageClassName":"openebs-zfs-localpv-compressed-128k"}` |
- | firehoseComponentDefaults.persistence.accessModes | Access modes for the persistent volume | list | `["ReadWriteOnce"]` |
- | firehoseComponentDefaults.persistence.enabled | Enable persistent storage | bool | `false` |
- | firehoseComponentDefaults.persistence.size | Size of the persistent volume | string | `"50Gi"` |
- | firehoseComponentDefaults.persistence.storageClassName | Storage class name | string | `"openebs-zfs-localpv-compressed-128k"` |
  | firehoseComponentDefaults.podDisruptionBudget | Pod Disruption Budget configuration | object | `{"enabled":true}` |
  | firehoseComponentDefaults.podManagementPolicy | , scaling behavior: (OrderedReady | Parallel) | StatefulSet only | `"OrderedReady"` |
  | firehoseComponentDefaults.podSecurityContext | Pod-wide security context | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"runAsUser":1000}` |

@@ -101,18 +101,6 @@ firehoseComponentDefaults:
   # -- Init containers configuration
   initContainers: {}
 
-  # -- Persistence configuration
-  persistence:
-    # -- Enable persistent storage
-    enabled: false
-    # -- Access modes for the persistent volume
-    accessModes: 
-      - "ReadWriteOnce"
-    # -- Storage class name
-    storageClassName: "openebs-zfs-localpv-compressed-128k"
-    # -- Size of the persistent volume
-    size: "50Gi"
-
   # -- Environment variables
   env: {}
 
@@ -249,7 +237,7 @@ firehoseComponentDefaults:
 
   # -- Horizontal Pod Autoscaler configuration
   horizontalPodAutoscaler:
-    enabled: true
+    enabled: false
     # example:
     # minReplicas: 2
     # maxReplicas: 10
