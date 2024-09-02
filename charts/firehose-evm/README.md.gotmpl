@@ -6,15 +6,131 @@
 
 ## Introduction
 
-Firehose is a high-performance blockchain data extraction tool that captures, processes, and streams blockchain data in real-time, enabling efficient data analysis and integration for various applications. This chart can be used to deploy any [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) chain.
+Firehose is a high-performance blockchain data extraction tool that captures, processes, and streams blockchain data in real-time, enabling efficient data analysis and integration for various applications.
+
+This chart can be used to deploy the constellation of services required to operate any [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) chain.
 
 ## Chart Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
-- Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
-- Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
+- Extreme flexibility and customizability
+- Sane defaults with solid security parameters (non-root execution, ready-only root filesystem, drops all capabilities)
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+
+## Chart Structure and Customization
+
+This chart is focused on the [firehose-ethereum](https://github.com/streamingfast/firehose-ethereum) workload and allows setting up a variable number of workload instances (Deployments / StatefulSets) running it. That is defined in the top-level key `firehoseComponents`.
+
+### firehoseComponents
+
+Each of the sub-keys defined here will generate a workload (either a `Deployment` or `StatefulSet`, set with the `kind` key) with a particular configuration defined under the sub-key. The specific per-component definitions will be merged on top of the `firehoseComponentDefaults` top-level key, so all components inherit a common set of default configurations.
+
+These instances will by default run `firehose-ethereum`, which will be configured via a ConfigMap which is dynamically generated with a combination of your values, the defaults, and templating. This configuration is set under the `.fireeth.config` subkeys, and will define the configuration parameters. Additionally, the set of firehose services to be launched by `firehose-ethereum` on a particular workload can be set under `.fireeth.services`.
+
+Example:
+```yaml
+firehoseComponents:
+  write-path-workload:
+    kind: StatefulSet
+    fireeth:
+      services:
+        - reader-node
+        - index-builder
+        - merger
+      config:
+        reader-node-grpc-listen-addr: "0.0.0.0:10010"
+        index-builder-grpc-listen-addr: "0.0.0.0:10009"
+  read-path-workload:
+    kind: Deployment
+    fireeth:
+      services:
+        - relayer
+        - firehose
+      config:
+        merger-grpc-listen-addr: ":10012"
+        firehose-grpc-listen-addr: "0.0.0.0:10015"
+```
+
+Will provision a Deployment, called `read-path-workload` and a StatefulSet called `write-path-workload`, each with its own ConfigMap dynamically generated based on that list of parameters, as well as a range of other Kubernetes resources such as a Service, Service Account, serviceMonitor, etc. 
+
+### firehoseServiceDefaults
+
+All components defined in `firehoseComponents` inherit the `firehoseComponentDefaults`, and can be set to run arbitrary firehose services. As such, there is `firehoseServiceDefaults`, a top-level key which contains service-specific defaults. These get inherited by each component as a function of the services they define in their `.fireeth.services` list. 
+
+Example:
+
+```yaml
+firehoseComponentDefaults:
+  kind: Deployment
+  fireeth:
+    config:
+      firehose-rate-limit-bucket-size: 20
+      firehose-rate-limit-bucket-fill-rate: "1s"
+
+firehoseServiceDefaults:
+  reader-node:
+    kind: StatefulSet
+    fireeth:
+      config:
+        reader-node-data-dir: "/var/lib/geth"
+
+  merger:
+    fireeth:
+      config:
+        merger-grpc-listen-addr: ":10012"
+
+firehoseComponents:
+  myComponent:
+    fireeth:
+      services:
+        - merger
+        - reader-node
+      config:
+        my-particular-option: "something"
+        firehose-rate-limit-bucket-fill-rate: "5s"
+```
+
+This will result in a component with a combined configuration equivalent to:
+```yaml
+firehoseComponents:
+  myComponent:
+    kind: StatefulSet
+    fireeth:
+      services:
+        - merger
+        - reader-node
+      config:
+        firehose-rate-limit-bucket-size: 20
+        firehose-rate-limit-bucket-fill-rate: "5s"
+        reader-node-data-dir: "/var/lib/geth"
+        merger-grpc-listen-addr: ":10012"
+        my-particular-option: "something"
+```
+
+which will result in a StatefulSet with firehose running both merger and reader-node services on the POD instances.
+
+*Note:* The firehoseServiceDefaults of each of the configured services will be merged in the order they are defined in the list, in this case reader-node defaults would be merged on top of merger. I.e., if merger had in its `firehoseServiceDefaults` an explicit `kind: Deployment`, then as is, we would still get a `StatefulSet`, but if we exchanged their order to:
+```yaml
+firehoseComponents:
+  myComponent:
+    fireeth:
+      services:
+        - reader-node
+        - merger
+```
+then the result would be `kind: Deployment`. So it makes sense most of the `firehoseServiceDefaults` are really component specific and do not overlap much with each other.
+
+### General chart interfaces
+
+Virtually any aspect of both the workload, or any of the other resources can be extended or overridden.
+
+There are three major `.Values` sections:
+- firehoseComponents
+
+
+- firehoseComponentDefaults
+- global
+
 
 ## Quickstart
 

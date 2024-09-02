@@ -1,0 +1,78 @@
+{{- range $key, $componentValues := $.Values.firehoseComponents -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+{{- $values := deepCopy $templateCtx.Pod }}
+
+
+{{- if and $values.enabled $values.horizontalPodAutoscaler.enabled }}
+{{- $renderedHorizontalPodAutoscaler := include "templates.HorizontalPodAutoscaler" $templateCtx | fromYaml }}
+---
+{{ $renderedHorizontalPodAutoscaler | toYaml }}
+{{- end }}
+
+
+{{- if and $values.enabled $values.configMap.enabled }}
+{{- $renderedConfigMap := include "templates.ConfigMap" $templateCtx | fromYaml }}
+---
+{{ $renderedConfigMap | toYaml }}
+{{- end -}}
+
+
+{{- if $values.enabled }}
+{{- $renderedWorkload := get (include "utils.removeNulls" (include "templates.Workload" $templateCtx | fromYaml) | fromYaml)
+"result" }}
+---
+{{ $renderedWorkload | toYaml }}
+{{- end }}
+
+
+{{- if and $values.enabled (or $values.service.enabled $values.serviceHeadless) }}
+{{- $renderedService := include "templates.Service" $templateCtx | fromYaml }}
+{{- if $values.service.enabled }}
+---
+{{ $renderedService | toYaml }}
+{{- end }}
+{{- if $values.serviceHeadless }}
+{{- $__templateCtxHeadless := set (deepCopy $templateCtx) "__svc" $renderedService }}
+{{- $serviceHeadlessOverrides := tpl (include "templates.ServiceHeadless" $__templateCtxHeadless) $templateCtx | fromYaml }}
+{{- $renderedServiceHeadless :=  mergeOverwrite (deepCopy $renderedService) $serviceHeadlessOverrides }}
+---
+{{ $renderedServiceHeadless | toYaml }}
+{{- end -}}
+{{- end }}
+
+
+{{- if and $values.enabled $values.podDisruptionBudget }}
+{{- $renderedPodDisruptionBudget := include "templates.PodDisruptionBudget" $templateCtx | fromYaml }}
+---
+{{ $renderedPodDisruptionBudget | toYaml }}
+{{- end }}
+
+
+{{- if and $values.serviceAccount.create $values.serviceAccount.rbac.create -}}
+{{- $renderedRole := include "templates.Role" $templateCtx | fromYaml }}
+{{- $renderedRoleBinding := include "templates.RoleBinding" $templateCtx | fromYaml }}
+---
+{{ $renderedRole | toYaml }}
+---
+{{ $renderedRoleBinding | toYaml }}
+{{- end -}}
+
+
+{{- if $values.serviceAccount.create }}
+{{- $renderedServiceAccount := include "templates.ServiceAccount" $templateCtx | fromYaml }}
+---
+{{ $renderedServiceAccount | toYaml }}
+{{- end }}
+
+{{- if and $values.enabled $values.serviceMonitor.enabled }}
+{{- $renderedServiceMonitor := include "templates.serviceMonitor" $templateCtx | fromYaml }}
+---
+{{ $renderedServiceMonitor | toYaml }}
+{{- end -}}
+
+---
+{{ $templateCtx.Pod.volumeMounts | toYaml }}
+
+{{- end }}

@@ -1,4 +1,4 @@
-{{- define "defaults.ConfigMap" }}
+{{- define "templates.ConfigMap" }}
 {{- $config := include "resources.generateConfigMap" ( deepCopy $ ) }}
 apiVersion: v1
 kind: ConfigMap
@@ -10,20 +10,3 @@ data:
   config.yaml: |-
     {{- $config | trim | nindent 4 }}
 {{- end }}
-
-{{- range $key, $componentValues := $.Values.firehosePods -}}
-{{- $componentName := $key }}
-
-{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
-
-{{- $values := deepCopy $templateCtx.Pod }}
-
-{{- $defaultConfigMap := include "defaults.ConfigMap" $templateCtx | fromYaml }}
-
-{{- $templatedConfigMap := get (list $defaultConfigMap $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
-
-{{- if and $values.enabled $values.configMap.enabled }}
----
-{{ $templatedConfigMap | toYaml }}
-{{- end -}}
-{{- end -}}

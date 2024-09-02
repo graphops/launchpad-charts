@@ -9,7 +9,7 @@ global:
   # -- Global annotations added to all resources
   annotations: {}
 
-common:
+firehoseComponentDefaults:
   kind: Deployment
   # -- Image configuration for firehose-evm
   image:
@@ -26,6 +26,59 @@ common:
   # -- Pull secrets required to fetch images
   imagePullSecrets: []
 
+  # -- Firehose-specific configuration
+  fireeth:
+    services: []
+    metrics:
+      enabled: true
+      addr: 0.0.0.0
+      port: 9102
+    pprof:
+      enabled: true
+      addr: 127.0.0.1
+      port: 6060
+    config:
+      data-dir: "/var/lib/fireeth"
+      metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
+      pprof-listen-addr: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
+      log-to-file: false
+      common-index-block-sizes: 10000
+      firehose-rate-limit-bucket-size: 20
+      firehose-rate-limit-bucket-fill-rate: "1s"
+      common-one-block-store-url: null
+      common-forked-blocks-store-url: null
+      common-merged-blocks-store-url: null
+      common-live-blocks-addr: "relayer:10014"
+    args:
+      start: "__none"
+      "-c": "/config/config.yaml"
+    argsOrder:
+      - start
+      - "-c"
+
+  configMap:
+    enabled: true
+    useEnvSubst: false
+    template: |
+      {{- $nodeArgs := false }}
+      start:
+        args:
+          {{- range .Pod.fireeth.services }}
+          - {{ . }}
+          {{- if contains "node" . }}
+          {{- $nodeArgs := true }}
+          {{- end }}
+          {{- end }}
+        flags:
+          {{- .Pod.fireeth.config | toYaml | nindent 4 }}
+          {{- if $nodeArgs }}
+          {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.node.args | default dict ) ) | fromYamlArray }}
+          reader-node-arguments: |
+          {{- range $readerNodeArgs }}
+            - {{ . | quote }}
+          {{- end }}
+          {{- end }}
+
   # -- Service configuration
   service:
     enabled: true
@@ -34,16 +87,16 @@ common:
       type: "ClusterIP"
       # -- Service ports configuration
       ports:
-        metrics-fh:
-          port: '{{ .Pod.fireeth.metrics.port }}'
+        fh-metrics:
+          port: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
           protocol: "TCP"
     # -- Additional service labels
     labels: {}
     # -- Additional service annotations
     annotations: {}
 
-  # -- Also create headless services
-  serviceHeadless: true
+  # -- Also create headless services, mandatory for StatefulSets and true by default
+  serviceHeadless: '{{ eq .Pod.kind "StatefulSet" | ternary true true }}'
 
   # -- Init containers configuration
   initContainers: {}
@@ -63,44 +116,45 @@ common:
   # -- Environment variables
   env: {}
 
-
-  # -- Environment variables from secrets
-  envFromSecret:
-    FIREETH_COMMON_ONE_BLOCK_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing one blocks
-      secretName: ""
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing one blocks
-      key: ""
-    FIREETH_COMMON_MERGED_BLOCKS_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing merged blocks
-      secretName: ""
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing merged blocks
-      key: ""
-    FIREETH_COMMON_FORKED_BLOCKS_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url for storing forked blocks
-      secretName: ""
-      # -- Name of the data key in the secret that contains your S3 bucket url for storing forked blocks
-      key: ""
-    FIREETH_COMMON_INDEX_STORE_URL:
-      # -- Name of the secret that contains your S3 bucket url of your index store
-      secretName: ""
-      # -- Name of the data key in the secret that contains your S3 bucket url of your index store
-      key: ""
-
-  # -- Environment variables from ConfigMaps
-  envFromConfigmap: {}
+  # -- Environment variables from references
+  envFrom:
+    SecretKeyRef:
+      FIREETH_COMMON_ONE_BLOCK_STORE_URL:
+        # -- Name of the secret that contains your S3 bucket url for storing one blocks
+        name: ""
+        # -- Name of the data key in the secret that contains your S3 bucket url for storing one blocks
+        key: ""
+      FIREETH_COMMON_MERGED_BLOCKS_STORE_URL:
+        # -- Name of the secret that contains your S3 bucket url for storing merged blocks
+        name: ""
+        # -- Name of the data key in the secret that contains your S3 bucket url for storing merged blocks
+        key: ""
+      FIREETH_COMMON_FORKED_BLOCKS_STORE_URL:
+        # -- Name of the secret that contains your S3 bucket url for storing forked blocks
+        name: ""
+        # -- Name of the data key in the secret that contains your S3 bucket url for storing forked blocks
+        key: ""
+      FIREETH_COMMON_INDEX_STORE_URL:
+        # -- Name of the secret that contains your S3 bucket url of your index store
+        name: ""
+        # -- Name of the data key in the secret that contains your S3 bucket url of your index store
+        key: ""
 
   # -- ServiceMonitor configuration for Prometheus Operator
   serviceMonitor:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
     enabled: true
+    metadata:
+      labels: {}
+      annotations: {}
     spec:
       # Endpoint overrides, keyed by port name
       endpoints:
         metrics-fh:
           # Override or add any endpoint-specific fields
-          interval: "60s"
+          interval: "30s"
           scrapeTimeout: "10s"
+          path: /metrics
           honorLabels: true
           # ... any other endpoint-specific fields
       # Any other top-level ServiceMonitor spec fields
@@ -129,6 +183,7 @@ common:
 
   # -- Component level annotations (templated)
   annotations: {}
+
   # -- Component level labels (templated)
   labels:
     app.kubernetes.io/component: '{{ .componentName }}'
@@ -148,28 +203,6 @@ common:
         - ALL
   # -- Container level security context overrides
   securityContext: {}
-
-  configMap:
-    enabled: true
-    template: |
-      {{ $nodeArgs := false }}
-      start:
-        args:
-          {{- range .Pod.fireeth.components }}
-          - {{ . }}
-          {{- if contains "node" . }}
-          {{- $nodeArgs := true }}
-          {{- end }}
-          {{- end }}
-        flags:
-          {{- .Pod.fireeth.config | toYaml | nindent 4 }}
-          {{- if $nodeArgs }}
-          {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.node.args | default dict ) ) | fromYamlArray }}
-          reader-node-arguments: |
-          {{- range $readerNodeArgs }}
-            - {{ . | quote }}
-          {{- end }}
-          {{- end }}
 
   # -- Resource requests and limits
   resources: {}
@@ -226,6 +259,21 @@ common:
     #       name: "cpu"
     #       targetAverageUtilization: 80
 
+  ports:
+    metrics-fh:
+      containerPort: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
+      protocol: TCP
+
+
+  # -- Update Strategy, (RollingUpdate | Recreate) for Deployments, (RollingUpdate | OnDelete) for StatefulSets
+  updateStrategy:
+    type: RollingUpdate
+
+  # -- (StatefulSet only), scaling behavior: (OrderedReady | Parallel)
+  podManagementPolicy: OrderedReady
+
+  # -- (StatefulSet only), headless service name
+
   # -- Extra containers to add to the pod (templated)
   extraContainers: {}
     # example:
@@ -234,198 +282,123 @@ common:
     #     ports:
     #       - containerPort: 80
 
-  # -- Extra volumes to add to the pod (templated)
-  extraVolumes: []
-    # - name: extra-volume
-    #   emptyDir: {}
-
-  # Extra volume mounts to add to containers (templated)
-  extraVolumeMounts: {}
-    # {{ .componentName }}: # Name of the container to add the volume mount to
-    #   - name: extra-volume
-    #     mountPath: /mnt/extra-volume
-
-  # -- Firehose-specific configuration
-  fireeth:
-    components: []
-    metrics:
+  volumes:
+    data-dir:
       enabled: true
-      addr: "0.0.0.0"
-      port: 9102
-    pprof:
-      enabled: false
-      addr: "localhost"
-      port: 6060
+      emptyDir: {}
     config:
-      data-dir: "/var/lib/fireeth"
-      metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
-      pprof-listen-addr: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
-      log-to-file: false
-      common-index-block-sizes: 10000
-      firehose-rate-limit-bucket-size: 20
-      firehose-rate-limit-bucket-fill-rate: "1s"
-      common-one-block-store-url: null
-      common-forked-blocks-store-url: null
-      common-merged-blocks-store-url: null
-      common-live-blocks-addr: "relayer:10014"
-      firehose-grpc-listen-addr: :9000
-    args:
-      start: "__none"
-      -c: "__none"
-      /config/config.yaml: "__none"
-    argsOrder:
-      - start
-      - -c
-      - /config/config.yaml
+      enabled: '{{ .Pod.configMap.enabled }}'
+      configMap:
+        name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-config'
+        defaultMode: 420
+    config-processed:
+      enabled: '{{ .Pod.configMap.useEnvSubst }}'
+      emptyDir: {}
 
-firehosePods:
-  grpc:
-    enabled: true
-    # -- Service configuration
+  volumeMounts:
+    data-dir:
+      enabled: true
+      readOnly: false
+      mountPath: '{{ index .Pod.fireeth.config "data-dir" }}'
+    config:
+      enabled: '{{ .Pod.configMap.enabled }}'
+      mountPath: '{{ .Pod.configMap.useEnvSubst | ternary "/config-input" "/config" }}'
+      readOnly: true
+    config-processed:
+      enabled: '{{ .Pod.configMap.useEnvSubst }}'
+      mountPath: "/config"
+      readOnly: false
+
+
+firehoseServiceDefaults:
+  firehose:
+    fireeth:
+      config:
+        firehose-grpc-listen-addr: "0.0.0.0:10015"
+
     service:
       enabled: true
       spec:
         ports:
-          grpc:
-            containerPort: 10015
-            protocol: TCP
-          metrics-fh:
-            containerPort: 9102
+          firehose-grpc:
+            port: '{{ with .Pod.fireeth.config }}{{ if (index . "firehose-grpc-listen-addr") }}{{ splitList ":" (index . "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
             protocol: TCP
 
-    # -- Firehose-specific configuration
+    ports:
+      firehose-grpc:
+        containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "firehose-grpc-listen-addr") }}{{ splitList ":" (index . "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
+
+  merger:
     fireeth:
-      components:
-        - firehose
       config:
-        firehose-grpc-listen-addr: ":10015"
+        merger-grpc-listen-addr: ":10012"
 
-    # GRPC-specific configurations
-    replicas: 1
-    nameOverride: ""
-    fullnameOverride: ""
-    existingConfigMap: ""
-    configMap:
+    service:
       enabled: true
+      spec:
+        ports:
+          merger-grpc:
+            port: '{{ with .Pod.fireeth.config }}{{ if (index . "merger-grpc-listen-addr") }}{{ splitList ":" (index . "merger-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+            protocol: TCP
+
+    ports:
+      merger-grpc:
+        containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "merger-grpc-listen-addr") }}{{ splitList ":" (index . "merger-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
+
+  relayer:
+    fireeth:
+      config:
+        relayer-source: "reader:10010"
+        relayer-grpc-listen-addr: "0.0.0.0:10014"
+        relayer-max-source-latency: 1h
+
+    service:
+      enabled: true
+      spec:
+        ports:
+          relayer-grpc:
+            port: '{{ with .Pod.fireeth.config }}{{ if (index . "relayer-grpc-listen-addr") }}{{ splitList ":" (index . "relayer-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+            protocol: TCP
+
+    ports:
+      relayer-grpc:
+        containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "relayer-grpc-listen-addr") }}{{ splitList ":" (index . "relayer-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
+
+  index-builder:
+    fireeth:
+      config:
+        index-builder-grpc-listen-addr: "0.0.0.0:10009"
+        index-builder-index-size: "1000"
+
+    service:
+      enabled: true
+      spec:
+        ports:
+          index-builder-grpc:
+            port: '{{ with .Pod.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+            protocol: TCP
+
+    ports:
+      index-builder-grpc:
+        containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
 
   reader-node:
     kind: StatefulSet
-    enabled: true
-    # -- Service configuration
-    env:
-      MANAGER_API_PORT: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last }}'
 
-    service:
-      spec:
-        ports:
-          reader-grpc:
-            port: 10010
-            protocol: TCP
-          metrics-geth:
-            port: 6061
-            protocol: TCP
-          geth-auth:
-            port: 8551
-            protocol: TCP
-          node-mgr:
-            port: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last }}'
-            protocol: "TCP"
-
-    # -- Init containers configuration
-    initContainers:
-      10-init-nodeport:
-        image: lachlanevenson/k8s-kubectl:v1.25.4
-        imagePullPolicy: IfNotPresent
-        resources: {}
-        __condition: '{{ .Pod.p2p.enabled }}'
-      20-init-snapshot:
-        image: rclone/rclone:1.67.0
-        imagePullPolicy: IfNotPresent
-        resources: {}
-        __condition: '{{ .Pod.initSnapshot.enabled }}'
-
-    # -- Persistence configuration
-    persistence:
-      enabled: true
-      reader_node:
-        # -- Access modes for the persistent volume
-        accessModes: ["ReadWriteOnce"]
-        # -- The storage class to use when provisioning a persistent volume
-        storageClassName: openebs-zfs-localpv-compressed-8k
-        resources:
-          requests:
-            # -- The amount of disk space to provision
-            storage: 3Ti
-
-    # -- Service account configuration
-    serviceAccount:
-      # -- Specifies whether a service account should be created
-      create: true
-      # -- Annotations to add to the service account
-      annotations: {}
-      # -- The name of the service account to use.
-      # If not set and create is true, a name is generated using the fullname template
-      name: ""
-
-    # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
-    jwt:
-      # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
-      existingSecret: &jwt
-        # -- Name of the Secret resource in the same namespace
-        name: null
-        # -- Data key for the JWT in the Secret
-        key: null
-      # -- Use this literal value for the JWT
-      fromLiteral: 1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480
-
-    # -- Lifecycle hooks
-    lifecycle:
-      preStop:
-        exec:
-          command: ["/usr/local/bin/eth-maintenance"]
-
-    # Additional reader-node specific configurations
-    p2p:
-      # -- Expose P2P port via NodePort
-      enabled: false
-      type: NodePort
-      # -- NodePort to be used. Must be unique.
-      port: 32310
-
-    dataDir: "/var/lib/geth"
-    nodePath: "/usr/lib/geth"
-
-    configMap:
-      enabled: true
-      template: |
-        start:
-          args:
-            - {{ .componentName }}
-          flags:
-            {{- .Pod.fireeth.config | toYaml | nindent 4 }}
-            {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.node.args | default dict ) ) | fromYamlArray }}
-            reader-node-arguments: |
-            {{- range $readerNodeArgs }}
-              - {{ . | quote }}
-            {{- end }}
-
-    # -- Firehose-specific configuration
     fireeth:
-      components:
-        - reader-node
       config:
-        reader-node-grpc-listen-addr: ":10010"
-        reader-node-manager-api-addr: ":10011"
+        reader-node-grpc-listen-addr: "0.0.0.0:10010"
+        reader-node-manager-api-addr: "127.0.0.1:10011"
         reader-node-data-dir: "/var/lib/geth"
         reader-node-path: "/app/geth"
 
-    replicas: 1
-    nameOverride: ""
-    fullnameOverride: ""
-
     node:
       metrics:
-        __enabled: false
+        enabled: true
         addr: 0.0.0.0
         port: 6061
       args:
@@ -437,8 +410,8 @@ firehosePods:
         http.api: net,web3,eth,debug
         http.addr: 0.0.0.0
         http.vhosts: "*"
-        metrics.addr: "${NODE_DEPLOYMENT_METRICS_ADDR}"
-        metrics.port: "${NODE_DEPLOYMENT_METRICS_PORT}"
+        metrics.addr: 0.0.0.0
+        metrics.port: 6061
         authrpc.port: 8551
         authrpc.jwtsecret: /jwt/jwt.hex
         authrpc.addr: 0.0.0.0
@@ -453,6 +426,157 @@ firehosePods:
         txlookuplimit: 1000
         cache: 8192
         maxpeers: 100
+
+    configMap:
+      useEnvSubst: true
+
+    env:
+      MANAGER_API_PORT: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last }}'
+
+    service:
+      spec:
+        ports:
+          reader-node-grpc:
+            port: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+            protocol: TCP
+          node-metrics:
+            port: 6061
+            protocol: TCP
+          node-auth:
+            port: 8551
+            protocol: TCP
+          node-mgr:
+            port: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last | int }}'
+            protocol: TCP
+
+    # -- Container ports
+    ports:
+      reader-node-grpc:
+        containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
+
+    # -- Init containers configuration
+    initContainers:
+      10-init-nodeport:
+        image: lachlanevenson/k8s-kubectl:v1.25.4
+        imagePullPolicy: IfNotPresent
+        resources: {}
+      20-init-snapshot:
+        image: rclone/rclone:1.67.0
+        imagePullPolicy: IfNotPresent
+        resources: {}
+
+    volumeClaimTemplates:
+      data-dir:
+        enabled: true
+        metadata:
+          labels: {}
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          resources:
+            requests:
+              storage: 50Gi
+
+    volumes:
+      data-dir:
+        emptyDir: null
+        persistentVolumeClaim:
+          claimName: data-dir
+
+    lifecycle:
+      preStop:
+        exec:
+          command: ["/usr/local/bin/eth-maintenance"]
+
+
+firehoseComponents:
+  grpc:
+    enabled: true
+
+    replicas: 1
+    nameOverride: ""
+    fullnameOverride: ""
+    existingConfigMap: ""
+
+    # -- Firehose-specific configuration
+    fireeth:
+      services:
+        - firehose
+
+  relayer:
+    enabled: true
+
+    replicas: 1
+    nameOverride: ""
+    fullnameOverride: ""
+
+    fireeth:
+      services:
+        - relayer
+
+  merger:
+    enabled: true
+
+    fireeth:
+      services:
+        - merger
+
+  index-builder:
+    enabled: true
+
+    # -- Firehose-specific configuration
+    fireeth:
+      services:
+        - index-builder
+
+  reader-node:
+    enabled: true
+
+    replicas: 1
+    nameOverride: ""
+    fullnameOverride: ""
+
+    # -- Firehose-specific configuration
+    fireeth:
+      services:
+        - reader-node
+
+    node:
+      # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+      jwt:
+        # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+        existingSecret: &jwt
+          # -- Name of the Secret resource in the same namespace
+          name: null
+          # -- Data key for the JWT in the Secret
+          key: null
+        # -- Use this literal value for the JWT
+        fromLiteral: 1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480
+
+    # -- Persistence configuration
+    persistence:
+      enabled: true
+      reader_node:
+        # -- Access modes for the persistent volume
+        accessModes: ["ReadWriteOnce"]
+        # -- The storage class to use when provisioning a persistent volume
+        storageClassName: openebs-zfs-localpv-compressed-8k
+        resources:
+          requests:
+            # -- The amount of disk space to provision
+            storage: 3Ti
+
+    # Additional reader-node specific configurations
+    p2p:
+      # -- Expose P2P port via NodePort
+      enabled: false
+      type: NodePort
+      # -- NodePort to be used. Must be unique.
+      port: 32310
+
+    dataDir: "/var/lib/geth"
+    nodePath: "/usr/lib/geth"
 
     initSnapshot:
       enabled: false
@@ -472,76 +596,4 @@ firehosePods:
           tag: v1.25.4
           # -- Container pull policy
           pullPolicy: IfNotPresent
-
-  relayer:
-    enabled: true
-
-    # -- Service configuration
-    service:
-      enabled: true
-      spec:
-        ports:
-          relayer-grpc:
-            containerPort: 10014
-            protocol: TCP
-          metrics-fh:
-            containerPort: 9102
-            protocol: TCP
-
-    fireeth:
-      components:
-        - relayer
-      config:
-        relayer-source: "reader:10010"
-        relayer-grpc-listen-addr: ":10014"
-        relayer-max-source-latency: 1h
-
-    replicas: 1
-    nameOverride: ""
-    fullnameOverride: ""
-
-  merger:
-    enabled: true
-    # -- Service configuration
-    service:
-      enabled: true
-      spec:
-        ports:
-          merger-grpc:
-            containerPort: 10012
-            protocol: TCP
-          metrics-fh:
-            containerPort: 9102
-            protocol: TCP
-
-    fireeth:
-      components:
-        - merger
-      config:
-        merger-grpc-listen-addr: ":10012"
-
-  index-builder:
-    enabled: true
-    # -- Service configuration
-    service:
-      enabled: true
-      spec:
-        ports:
-          indexer-grpc:
-            containerPort: 10009
-            protocol: TCP
-          metrics-fh:
-            containerPort: 9102
-            protocol: TCP
-    # -- Firehose-specific configuration
-    fireeth:
-      components:
-        - index-builder
-      config:
-        index-builder-grpc-listen-addr: ":10009"
-        index-builder-index-size: "1000"
-
-    # Index-builder specific configurations
-    configMap:
-      enabled: true
 

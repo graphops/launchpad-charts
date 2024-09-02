@@ -34,7 +34,10 @@ Uses digest if provided, otherwise uses tag. Requires repository.
     {{- $templatedCollection | fromYaml }}
 */}}
 
-{{- $collection := deepCopy ( index . 0 ) -}}
+{{- $collection := index . 0 }}
+{{- if not (empty $collection) }}
+{{- $collection = deepCopy $collection -}}
+{{- end }}
 {{- $templateCtx := deepCopy ( index . 1 ) -}}
 
 {{/* Process the collection */}}
@@ -43,7 +46,7 @@ Uses digest if provided, otherwise uses tag. Requires repository.
   {{- if contains "\n" $collection }}
     {{- dict "result" ( tpl $collection $templateCtx ) | toYaml }}
   {{- else }}
-    {{ $tempStr := printf "%s: %s" "result" ( $collection | trimAll "\"" | trimAll "'" ) }}
+    {{- $tempStr := printf "%s: %s" "result" ( $collection | trimAll "\"" | trimAll "'" ) }}
     {{ tpl $tempStr $templateCtx }}
   {{- end }}
 {{- else if kindIs "map" $collection -}}
@@ -52,14 +55,14 @@ Uses digest if provided, otherwise uses tag. Requires repository.
     {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" | fromYaml -}}
     {{- $result = set $result $key $processedValue.result -}}
   {{- end -}}
-  {{- dict "result" $result | toYaml -}}
+  {{- include "utils.removeNulls" $result -}}
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
     {{- $processedValue := list $value $templateCtx | include "utils.templateCollection" | fromYaml -}}
     {{- $result = append $result $processedValue.result -}}
   {{- end -}}
-  {{- dict "result" $result | toYaml -}}
+  {{- include "utils.removeNulls" $result -}}
 {{- else -}}
   {{- dict "result" $collection | toYaml -}}
 {{- end -}}
@@ -122,7 +125,7 @@ Usage example:
 
 {{/* Template each item in the result if templateCtx is not empty */}}
 {{- if not (empty $templateCtx) -}}
-    {{- $result = list $result $templateCtx | include "utils.templateCollection" | fromYamlArray }}
+    {{- $result = get (list $result $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
 {{- end -}}
 
 {{- $result | toYaml -}}
@@ -145,7 +148,7 @@ Usage:
 {{- if eq $length 0 -}}
   {{- dict | toYaml -}}
 {{- else if eq $length 1 -}}
-  {{- index . 0 | toYaml -}}
+  {{- get ( include "utils.removeNulls" ( index . 0 ) | fromYaml ) "result" | toYaml -}}
 {{- else -}}
   {{- $last := index . (sub $length 1) -}}
   {{- $initial := slice . 0 (sub $length 1) | include "utils.deepMerge" | fromYaml -}}
@@ -154,19 +157,19 @@ Usage:
   {{- $merged := dict -}}
 
   {{- range $key, $baseValue := $initial -}}
-    {{- if hasKey $last $key -}}
-      {{- $overrideValue := index $last $key -}}
-      {{- if and (kindIs "map" $baseValue) (kindIs "map" $overrideValue) -}}
-        {{- $nestedMerge := list $baseValue $overrideValue | include "utils.deepMerge" | fromYaml -}}
-        {{- $_ := set $merged $key $nestedMerge -}}
-      {{- else if and (kindIs "slice" $baseValue) (kindIs "slice" $overrideValue) -}}
-        {{- $_ := set $merged $key $overrideValue -}}
-      {{- else if ne $overrideValue nil -}}
-        {{- $_ := set $merged $key $overrideValue -}}
+    {{- if ne $baseValue nil }}
+      {{- if hasKey $last $key -}}
+        {{- $overrideValue := index $last $key -}}
+        {{- if and (kindIs "map" $baseValue) (kindIs "map" $overrideValue) -}}
+          {{- $nestedMerge := list $baseValue $overrideValue | include "utils.deepMerge" | fromYaml -}}
+          {{- $_ := set $merged $key $nestedMerge -}}
+        {{- else -}}
+          {{- $_ := set $merged $key $overrideValue -}}
+        {{- end -}}
+      {{- else -}}
+        {{- $_ := set $merged $key $baseValue -}}
       {{- end -}}
-    {{- else -}}
-      {{- $_ := set $merged $key $baseValue -}}
-    {{- end -}}
+    {{- end }}
   {{- end -}}
 
   {{- range $key, $value := $last -}}
@@ -178,6 +181,63 @@ Usage:
   {{- $merged | toYaml -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- define "utils.removeNulls" -}}
+  {{- $value := . -}}
+  {{- $result := dict -}}
+  {{- if kindIs "map" $value -}}
+    {{- $newMap := dict -}}
+    {{- range $k, $v := $value -}}
+      {{- if not (eq $v nil) -}}
+        {{- $nestedResult := include "utils.removeNulls" $v | fromYaml -}}
+        {{- if $nestedResult -}}
+          {{- if kindIs "map" $nestedResult -}}
+            {{- if hasKey $nestedResult "result" -}}
+              {{- $newMap = set $newMap $k (get $nestedResult "result") -}}
+            {{- else -}}
+              {{- /* Preserve empty maps */ -}}
+              {{- $newMap = set $newMap $k dict -}}
+            {{- end -}}
+          {{- else -}}
+            {{- $newMap = set $newMap $k $nestedResult -}}
+          {{- end -}}
+        {{- else -}}
+          {{- $newMap = set $newMap $k $v -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $result = set $result "result" $newMap -}}
+  {{- else if kindIs "slice" $value -}}
+    {{- $newSlice := list -}}
+    {{- range $v := $value -}}
+      {{- if not (eq $v nil) -}}
+        {{- $nestedResult := include "utils.removeNulls" $v | fromYaml -}}
+        {{- if $nestedResult -}}
+          {{- if kindIs "map" $nestedResult -}}
+            {{- if hasKey $nestedResult "result" -}}
+              {{- $newSlice = append $newSlice (get $nestedResult "result") -}}
+            {{- else -}}
+              {{- /* Preserve empty maps */ -}}
+              {{- $newSlice = append $newSlice dict -}}
+            {{- end -}}
+          {{- else -}}
+            {{- $newSlice = append $newSlice $nestedResult -}}
+          {{- end -}}
+        {{- else -}}
+          {{- $newSlice = append $newSlice $v -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $result = set $result "result" $newSlice -}}
+  {{- else -}}
+    {{- if not (eq $value nil) -}}
+      {{- $result = set $result "result" $value -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $result | toYaml -}}
+{{- end -}}
+
 
 {{- define "utils.mergeMapWithList" -}}
 {{/*
@@ -333,22 +393,4 @@ Example:
 {{- end -}}
 
 {{- $merged | toYaml -}}
-{{- end -}}
-
-{{- define "utils.getNestedValue" -}}
-{{- $path := splitList "." ( index . 1 ) -}}
-{{- $value := index . 0 -}}
-
-{{- if eq (first $path) "" -}}
-  {{- $path = rest $path -}}
-{{- end -}}
-{{- range $key := $path -}}
-  {{- if kindIs "map" $value -}}
-    {{- $value = index $value $key -}}
-  {{- else -}}
-    {{- $value = nil -}}
-    {{- break -}}
-  {{- end -}}
-{{- end -}}
-{{- $value | toYaml -}}
 {{- end -}}

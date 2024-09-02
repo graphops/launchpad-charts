@@ -19,14 +19,37 @@
 {{- $rootCtx := .Root }}
 {{- $podCtx := .Pod }}
 {{- $componentName := .componentName }}
-{{- $templateCtx := dict "Root" $rootCtx "Pod" $podCtx "componentName" $componentName }}
-{{/* Template and parse container definitions */}}
+{{- $templateCtx := deepCopy $ }}
+{{/* Get chart-defined init containers */}}
 {{- $chartInitContainers := include "def.chartInitContainers" $templateCtx | fromYaml }}
-{{- $podContainers := get (include "utils.templateCollection" (list $podCtx.initContainers $templateCtx) | fromYaml) "result" }}
-{{/* Merge built-in and user-defined containers */}}
-{{- $mergedContainers := include "utils.deepMerge" (list $chartInitContainers $podContainers) | fromYaml }}
-{{/* Process merged containers */}}
-{{- $mergedContainers | toYaml }}
+
+{{/* Get user-defined init containers */}}
+{{- $podInitContainers := get (include "utils.templateCollection" (list $podCtx.initContainers $templateCtx) | fromYaml) "result" }}
+
+{{/* Process user-defined containers, merging with chart-defined if they exist */}}
+{{- $finalContainers := list }}
+{{- range $name, $container := $podInitContainers }}
+  {{- if eq ( get $container "enabled" | default "true" ) "true" }}
+    {{- $chartContainer := get $chartInitContainers $name }}
+    {{- $mergedContainer := dict }}
+    {{- if $chartContainer }}
+      {{- $mergedContainer = include "utils.deepMerge" (list $chartContainer $container) | fromYaml }}
+    {{- else }}
+      {{- $mergedContainer = $container }}
+    {{- end }}
+    {{- $cleanedContainer := dict }}
+    {{- if not ( hasKey $mergedContainer "name" ) }}
+      {{- $_ := set $mergedContainer "name" $name }}
+    {{- end }}
+    {{- range $key, $value := $mergedContainer }}
+      {{- if not ( hasPrefix "_" $key ) }}
+        {{- $_ := set $cleanedContainer $key $value }}
+      {{- end }}
+    {{- end }}
+    {{- $finalContainers = append $finalContainers $cleanedContainer }}
+  {{- end }}
+{{- end }}
+{{- $finalContainers | toYaml }}
 {{- end }}
 
 
@@ -108,8 +131,7 @@ Example:
 
 
 {{- define "resources.generateConfigMap" -}}
-{{- $configMapContent := tpl .Pod.configMap.template $ }}
-{{ $configMapContent }}
+{{ .Pod.configMap.template }}
 {{- end }}
 
 
@@ -117,9 +139,13 @@ Example:
 {{- $rootCtx := deepCopy .Root }}
 {{- $componentName := .componentName }}
 
-{{- $commonValues := .Root.Values.common }}
-{{- $componentValues := index .Root.Values.firehosePods $componentName }}
-{{- $mergedValues := list $commonValues $componentValues | include "utils.deepMerge" | fromYaml }}
+{{- $commonValues := .Root.Values.firehoseComponentDefaults }}
+{{- $componentValues := index .Root.Values.firehoseComponents $componentName }}
+{{- $perServiceDefaults := list }}
+{{- range $service := $componentValues.fireeth.services | default list }}
+{{- $perServiceDefaults = append $perServiceDefaults (index $rootCtx.Values.firehoseServiceDefaults $service) }}
+{{- end }}
+{{- $mergedValues := concat (list $commonValues) $perServiceDefaults (list $componentValues) | include "utils.deepMerge" | fromYaml }}
 
 {{ $_ := set $rootCtx "Chart" ( $rootCtx.Chart | toYaml | fromYaml ) }}
 {{- range $key, $value := $rootCtx.Chart }}
@@ -132,6 +158,11 @@ Example:
 {{ $_ := unset $rootCtx.Chart "ApiVersion" }}
 
 {{- $templateCtx := dict "Root" $rootCtx "Pod" $mergedValues "componentName" $componentName }}
+
+{{ $1stPassPod := get (include "utils.templateCollection" (list $templateCtx.Pod $templateCtx) | fromYaml) "result" }}
+{{ $_ := set $templateCtx "Pod" $1stPassPod }}
+{{ $2ndPassPod := get (include "utils.templateCollection" (list $1stPassPod $templateCtx) | fromYaml) "result" }}
+{{ $_ := set $templateCtx "Pod" $2ndPassPod }}
 
 {{- $templateCtx | toYaml }}
 {{- end }}

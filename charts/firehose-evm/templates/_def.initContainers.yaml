@@ -30,7 +30,28 @@
     - name: configmap
       mountPath: /config
       readOnly: true
-20-init-snapshot:
+20-init-envsubst:
+  image: busybox:1.28
+  command: ["/bin/sh", "-c"]
+  args:
+    - |
+      for file in /config-input/*.yaml; do
+        envsubst < $file > /config-output/$(basename $file)
+      done
+  env:
+    - name: VAR1
+      value: "value1"
+    - name: VAR2
+      valueFrom:
+        secretKeyRef:
+          name: mysecret
+          key: VAR2
+  volumeMounts:
+    - name: config
+      mountPath: /config-input
+    - name: config-processed
+      mountPath: /config-output
+30-init-snapshot:
   securityContext:
     privileged: true
   command:

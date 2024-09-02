@@ -1,4 +1,4 @@
-{{- define "defaults.PodDisruptionBudget" }}
+{{- define "templates.PodDisruptionBudget" }}
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
@@ -16,21 +16,4 @@ spec:
   {{- if .Pod.podDisruptionBudget.maxUnavailable }}
   maxUnavailable: {{ .Pod.podDisruptionBudget.maxUnavailable }}
   {{- end }}
-{{- end }}
-
-
-{{- range $key, $componentValues := $.Values.firehosePods -}}
-{{- $componentName := $key }}
-
-{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
-
-{{- $values := deepCopy $templateCtx.Pod }}
-
-{{- $defaultPodDisruptionBudget := include "defaults.PodDisruptionBudget" $templateCtx | fromYaml }}
-{{- $templatedPodDisruptionBudget := get (list $defaultPodDisruptionBudget $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
-
-{{- if and $values.enabled $values.podDisruptionBudget }}
----
-{{ $templatedPodDisruptionBudget | toYaml }}
-{{- end }}
 {{- end }}

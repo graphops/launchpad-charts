@@ -1,10 +1,22 @@
-{{- define "defaults.serviceMonitor" }}
+{{- define "templates.serviceMonitor" }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "metadata.fullname" . }}-{{ .componentName }}
   labels:
     {{- include "metadata.labels" . | nindent 4 }}
+  {{- with .Pod.serviceMonitor.metadata }}
+  labels:
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
 spec:
   jobLabel: {{ .Root.Release.Name | quote }}
   selector:
@@ -13,28 +25,13 @@ spec:
   namespaceSelector:
     matchNames:
       - {{ .Root.Release.Namespace }}
+  {{- with .Pod.serviceMonitor.spec.endpoints }}
+  {{- if not (empty .) }}
   endpoints:
-    - port: metrics-fh
-      path: /metrics
-      interval: 30s
-      scrapeTimeout: 10s
+  {{- range $name, $spec := . }}
+    - port: {{ $name }}
+      {{ $spec | toYaml | nindent 6 }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
 {{- end }}
-
-{{- range $key, $componentValues := $.Values.firehosePods -}}
-{{- $componentName := $key }}
-
-{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
-
-{{- $values := deepCopy $templateCtx.Pod }}
-
-{{- $defaultServiceMonitor := include "defaults.serviceMonitor" $templateCtx | fromYaml }}
-{{- $path := list (dict "path" "spec.endpoints" "indexKey" "port") }}
-{{- $finalServiceMonitor := ( list $defaultServiceMonitor (omit $values.serviceMonitor "enabled") $path ) | include "utils.smartMerge" | fromYaml }}
-
-{{- $templatedServiceMonitor := get (list $finalServiceMonitor $templateCtx | include "utils.templateCollection" | fromYaml) "result" }}
-
-{{- if and $values.enabled $values.serviceMonitor.enabled }}
----
-{{ $templatedServiceMonitor | toYaml }}
-{{- end -}}
-{{- end -}}

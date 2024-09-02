@@ -1,0 +1,246 @@
+{{- define "templates.Workload" }}
+{{- $configHash := "0xdeadbeef"}}
+apiVersion: apps/v1
+kind: {{ .Pod.kind }}
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  {{- with .Pod }}
+  labels:
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+  namespace: {{ .Root.Release.Namespace }}
+spec:
+  selector:
+    {{- with .Pod }}
+    matchLabels:
+    {{- $labels := include "metadata.allLabels" $ | fromYaml }}
+    {{- range $key, $value := $labels }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- end }}
+  replicas: {{ .Pod.replicas }}
+  template:
+    metadata:
+      {{- with .Pod }}
+      annotations:
+      {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+      {{- range $key, $value := $annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- if not .annotations }}
+        # Add an empty line to ensure annotations block is created if it does not exist
+        {}
+      {{- end }}
+      {{- end }}
+
+      {{- with .Pod }}
+      labels:
+      {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+      {{- range $key, $value := $labels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+    spec:
+      {{- with .Pod.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "metadata.serviceAccountName" $ }}
+
+      {{- with .Pod.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      terminationGracePeriodSeconds: {{ .Pod.terminationGracePeriodSeconds | default "60" }}
+
+      {{- with .Pod.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Pod.tolerations }}
+      tolerations:
+        {{- range $key, $value := . }}
+        - key: {{ $key }}
+          {{- toYaml $value | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
+      {{- with .Pod.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      {{- with .Pod.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- range $key, $value := . }}
+        - {{- toYaml $value | nindent 10 }}
+          labelSelector:
+            matchLabels:
+              {{- include "metadata.selectorLabels" $ | nindent 14 }}
+        {{- end }}
+      {{- end }}
+      {{- with .Pod.updateStrategy }}
+      updateStrategy: {{ . }}
+      {{- end }}
+
+      {{- with .Pod.volumes }}
+      {{- $enabledVolumes := dict }}
+      {{- range $name, $spec := . }}
+      {{- if ( $spec.enabled | default false ) }}
+      {{- $_ := set $enabledVolumes $name $spec }}
+      {{- end }}
+      {{- end }}
+      {{- if not (empty $enabledVolumes) }}
+      volumes:
+      {{- range $name, $spec := $enabledVolumes }}
+        - name: {{ $name }}
+          {{- (omit $spec "enabled") | toYaml | nindent 10 }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+
+      {{- $initContainers := include "resources.initContainers" $ | fromYamlArray }}
+      {{- if $initContainers }}
+      initContainers:
+      {{- range $spec := $initContainers }}
+        - {{- $spec | toYaml | nindent 10 }}
+      {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .componentName }}
+
+          {{- with .Pod.image }}
+          image: {{ include "utils.getImage" . | quote }}
+          imagePullPolicy: {{ .pullPolicy }}
+          {{- end }}
+
+          {{- with .Pod.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- $__parameters := dict
+            "map" ( .Pod.fireeth.args | default dict )
+            "orderList" ( .Pod.fireeth.argsOrder | default list )
+            "templateCtx" $
+          }}
+          {{- $args := include "utils.generateArgsList" $__parameters | fromYamlArray }}
+          args:
+          {{- range $args }}
+            - {{ . }}
+          {{- end }}
+
+          {{ with .Pod.ports }}
+          ports:
+          {{- range $name, $spec := . }}
+          {{- if and $name $spec.containerPort }}
+            - name: {{ $name }}
+              {{ $spec | toYaml | nindent 14 }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- with .Pod.envFrom }}
+          {{- range $ref, $refMaps := . }}
+          {{- range $envName, $envMap := $refMaps }}
+          {{- if and $envName $envMap $envMap.name $envMap.key }}
+            - name: {{ $envName }}
+              valueFrom:
+                {{ $ref }}:
+                {{- range $key, $value := $envMap }}
+                  {{ $key }}: {{ $value }}
+                {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with .Pod.env }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+
+          {{- with .Pod.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Pod.lifecycle }}
+          lifecycle:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Pod.volumeMounts }}
+          {{- $enabledVolumeMounts := dict }}
+          {{- range $name, $spec := . }}
+          {{- if ( $spec.enabled | default false ) }}
+          {{- $_ := set $enabledVolumeMounts $name $spec }}
+          {{- end }}
+          {{- end }}
+          {{- if not (empty $enabledVolumeMounts) }}
+          volumeMounts:
+          {{- range $name, $spec := $enabledVolumeMounts }}
+            - name: {{ $name }}
+              {{ (omit $spec "enabled") | toYaml | nindent 14 }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+
+      {{- if eq .Pod.kind "StatefulSet" }}
+      {{- with .Pod.podManagementPolicy }}
+      podManagementPolicy: {{ . }}
+      {{- end }}
+
+      {{- with .Pod.serviceName }}
+      serviceName: {{ . }}
+      {{- end }}
+
+      {{- with .Pod.volumeClaimTemplates }}
+      {{- $enabledVolumeClaimTemplates := dict }}
+      {{- range $name, $vc := . }}
+      {{- if ( $vc.enabled | default false ) }}
+      {{- $_ := set $enabledVolumeClaimTemplates $name $vc }}
+      {{- end }}
+      {{- end }}
+      {{- if not (empty $enabledVolumeClaimTemplates) }}
+      volumeClaimTemplates:
+        {{- range $name, $vc := $enabledVolumeClaimTemplates }}
+        - metadata:
+            name: {{ $name }}
+            {{ omit ($vc.metadata | default dict) "name" | toYaml | nindent 12 }}
+
+            {{- with $vc.metadata }}
+            annotations:
+            {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+            {{- range $key, $value := $annotations }}
+              {{ $key }}: {{ $value | quote }}
+            {{- end }}
+            labels:
+            {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+            {{- range $key, $value := $labels }}
+              {{ $key }}: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          spec:
+            {{ $vc.spec | default dict | toYaml | nindent 12 }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+{{- end }}
