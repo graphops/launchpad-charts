@@ -1,4 +1,4 @@
-{{- $values := $.Values.indexerAgent }}
+{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{/* START StatefulSet */}}
@@ -37,6 +37,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if $values.initContainers }}
+      initContainers:
+        {{- toYaml $values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -51,35 +55,41 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
+          {{- if $values.env }}
+          {{- range $key, $val := ( omit $values.env "INDEXER_AGENT_POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
-          {{- end }}
-          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-          {{- range $key, $val := .}}
+          {{- if $values.secretEnv }}
+          {{- range $key, $val := ( omit $values.secretEnv "INDEXER_AGENT_POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
-                  optional: false
           {{- end }}
           {{- end }}
+            - name: INDEXER_AGENT_POSTGRES_URL
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "postgres-host" }}:{{ index $values.postgresConfig "postgres-port" }}/{{ index $values.postgresConfig "postgres-database" }}'  
           args:
+            - --config=/etc/indexer-agent/config.yaml
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
           ports:
-            - name: http-mgmtapi
-              containerPort: 8000
+            - name: http-queryapi
+              containerPort: {{ index $values.service "service-port" }}
               protocol: TCP
+            {{- if $values.metrics.enabled }}
             - name: http-metrics
-              containerPort: 7300
+              containerPort: {{ $values.metrics.port }}
               protocol: TCP
+            {{- end }}
+          volumeMounts:
+          - name: config
+            mountPath: "/etc/indexer-agent"
+            readOnly: true
           readinessProbe:
             httpGet:
               port: http-mgmtapi
@@ -87,6 +97,14 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+        {{- if $values.initContainers }}
+        - name: init-data
+          emptyDir: {}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

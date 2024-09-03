@@ -49,14 +49,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | indexerAgent.affinity |  | object | `{}` |
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"collect-receipts-endpoint":null,"dai-contract":null,"epoch-subgraph-endpoint":null,"graph-node-admin-endpoint":null,"index-node-ids":null,"network-subgraph-deployment":null,"public-indexer-url":null}` |
- | indexerAgent.config.collect-receipts-endpoint | The gateway collect-receipts endpoint for getting vouchers | required | `nil` |
- | indexerAgent.config.dai-contract | Contract address of ERC20 used for DAI variable in cost models | required | `nil` |
- | indexerAgent.config.epoch-subgraph-endpoint | Query endpoint for syncing status of EBO and its contract state. | optional | `nil` |
- | indexerAgent.config.graph-node-admin-endpoint | URL for your graph-node admin API endpoint | required | `nil` |
- | indexerAgent.config.index-node-ids | A command separated list of graph-node Node IDs to assign subgraphs to | required | `nil` |
- | indexerAgent.config.network-subgraph-deployment | Base58 deployment hash (Qm...) for the Graph Network Subgraph | required | `nil` |
- | indexerAgent.config.public-indexer-url | Public HTTPS URL of your indexer-service query endpoint | required | `nil` |
+ | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{}` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
  | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.21.4"}` |
@@ -70,7 +63,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
- | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"database":{"postgres_url":"postgres://valid_username:valid_password@valid_postgres_host:5432/valid_postgres_database"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"tap.rav_request":{"trigger_value_divisor":100},"tap.sender_aggregator_endpoints":{"valid_sender_address":"gateway_url"}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"secretEnv":{}}` |
+ | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"tap.rav_request":{"trigger_value_divisor":100},"tap.sender_aggregator_endpoints":{"valid_sender_address":"gateway_url"}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"postgresConfig":{"database":"your_database","host":"localhost","password":"your_password","port":5432,"username":"your_username"},"secretEnv":{}}` |
+ | indexerDefaults.config.graph_node.query_url | URL for your graph node query endpoint (probably a load balancer address) | required | `"your_graph_node_query_url"` |
+ | indexerDefaults.config.graph_node.status_url | URL for your graph node status endpoint (probably a load balancer address) | required | `"your_graph_node_status_endpoint"` |
+ | indexerDefaults.config.indexer.indexer_address | Ethereum address of your Indexer | required | `"your_indexer_address"` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | indexerService.config |  | object | `{}` |
