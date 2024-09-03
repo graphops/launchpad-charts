@@ -48,28 +48,6 @@ indexerDefaults:
     database: "your_database"
     username: "your_username"
     password: "your_password"
-  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  # config:
-  #   ethereum: null
-  #   # -- Name of the network that you have specified a node URL for in `ethereum`
-  #   ethereum-network: "mainnet"
-  #   # -- (required) Ethereum address of your Indexer
-  #   indexer-address: null
-  #   # -- (required) URL for your graph node query endpoint (probably a load balancer address)
-
-  #   postgres-host: null
-  #   # -- Name of the Postgres database to use for indexer metadata
-  #   postgres-database: indexer
-  #   # -- Specify a plain text username to authenticate with Postgres
-  #   postgres-username: null
-  #   # -- (not recommended) Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-  #   postgres-password: null
-  #   # -- Port that Postgres is available on
-  #   postgres-port: 5432
-  #   # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-  #   mnemonic: null
-  #   # -- (required) An endpoint to query the network subgraph
-  #   network-subgraph-endpoint: null
 
   config:
     indexer:
@@ -172,7 +150,7 @@ indexerAgent:
     type: ClusterIP
     ports: # Valid keys are names of ports that are exposed by the Pod
       # -- Service Port to expose Indexer Management API on
-      http-queryapi: 7600
+      http-mgmtapi: 8000
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -242,6 +220,9 @@ indexerService:
     topologyAwareRouting:
       enabled: false
     type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Indexer Query API on
+      http-queryapi: 7600
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -307,6 +288,9 @@ indexerTapAgent:
     topologyAwareRouting:
       enabled: false
     type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Indexer Query API on
+      http-queryapi: 7600
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious

@@ -75,7 +75,7 @@ spec:
           {{- end }}
           {{- end }}
             - name: TAP_AGENT_DATABASE__POSTGRES_URL
-              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "postgres-host" }}:{{ index $values.postgresConfig "postgres-port" }}/{{ index $values.postgresConfig "postgres-database" }}'          
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'          
           command:
           - /usr/local/bin/indexer-tap-agent
           - --config=/etc/indexer-rs/config.toml
@@ -84,7 +84,7 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: {{ index $values.service "service-port" }}
+              containerPort: {{ index $values.service.ports "http-queryapi" }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
             - name: http-metrics

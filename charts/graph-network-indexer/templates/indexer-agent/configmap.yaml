@@ -1,0 +1,71 @@
+{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
+{{- $componentName := "agent" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+
+data:
+  config.yaml: |
+    {{- if $values.config.subgraphs }}
+    subgraphs:
+      {{- if (not (empty $values.config.subgraphs.network)) }}
+      networkSubgraph: 
+        url: {{ index $values.config.subgraphs.network "query_url" }}
+        deployment: {{ index $values.config.subgraphs.network "deployment_id"  }}
+      {{- end }}
+
+      {{- if (not (empty $values.config.subgraphs.escrow)) }}
+      escrowSubgraph: 
+        url: {{ index $values.config.subgraphs.escrow "query_url" }}
+        deployment: {{ index $values.config.subgraphs.escrow "deployment_id"  }}
+      {{- end }}
+    {{- end }}
+    tapSubgraph:
+        url: "https://gateway-arbitrum.network.thegraph.com/api/<api-key>/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD"
+    transactionMonitoring:
+      gasIncreaseTimeout: 240000
+      gasIncreaseFactor: 1.2
+      baseFeePerGasMax: 100000000000
+      maxTransactionAttempts: 0
+
+    {{- if $values.config.blockchain }}    
+    tapAddressBook:
+      {{ $values.config.blockchain.chain_id }}:
+        TAPVerifier: {{ $values.config.blockchain.receipts_verifier_address }}
+    {{- end }}
+
+    {{- if $values.config.indexer }}
+    indexerOptions:
+      address: {{ index $values.config.indexer "indexer_address" }}
+    {{- end }}
+
+    {{- if $values.config.graph_node }}
+    graphNode:
+      queryEndpoint: {{ index $values.config.graph_node "query_endpoint" }}
+      statusEndpoint: {{ index $values.config.graph_node "status_endpoint" }}
+    {{- end }}
+
+    {{- if $values.metrics.enabled }}
+    metrics:
+      port: {{ $values.metrics.port }}
+      address: {{ $values.metrics.address }}
+    {{- end }}
+
+    {{- if $values.postgresConfig }}
+    postgres:
+      host: {{ $values.postgresConfig.host }}
+      port: {{ $values.postgresConfig.port }}
+      database: {{ $values.postgresConfig.database }}
+      username: {{ $values.postgresConfig.username }}
+      password: {{ $values.postgresConfig.password }}
+    {{- end }}
+
+{{/* END ConfigMap */}}

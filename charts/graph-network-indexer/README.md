@@ -58,7 +58,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | indexerAgent.resources |  | object | `{}` |
  | indexerAgent.secretEnv |  | object | `{}` |
- | indexerAgent.service.ports.http-queryapi | Service Port to expose Indexer Management API on | int | `7600` |
+ | indexerAgent.service.ports.http-mgmtapi | Service Port to expose Indexer Management API on | int | `8000` |
  | indexerAgent.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
@@ -81,6 +81,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.replicas | Number of replicas to run | int | `1` |
  | indexerService.resources |  | object | `{}` |
  | indexerService.secretEnv |  | object | `{}` |
+ | indexerService.service.ports.http-queryapi | Service Port to expose Indexer Query API on | int | `7600` |
  | indexerService.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerService.service.type |  | string | `"ClusterIP"` |
  | indexerService.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
@@ -97,6 +98,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | indexerTapAgent.replicas | Number of replicas to run | int | `1` |
  | indexerTapAgent.resources |  | object | `{}` |
+ | indexerTapAgent.service.ports.http-queryapi | Service Port to expose Indexer Query API on | int | `7600` |
  | indexerTapAgent.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerTapAgent.service.type |  | string | `"ClusterIP"` |
  | indexerTapAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |

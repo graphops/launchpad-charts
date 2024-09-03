@@ -15,7 +15,7 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  - port: {{ index $values.service "service-port" }}
+  - port: {{ index $values.service.ports "http-queryapi" }}
     targetPort: http-queryapi
     protocol: TCP
     name: http-queryapi
