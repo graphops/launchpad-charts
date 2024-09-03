@@ -1,4 +1,4 @@
-{{- $values := $.Values.indexerService }}
+{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerService }}
 {{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
@@ -15,14 +15,16 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  - port: {{ index $.Values.indexerDefaults.configService "service-port" }}
+  - port: {{ index $values.service "service-port" }}
     targetPort: http-queryapi
     protocol: TCP
     name: http-queryapi
-  - port: {{ index $.Values.indexerDefaults.configService "metrics-port" }}
+  {{- if $values.metrics.enabled }}
+  - port: {{ $values.metrics.port }}
     targetPort: http-metrics
     protocol: TCP
     name: http-metrics
+  {{- end }}
   selector:
     {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}

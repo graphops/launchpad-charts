@@ -1,4 +1,4 @@
-{{- $values := $.Values.indexerAgent }}
+{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerAgent }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
@@ -35,11 +35,15 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  {{- range $portName, $portNumber := $values.service.ports }}
-    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
-      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
-      protocol: TCP
-      name: {{ $portName }}
+  - port: {{ index $values.service "service-port" }}
+    targetPort: http-queryapi
+    protocol: TCP
+    name: http-queryapi
+  {{- if $values.metrics.enabled }}
+  - port: {{ $values.metrics.port }}
+    targetPort: http-metrics
+    protocol: TCP
+    name: http-metrics
   {{- end }}
   selector:
     {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}

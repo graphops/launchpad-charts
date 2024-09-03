@@ -26,6 +26,8 @@ prometheus:
     relabelings: []
     metricRelabelings: []
 
+config: {}
+
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
   dashboards: false
@@ -36,158 +38,77 @@ grafana:
 
 # -- Value defaults that apply to both indexer-agent and indexer-service
 indexerDefaults:
+  metrics:
+    enabled: true
+    address: 0.0.0.0
+    port: 7300
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
+  # config:
+  #   ethereum: null
+  #   # -- Name of the network that you have specified a node URL for in `ethereum`
+  #   ethereum-network: "mainnet"
+  #   # -- (required) Ethereum address of your Indexer
+  #   indexer-address: null
+  #   # -- (required) URL for your graph node query endpoint (probably a load balancer address)
+  #   graph-node-query-endpoint: null
+  #   # -- (required) URL for your graph node status endpoint (probably a load balancer address)
+  #   graph-node-status-endpoint: null
+  #   # -- (required) Hostname for your Postgres indexer metadata database
+  #   postgres-host: null
+  #   # -- Name of the Postgres database to use for indexer metadata
+  #   postgres-database: indexer
+  #   # -- Specify a plain text username to authenticate with Postgres
+  #   postgres-username: null
+  #   # -- (not recommended) Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
+  #   postgres-password: null
+  #   # -- Port that Postgres is available on
+  #   postgres-port: 5432
+  #   # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
+  #   mnemonic: null
+  #   # -- (required) An endpoint to query the network subgraph
+  #   network-subgraph-endpoint: null
+
   config:
-    # -- (required) URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli)
-    ethereum: null
-    # -- Name of the network that you have specified a node URL for in `ethereum`
-    ethereum-network: "mainnet"
-    # -- (required) Ethereum address of your Indexer
-    indexer-address: null
-    # -- (required) URL for your graph node query endpoint (probably a load balancer address)
-    graph-node-query-endpoint: null
-    # -- (required) URL for your graph node status endpoint (probably a load balancer address)
-    graph-node-status-endpoint: null
-    # -- (required) Hostname for your Postgres indexer metadata database
-    postgres-host: null
-    # -- Name of the Postgres database to use for indexer metadata
-    postgres-database: indexer
-    # -- Specify a plain text username to authenticate with Postgres
-    postgres-username: null
-    # -- (not recommended) Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-    postgres-password: null
-    # -- Port that Postgres is available on
-    postgres-port: 5432
-    # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-    mnemonic: null
-    # -- (required) An endpoint to query the network subgraph
-    network-subgraph-endpoint: null
-
-  configService:
-  
-    metrics-port: 7300
-
-    subgraphs-network-syncing-interval-secs: 60
-
-    subgraphs-network-recently-closed-allocation-buffer-secs: 100
-
-    service-host: "0.0.0.0"
-
-    service-port: 7600
-
-    blockchain-chain-id: 421614
-
-    subgraphs-escrow-syncing-interval-secs: 60
-
-    subgraphs-escrow-query-url: null
-
-    blockchain-receipts-verifier-address: null
-
-    service-url-prefix: "/"
-
-    service-serve-network-subgraph: false
-
-    service-serve-escrow-subgraph: false
-
-    service-tap-max-receipt-value-grt: "0.001"
-
-    tap-max-amount-willing-to-lose-grt: "0.03"
-
-    tap-rav-request-trigger-value-divisor: 100
-    
-    tap-rav-request-timestamp-buffer-secs: 60
-
-    tap-rav-request-request-timeout-secs: 5
-
-    tap-rav-request-max-receipts-per-request: 20
-
-    tap-sender-aggregator-endpoints: []
-
-
-  configTemplate: |
-      # WARNING:  This shows all the possible configuration options. Make sure you know what
-      #           you are doing.
-      #           Prefer starting with `minimal-config-example.toml`.
-      #
-      # All the optional values (missing from the minimal config) are set to the current
-      # default values.
-      # You will have to change *most* the values below to match your setup.
-      #
-      # Some of the config below are global graph network values, which you can find here:
-      # https://github.com/graphprotocol/indexer/tree/main/docs/networks
-      #
-      # If you want to supply some or all of the configuration below using environment variables,
-      # use the prefix "INDEXER_SERVICE" or "TAP_AGENT" for indexer-service or tap-agent, respectively,
-      # followed by the name of the field, using double underscores "__" for nesting. Example:
-      #
-      #       INDEXER_SERVICE_SUBGRAPHS__NETWORK__QUERY_URL = [...]
-      #
-      #   For
-      #
-      #       [subgraphs.network]
-      #       query_url = [...]
-
-      [indexer]
-      indexer_address = {{ index .Values.indexerDefaults.config "indexer-address" | quote }}
+    indexer:
+      indexer_address: "your_indexer_address"
       # We are commenting this example mnemonic because the operator mnemonic should come from the INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC environment variable instead
       # operator_mnemonic = "anchor zebra vocal chair sample grape inmate loyal window harbor glue teach symbol brown prefer soup spice waste visit reform concert venue silk turtle"
 
-      # [database]
-      # # The URL of the Postgres database used for the indexer components. The same database
-      # # that is used by the `indexer-agent`. It is expected that `indexer-agent` will create
-      # # the necessary tables.
-      # We are commenting this out because we are using the secretEnvs to construct the postgres url and use INDEXER_SERVICE_DATABASE__POSTGRES_URL as the environment variable instead
-      # postgres_url = "postgres://valid_username:valid_password@valid_postgres_host:5432/valid_postgres_database"
+    database:
+      postgres_url: "postgres://valid_username:valid_password@valid_postgres_host:5432/valid_postgres_database"
 
-      [metrics]
-      port = {{ index .Values.indexerDefaults.configService "metrics-port" }}
+    graph_node:
+      query_url: "your_graph_node_query_url"
+      status_url: "your_graph_node_status_endpoint"
 
-      [graph_node]
-      query_url = {{ index .Values.indexerDefaults.config "graph-node-query-endpoint" | quote }}
-      status_url = {{ index .Values.indexerDefaults.config "graph-node-status-endpoint" | quote }}
+    # subgraphs.network:
+    #   # Query URL for the Graph Network subgraph.
+    #   query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
 
-      [subgraphs.network]
-      query_url = {{ index .Values.indexerDefaults.config "network-subgraph-endpoint" | quote }}
-      syncing_interval_secs = {{ index .Values.indexerDefaults.configService "subgraphs-network-syncing-interval-secs" }}
-      recently_closed_allocation_buffer_secs = {{ index .Values.indexerDefaults.configService "subgraphs-network-recently-closed-allocation-buffer-secs" }}
+    #   # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+    #   # Locally indexing the subgraph is recommended.
+    #   # NOTE: Use `query_url` or `deployment_id` only
+    #   deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-      [subgraphs.escrow]
-      query_url = {{ index .Values.indexerDefaults.configService "subgraphs-escrow-query-url" | quote }}
-      syncing_interval_secs = {{ index .Values.indexerDefaults.configService "subgraphs-escrow-syncing-interval-secs" }}
+    # subgraphs.escrow:
+    #   # Query URL for the Graph Network subgraph.
+    #   query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
 
-      [blockchain]
-      chain_id = {{ index .Values.indexerDefaults.configService "blockchain-chain-id" }}
-      receipts_verifier_address = {{ index .Values.indexerDefaults.configService "blockchain-receipts-verifier-address" | quote }}
+    #   # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+    #   # Locally indexing the subgraph is recommended.
+    #   # NOTE: Use `query_url` or `deployment_id` only
+    #   deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-      ##############################################
-      # Specific configurations to indexer-service #
-      ##############################################
-      [service]
-      host_and_port = {{ printf "%s:%d" (index .Values.indexerDefaults.configService "service-host") (int (index .Values.indexerDefaults.configService "service-port")) | quote }}
-      url_prefix = {{ index .Values.indexerDefaults.configService "service-url-prefix" | quote }}
-      serve_network_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-network-subgraph" }}
-      serve_escrow_subgraph = {{ index .Values.indexerDefaults.configService "service-serve-escrow-subgraph" }}
+    blockchain:
+      chain_id: "valid_blockchain_chain_id"
+      # find TAPVerifier address at https://github.com/semiotic-ai/timeline-aggregation-protocol-contracts/blob/main/addresses.json
+      receipts_verifier_address: "valid_blockchain_receipts_verifier_address"
+    tap.rav_request:
+      trigger_value_divisor: 100
 
-      [service.tap]
-      max_receipt_value_grt = {{ index .Values.indexerDefaults.configService "service-tap-max-receipt-value-grt" }}
-
-      ########################################
-      # Specific configurations to tap-agent #
-      ########################################
-      [tap]
-      max_amount_willing_to_lose_grt = {{ index .Values.indexerDefaults.configService "tap-max-amount-willing-to-lose-grt" }}
-
-      [tap.rav_request]
-      trigger_value_divisor = {{ index .Values.indexerDefaults.configService "tap-rav-request-trigger-value-divisor" }}
-      timestamp_buffer_secs = {{ index .Values.indexerDefaults.configService "tap-rav-request-timestamp-buffer-secs" }}
-      request_timeout_secs = {{ index .Values.indexerDefaults.configService "tap-rav-request-request-timeout-secs" }}
-      max_receipts_per_request = {{ index .Values.indexerDefaults.configService "tap-rav-request-max-receipts-per-request" }}
-
-      [tap.sender_aggregator_endpoints]
-      {{- range $key, $value := index .Values.indexerDefaults.configService "tap-sender-aggregator-endpoints" }}
-      {{ $key }} = {{ $value | quote }}
-      {{- end }}
-
+    # Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender 
+    tap.sender_aggregator_endpoints:
+      valid_sender_address: "gateway_url"
 
   secretEnv: {}
 
@@ -248,9 +169,7 @@ indexerAgent:
     type: ClusterIP
     ports: # Valid keys are names of ports that are exposed by the Pod
       # -- Service Port to expose Indexer Management API on
-      http-mgmtapi: 8000
-      # -- Service Port to expose Metrics on
-      http-metrics: 7300
+      http-queryapi: 7600
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -287,6 +206,10 @@ indexerService:
 
   # -- Number of replicas to run
   replicas: 1
+  metrics:
+    enabled: false
+
+  config: {}
 
   secretEnv: {}
 
@@ -353,6 +276,10 @@ indexerTapAgent:
 
   # -- Number of replicas to run
   replicas: 1
+
+  config: {}
+  metrics:
+    enabled: false
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []

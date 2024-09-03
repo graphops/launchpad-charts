@@ -1,4 +1,4 @@
-{{- $values := $.Values.indexerService }}
+{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerService }}
 {{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{- /* If serviceMonitors enabled in chart-wide values */ -}}

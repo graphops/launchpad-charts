@@ -1,11 +1,9 @@
-{{- $values := $.Values.indexerTapAgent }}
+{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerTapAgent }}
 {{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
-{{- $configTemplate := .Values.indexerDefaults.configTemplate }}
-{{- $configToml := print (tpl $configTemplate $) }}
 {{/* We use a hash of the configuration to automate restarts of dependents */}}
-{{- $graphNetworkConfigHash := $configToml | sha256sum }}
+{{- $graphNetworkConfigHash := include "graph-network-indexer.config" (dict "componentConfig" $values) | sha256sum }}
 
 {{/* START Deployment */}}
 ---
@@ -25,7 +23,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config.toml: {{ $graphNetworkConfigHash }}
+        checksum/config: {{ $graphNetworkConfigHash }}
       {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -90,11 +88,13 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: {{ index .Values.indexerDefaults.configService "service-port" }}
+              containerPort: {{ index $values.service "service-port" }}
               protocol: TCP
+            {{- if $values.metrics.enabled }}
             - name: http-metrics
-              containerPort: {{ index .Values.indexerDefaults.configService "metrics-port" }}
+              containerPort: {{ $values.metrics.port }}
               protocol: TCP
+            {{- end }}
           volumeMounts:
           - name: config
             mountPath: "/etc/indexer-rs"
@@ -106,7 +106,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: {{ include "graph-network-indexer.fullname" . }}-config
+            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
         {{- if $values.initContainers }}
         - name: init-data
           emptyDir: {}

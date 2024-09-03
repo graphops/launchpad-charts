@@ -64,3 +64,21 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Generate the configuration for the given component.
+*/}}
+{{- define "graph-network-indexer.config" -}}
+{{- range $section, $sectionValues := .componentConfig.config }}
+[{{ $section }}]
+{{- range $key, $value := $sectionValues }}
+{{ $key }} = {{ if kindIs "map" $value }}{{ $value | toJson | quote }}{{ else }}{{ $value | quote }}{{ end }}
+{{- end }}
+{{- end }}
+{{- if .componentConfig.metrics.enabled }}
+[metrics]
+enabled = true
+port = {{ .componentConfig.metrics.port }}
+address = {{ .componentConfig.metrics.address }}
+{{- end }}
+{{- end }}

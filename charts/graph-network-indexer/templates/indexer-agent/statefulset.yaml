@@ -70,13 +70,6 @@ spec:
           {{- end }}
           {{- end }}
           args:
-          {{- with (deepCopy $.Values.indexerDefaults.config | mustMerge $values.config) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
-            - --{{ $key }}={{ $val }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
