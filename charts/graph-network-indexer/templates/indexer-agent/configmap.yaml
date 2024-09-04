@@ -61,8 +61,9 @@ data:
       password: {{ $values.postgresConfig.password }}
     {{- end }}
 
+    {{- if $values.indexerManagement }}
     indexerManagement:
       address: {{ $values.indexerManagement.address | default "0.0.0.0" }}
       port: {{ $values.indexerManagement.port | default 8000 }}
-
+    {{- end }}
 {{/* END ConfigMap */}}

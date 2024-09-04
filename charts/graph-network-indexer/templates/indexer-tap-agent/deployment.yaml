@@ -78,7 +78,11 @@ spec:
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'          
           command:
           - /usr/local/bin/indexer-tap-agent
-          - --config={{ $values.configPath | default "/etc/indexer-rs/config.toml" }}
+          {{- if $values.configPath }}
+          - --config={{ $values.configPath }}
+          {{- else }}
+          - --config=/etc/indexer-rs/config.toml
+          {{- end }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
@@ -130,6 +134,8 @@ spec:
             type: {{ $volume.hostPath.type }}
             {{- end }}
           {{- end }}
+        {{- end }}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -73,13 +73,17 @@ spec:
             - name: INDEXER_AGENT_POSTGRES_URL
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'  
           args:
-            - --config={{ $values.configPath | default "/etc/indexer-agent/config.yaml" }}
+            {{- if $values.configPath }}
+            - --config={{ $values.configPath }}
+            {{- else }}
+            - --config=/etc/indexer-agent/config.yaml
+            {{- end }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
           ports:
             - name: http-mgmtapi
-              containerPort: {{ $values.indexerManagement.port | default 8000 }}
+              containerPort: {{ if $values.indexerManagement }}{{ $values.indexerManagement.port | default 8000 }}{{ else }}8000{{ end }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
             - name: http-metrics
