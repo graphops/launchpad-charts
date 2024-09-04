@@ -17,7 +17,7 @@ data:
     {{- if $values.config.subgraphs }}
     subgraphs:
       {{- if (not (empty $values.config.subgraphs.network)) }}
-      networkSubgraph: 
+      networkSubgraph:
         url: {{ index $values.config.subgraphs.network "query_url" }}
         deployment: {{ index $values.config.subgraphs.network "deployment_id"  }}
       {{- end }}
@@ -25,11 +25,11 @@ data:
       {{- if (not (empty $values.config.subgraphs.escrow)) }}
       escrowSubgraph: 
         url: {{ index $values.config.subgraphs.escrow "query_url" }}
-        deployment: {{ index $values.config.subgraphs.escrow "deployment_id"  }}
+        deployment: {{ index $values.config.subgraphs.escrow "deployment_id" }}
       {{- end }}
     {{- end }}
 
-    {{- if $values.config.blockchain }}    
+    {{- if $values.config.blockchain }}
     tapAddressBook:
       {{ $values.config.blockchain.chain_id }}:
         TAPVerifier: {{ $values.config.blockchain.receipts_verifier_address }}

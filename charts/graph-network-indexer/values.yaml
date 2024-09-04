@@ -89,9 +89,9 @@ indexerDefaults:
     tap.rav_request:
       trigger_value_divisor: 100
 
-    # Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender 
-    tap.sender_aggregator_endpoints:
-      valid_sender_address: "gateway_url"
+    # -- (required)Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender and the value is the URL of the sender aggregator.
+    # tap.sender_aggregator_endpoints:
+    #   0x0000000000000000000000000000000000000000: "https://sender-aggregator-url.com"
 
   secretEnv: {}
 
@@ -197,7 +197,6 @@ indexerService:
   secretEnv: {}
 
   env: {}
-
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
@@ -317,4 +316,3 @@ indexerTapAgent:
     antiAffinityByHostname: true
 
   affinity: {}
-
