@@ -28,13 +28,6 @@ data:
         deployment: {{ index $values.config.subgraphs.escrow "deployment_id"  }}
       {{- end }}
     {{- end }}
-    tapSubgraph:
-        url: "https://gateway-arbitrum.network.thegraph.com/api/<api-key>/subgraphs/id/7ubx365MiqBH5iUz6XWXWT8PTof5BVAyEzdb8m17RvbD"
-    transactionMonitoring:
-      gasIncreaseTimeout: 240000
-      gasIncreaseFactor: 1.2
-      baseFeePerGasMax: 100000000000
-      maxTransactionAttempts: 0
 
     {{- if $values.config.blockchain }}    
     tapAddressBook:
@@ -67,5 +60,9 @@ data:
       username: {{ $values.postgresConfig.username }}
       password: {{ $values.postgresConfig.password }}
     {{- end }}
+
+    indexerManagement:
+      address: {{ $values.indexerManagement.address | default "0.0.0.0" }}
+      port: {{ $values.indexerManagement.port | default 8000 }}
 
 {{/* END ConfigMap */}}

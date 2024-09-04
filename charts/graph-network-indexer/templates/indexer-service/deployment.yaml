@@ -1,4 +1,4 @@
-{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerService }}
+{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerService) }}
 {{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
@@ -76,7 +76,7 @@ spec:
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'          
           command:
           - /usr/local/bin/service
-          - --config=/etc/indexer-rs/config.toml
+          - --config={{ $values.configPath | default "/etc/indexer-rs/config.toml" }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
@@ -93,6 +93,15 @@ spec:
           - name: config
             mountPath: "/etc/indexer-rs"
             readOnly: true
+          {{- if $values.additionalVolumeMounts }}
+          {{- range $mount := $values.additionalVolumeMounts }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
+            {{- if $mount.readOnly }}
+            readOnly: {{ $mount.readOnly }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
           readinessProbe:
             httpGet:
               port: http-queryapi
@@ -104,9 +113,25 @@ spec:
         - name: config
           configMap:
             name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
-        {{- if $values.initContainers }}
-        - name: init-data
+        {{- if $values.additionalVolumes }}
+        {{- range $volume := $values.additionalVolumes }}
+        - name: {{ $volume.name }}
+          {{- if $volume.configMap }}
+          configMap:
+            name: {{ $volume.configMap.name }}
+          {{- else if $volume.secret }}
+          secret:
+            secretName: {{ $volume.secret.secretName }}
+          {{- else if $volume.emptyDir }}
           emptyDir: {}
+          {{- else if $volume.hostPath }}
+          hostPath:
+            path: {{ $volume.hostPath.path }}
+            {{- if $volume.hostPath.type }}
+            type: {{ $volume.hostPath.type }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
         {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:

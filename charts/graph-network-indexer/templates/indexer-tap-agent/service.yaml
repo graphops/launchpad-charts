@@ -1,4 +1,4 @@
-{{- $values := merge (deepCopy .Values.indexerDefaults) .Values.indexerTapAgent }}
+{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
 {{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
