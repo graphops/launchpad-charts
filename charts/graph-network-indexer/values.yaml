@@ -61,6 +61,7 @@ indexerDefaults:
       query_url: "your_graph_node_query_url" 
       # -- (required) URL for your graph node status endpoint (probably a load balancer address)
       status_url: "your_graph_node_status_endpoint"
+
     service:
       host_and_port: "0.0.0.0:7600"
 
@@ -263,8 +264,6 @@ indexerTapAgent:
   replicas: 1
 
   config: {}
-  metrics:
-    enabled: false
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []

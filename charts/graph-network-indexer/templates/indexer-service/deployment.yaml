@@ -21,7 +21,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ $graphNetworkConfigHash }}
+        checksum/config.toml: {{ $graphNetworkConfigHash }}
       {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

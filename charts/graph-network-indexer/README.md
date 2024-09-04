@@ -92,7 +92,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":""}` |
  | indexerTapAgent.image.tag | Overrides the image tag | string | Chart.appVersion |
- | indexerTapAgent.metrics.enabled |  | bool | `false` |
  | indexerTapAgent.nodeSelector |  | object | `{}` |
  | indexerTapAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
