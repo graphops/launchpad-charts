@@ -1,4 +1,4 @@
-{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 {{/* START StatefulSet */}}
@@ -83,7 +83,7 @@ spec:
           {{- end }}
           ports:
             - name: http-mgmtapi
-              containerPort: {{ if $values.indexerManagement }}{{ $values.indexerManagement.port | default 8000 }}{{ else }}8000{{ end }}
+              containerPort: {{ if $values.indexerManagement }}{{ $values.indexerManagement.port }}{{ else }}8000{{ end }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
             - name: http-metrics

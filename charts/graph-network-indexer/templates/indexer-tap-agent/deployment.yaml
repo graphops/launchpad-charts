@@ -1,4 +1,4 @@
-{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
 {{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
@@ -88,7 +88,9 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: {{ index $values.service.ports "http-queryapi" }}
+              {{- with $servicePort := splitList ":" $values.config.service.host_and_port }}
+              containerPort: {{ index $servicePort 1 | int }}
+              {{- end }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
             - name: http-metrics

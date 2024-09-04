@@ -1,4 +1,4 @@
-{{- $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
