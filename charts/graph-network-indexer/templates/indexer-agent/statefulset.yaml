@@ -71,7 +71,7 @@ spec:
           {{- end }}
           {{- end }}
             - name: INDEXER_AGENT_POSTGRES_URL
-              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'  
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
           args:
             {{- if $values.configPath }}
             - --config={{ $values.configPath }}
