@@ -35,10 +35,12 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  - port: {{ index $values.service "service-port" }}
-    targetPort: http-queryapi
+  {{- range $portName, $portNumber := $values.service.ports }}
+  - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+    targetPort: {{ $portName }} # the name of the port on the container that we are routing to
     protocol: TCP
-    name: http-queryapi
+    name: {{ $portName }}
+  {{- end }}
   {{- if $values.metrics.enabled }}
   - port: {{ $values.metrics.port }}
     targetPort: http-metrics

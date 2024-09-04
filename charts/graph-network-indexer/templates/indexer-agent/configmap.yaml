@@ -18,14 +18,14 @@ data:
     subgraphs:
       {{- if (not (empty $values.config.subgraphs.network)) }}
       networkSubgraph:
-        url: {{ index $values.config.subgraphs.network "query_url" }}
-        deployment: {{ index $values.config.subgraphs.network "deployment_id"  }}
+        url: {{ $values.config.subgraphs.network.query_url }}
+        deployment: {{ $values.config.subgraphs.network.deployment_id }}
       {{- end }}
 
       {{- if (not (empty $values.config.subgraphs.escrow)) }}
       escrowSubgraph: 
-        url: {{ index $values.config.subgraphs.escrow "query_url" }}
-        deployment: {{ index $values.config.subgraphs.escrow "deployment_id" }}
+        url: {{ $values.config.subgraphs.escrow.query_url }}
+        deployment: {{ $values.config.subgraphs.escrow.deployment_id }}
       {{- end }}
     {{- end }}
 
@@ -42,8 +42,8 @@ data:
 
     {{- if $values.config.graph_node }}
     graphNode:
-      queryEndpoint: {{ index $values.config.graph_node "query_endpoint" }}
-      statusEndpoint: {{ index $values.config.graph_node "status_endpoint" }}
+      queryEndpoint: {{ index $values.config.graph_node "query_url" }}
+      statusEndpoint: {{ index $values.config.graph_node "status_url" }}
     {{- end }}
 
     {{- if $values.metrics.enabled }}
