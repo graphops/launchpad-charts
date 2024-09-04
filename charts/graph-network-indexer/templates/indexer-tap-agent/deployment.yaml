@@ -88,8 +88,8 @@ spec:
           {{- end }}
           ports:
             - name: http-queryapi
-              {{- with $servicePort := splitList ":" $values.config.service.host_and_port }}
-              containerPort: {{ index $servicePort 1 | int }}
+              {{- with $servicePort := splitList ":" $values.config.service.host_and_port | last }}
+              containerPort: {{ $servicePort | int }}
               {{- end }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
