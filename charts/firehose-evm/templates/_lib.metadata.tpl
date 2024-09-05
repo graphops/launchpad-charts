@@ -86,6 +86,11 @@ Create the name of the role or cluster role for a specific component
 {{- printf "%s-%s-role" (include "metadata.fullname" $) .componentName -}}
 {{- end }}
 
+{{- define "metadata.clusterRoleName" -}}
+{{- $rootCtx := .Root -}}
+{{- printf "%s-%s-%s-role" ( .Root.Release.Namespace ) (include "metadata.fullname" $) .componentName -}}
+{{- end }}
+
 {{- define "metadata.allLabels" -}}
 {{- include "metadata.mergeLabelsOrAnnotations" (dict "Root" .Root "Pod" .Pod "specific" .labels "componentName" .componentName "type" "labels") -}}
 {{- end -}}

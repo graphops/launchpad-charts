@@ -45,6 +45,9 @@ Uses digest if provided, otherwise uses tag. Requires repository.
   {{/* this is to allow to preserve types other than strings */}}
   {{- if contains "\n" $collection }}
     {{- dict "result" ( tpl $collection $templateCtx ) | toYaml }}
+  {{/* to preserve empty strings, relevant for apiGroups in Roles */}}
+  {{- else if empty $collection }}
+    {{- printf "%s: %s" "result" "\"\"" }}
   {{- else }}
     {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
     {{ tpl $tempStr $templateCtx }}

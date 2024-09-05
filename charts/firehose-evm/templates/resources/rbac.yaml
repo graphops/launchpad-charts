@@ -1,8 +1,6 @@
 {{- define "templates.Role" }}
-{{- $roleKind := ternary "ClusterRole" "Role" .Pod.serviceAccount.rbac.clusterWide }}
-{{- $bindingKind := ternary "ClusterRoleBinding" "RoleBinding" .Pod.serviceAccount.rbac.clusterWide }}
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ $roleKind }}
+kind: Role
 metadata:
   name: {{ include "metadata.roleName" $ }}
   labels:
@@ -11,19 +9,45 @@ rules:
   {{- .Pod.serviceAccount.rbac.rules | default list| toYaml | nindent 2 }}
 {{- end }}
 
-{{- define "templates.RoleBinding" }}
-{{- $roleKind := ternary "ClusterRole" "Role" .Pod.serviceAccount.rbac.clusterWide }}
-{{- $bindingKind := ternary "ClusterRoleBinding" "RoleBinding" .Pod.serviceAccount.rbac.clusterWide }}
+{{- define "templates.ClusterRole" }}
 apiVersion: rbac.authorization.k8s.io/v1
-kind: {{ $bindingKind }}
+kind: ClusterRole
+metadata:
+  name: {{ include "metadata.clusterRoleName" $ }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+rules:
+  {{- .Pod.serviceAccount.rbac.clusterRules | default list| toYaml | nindent 2 }}
+{{- end }}
+
+{{- define "templates.RoleBinding" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
   name: {{ include "metadata.roleName" $ }}
   labels:
     {{- include "metadata.labels" $ | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: {{ $roleKind }}
+  kind: Role
   name: {{ include "metadata.roleName" $ }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "metadata.serviceAccountName" $ }}
+    namespace: {{ .Root.Release.Namespace }}
+{{- end }}
+
+{{- define "templates.ClusterRoleBinding" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "metadata.clusterRoleName" $ }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "metadata.clusterRoleName" $ }}
 subjects:
   - kind: ServiceAccount
     name: {{ include "metadata.serviceAccountName" $ }}

@@ -39,6 +39,26 @@ firehoseComponentDefaults:
       enabled: true
       addr: 127.0.0.1
       port: 6060
+    p2p:
+      # -- Expose P2P port via NodePort
+      enabled: false
+      # -- NodePort to be used. Must be unique.
+      # Leave blank for a dynamic port
+      port: null
+    jwt:
+      # -- Provision or use an existing JWT secret
+      # If it's enabled and neither existingSecret
+      # or fromLiteral are set, a random secret will
+      # be generated and then re-used in the future
+      enabled: false
+      # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+      existingSecret:
+        # -- Name of the Secret resource in the same namespace
+        name: null
+        # -- Data key for the JWT in the Secret
+        key: null
+      # -- Use this literal value for the JWT
+      fromLiteral: null
     config:
       data-dir: "/var/lib/fireeth"
       metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
@@ -102,6 +122,40 @@ firehoseComponentDefaults:
 
   # -- Also create headless services, mandatory for StatefulSets and true by default
   serviceHeadless: '{{ eq .Pod.kind "StatefulSet" | ternary true true }}'
+
+  # -- Create a NodePort service
+  serviceP2P:
+    enabled: '{{ default false .Pod.fireeth.p2p.enabled }}'
+    spec:
+      # -- Service type
+      type: "NodePort"
+      externalTrafficPolicy: Local
+      # -- Service ports configuration
+      ports:
+        p2p-tcp:
+          # -- (mandatory) default is to use nodePort if specified, or 30303
+          port: '{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 | int) (index . "p2p-tcp" "nodePort" | int) }}{{ end }}'
+          # -- (optional) default is to use the port's name
+          targetPort: null
+          # -- (optional) nodePort to use, if left null a dynamic one will be atributed
+          nodePort: null
+          protocol: TCP
+        p2p-udp:
+          # -- (mandatory) default is to use nodePort if specified, or 30303
+          port: '{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 | int) (index . "p2p-tcp" "nodePort" | int) }}{{ end }}'
+          # -- (optional) default is to use the port's name
+          targetPort: null
+          # -- (optional) nodePort to use, if left null a dynamic one will be atributed
+          nodePort: null
+          protocol: UDP
+      selector:
+        statefulset.kubernetes.io/pod-name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'
+    # -- Additional service labels
+    labels:
+      pod: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'
+      type: p2p # this label is used by the initContainer to select this service
+    # -- Additional service annotations
+    annotations: {}
 
   # -- Init containers configuration
   initContainers:
@@ -175,8 +229,9 @@ firehoseComponentDefaults:
     labels: {}
     rbac:
       create: true
+      createCluster: false
       rules: []
-      clusterWide: false
+      clusterRules: []
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -399,12 +454,48 @@ firehoseServiceDefaults:
     kind: StatefulSet
 
     fireeth:
+
+      jwt:
+        enabled: true
+
+      # Additional reader-node specific configurations
+      p2p:
+        # -- Expose P2P port via NodePort
+        enabled: true
+        # -- NodePort to be used. Must be unique.
+        # Leave blank for a dynamic port
+        port: null
+        spec:
+          ports:
+            node-p2p-tcp:
+              port: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+              protocol: TCP
+
       config:
         reader-node-grpc-listen-addr: "0.0.0.0:10010"
         reader-node-manager-api-addr: "127.0.0.1:10011"
         reader-node-data-dir: "/var/lib/geth"
         reader-node-path: "/app/geth"
 
+    serviceAccount:
+      rbac:
+        createCluster: true
+        clusterRules:
+          - apiGroups: [""]
+            resources:
+              - "nodes"
+            verbs:
+              - "get"
+              - "list"
+              - "watch"
+        rules:
+          - apiGroups: [""]
+            resources:
+              - "services"
+            verbs:
+              - "get"
+              - "list"
+              - "watch"
     node:
       metrics:
         enabled: true
@@ -427,9 +518,9 @@ firehoseServiceDefaults:
         authrpc.vhosts: '*'
         datadir: "{node-data-dir}"
         firehose-enabled: "__none"
-#        port: "${EXTERNAL_PORT}"
-#        discovery.port: "${EXTERNAL_PORT}"
-        nat: "extip:${EXTERNAL_IP}"
+        port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
+        discovery.port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
+        nat: '{{ .Pod.fireeth.p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }}'
         sepolia: "__none"
         networkid: "11155111"
         txlookuplimit: 1000
@@ -567,59 +658,3 @@ firehoseComponents:
     fireeth:
       services:
         - reader-node
-
-    node:
-      # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
-      jwt:
-        # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
-        existingSecret: &jwt
-          # -- Name of the Secret resource in the same namespace
-          name: null
-          # -- Data key for the JWT in the Secret
-          key: null
-        # -- Use this literal value for the JWT
-        fromLiteral: 1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480
-
-    # -- Persistence configuration
-    persistence:
-      enabled: true
-      reader_node:
-        # -- Access modes for the persistent volume
-        accessModes: ["ReadWriteOnce"]
-        # -- The storage class to use when provisioning a persistent volume
-        storageClassName: openebs-zfs-localpv-compressed-8k
-        resources:
-          requests:
-            # -- The amount of disk space to provision
-            storage: 3Ti
-
-    # Additional reader-node specific configurations
-    p2p:
-      # -- Expose P2P port via NodePort
-      enabled: false
-      type: NodePort
-      # -- NodePort to be used. Must be unique.
-      port: 32310
-
-    dataDir: "/var/lib/geth"
-    nodePath: "/usr/lib/geth"
-
-    initSnapshot:
-      enabled: false
-      env:
-        SNAPSHOT_REMOTE_LOCATION: "add_snapshot_location"
-
-    p2pNodePort:
-      # -- Expose P2P port via NodePort
-      enabled: true
-      # -- NodePort to be used. Must be unique.
-      port: 32310
-      initContainer:
-        image:
-          # -- Container image to fetch nodeport information
-          repository: lachlanevenson/k8s-kubectl
-          # -- Container tag
-          tag: v1.25.4
-          # -- Container pull policy
-          pullPolicy: IfNotPresent
-

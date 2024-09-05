@@ -200,7 +200,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.envFrom.SecretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.key | Name of the data key in the secret that contains your S3 bucket url for storing one blocks | string | `""` |
  | firehoseComponentDefaults.envFrom.SecretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing one blocks | string | `""` |
  | firehoseComponentDefaults.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
- | firehoseComponentDefaults.fireeth | Firehose-specific configuration | object | `{"args":{"--config-file":"/config/config.yaml","__separator":"=","start":"__none"},"argsOrder":["start","--config-file"],"config":{"common-forked-blocks-store-url":null,"common-index-block-sizes":10000,"common-live-blocks-addr":"relayer:10014","common-merged-blocks-store-url":null,"common-one-block-store-url":null,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"log-to-file":false,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}","pprof-listen-addr":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"127.0.0.1","enabled":true,"port":6060},"services":[]}` |
+ | firehoseComponentDefaults.fireeth | Firehose-specific configuration | object | `{"args":{"--config-file":"/config/config.yaml","__separator":"=","start":"__none"},"argsOrder":["start","--config-file"],"config":{"common-forked-blocks-store-url":null,"common-index-block-sizes":10000,"common-live-blocks-addr":"relayer:10014","common-merged-blocks-store-url":null,"common-one-block-store-url":null,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"log-to-file":false,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}","pprof-listen-addr":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"jwt":{"enabled":false,"existingSecret":{"key":null,"name":null},"fromLiteral":null},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"p2p":{"enabled":false,"port":null},"pprof":{"addr":"127.0.0.1","enabled":true,"port":6060},"services":[]}` |
+ | firehoseComponentDefaults.fireeth.jwt.enabled | Provision or use an existing JWT secret If it's enabled and neither existingSecret or fromLiteral are set, a random secret will be generated and then re-used in the future | bool | `false` |
+ | firehoseComponentDefaults.fireeth.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
+ | firehoseComponentDefaults.fireeth.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
+ | firehoseComponentDefaults.fireeth.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
+ | firehoseComponentDefaults.fireeth.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
+ | firehoseComponentDefaults.fireeth.p2p.enabled | Expose P2P port via NodePort | bool | `false` |
+ | firehoseComponentDefaults.fireeth.p2p.port | NodePort to be used. Must be unique. Leave blank for a dynamic port | string | `nil` |
  | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false}` |
  | firehoseComponentDefaults.image | Image configuration for firehose-evm | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
@@ -225,7 +232,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.service.labels | Additional service labels | object | `{}` |
  | firehoseComponentDefaults.service.spec.ports | Service ports configuration | object | `{"fh-metrics":{"port":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%d\" ( .port \| int ) ) nil }}{{ end }}","protocol":"TCP"}}` |
  | firehoseComponentDefaults.service.spec.type | Service type | string | `"ClusterIP"` |
- | firehoseComponentDefaults.serviceAccount | Service account configuration | object | `{"annotations":{},"create":true,"labels":{},"name":"","rbac":{"clusterWide":false,"create":true,"rules":[]}}` |
+ | firehoseComponentDefaults.serviceAccount | Service account configuration | object | `{"annotations":{},"create":true,"labels":{},"name":"","rbac":{"clusterRules":[],"create":true,"createCluster":false,"rules":[]}}` |
  | firehoseComponentDefaults.serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
  | firehoseComponentDefaults.serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | firehoseComponentDefaults.serviceAccount.labels | Labels to add to the service account | object | `{}` |
@@ -233,6 +240,17 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.serviceHeadless | Also create headless services, mandatory for StatefulSets and true by default | string | `"{{ eq .Pod.kind \"StatefulSet\" \| ternary true true }}"` |
  | firehoseComponentDefaults.serviceMonitor | ServiceMonitor configuration for Prometheus Operator | object | `{"enabled":true,"metadata":{"annotations":{},"labels":{}},"spec":{"endpoints":{"metrics-fh":{"honorLabels":true,"interval":"30s","path":"/metrics","scrapeTimeout":"10s"}}}}` |
  | firehoseComponentDefaults.serviceMonitor.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `true` |
+ | firehoseComponentDefaults.serviceP2P | Create a NodePort service | object | `{"annotations":{},"enabled":"{{ default false .Pod.fireeth.p2p.enabled }}","labels":{"pod":"{{ include \"metadata.fullname\" $ }}-{{ .componentName }}-0","type":"p2p"},"spec":{"externalTrafficPolicy":"Local","ports":{"p2p-tcp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"UDP","targetPort":null}},"selector":{"statefulset.kubernetes.io/pod-name":"{{ include \"metadata.fullname\" $ }}-{{ .componentName }}-0"},"type":"NodePort"}}` |
+ | firehoseComponentDefaults.serviceP2P.annotations | Additional service annotations | object | `{}` |
+ | firehoseComponentDefaults.serviceP2P.labels | Additional service labels | object | `{"pod":"{{ include \"metadata.fullname\" $ }}-{{ .componentName }}-0","type":"p2p"}` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports | Service ports configuration | object | `{"p2p-tcp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"UDP","targetPort":null}}` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.port | default is to use nodePort if specified, or 30303 | mandatory | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.targetPort | default is to use the port's name | optional | `nil` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.port | default is to use nodePort if specified, or 30303 | mandatory | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.targetPort | default is to use the port's name | optional | `nil` |
+ | firehoseComponentDefaults.serviceP2P.spec.type | Service type | string | `"NodePort"` |
  | firehoseComponentDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | firehoseComponentDefaults.tolerations | Tolerations configuration | list | `[]` |
  | firehoseComponentDefaults.topologySpreadConstraints | Topology spread constraints | list | `[]` |
@@ -265,31 +283,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponents.index-builder.fireeth | Firehose-specific configuration | object | `{"services":["index-builder"]}` |
  | firehoseComponents.merger.enabled |  | bool | `true` |
  | firehoseComponents.merger.fireeth.services[0] |  | string | `"merger"` |
- | firehoseComponents.reader-node.dataDir |  | string | `"/var/lib/geth"` |
  | firehoseComponents.reader-node.enabled |  | bool | `true` |
  | firehoseComponents.reader-node.fireeth | Firehose-specific configuration | object | `{"services":["reader-node"]}` |
  | firehoseComponents.reader-node.fullnameOverride |  | string | `""` |
- | firehoseComponents.reader-node.initSnapshot.enabled |  | bool | `false` |
- | firehoseComponents.reader-node.initSnapshot.env.SNAPSHOT_REMOTE_LOCATION |  | string | `"add_snapshot_location"` |
  | firehoseComponents.reader-node.nameOverride |  | string | `""` |
- | firehoseComponents.reader-node.node.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":"1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480"}` |
- | firehoseComponents.reader-node.node.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
- | firehoseComponents.reader-node.node.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
- | firehoseComponents.reader-node.node.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
- | firehoseComponents.reader-node.node.jwt.fromLiteral | Use this literal value for the JWT | string | `"1ce5c87e81573667e685eae935d988a92742d5f466d696605cc207a36389c480"` |
- | firehoseComponents.reader-node.nodePath |  | string | `"/usr/lib/geth"` |
- | firehoseComponents.reader-node.p2p.enabled | Expose P2P port via NodePort | bool | `false` |
- | firehoseComponents.reader-node.p2p.port | NodePort to be used. Must be unique. | int | `32310` |
- | firehoseComponents.reader-node.p2p.type |  | string | `"NodePort"` |
- | firehoseComponents.reader-node.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `true` |
- | firehoseComponents.reader-node.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | firehoseComponents.reader-node.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
- | firehoseComponents.reader-node.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | firehoseComponents.reader-node.p2pNodePort.port | NodePort to be used. Must be unique. | int | `32310` |
- | firehoseComponents.reader-node.persistence | Persistence configuration | object | `{"enabled":true,"reader_node":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":"openebs-zfs-localpv-compressed-8k"}}` |
- | firehoseComponents.reader-node.persistence.reader_node.accessModes | Access modes for the persistent volume | list | `["ReadWriteOnce"]` |
- | firehoseComponents.reader-node.persistence.reader_node.resources.requests.storage | The amount of disk space to provision | string | `"3Ti"` |
- | firehoseComponents.reader-node.persistence.reader_node.storageClassName | The storage class to use when provisioning a persistent volume | string | `"openebs-zfs-localpv-compressed-8k"` |
  | firehoseComponents.reader-node.replicas |  | int | `1` |
  | firehoseComponents.relayer.enabled |  | bool | `true` |
  | firehoseComponents.relayer.fireeth.services[0] |  | string | `"relayer"` |
@@ -321,12 +318,18 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-grpc-listen-addr |  | string | `"0.0.0.0:10010"` |
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-manager-api-addr |  | string | `"127.0.0.1:10011"` |
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-path |  | string | `"/app/geth"` |
+ | firehoseServiceDefaults.reader-node.fireeth.jwt.enabled |  | bool | `true` |
+ | firehoseServiceDefaults.reader-node.fireeth.p2p.enabled | Expose P2P port via NodePort | bool | `true` |
+ | firehoseServiceDefaults.reader-node.fireeth.p2p.port | NodePort to be used. Must be unique. Leave blank for a dynamic port | string | `nil` |
+ | firehoseServiceDefaults.reader-node.fireeth.p2p.spec.ports.node-p2p-tcp.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.reader-node.fireeth.p2p.spec.ports.node-p2p-tcp.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.reader-node.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"enabled":true},"20-init-envsubst":{"enabled":true}}` |
  | firehoseServiceDefaults.reader-node.kind |  | string | `"StatefulSet"` |
  | firehoseServiceDefaults.reader-node.lifecycle.preStop.exec.command[0] |  | string | `"/usr/local/bin/eth-maintenance"` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.addr" |  | string | `"0.0.0.0"` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.port" |  | int | `8551` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.vhosts" |  | string | `"*"` |
+ | firehoseServiceDefaults.reader-node.node.args."discovery.port" |  | string | `"{{ .Pod.fireeth.p2p.enabled \| ternary \"${EXTERNAL_PORT}\" nil }}"` |
  | firehoseServiceDefaults.reader-node.node.args."http.addr" |  | string | `"0.0.0.0"` |
  | firehoseServiceDefaults.reader-node.node.args."http.api" |  | string | `"net,web3,eth,debug"` |
  | firehoseServiceDefaults.reader-node.node.args."http.vhosts" |  | string | `"*"` |
@@ -339,8 +342,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.node.args.firehose-enabled |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.http |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.maxpeers |  | int | `100` |
- | firehoseServiceDefaults.reader-node.node.args.nat |  | string | `"extip:${EXTERNAL_IP}"` |
+ | firehoseServiceDefaults.reader-node.node.args.nat |  | string | `"{{ .Pod.fireeth.p2p.enabled \| ternary \"extip:${EXTERNAL_IP}\" nil }}"` |
  | firehoseServiceDefaults.reader-node.node.args.networkid |  | string | `"11155111"` |
+ | firehoseServiceDefaults.reader-node.node.args.port |  | string | `"{{ .Pod.fireeth.p2p.enabled \| ternary \"${EXTERNAL_PORT}\" nil }}"` |
  | firehoseServiceDefaults.reader-node.node.args.sepolia |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.snapshot |  | string | `"true"` |
  | firehoseServiceDefaults.reader-node.node.args.syncmode |  | string | `"full"` |
@@ -357,6 +361,17 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-mgr.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.reader-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.reader-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.clusterRules[0].apiGroups[0] |  | string | `""` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.clusterRules[0].resources[0] |  | string | `"nodes"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.clusterRules[0].verbs[0] |  | string | `"get"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.clusterRules[0].verbs[1] |  | string | `"list"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.clusterRules[0].verbs[2] |  | string | `"watch"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.createCluster |  | bool | `true` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.rules[0].apiGroups[0] |  | string | `""` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.rules[0].resources[0] |  | string | `"services"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.rules[0].verbs[0] |  | string | `"get"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.rules[0].verbs[1] |  | string | `"list"` |
+ | firehoseServiceDefaults.reader-node.serviceAccount.rbac.rules[0].verbs[2] |  | string | `"watch"` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.enabled |  | bool | `true` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.metadata.labels |  | object | `{}` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.spec.accessModes[0] |  | string | `"ReadWriteOnce"` |

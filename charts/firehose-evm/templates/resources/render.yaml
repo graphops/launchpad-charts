@@ -42,6 +42,11 @@
 {{- end -}}
 {{- end }}
 
+{{- if (default false $values.fireeth.p2p.enabled) }}
+{{- $renderedServiceP2P := include "templates.ServiceP2P" $templateCtx | fromYaml }}
+---
+{{ $renderedServiceP2P | toYaml }}
+{{- end }}
 
 {{- if and $values.enabled $values.podDisruptionBudget }}
 {{- $renderedPodDisruptionBudget := include "templates.PodDisruptionBudget" $templateCtx | fromYaml }}
@@ -59,6 +64,14 @@
 {{ $renderedRoleBinding | toYaml }}
 {{- end -}}
 
+{{- if and $values.serviceAccount.create $values.serviceAccount.rbac.createCluster -}}
+{{- $renderedClusterRole := include "templates.ClusterRole" $templateCtx | fromYaml }}
+{{- $renderedClusterRoleBinding := include "templates.ClusterRoleBinding" $templateCtx | fromYaml }}
+---
+{{ $renderedClusterRole | toYaml }}
+---
+{{ $renderedClusterRoleBinding | toYaml }}
+{{- end -}}
 
 {{- if $values.serviceAccount.create }}
 {{- $renderedServiceAccount := include "templates.ServiceAccount" $templateCtx | fromYaml }}
@@ -70,6 +83,12 @@
 {{- $renderedServiceMonitor := include "templates.serviceMonitor" $templateCtx | fromYaml }}
 ---
 {{ $renderedServiceMonitor | toYaml }}
+{{- end -}}
+
+{{- if and ($values.fireeth.jwt.enabled) (empty $values.fireeth.jwt.existingSecret.name) (empty $values.fireeth.jwt.existingSecret.key) }}
+{{- $renderedSecret := include "templates.Secret" $templateCtx | fromYaml }}
+---
+{{ $renderedSecret | toYaml }}
 {{- end -}}
 
 {{- end }}
