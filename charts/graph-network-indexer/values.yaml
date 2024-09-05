@@ -213,6 +213,12 @@ indexerService:
     # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
     #   secretName: # your secret containing mnemonic
     #   key: # your key in the secret
+    # POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username will be used to build the postgres url
+    #   key: # your key in the secret
+    # POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password will be used to build the postgres url
+    #   key: # your key in the secret
 
 
   env: {}
@@ -336,6 +342,12 @@ indexerTapAgent:
 
   secretEnv: {}
     # -- We recommend that you set the following environment variables in the indexer-service secret
-    # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+    # TAP_AGENT_INDEXER__OPERATOR_MNEMONIC:
     #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+    # POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username will be used to build the postgres url
+    #   key: # your key in the secret
+    # POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password will be used to build the postgres url
     #   key: # your key in the secret

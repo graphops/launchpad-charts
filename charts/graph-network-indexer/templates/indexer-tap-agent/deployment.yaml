@@ -75,7 +75,7 @@ spec:
           {{- end }}
           {{- end }}
             - name: TAP_AGENT_DATABASE__POSTGRES_URL
-              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}' 
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
           command:
           - /usr/local/bin/indexer-tap-agent
           {{- if $values.configPath }}
