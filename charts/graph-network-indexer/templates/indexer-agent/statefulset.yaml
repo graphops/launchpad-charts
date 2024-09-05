@@ -2,7 +2,6 @@
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
-{{- $graphNetworkConfigHash := include "graph-network-indexer.config" (dict "componentConfig" $values) | sha256sum }}
 {{/* START StatefulSet */}}
 ---
 apiVersion: apps/v1
@@ -21,11 +20,10 @@ spec:
       {{- $componentLabel | nindent 6 }}
   template:
     metadata:
+      {{- with $values.podAnnotations }}
       annotations:
-        checksum/config.yaml: {{ $graphNetworkConfigHash }}
-        {{- with $values.podAnnotations }}
-          {{- toYaml . | nindent 8 }}
-        {{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "graph-network-indexer.selectorLabels" . | nindent 8 }}
         {{- $componentLabel | nindent 8 }}
@@ -40,10 +38,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      {{- if $values.initContainers }}
-      initContainers:
-        {{- toYaml $values.initContainers | nindent 8 }}
-      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -59,13 +53,13 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
           {{- if $values.env }}
-          {{- range $key, $val := ( omit $values.env "INDEXER_AGENT_POSTGRES_URL" ) }}
+          {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           {{- if $values.secretEnv }}
-          {{- range $key, $val := ( omit $values.secretEnv "INDEXER_AGENT_POSTGRES_URL" ) }}
+          {{- range $key, $val := $values.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -73,14 +67,24 @@ spec:
                   key: {{ $val.key | quote }}
           {{- end }}
           {{- end }}
-            - name: INDEXER_AGENT_POSTGRES_URL
-              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
           args:
-            {{- if $values.configPath }}
-            - --config={{ $values.configPath }}
-            {{- else }}
-            - --config=/etc/indexer-agent/config.yaml
+            - --graph-node-query-endpoint={{ index $values.config.graph_node "query_url" }}
+            - --graph-node-status-endpoint={{ index $values.config.graph_node "status_url" }}
+            - --indexer-address={{ index $values.config.indexer "indexer_address" }}
+            {{- with $values.config.subgraphs }}
+            {{- if hasKey .network "query_url" }}
+            - --network-subgraph-endpoint={{ index .network "query_url" }}
             {{- end }}
+            {{- if hasKey .network "deployment_id" }}
+            - --network-subgraph-deployment={{ index .network "deployment_id" }}
+            {{- end }}
+            {{- if hasKey .escrow "query_url" }}
+            - --tap-subgraph-endpoint={{ index .escrow "query_url" }}
+            {{- end }}
+            {{- end }}
+            - --postgres-database={{ $values.postgresConfig.database }}
+            - --postgres-host={{ $values.postgresConfig.host }}
+            - --postgres-port={{ $values.postgresConfig.port }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
@@ -93,19 +97,6 @@ spec:
               containerPort: {{ $values.metrics.port }}
               protocol: TCP
             {{- end }}
-          volumeMounts:
-          - name: config
-            mountPath: "/etc/indexer-agent"
-            readOnly: true
-          {{- if $values.additionalVolumeMounts }}
-          {{- range $mount := $values.additionalVolumeMounts }}
-          - name: {{ $mount.name }}
-            mountPath: {{ $mount.mountPath }}
-            {{- if $mount.readOnly }}
-            readOnly: {{ $mount.readOnly }}
-            {{- end }}
-          {{- end }}
-          {{- end }}
           readinessProbe:
             httpGet:
               port: http-mgmtapi
@@ -113,30 +104,6 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      volumes:
-        - name: config
-          configMap:
-            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
-        {{- if $values.additionalVolumes }}
-        {{- range $volume := $values.additionalVolumes }}
-        - name: {{ $volume.name }}
-          {{- if $volume.configMap }}
-          configMap:
-            name: {{ $volume.configMap.name }}
-          {{- else if $volume.secret }}
-          secret:
-            secretName: {{ $volume.secret.secretName }}
-          {{- else if $volume.emptyDir }}
-          emptyDir: {}
-          {{- else if $volume.hostPath }}
-          hostPath:
-            path: {{ $volume.hostPath.path }}
-            {{- if $volume.hostPath.type }}
-            type: {{ $volume.hostPath.type }}
-            {{- end }}
-          {{- end }}
-        {{- end }}
-        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

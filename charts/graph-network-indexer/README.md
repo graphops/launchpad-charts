@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-55d26f7](https://img.shields.io/badge/AppVersion-sha--55d26f7-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-19ce452](https://img.shields.io/badge/AppVersion-sha--19ce452-informational?style=flat-square)
 
 ## Introduction
 
@@ -51,7 +51,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{}` |
  | indexerAgent.env |  | object | `{}` |
- | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `[]` |
+ | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `["--ethereum=null","--ethereum-network=\"mainnet\"","--graph-node-admin-endpoint=null","--mnemonic=null"]` |
+ | indexerAgent.extraArgs[0] | URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli) | required | `"--ethereum=null"` |
+ | indexerAgent.extraArgs[1] | Name of the network that you have specified a node URL for in `ethereum` | string | `"--ethereum-network=\"mainnet\""` |
+ | indexerAgent.extraArgs[2] | URL for your graph node query endpoint (probably a load balancer address) | required | `"--graph-node-admin-endpoint=null"` |
+ | indexerAgent.extraArgs[3] | Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable. | not recommended | `"--mnemonic=null"` |
  | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.21.4"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
@@ -63,7 +67,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
- | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"service":{"host_and_port":"0.0.0.0:7600"},"tap.rav_request":{"trigger_value_divisor":100}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"postgresConfig":{"database":"your_database","host":"localhost","password":"your_password","port":5432,"username":"your_username"},"secretEnv":{}}` |
+ | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"service":{"host_and_port":"0.0.0.0:7600"},"subgraphs.escrow":{"syncing_interval_secs":60},"subgraphs.network":{"syncing_interval_secs":60},"tap.rav_request":{"trigger_value_divisor":100}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"postgresConfig":{"database":"your_database","host":"localhost","port":5432}}` |
  | indexerDefaults.config.graph_node.query_url | URL for your graph node query endpoint (probably a load balancer address) | required | `"your_graph_node_query_url"` |
  | indexerDefaults.config.graph_node.status_url | URL for your graph node status endpoint (probably a load balancer address) | required | `"your_graph_node_status_endpoint"` |
  | indexerDefaults.config.indexer.indexer_address | Ethereum address of your Indexer | required | `"your_indexer_address"` |
@@ -74,7 +78,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":""}` |
  | indexerService.image.tag | Overrides the image tag | string | Chart.appVersion |
- | indexerService.metrics.enabled |  | bool | `false` |
  | indexerService.nodeSelector |  | object | `{}` |
  | indexerService.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerService.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -97,6 +100,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | indexerTapAgent.replicas | Number of replicas to run | int | `1` |
  | indexerTapAgent.resources |  | object | `{}` |
+ | indexerTapAgent.secretEnv |  | object | `{}` |
  | indexerTapAgent.service.ports.http-queryapi | Service Port to expose Indexer Query API on | int | `7600` |
  | indexerTapAgent.service.topologyAwareRouting.enabled |  | bool | `false` |
  | indexerTapAgent.service.type |  | string | `"ClusterIP"` |

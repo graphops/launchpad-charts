@@ -46,9 +46,6 @@ indexerDefaults:
     host: "localhost"
     port: 5432
     database: "your_database"
-    username: "your_username"
-    password: "your_password"
-
   config:
     indexer:
       # -- (required) Ethereum address of your Indexer
@@ -65,7 +62,8 @@ indexerDefaults:
     service:
       host_and_port: "0.0.0.0:7600"
 
-    # subgraphs.network:
+    subgraphs.network:
+        syncing_interval_secs: 60  
     #   # Query URL for the Graph Network subgraph.
     #   query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
 
@@ -74,9 +72,10 @@ indexerDefaults:
     #   # NOTE: Use `query_url` or `deployment_id` only
     #   deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-    # subgraphs.escrow:
+    subgraphs.escrow:
+        syncing_interval_secs: 60  
     #   # Query URL for the Graph Network subgraph.
-    #   query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
+    # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
 
     #   # Optional, deployment to look for in the local `graph-node`, if locally indexed.
     #   # Locally indexing the subgraph is recommended.
@@ -90,11 +89,9 @@ indexerDefaults:
     tap.rav_request:
       trigger_value_divisor: 100
 
-    # -- (required)Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender and the value is the URL of the sender aggregator.
+    # -- (required) Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender and the value is the URL of the sender aggregator.
     # tap.sender_aggregator_endpoints:
     #   0x0000000000000000000000000000000000000000: "https://sender-aggregator-url.com"
-
-  secretEnv: {}
 
   env: 
     {}
@@ -125,11 +122,29 @@ indexerAgent:
       # epoch-subgraph-endpoint: null
 
   secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-agent secret
+    # INDEXER_AGENT_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+    # INDEXER_AGENT_POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username
+    #   key: # your key in the secret
+    # INDEXER_AGENT_POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password
+    #   key: # your key in the secret
 
   env: {}
 
   # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
+  extraArgs: 
+    # -- (required) URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli)
+    - --ethereum=null
+    # -- Name of the network that you have specified a node URL for in `ethereum`
+    - --ethereum-network="mainnet"
+    # -- (required) URL for your graph node query endpoint (probably a load balancer address)
+    - --graph-node-admin-endpoint=null
+    # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
+    - --mnemonic=null
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -190,12 +205,15 @@ indexerService:
 
   # -- Number of replicas to run
   replicas: 1
-  metrics:
-    enabled: false
 
   config: {}
 
   secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-service secret
+    # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+
 
   env: {}
 
@@ -315,3 +333,9 @@ indexerTapAgent:
     antiAffinityByHostname: true
 
   affinity: {}
+
+  secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-service secret
+    # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret

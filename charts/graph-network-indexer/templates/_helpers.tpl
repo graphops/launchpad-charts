@@ -72,13 +72,12 @@ Generate the configuration for the given component.
 {{- range $section, $sectionValues := .componentConfig.config }}
 [{{ $section }}]
 {{- range $key, $value := $sectionValues }}
-{{ $key }} = {{ if kindIs "map" $value }}{{ $value | toJson | quote }}{{ else }}{{ $value | quote }}{{ end }}
+{{ $key }} = {{ if kindIs "map" $value }}{{ $value | toJson }}{{ else if kindIs "string" $value }}"{{ $value }}"{{ else }}{{ $value }}{{ end }}
 {{- end }}
 {{- end }}
 {{- if .componentConfig.metrics.enabled }}
 [metrics]
 enabled = true
 port = {{ .componentConfig.metrics.port }}
-address = {{ .componentConfig.metrics.address }}
 {{- end }}
 {{- end }}
