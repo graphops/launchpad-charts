@@ -68,29 +68,35 @@ spec:
           {{- end }}
           {{- end }}
           args:
-            - --graph-node-query-endpoint={{ index $values.config.graph_node "query_url" }}
-            - --graph-node-status-endpoint={{ index $values.config.graph_node "status_url" }}
-            - --indexer-address={{ index $values.config.indexer "indexer_address" }}
-            {{- with $values.config.subgraphs }}
-            {{- if hasKey .network "query_url" }}
-            - --network-subgraph-endpoint={{ index .network "query_url" }}
+            - --graph-node-query-endpoint={{ $values.config.graph_node.query_url }}
+            - --graph-node-status-endpoint={{ $values.config.graph_node.status_url }}
+            - --indexer-address={{ $values.config.indexer.indexer_address }}
+            {{- with (index $values.config "subgraphs.network") }}
+            {{- if hasKey . "query_url" }}
+            - --network-subgraph-endpoint={{ .query_url }}
             {{- end }}
-            {{- if hasKey .network "deployment_id" }}
-            - --network-subgraph-deployment={{ index .network "deployment_id" }}
+            {{- if hasKey . "deployment_id" }}
+            - --network-subgraph-deployment={{ .deployment_id }}
             {{- end }}
-            {{- if hasKey .escrow "query_url" }}
-            - --tap-subgraph-endpoint={{ index .escrow "query_url" }}
+            {{- end }}
+            {{- with (index $values.config "subgraphs.escrow") }}
+            {{- if hasKey . "query_url" }}
+            - --tap-subgraph-endpoint={{ .query_url }}
             {{- end }}
             {{- end }}
             - --postgres-database={{ $values.postgresConfig.database }}
             - --postgres-host={{ $values.postgresConfig.host }}
             - --postgres-port={{ $values.postgresConfig.port }}
-          {{- with $values.extraArgs }}
-            {{- toYaml (. | default list) | nindent 12 }}
+          {{- with $.Values.indexerAgent.config }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - --{{ $key }}={{ $val }}
+          {{- end }}
+          {{- end }}
           {{- end }}
           ports:
             - name: http-mgmtapi
-              containerPort: {{ if $values.indexerManagement }}{{ $values.indexerManagement.port }}{{ else }}8000{{ end }}
+              containerPort: {{ $.Values.indexerAgent.config.indexer_management_port }}
               protocol: TCP
             {{- if $values.metrics.enabled }}
             - name: http-metrics

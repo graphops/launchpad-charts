@@ -63,24 +63,24 @@ indexerDefaults:
       host_and_port: "0.0.0.0:7600"
 
     subgraphs.network:
-        syncing_interval_secs: 60  
-    #   # Query URL for the Graph Network subgraph.
-    #   query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
+      syncing_interval_secs: 60  
+      # # Query URL for the Graph Network subgraph.
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
 
-    #   # Optional, deployment to look for in the local `graph-node`, if locally indexed.
-    #   # Locally indexing the subgraph is recommended.
-    #   # NOTE: Use `query_url` or `deployment_id` only
-    #   deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+      # # Locally indexing the subgraph is recommended.
+      # # NOTE: Use `query_url` or `deployment_id` only
+      # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
     subgraphs.escrow:
-        syncing_interval_secs: 60  
-    #   # Query URL for the Graph Network subgraph.
-    # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
+      syncing_interval_secs: 60  
+      # # Query URL for the Graph Network subgraph.
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
 
-    #   # Optional, deployment to look for in the local `graph-node`, if locally indexed.
-    #   # Locally indexing the subgraph is recommended.
-    #   # NOTE: Use `query_url` or `deployment_id` only
-    #   deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+      # # Locally indexing the subgraph is recommended.
+      # # NOTE: Use `query_url` or `deployment_id` only
+      # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
     blockchain:
       chain_id: "valid_blockchain_chain_id"
@@ -105,21 +105,25 @@ indexerAgent:
     tag: "v0.21.4"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config: {}
-      # # -- (required) URL for your graph-node admin API endpoint
-      # graph-node-admin-endpoint: null
-      # # -- (required) Public HTTPS URL of your indexer-service query endpoint
-      # public-indexer-url: null
-      # # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
-      # index-node-ids: null
-      # # -- (required) The gateway collect-receipts endpoint for getting vouchers
-      # collect-receipts-endpoint: null
-      # # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
-      # network-subgraph-deployment: null
-      # # -- (required) Contract address of ERC20 used for DAI variable in cost models
-      # dai-contract: null
-      # # -- (optional) Query endpoint for syncing status of EBO and its contract state.
-      # epoch-subgraph-endpoint: null
+  config: 
+    indexer-management-port: 8000
+    ethereum: null
+    # -- Name of the network that you have specified a node URL for in `ethereum`
+    ethereum-network: mainnet
+    # # -- (required) URL for your graph-node admin API endpoint
+    graph-node-admin-endpoint: test
+    # # -- (required) Public HTTPS URL of your indexer-service query endpoint
+    # public-indexer-url: null
+    # # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
+    # index-node-ids: null
+    # # -- (required) The gateway collect-receipts endpoint for getting vouchers
+    # collect-receipts-endpoint: null
+    # # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
+    # network-subgraph-deployment: null
+    # # -- (required) Contract address of ERC20 used for DAI variable in cost models
+    # dai-contract: null
+    # # -- (optional) Query endpoint for syncing status of EBO and its contract state.
+    # epoch-subgraph-endpoint: null
 
   secretEnv: {}
     # -- We recommend that you set the following environment variables in the indexer-agent secret
@@ -134,17 +138,6 @@ indexerAgent:
     #   key: # your key in the secret
 
   env: {}
-
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: 
-    # -- (required) URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli)
-    - --ethereum=null
-    # -- Name of the network that you have specified a node URL for in `ethereum`
-    - --ethereum-network="mainnet"
-    # -- (required) URL for your graph node query endpoint (probably a load balancer address)
-    - --graph-node-admin-endpoint=null
-    # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-    - --mnemonic=null
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown

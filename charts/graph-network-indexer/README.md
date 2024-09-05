@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: sha-19ce452](https://img.shields.io/badge/AppVersion-sha--19ce452-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0-rc.6](https://img.shields.io/badge/AppVersion-1.0.0--rc.6-informational?style=flat-square)
 
 ## Introduction
 
@@ -49,13 +49,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | indexerAgent.affinity |  | object | `{}` |
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{}` |
+ | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-admin-endpoint":"test","indexer-management-port":8000}` |
+ | indexerAgent.config.ethereum-network | Name of the network that you have specified a node URL for in `ethereum` | string | `"mainnet"` |
  | indexerAgent.env |  | object | `{}` |
- | indexerAgent.extraArgs | Additional CLI arguments to pass to `indexer-agent` | list | `["--ethereum=null","--ethereum-network=\"mainnet\"","--graph-node-admin-endpoint=null","--mnemonic=null"]` |
- | indexerAgent.extraArgs[0] | URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli) | required | `"--ethereum=null"` |
- | indexerAgent.extraArgs[1] | Name of the network that you have specified a node URL for in `ethereum` | string | `"--ethereum-network=\"mainnet\""` |
- | indexerAgent.extraArgs[2] | URL for your graph node query endpoint (probably a load balancer address) | required | `"--graph-node-admin-endpoint=null"` |
- | indexerAgent.extraArgs[3] | Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable. | not recommended | `"--mnemonic=null"` |
  | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.21.4"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
