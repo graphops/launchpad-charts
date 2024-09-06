@@ -1,0 +1,13 @@
+{{- define "templates.PodDisruptionBudget" }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+  namespace: {{ .Root.Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "metadata.selectorLabels" $ | nindent 6 }}
+{{- end }}

@@ -1,0 +1,32 @@
+{{- if .Values.postInstallNotes }}
+
+   ██████╗ ██████╗  █████╗ ██████╗ ██╗  ██╗██████╗ ██████╗ ███████╗
+  ██╔════╝ ██╔══██╗██╔══██╗██╔══██╗██║  ██║██╔══██╗██╔══██╗██╔════╝
+  ██║  ███╗██████╔╝███████║██████╔╝███████║██████╔╝██████╔╝███████╗
+  ██║   ██║██╔══██╗██╔══██║██╔═══╝ ██╔══██║██╔═══╝ ██╔═══╝ ╚════██║
+  ╚██████╔╝██║  ██║██║  ██║██║     ██║  ██║██║     ██║     ███████║
+   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝     ╚═╝     ╚══════╝
+
+The {{ .Chart.Name }} chart has been successfully installed on your Kubernetes cluster!
+
+This chart is part of the Launchpad toolkit by GraphOps, designed to streamline deployment and management of blockchain and web3 infrastructure.
+
+Next steps:
+
+1. Refer to the chart's values file for available configuration options to customize your deployment.
+
+2. Check out Launchpad Namespaces (https://github.com/graphops/launchpad-namespaces) to deploy and manage functionally-related bundles of Helm charts.
+
+3. Use Launchpad Starter (https://github.com/graphops/launchpad-starter) as a starting point for new Launchpad deployments. It provides a declarative workflow to manage your stack.
+
+4. Explore Launchpad Taskfiles (https://github.com/graphops/launchpad-taskfiles), a collection of pre-configured tasks to facilitate common operations.
+
+To learn more about Launchpad and its components, visit https://docs.graphops.xyz/launchpad/intro.
+
+For support and community discussions, join us on Discord: https://discord.gg/graphops.
+
+Thanks for using {{ .Chart.Name }} and Launchpad!
+
+- The GraphOps Team
+
+{{- end }}

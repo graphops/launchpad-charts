@@ -1,0 +1,14 @@
+{{- define "templates.HorizontalPodAutoscaler" }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  labels:
+    {{- include "metadata.labels" $ | nindent 4 }}
+  namespace: {{ .Root.Release.Namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ .Pod.kind }}
+    name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+{{- end }}

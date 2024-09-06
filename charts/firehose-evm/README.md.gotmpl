@@ -1,0 +1,183 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Introduction
+
+Firehose is a high-performance blockchain data extraction tool that captures, processes, and streams blockchain data in real-time, enabling efficient data analysis and integration for various applications.
+
+This chart can be used to deploy the constellation of services required to operate any [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) chain.
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
+- Extreme flexibility and customizability
+- Sane defaults with solid security parameters (non-root execution, ready-only root filesystem, drops all capabilities)
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+
+## Chart Structure and Customization
+
+This chart is focused on the [firehose-ethereum](https://github.com/streamingfast/firehose-ethereum) workload and allows setting up a variable number of workload instances (Deployments / StatefulSets) running it. That is defined in the top-level key `firehoseComponents`.
+
+### firehoseComponents
+
+Each of the sub-keys defined here will generate a workload (either a `Deployment` or `StatefulSet`, set with the `kind` key) with a particular configuration defined under the sub-key. The specific per-component definitions will be merged on top of the `firehoseComponentDefaults` top-level key, so all components inherit a common set of default configurations.
+
+These instances will by default run `firehose-ethereum`, which will be configured via a ConfigMap which is dynamically generated with a combination of your values, the defaults, and templating. This configuration is set under the `.fireeth.config` subkeys, and will define the configuration parameters. Additionally, the set of firehose services to be launched by `firehose-ethereum` on a particular workload can be set under `.fireeth.services`.
+
+Example:
+```yaml
+firehoseComponents:
+  write-path-workload:
+    kind: StatefulSet
+    fireeth:
+      services:
+        - reader-node
+        - index-builder
+        - merger
+      config:
+        reader-node-grpc-listen-addr: "0.0.0.0:10010"
+        index-builder-grpc-listen-addr: "0.0.0.0:10009"
+  read-path-workload:
+    kind: Deployment
+    fireeth:
+      services:
+        - relayer
+        - firehose
+      config:
+        merger-grpc-listen-addr: ":10012"
+        firehose-grpc-listen-addr: "0.0.0.0:10015"
+```
+
+Will provision a Deployment, called `read-path-workload` and a StatefulSet called `write-path-workload`, each with its own ConfigMap dynamically generated based on that list of parameters, as well as a range of other Kubernetes resources such as a Service, Service Account, serviceMonitor, etc.
+
+### firehoseServiceDefaults
+
+All components defined in `firehoseComponents` inherit the `firehoseComponentDefaults`, and can be set to run arbitrary firehose services. As such, there is `firehoseServiceDefaults`, a top-level key which contains service-specific defaults. These get inherited by each component as a function of the services they define in their `.fireeth.services` list. 
+
+Example:
+
+```yaml
+firehoseComponentDefaults:
+  kind: Deployment
+  fireeth:
+    config:
+      firehose-rate-limit-bucket-size: 20
+      firehose-rate-limit-bucket-fill-rate: "1s"
+
+firehoseServiceDefaults:
+  reader-node:
+    kind: StatefulSet
+    fireeth:
+      config:
+        reader-node-data-dir: "/var/lib/geth"
+
+  merger:
+    fireeth:
+      config:
+        merger-grpc-listen-addr: ":10012"
+
+firehoseComponents:
+  myComponent:
+    fireeth:
+      services:
+        - merger
+        - reader-node
+      config:
+        my-particular-option: "something"
+        firehose-rate-limit-bucket-fill-rate: "5s"
+```
+
+This will result in a component with a combined configuration equivalent to:
+```yaml
+firehoseComponents:
+  myComponent:
+    kind: StatefulSet
+    fireeth:
+      services:
+        - merger
+        - reader-node
+      config:
+        firehose-rate-limit-bucket-size: 20
+        firehose-rate-limit-bucket-fill-rate: "5s"
+        reader-node-data-dir: "/var/lib/geth"
+        merger-grpc-listen-addr: ":10012"
+        my-particular-option: "something"
+```
+
+which will result in a StatefulSet with firehose running both merger and reader-node services on the POD instances.
+
+*Note:* The firehoseServiceDefaults of each of the configured services will be merged in the order they are defined in the list, in this case reader-node defaults would be merged on top of merger. I.e., if merger had in its `firehoseServiceDefaults` an explicit `kind: Deployment`, then as is, we would still get a `StatefulSet`, but if we exchanged their order to:
+```yaml
+firehoseComponents:
+  myComponent:
+    fireeth:
+      services:
+        - reader-node
+        - merger
+```
+then the result would be `kind: Deployment`. So it's intended for most of `firehoseServiceDefaults` to be component specific and do not overlap much with each other.
+
+### General chart interfaces
+
+Virtually any aspect of the workload (StatefulSet or Deployment) can be overriden under the component level key, where you can set things such as `resources:`, `nodeSelector:`, `podSecurityContext:`, `env:` or `labels:`. Note that those often map to keys that are structured in different parts of the workload spec, such as `metadata.labels` or keys from the POD level or the container definition (there is a single main container defined). In general those have been flattened for convenience.
+
+On par with settings workload spec parameters, a firehose component includes a range of different resources such as a Service, ConfigMap, ServiceMonitor, .... Those resources have a corresponding key to override or extend their parameters, or with entra configuration settingsm, as well as an `enabled` boolean to toggle their creation. Example:
+
+```yaml
+# -- ServiceMonitor configuration for Prometheus Operator
+serviceMonitor:
+  # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+  enabled: true
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    # Endpoint overrides, keyed by port name
+    endpoints:
+      metrics-fh:
+        # Override or add any endpoint-specific fields
+        interval: "30s"
+        scrapeTimeout: "10s"
+        path: /metrics
+        honorLabels: true
+        # ... any other endpoint-specific fields
+    # Any other top-level ServiceMonitor spec fields
+
+  # -- Service account configuration
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- Labels to add to the service account
+  labels: {}
+  rbac:
+    create: true
+    rules: []
+    clusterWide: false
+```
+
+
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+helm repo add graphops http://graphops.github.io/launchpad-charts
+helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}

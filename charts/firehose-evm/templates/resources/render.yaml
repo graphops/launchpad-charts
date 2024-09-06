@@ -1,0 +1,99 @@
+{{ range $key, $componentValues := $.Values.firehoseComponents -}}
+{{- $componentName := $key }}
+
+{{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
+{{- $values := deepCopy $templateCtx.Pod }}
+
+{{- if and $values.enabled $values.horizontalPodAutoscaler.enabled }}
+{{- $baseHorizontalPodAutoscaler := include "templates.HorizontalPodAutoscaler" $templateCtx | fromYaml }}
+{{- $finalHorizontalPodAutoscaler := list $baseHorizontalPodAutoscaler (omit $values.horizontalPodAutoscaler "enabled") | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalHorizontalPodAutoscaler | toYaml }}
+{{- end }}
+
+{{- if and $values.enabled $values.configMap.enabled }}
+{{- $baseConfigMap := include "templates.ConfigMap" $templateCtx | fromYaml }}
+{{- $finalConfigMap := list $baseConfigMap (omit $values.configMap "enabled" "options") | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalConfigMap | toYaml }}
+{{- end -}}
+
+{{- if $values.enabled }}
+{{- $renderedWorkload := get (include "utils.removeNulls" (include "templates.Workload" $templateCtx | fromYaml) | fromYaml)
+"result" }}
+---
+{{ $renderedWorkload | toYaml }}
+{{- end }}
+
+{{- if and $values.enabled (or $values.service.enabled $values.serviceHeadless) }}
+{{- $baseService := include "templates.Service" $templateCtx | fromYaml }}
+{{- $finalService := list $baseService (omit $values.service "enabled") (list (dict "path" ".spec.ports" "indexKey" "name" "defaultFor" (list "targetPort"))) | include "utils.smartMerge" | fromYaml }}
+{{- if $values.service.enabled }}
+---
+{{ $finalService | toYaml }}
+{{- end }}
+{{- if $values.serviceHeadless }}
+{{- $__templateCtxHeadless := set (deepCopy $templateCtx) "__svc" $finalService }}
+{{- $serviceHeadlessOverrides := tpl (include "templates.ServiceHeadless" $__templateCtxHeadless) $templateCtx | fromYaml }}
+{{- $finalServiceHeadless :=  mergeOverwrite (deepCopy $finalService) $serviceHeadlessOverrides }}
+---
+{{ $finalServiceHeadless | toYaml }}
+{{- end -}}
+{{- end }}
+
+{{- if (default false $values.fireeth.p2p.enabled) }}
+{{- $baseServiceP2P := include "templates.ServiceP2P" $templateCtx | fromYaml }}
+{{- $finalServiceP2P := list $baseServiceP2P (omit $values.serviceP2P "enabled") (list (dict "path" ".spec.ports" "indexKey" "name" "defaultFor" (list "targetPort"))) | include "utils.smartMerge" | fromYaml }}
+---
+{{ $finalServiceP2P | toYaml }}
+{{- end }}
+
+{{- if and $values.enabled $values.podDisruptionBudget }}
+{{- $basePodDisruptionBudget := include "templates.PodDisruptionBudget" $templateCtx | fromYaml }}
+{{- $finalPodDisruptionBudget := list $basePodDisruptionBudget (omit $values.podDisruptionBudget "enabled") | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalPodDisruptionBudget | toYaml }}
+{{- end }}
+
+{{- if and $values.serviceAccount.enabled $values.rbac.enabled -}}
+{{- $baseRole := include "templates.Role" $templateCtx | fromYaml }}
+{{- $baseRoleBinding := include "templates.RoleBinding" $templateCtx | fromYaml }}
+{{- $finalRole := list $baseRole $values.rbac.roleSpec | include "utils.deepMerge" | fromYaml }}
+{{- $finalRoleBinding := list $baseRoleBinding $values.rbac.bindingSpec | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalRole | toYaml }}
+---
+{{ $finalRoleBinding | toYaml }}
+{{- end -}}
+
+{{- if and $values.serviceAccount.enabled $values.clusterRbac.enabled -}}
+{{- $baseClusterRole := include "templates.ClusterRole" $templateCtx | fromYaml }}
+{{- $baseClusterRoleBinding := include "templates.ClusterRoleBinding" $templateCtx | fromYaml }}
+{{- $finalClusterRole := list $baseClusterRole $values.clusterRbac.roleSpec | include "utils.deepMerge" | fromYaml }}
+{{- $finalClusterRoleBinding := list $baseClusterRoleBinding $values.clusterRbac.bindingSpec | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalClusterRole | toYaml }}
+---
+{{ $finalClusterRoleBinding | toYaml }}
+{{- end -}}
+
+{{- if $values.serviceAccount.enabled }}
+{{- $baseServiceAccount := include "templates.ServiceAccount" $templateCtx | fromYaml }}
+{{- $finalServiceAccount := list $baseServiceAccount ( omit $values.serviceAccount "enabled" ) | include "utils.deepMerge" | fromYaml }}
+---
+{{ $finalServiceAccount | toYaml }}
+{{- end }}
+
+{{- if and $values.enabled $values.serviceMonitor.enabled }}
+{{- $renderedServiceMonitor := include "templates.serviceMonitor" $templateCtx | fromYaml }}
+---
+{{ $renderedServiceMonitor | toYaml }}
+{{- end -}}
+
+{{- if and ($values.fireeth.jwt.enabled) (empty $values.fireeth.jwt.existingSecret.name) (empty $values.fireeth.jwt.existingSecret.key) }}
+{{- $renderedSecret := include "templates.Secret" $templateCtx | fromYaml }}
+---
+{{ $renderedSecret | toYaml }}
+{{- end -}}
+
+{{- end }}

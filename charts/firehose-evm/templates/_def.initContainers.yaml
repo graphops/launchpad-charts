@@ -1,0 +1,68 @@
+{{- define "def.chartInitContainers" -}}
+10-init-nodeport:
+  env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: SITES
+      value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
+  command:
+    - sh
+    - -c
+    - |
+      set -ex;
+      export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+      export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+      until [ -n "$EXTERNAL_IP" ]; do
+        for SITE in $SITES; do
+          if [ -z "$EXTERNAL_IP" ]; then
+            # Attempt to retrieve the external IP using the current site
+            EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+            # If a valid IP is retrieved, exit the loop
+            if [ -n "$EXTERNAL_IP" ]; then
+              break
+            fi
+          fi
+        done
+        # Sleep for a second before retrying if EXTERNAL_IP is still not set
+        if [ -z "$EXTERNAL_IP" ]; then
+          sleep 1
+        fi
+      done
+      export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
+      echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+      echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+      cat /env/init-nodeport;
+  volumeMounts:
+    - name: env-dir
+      mountPath: /env
+20-init-envsubst:
+  command: ["/bin/sh", "-c"]
+  args:
+    - |
+      ENV_DIR="/env"
+
+      if [ -d /env ]; then
+        set -o allexport
+        for env_file in "$ENV_DIR"/*; do
+          [ -f "$env_file" ] && source "$env_file"
+        done
+        set +o allexport
+      fi
+
+      for file in /config-input/*.yaml; do
+        envsubst < $file > /config-output/$(basename $file)
+      done
+  volumeMounts:
+    - name: config
+      mountPath: /config-input
+    - name: config-processed
+      mountPath: /config-output
+    - name: env-dir
+      mountPath: /env
+{{- end }}
