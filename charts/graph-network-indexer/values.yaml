@@ -55,7 +55,7 @@ indexerDefaults:
 
     graph_node:
       # -- (required) URL for your graph node query endpoint (probably a load balancer address)
-      query_url: "your_graph_node_query_url" 
+      query_url: "your_graph_node_query_url"
       # -- (required) URL for your graph node status endpoint (probably a load balancer address)
       status_url: "your_graph_node_status_endpoint"
 
