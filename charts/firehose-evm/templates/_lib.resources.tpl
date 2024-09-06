@@ -129,7 +129,7 @@ Example:
 
 
 {{- define "resources.generateConfigMap" -}}
-{{ .Pod.configMap.template }}
+{{ .Pod.configMap.options.template }}
 {{- end }}
 
 

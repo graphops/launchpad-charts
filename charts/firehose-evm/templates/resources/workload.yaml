@@ -79,7 +79,7 @@ spec:
       {{- with .Pod }}
       annotations:
       {{- if .configMap.enabled }}
-        config/hash: {{ .configMap.template | sha256sum }}
+        config/hash: {{ .configMap.options.template | sha256sum }}
       {{- end }}
       {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
       {{- range $key, $value := $annotations }}

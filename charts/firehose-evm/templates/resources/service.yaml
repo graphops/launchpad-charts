@@ -8,14 +8,7 @@ metadata:
     {{- include "metadata.labels" $ | nindent 4 }}
 spec:
   type: {{ .Pod.service.spec.type }}
-  ports:
-  {{- range $name, $spec := .Pod.service.spec.ports }}
-  {{- if not (empty $spec.port) }}
-    - name: {{ $name }}
-      targetPort: {{ $spec.targetPort | default $name }} # the name of the port on the container that we are routing to
-      {{ (omit $spec "targetPort") | toYaml | nindent 6 }}
-  {{- end }}
-  {{- end }}
+  ports: []
   selector:
     {{- include "metadata.selectorLabels" $ | nindent 4 }}
 {{- end }}
@@ -33,21 +26,13 @@ kind: Service
 metadata:
   name: {{ include "metadata.fullname" $ }}-{{ .componentName }}-p2p-0
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
     pod: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'
     type: p2p # this label is used by the initContainer to select this service
+    {{- include "metadata.labels" $ | nindent 4 }}
 spec:
   type: NodePort
-  ports:
-  {{- if .Pod.fireeth.p2p.enabled }}
-  {{- range $name, $spec := .Pod.serviceP2P.spec.ports }}
-  {{- if not (empty $spec.port) }}
-    - name: {{ $name }}
-      targetPort: {{ $spec.targetPort | default $name }} # the name of the port on the container that we are routing to
-      {{ (omit $spec "targetPort") | toYaml | nindent 6 }}
-  {{- end }}
-  {{- end }}
-  {{- end }}
+  externalTrafficPolicy: Local
+  ports: []
   selector:
     {{- include "metadata.selectorLabels" . | nindent 4 }}
     statefulset.kubernetes.io/pod-name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'

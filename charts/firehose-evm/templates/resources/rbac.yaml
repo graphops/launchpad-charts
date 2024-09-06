@@ -5,8 +5,7 @@ metadata:
   name: {{ include "metadata.roleName" $ }}
   labels:
     {{- include "metadata.labels" $ | nindent 4 }}
-rules:
-  {{- .Pod.serviceAccount.rbac.rules | default list| toYaml | nindent 2 }}
+rules: []
 {{- end }}
 
 {{- define "templates.ClusterRole" }}
@@ -16,8 +15,7 @@ metadata:
   name: {{ include "metadata.clusterRoleName" $ }}
   labels:
     {{- include "metadata.labels" $ | nindent 4 }}
-rules:
-  {{- .Pod.serviceAccount.rbac.clusterRules | default list| toYaml | nindent 2 }}
+rules: []
 {{- end }}
 
 {{- define "templates.RoleBinding" }}

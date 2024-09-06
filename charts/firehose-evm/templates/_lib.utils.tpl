@@ -85,7 +85,7 @@ Purpose:
   Ordered args come first, followed by remaining ones in the order provided by range.
 - Optionally evaluates templating on the resulting strings
 Parameters:
-- map: Dictionary of key-value pairs to convert to arguments
+- map: Map of key-value pairs to convert to arguments
 - orderList: List of keys to determine argument order (optional, default: [])
 - <map>.__prefix: String to prepend to each key (optional, default: "")
 - <map>.__separator: String to separate key and value (optional, default: " ")
@@ -366,6 +366,9 @@ Example:
   {{- $mergedValue := $merged -}}
 
   {{- $pathParts := splitList "." $path -}}
+  {{- if and (gt (len $pathParts) 0) (eq (index $pathParts 0) "") -}}
+    {{- $pathParts = slice $pathParts 1 -}}
+  {{- end -}}
   {{- $lastIndex := sub (len $pathParts) 1 -}}
 
   {{- range $index, $part := $pathParts -}}

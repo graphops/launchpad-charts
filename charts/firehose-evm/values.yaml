@@ -1,8 +1,6 @@
 # Default values for firehose-evm.
 # This is a YAML-formatted file.
 
-
-
 global:
   nameOverride: ""
   fullnameOverride: ""
@@ -12,6 +10,7 @@ global:
   annotations: {}
 
 firehoseComponentDefaults:
+  # -- Default workload type (Deployment | StatefulSet)
   kind: Deployment
   # -- Image configuration for firehose-evm
   image:
@@ -30,26 +29,35 @@ firehoseComponentDefaults:
 
   # -- Firehose-specific configuration
   fireeth:
+    # -- List of firehose services to launch (reader-node | merger | relayer | ...)
     services: []
+
+    # -- Enable support for metrics
     metrics:
       enabled: true
       addr: 0.0.0.0
       port: 9102
+
+    # -- Enable pprof interface support for profiling data
     pprof:
-      enabled: true
+      enabled: false
       addr: 127.0.0.1
       port: 6060
+
+    # -- Enable a NodePort for P2P support in node
     p2p:
       # -- Expose P2P port via NodePort
       enabled: false
       # -- NodePort to be used. Must be unique.
       # Leave blank for a dynamic port
       port: null
+
+    # -- Provision or use an existing JWT secret
+    # If it's enabled and neither existingSecret
+    # or fromLiteral are set, a random secret will
+    # be generated and then re-used in the future
     jwt:
-      # -- Provision or use an existing JWT secret
-      # If it's enabled and neither existingSecret
-      # or fromLiteral are set, a random secret will
-      # be generated and then re-used in the future
+      # -- Provision or make use of a JWT secret for Node
       enabled: false
       # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
       existingSecret:
@@ -59,6 +67,8 @@ firehoseComponentDefaults:
         key: null
       # -- Use this literal value for the JWT
       fromLiteral: null
+
+    # -- Fireeth configuration paramaters
     config:
       data-dir: "/var/lib/fireeth"
       metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
@@ -71,42 +81,81 @@ firehoseComponentDefaults:
       common-forked-blocks-store-url: null
       common-merged-blocks-store-url: null
       common-live-blocks-addr: "relayer:10014"
+
+    # -- Command line arguments for fireeth
+    # Generated from this map and format can be
+    # tweaked with __separator and __prefix.
+    # the '__none' string allows for declaring
+    # an argument without a value (i.e. --sepolia)
     args:
       __separator: "="
       start: "__none"
       "--config-file": "/config/config.yaml"
+    # -- List to set a specific order for some of
+    # the args elements. The ones set will appear first
+    # in the order of the list, and the reamining ones
+    # will be unsorted, or alphabetically sorted
     argsOrder:
       - start
       - "--config-file"
 
-  configMap:
-    enabled: true
-    useEnvSubst: false
-    template: |
-      {{- $nodeArgs := false }}
-      start:
-        args:
-          {{- range .Pod.fireeth.services }}
-          - {{ . }}
-          {{- if (contains "node" .) }}
-          {{- $nodeArgs = true }}
-          {{- end }}
-          {{- end }}
-        flags:
-          {{- range $key, $value := .Pod.fireeth.config }}
-          {{ $key }}: "{{ $value }}"
-          {{- end }}
-          {{- if $nodeArgs }}
-          {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.node.args | default dict ) ) | fromYamlArray }}
-          reader-node-arguments: |
-          {{- range $readerNodeArgs }}
-            {{ . }}
-          {{- end }}
-          {{- end }}
+    # -- Enable support for metrics on the blockchain node
+    nodeMetrics:
+      enabled: true
+      addr: 0.0.0.0
+      port: 6061
 
-  # -- Service configuration
-  service:
+    # -- Command line arguments to pass to the blockchain node
+    nodeArgs: {}
+
+    # -- List or ordered arguments for the nodeArgs
+    nodeArgsOrder: []
+
+  #####   Resources  Section   #####
+  ##################################
+
+  # -- ConfigMap customization
+  configMap:
+    # -- Create a ConfigMap (highly recommended)
     enabled: true
+    # -- ConfigMap specific options
+    options:
+      # -- Run an envsubst initcontainer at runtime
+      useEnvSubst: false
+      # -- Default ConfigMap template for the fireeth config
+      template: |
+        {{- $nodeArgs := false }}
+        start:
+          args:
+            {{- range .Pod.fireeth.services }}
+            - {{ . }}
+            {{- if (contains "node" .) }}
+            {{- $nodeArgs = true }}
+            {{- end }}
+            {{- end }}
+          flags:
+            {{- range $key, $value := .Pod.fireeth.config }}
+            {{ $key }}: "{{ $value }}"
+            {{- end }}
+            {{- if $nodeArgs }}
+            {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.fireeth.nodeArgs | default dict ) "orderList" ( .Pod.fireeth.nodeArgsOrder | default list ) ) | fromYamlArray }}
+            reader-node-arguments: |
+            {{- range $readerNodeArgs }}
+              {{ . }}
+            {{- end }}
+            {{- end }}
+    # -- Any remaiing key/values can be added and will be
+    # merged with the templated ConfigMap resource
+    metadata:
+      labels: {}
+      annotations: {}
+
+  # -- Service customization
+  service:
+    # -- Create a Service
+    enabled: true
+    # -- Any other key/values will be merged with the final Service resource
+    # `spec.ports` is a key-value map, with the port name as key, and the spec as value
     spec:
       # -- Service type
       type: "ClusterIP"
@@ -115,21 +164,22 @@ firehoseComponentDefaults:
         fh-metrics:
           port: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
           protocol: "TCP"
-    # -- Additional service labels
-    labels: {}
-    # -- Additional service annotations
-    annotations: {}
+    metadata:
+      # -- Additional service labels
+      labels: {}
+      # -- Additional service annotations
+      annotations: {}
 
   # -- Also create headless services, mandatory for StatefulSets and true by default
   serviceHeadless: '{{ eq .Pod.kind "StatefulSet" | ternary true true }}'
 
-  # -- Create a NodePort service
+  # -- Creates a NodePort service (used in P2P support)
+  # if a nodePort isn't specified, kubernetes will dinamically attribute one
   serviceP2P:
     enabled: '{{ default false .Pod.fireeth.p2p.enabled }}'
+    # -- Any other key/values will be merged with the final Service resource
+    # `spec.ports` is a key-value map, with the port name as key, and the spec as value
     spec:
-      # -- Service type
-      type: "NodePort"
-      externalTrafficPolicy: Local
       # -- Service ports configuration
       ports:
         p2p-tcp:
@@ -148,14 +198,116 @@ firehoseComponentDefaults:
           # -- (optional) nodePort to use, if left null a dynamic one will be atributed
           nodePort: null
           protocol: UDP
-      selector:
-        statefulset.kubernetes.io/pod-name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'
-    # -- Additional service labels
-    labels:
-      pod: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-0'
-      type: p2p # this label is used by the initContainer to select this service
-    # -- Additional service annotations
-    annotations: {}
+    metadata:
+      # -- Additional service labels
+      labels: {}
+      # -- Additional service annotations
+      annotations: {}
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: true
+    metadata:
+      labels: {}
+      annotations: {}
+    spec:
+      # Endpoint overrides, keyed by port name
+      endpoints:
+        metrics-fh:
+          # Override or add any endpoint-specific fields
+          interval: "30s"
+          scrapeTimeout: "10s"
+          path: /metrics
+          honorLabels: true
+          # ... any other endpoint-specific fields
+      # Any other top-level ServiceMonitor spec fields
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    enabled: true
+    # -- Rest spec
+    metadata:
+      # -- The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      # name:
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Labels to add to the service account
+      labels: {}
+    secrets: []
+
+  rbac:
+    enabled: true
+    roleSpec:
+      rules: []
+      metadata:
+        labels: {}
+        annotations: {}
+    bindingSpec:
+      roleRef: {}
+      subjects: []
+      metadata:
+        labels: {}
+        annotations: {}
+
+  clusterRbac:
+    enabled: false
+    roleSpec:
+      rules: []
+    bindingSpec:
+      roleRef: {}
+      subjects: []
+
+  # -- Pod Disruption Budget configuration
+  podDisruptionBudget:
+    enabled: false
+    spec:
+      # minAvailable: 1
+      # or
+      # maxUnavailable: 25%
+    metadata:
+      labels: {}
+      annotations: {}
+
+  # -- Horizontal Pod Autoscaler configuration
+  horizontalPodAutoscaler:
+    enabled: false
+    # -- Anything else will be marge on the final horizontalPodAutoscaler resource template
+    metadata:
+      labels: {}
+      annotations: {}
+    spec: {}
+      # example:
+      # minReplicas: 2
+      # maxReplicas: 10
+      # metrics:
+      #   - type: "Resource"
+      #     resource:
+      #       name: "cpu"
+      #       targetAverageUtilization: 80
+
+
+
+  ### Container Level Parameters ###
+  ##################################
+
+  # -- Component level annotations (templated)
+  annotations: {}
+
+  # -- Component level labels (templated)
+  labels:
+    app.kubernetes.io/component: '{{ .componentName }}'
+    app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
+    version.firehose.graphops.xyz/fireeth: "2.6.7"
+    version.firehose.graphops.xyz/node: "1.13.15"
+    version.firehose.graphops.xyz/protocol: "2.4"
+
+  ports:
+    metrics-fh:
+      containerPort: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
+      protocol: TCP
 
   # -- Init containers configuration
   initContainers:
@@ -197,66 +349,6 @@ firehoseComponentDefaults:
         # -- Name of the data key in the secret that contains your S3 bucket url of your index store
         key: ""
 
-  # -- ServiceMonitor configuration for Prometheus Operator
-  serviceMonitor:
-    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-    enabled: true
-    metadata:
-      labels: {}
-      annotations: {}
-    spec:
-      # Endpoint overrides, keyed by port name
-      endpoints:
-        metrics-fh:
-          # Override or add any endpoint-specific fields
-          interval: "30s"
-          scrapeTimeout: "10s"
-          path: /metrics
-          honorLabels: true
-          # ... any other endpoint-specific fields
-      # Any other top-level ServiceMonitor spec fields
-
-  # -- Service account configuration
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- Labels to add to the service account
-    labels: {}
-    rbac:
-      create: true
-      createCluster: false
-      rules: []
-      clusterRules: []
-
-  # Increasing the grace termination period prevents Kubernetes
-  # from killing the node process prematurely. Premature shutdown
-  # can lead to data integrity issues
-  # -- Amount of time to wait before force-killing the process
-  terminationGracePeriodSeconds: 10
-
-  # -- Component level annotations (templated)
-  annotations: {}
-
-  # -- Component level labels (templated)
-  labels:
-    app.kubernetes.io/component: '{{ .componentName }}'
-    app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
-    version.firehose.graphops.xyz/fireeth: "2.6.7"
-    version.firehose.graphops.xyz/node: "1.13.15"
-    version.firehose.graphops.xyz/protocol: "2.4"
-
-  # -- Pod-wide security context
-  podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
-    fsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
-
   # -- Container level security context overrides
   securityContext:
     allowPrivilegeEscalation: false
@@ -280,6 +372,37 @@ firehoseComponentDefaults:
     #   memory: 128Mi
     #   ephemeral-storage: 100Mi
 
+  volumeMounts:
+    data-dir:
+      enabled: true
+      readOnly: false
+      mountPath: '{{ index .Pod.fireeth.config "data-dir" }}'
+    config:
+      enabled: '{{ .Pod.configMap.enabled }}'
+      mountPath: '{{ .Pod.configMap.options.useEnvSubst | ternary "/config-input" "/config" }}'
+      readOnly: true
+    config-processed:
+      enabled: '{{ .Pod.configMap.options.useEnvSubst }}'
+      mountPath: "/config"
+      readOnly: false
+
+
+  ###    Pod Level Parameters    ###
+  ##################################
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
+    fsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
+
   # -- Node selector configuration
   nodeSelector: {}
 
@@ -301,47 +424,12 @@ firehoseComponentDefaults:
     #   exec:
     #     command: ["/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1; done"]
 
-  # -- Pod Disruption Budget configuration
-  podDisruptionBudget:
-    enabled: true
-    # minAvailable: 1
-    # or
-    # maxUnavailable: 25%
-
-  # -- Horizontal Pod Autoscaler configuration
-  horizontalPodAutoscaler:
-    enabled: false
-    # example:
-    # minReplicas: 2
-    # maxReplicas: 10
-    # metrics:
-    #   - type: "Resource"
-    #     resource:
-    #       name: "cpu"
-    #       targetAverageUtilization: 80
-
-  ports:
-    metrics-fh:
-      containerPort: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
-      protocol: TCP
-
-
   # -- Update Strategy, (RollingUpdate | Recreate) for Deployments, (RollingUpdate | OnDelete) for StatefulSets
   updateStrategy:
     type: RollingUpdate
 
   # -- (StatefulSet only), scaling behavior: (OrderedReady | Parallel)
   podManagementPolicy: OrderedReady
-
-  # -- (StatefulSet only), headless service name
-
-  # -- Extra containers to add to the pod (templated)
-  extraContainers: {}
-    # example:
-    #   sidecar1:
-    #     image: nginx:latest
-    #     ports:
-    #       - containerPort: 80
 
   volumes:
     data-dir:
@@ -353,28 +441,27 @@ firehoseComponentDefaults:
         name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-config'
         defaultMode: 420
     config-processed:
-      enabled: '{{ and .Pod.configMap.useEnvSubst .Pod.configMap.enabled }}'
+      enabled: '{{ and .Pod.configMap.options.useEnvSubst .Pod.configMap.enabled }}'
       emptyDir: {}
     env-dir:
-      enabled: '{{ (or (and .Pod.configMap.useEnvSubst .Pod.configMap.enabled) false ) | ternary true false }}'
+      enabled: '{{ (or (and .Pod.configMap.options.useEnvSubst .Pod.configMap.enabled) false ) | ternary true false }}'
       emptyDir: {}
 
-  volumeMounts:
-    data-dir:
-      enabled: true
-      readOnly: false
-      mountPath: '{{ index .Pod.fireeth.config "data-dir" }}'
-    config:
-      enabled: '{{ .Pod.configMap.enabled }}'
-      mountPath: '{{ .Pod.configMap.useEnvSubst | ternary "/config-input" "/config" }}'
-      readOnly: true
-    config-processed:
-      enabled: '{{ .Pod.configMap.useEnvSubst }}'
-      mountPath: "/config"
-      readOnly: false
+  # -- Extra containers to add to the pod (templated)
+  extraContainers: {}
+    # example:
+    #   sidecar1:
+    #     image: nginx:latest
+    #     ports:
+    #       - containerPort: 80
 
 
+# -- Defaults per firehose service type, will
+# get inherited by workloads running that service
+# keys will match service names, and on each key
+# the same interface as <firehoseDefaults> is available
 firehoseServiceDefaults:
+  # -- Defaults for the firehose service
   firehose:
     fireeth:
       config:
@@ -393,6 +480,7 @@ firehoseServiceDefaults:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "firehose-grpc-listen-addr") }}{{ splitList ":" (index . "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
+  # -- Defaults for the merger service
   merger:
     fireeth:
       config:
@@ -411,6 +499,7 @@ firehoseServiceDefaults:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "merger-grpc-listen-addr") }}{{ splitList ":" (index . "merger-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
+  # -- Defaults for the relayer service
   relayer:
     fireeth:
       config:
@@ -431,6 +520,7 @@ firehoseServiceDefaults:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "relayer-grpc-listen-addr") }}{{ splitList ":" (index . "relayer-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
+  # -- Defaults for the index-builder service
   index-builder:
     fireeth:
       config:
@@ -450,20 +540,16 @@ firehoseServiceDefaults:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
+  # -- Defaults for the reader-node service
   reader-node:
     kind: StatefulSet
 
     fireeth:
-
       jwt:
         enabled: true
 
-      # Additional reader-node specific configurations
       p2p:
-        # -- Expose P2P port via NodePort
         enabled: true
-        # -- NodePort to be used. Must be unique.
-        # Leave blank for a dynamic port
         port: null
         spec:
           ports:
@@ -477,31 +563,12 @@ firehoseServiceDefaults:
         reader-node-data-dir: "/var/lib/geth"
         reader-node-path: "/app/geth"
 
-    serviceAccount:
-      rbac:
-        createCluster: true
-        clusterRules:
-          - apiGroups: [""]
-            resources:
-              - "nodes"
-            verbs:
-              - "get"
-              - "list"
-              - "watch"
-        rules:
-          - apiGroups: [""]
-            resources:
-              - "services"
-            verbs:
-              - "get"
-              - "list"
-              - "watch"
-    node:
-      metrics:
+      nodeMetrics:
         enabled: true
         addr: 0.0.0.0
         port: 6061
-      args:
+
+      nodeArgs:
         __prefix: "--"
         __separator: "="
         syncmode: "full"
@@ -527,8 +594,35 @@ firehoseServiceDefaults:
         cache: 8192
         maxpeers: 100
 
+      nodeArgsOrder: []
+
+    rbac:
+      enabled: true
+      roleSpec:
+        rules:
+          - apiGroups: [""]
+            resources:
+              - "services"
+            verbs:
+              - "get"
+              - "list"
+              - "watch"
+
+    clusterRbac:
+      enabled: true
+      roleSpec:
+        rules:
+          - apiGroups: [""]
+            resources:
+              - "nodes"
+            verbs:
+              - "get"
+              - "list"
+              - "watch"
+
     configMap:
-      useEnvSubst: true
+      options:
+        useEnvSubst: true
 
     env:
       MANAGER_API_PORT: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last }}'
@@ -563,6 +657,7 @@ firehoseServiceDefaults:
         enabled: true
 
     volumeClaimTemplates:
+
       data-dir:
         enabled: true
         metadata:
@@ -573,6 +668,7 @@ firehoseServiceDefaults:
           resources:
             requests:
               storage: 50Gi
+
       node-data-dir:
         enabled: true
         metadata:
@@ -586,10 +682,12 @@ firehoseServiceDefaults:
 
 
     volumes:
+
       data-dir:
         emptyDir: null
         persistentVolumeClaim:
           claimName: data-dir
+
       node-data-dir:
         enabled: true
         persistentVolumeClaim:
@@ -607,6 +705,12 @@ firehoseServiceDefaults:
           command: ["/usr/local/bin/eth-maintenance"]
 
 
+# -- Definition and architecture of components to provision.
+# A component is a kubernetes workload (Deployment or StatefulSet).
+# The components will be named by the key name, and inherit the
+# firehoseComponentDefaults as well as the defaults for the firehose
+# services they will be set to run, under `.fireeth.services` list.
+# For each component, configuraiton follows <firehoseComponentDefaults>.
 firehoseComponents:
   grpc:
     enabled: true
@@ -616,7 +720,6 @@ firehoseComponents:
     fullnameOverride: ""
     existingConfigMap: ""
 
-    # -- Firehose-specific configuration
     fireeth:
       services:
         - firehose
@@ -642,7 +745,6 @@ firehoseComponents:
   index-builder:
     enabled: true
 
-    # -- Firehose-specific configuration
     fireeth:
       services:
         - index-builder
@@ -654,7 +756,6 @@ firehoseComponents:
     nameOverride: ""
     fullnameOverride: ""
 
-    # -- Firehose-specific configuration
     fireeth:
       services:
         - reader-node

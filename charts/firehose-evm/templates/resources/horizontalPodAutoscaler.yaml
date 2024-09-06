@@ -11,14 +11,4 @@ spec:
     apiVersion: apps/v1
     kind: {{ .Pod.kind }}
     name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
-  {{- with .Pod.horizontalPodAutoscaler }}
-  {{- if .minReplicas }}
-  minReplicas: {{ .minReplicas }}
-  {{- end }}
-  {{- if .maxReplicas }}
-  minReplicas: {{ .maxReplicas }}
-  {{- end }}
-  metrics:
-    {{- toYaml ( .metrics | default list ) | nindent 4 }}
-  {{- end }}
 {{- end }}
