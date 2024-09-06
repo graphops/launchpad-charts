@@ -71,10 +71,10 @@ app.kubernetes.io/instance: {{ .Root.Release.Name }}
 Create the name of the service account to use for a specific component
 */}}
 {{- define "metadata.serviceAccountName" -}}
-{{- if .Pod.serviceAccount.create -}}
-  {{- default (printf "%s-%s" (include "metadata.fullname" .) .componentName) .Pod.serviceAccount.name -}}
+{{- if .Pod.serviceAccount.enabled -}}
+  {{- default (printf "%s-%s" (include "metadata.fullname" .) .componentName) .Pod.serviceAccount.metadata.name -}}
 {{- else -}}
-  {{- default "default" .Pod.serviceAccount.name -}}
+  {{- default "default" .Pod.serviceAccount.metadata.name -}}
 {{- end -}}
 {{- end }}
 

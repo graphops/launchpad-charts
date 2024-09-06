@@ -27,7 +27,7 @@
 
 {{- if and $values.enabled (or $values.service.enabled $values.serviceHeadless) }}
 {{- $baseService := include "templates.Service" $templateCtx | fromYaml }}
-{{- $finalService := list $baseService (omit $values.service "enabled") (list (dict "path" ".spec.ports" "indexKey" "name")) | include "utils.smartMerge" | fromYaml }}
+{{- $finalService := list $baseService (omit $values.service "enabled") (list (dict "path" ".spec.ports" "indexKey" "name" "defaultFor" (list "targetPort"))) | include "utils.smartMerge" | fromYaml }}
 {{- if $values.service.enabled }}
 ---
 {{ $finalService | toYaml }}
@@ -43,7 +43,7 @@
 
 {{- if (default false $values.fireeth.p2p.enabled) }}
 {{- $baseServiceP2P := include "templates.ServiceP2P" $templateCtx | fromYaml }}
-{{- $finalServiceP2P := list $baseServiceP2P (omit $values.serviceP2P "enabled") (list (dict "path" ".spec.ports" "indexKey" "name")) | include "utils.smartMerge" | fromYaml }}
+{{- $finalServiceP2P := list $baseServiceP2P (omit $values.serviceP2P "enabled") (list (dict "path" ".spec.ports" "indexKey" "name" "defaultFor" (list "targetPort"))) | include "utils.smartMerge" | fromYaml }}
 ---
 {{ $finalServiceP2P | toYaml }}
 {{- end }}

@@ -9,6 +9,4 @@ metadata:
 data:
   config.yaml: |-
     {{- $config | trim | nindent 4 }}
-    POD-node:
-      {{- .Pod.node | toYaml | nindent 6 }}
 {{- end }}

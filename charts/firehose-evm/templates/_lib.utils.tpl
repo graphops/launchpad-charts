@@ -256,6 +256,7 @@ Parameters:
   1. baseList (list): The original list of maps to be merged.
   2. overrideMap (map): A map of overrides, where top level keys match with the indexKey of the maps on the base list
   3. indexKey (string): The key name on the maps base list maps used to match with the override map keys.
+  4. defaultFor (list): A list of keys that inherit the matching key as value, besides indexKey
 
 Behavior:
 - If an override key matches with a base map's specified index key:
@@ -277,6 +278,7 @@ Example:
 {{- $base := deepCopy ( index . 0) -}}
 {{- $override := deepCopy ( index . 1 ) -}}
 {{- $indexKey := deepCopy ( index . 2 ) -}}
+{{- $defaultFor := deepCopy (index . 3 ) -}}
 
 {{- $result := list -}}
 {{- $seenKeys := dict -}}
@@ -290,6 +292,12 @@ Example:
       {{/* Skip this item if the override is null */}}
     {{- else -}}
       {{- $newItem := mergeOverwrite (deepCopy $item) (index $override $key) -}}
+      {{- /* Ensure the new item has the defaultFor keys set */ -}}
+      {{- range $defaultKey := $defaultFor -}}
+      {{- if not (hasKey $newItem $defaultKey) }}
+      {{- $_ := set $newItem $defaultKey $key }}
+      {{- end }}
+      {{- end }}
       {{- $result = append $result $newItem -}}
     {{- end -}}
   {{- else -}}
@@ -301,7 +309,12 @@ Example:
 {{- range $key, $value := $override -}}
   {{- if not (hasKey $seenKeys $key) -}}
     {{- if ne $value nil -}}
-      {{- /* Ensure the new item has the indexKey set correctly */ -}}
+      {{- /* Ensure the new item has the indexKey and defaultFor set */ -}}
+      {{- range $defaultKey := $defaultFor -}}
+      {{- if not (hasKey $value $defaultKey) }}
+      {{- $_ := set $value $defaultKey $key }}
+      {{- end }}
+      {{- end }}
       {{- $_ := set $value $indexKey $key -}}
       {{- $result = append $result $value -}}
     {{- end -}}
@@ -327,6 +340,7 @@ Parameters:
   3. specialPaths (list): List of maps for special paths, each a map of:
     - path (string): Path to the special merge location.
     - indexKey (string): Key which value is used for matching with an override map top level key.
+    - defaultFor (list): List of key names besides indexKey that will have as default the key name
 
 Behavior:
 - Performs initial deep merge of base and override maps.
@@ -360,6 +374,7 @@ Example:
 {{- range $specialPath := $specialPaths -}}
   {{- $path := $specialPath.path -}}
   {{- $indexKey := $specialPath.indexKey -}}
+  {{- $defaultFor := $specialPath.defaultFor | default list -}}
 
   {{- $baseValue := $base -}}
   {{- $overrideValue := $override -}}
@@ -378,7 +393,7 @@ Example:
       {{- $mergedValue = index $mergedValue $part -}}
 
       {{- if and (kindIs "slice" $baseValue) (kindIs "map" $overrideValue) -}}
-        {{- $newMergedValue := list $baseValue $overrideValue $indexKey | include "utils.mergeMapWithList" | fromYamlArray -}}
+        {{- $newMergedValue := list $baseValue $overrideValue $indexKey $defaultFor | include "utils.mergeMapWithList" | fromYamlArray -}}
 
         {{/* Update the merged value at the specified path */}}
         {{- $currentPath := $merged -}}

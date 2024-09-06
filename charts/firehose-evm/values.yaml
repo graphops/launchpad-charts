@@ -34,7 +34,7 @@ firehoseComponentDefaults:
 
     # -- Enable support for metrics
     metrics:
-      enabled: true
+      enabled: false
       addr: 0.0.0.0
       port: 9102
 
@@ -72,7 +72,7 @@ firehoseComponentDefaults:
     config:
       data-dir: "/var/lib/fireeth"
       metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
-      pprof-listen-addr: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
+      pprof-listen-addr: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%s:%d" .addr (.port | int)) nil }}{{ end }}'
       log-to-file: false
       common-index-block-sizes: 10000
       firehose-rate-limit-bucket-size: 20
@@ -140,10 +140,10 @@ firehoseComponentDefaults:
             {{- if $nodeArgs }}
             {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.fireeth.nodeArgs | default dict ) "orderList" ( .Pod.fireeth.nodeArgsOrder | default list ) ) | fromYamlArray }}
             reader-node-arguments: |
-            {{- range $readerNodeArgs }}
-              {{ . }}
-            {{- end }}
-            {{- end }}
+              {{- range $readerNodeArgs }}
+                {{ . }}
+              {{- end }}
+              {{- end }}
     # -- Any remaiing key/values can be added and will be
     # merged with the templated ConfigMap resource
     metadata:
@@ -236,18 +236,18 @@ firehoseComponentDefaults:
       annotations: {}
       # -- Labels to add to the service account
       labels: {}
-    secrets: []
+    # secrets: []
 
   rbac:
     enabled: true
     roleSpec:
-      rules: []
+      # rules: []
       metadata:
         labels: {}
         annotations: {}
     bindingSpec:
       roleRef: {}
-      subjects: []
+      # subjects: []
       metadata:
         labels: {}
         annotations: {}
@@ -255,10 +255,10 @@ firehoseComponentDefaults:
   clusterRbac:
     enabled: false
     roleSpec:
-      rules: []
+      # rules: []
     bindingSpec:
       roleRef: {}
-      subjects: []
+      # subjects: []
 
   # -- Pod Disruption Budget configuration
   podDisruptionBudget:
