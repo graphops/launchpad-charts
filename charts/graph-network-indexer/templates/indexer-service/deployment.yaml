@@ -1,7 +1,9 @@
-{{- $values := $.Values.indexerService }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerService) }}
 {{- $componentName := "service" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
-{{/* START Deployment */}}
+
+{{- $graphNetworkConfigHash := include "graph-network-indexer.config" (dict "componentConfig" $values) | sha256sum }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,8 +20,9 @@ spec:
       {{- $componentLabel | nindent 6 }}
   template:
     metadata:
-      {{- with $values.podAnnotations }}
       annotations:
+        checksum/config.toml: {{ $graphNetworkConfigHash }}
+      {{- with $values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
@@ -36,6 +39,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if $values.initContainers }}
+      initContainers:
+        {{- toYaml $values.initContainers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
@@ -50,42 +57,57 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
+          {{- if $values.env }}
+          {{- range $key, $val := ( omit $values.env "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
-          {{- end }}
-          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-          {{- range $key, $val := .}}
+          {{- if $values.secretEnv }}
+          {{- range $key, $val := ( omit $values.secretEnv "INDEXER_SERVICE_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
-                  optional: false
           {{- end }}
           {{- end }}
-          args:
-          {{- with (deepCopy $.Values.indexerDefaults.config | mustMerge $values.config) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
-            - --{{ $key }}={{ $val }}
-          {{- end }}
-          {{- end }}
+            - name: INDEXER_SERVICE_DATABASE__POSTGRES_URL
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
+          command:
+          - /usr/local/bin/service
+          {{- if $values.configPath }}
+          - --config={{ $values.configPath }}
+          {{- else }}
+          - --config=/etc/indexer-rs/config.toml
           {{- end }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
           {{- end }}
           ports:
             - name: http-queryapi
-              containerPort: 7600
+              {{- with $servicePort := splitList ":" $values.config.service.host_and_port | last }}
+              containerPort: {{ $servicePort | int }}
+              {{- end }}
               protocol: TCP
+            {{- if $values.metrics.enabled }}
             - name: http-metrics
-              containerPort: 7300
+              containerPort: {{ $values.metrics.port }}
               protocol: TCP
+            {{- end }}
+          volumeMounts:
+          - name: config
+            mountPath: "/etc/indexer-rs"
+            readOnly: true
+          {{- if $values.additionalVolumeMounts }}
+          {{- range $mount := $values.additionalVolumeMounts }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
+            {{- if $mount.readOnly }}
+            readOnly: {{ $mount.readOnly }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
           readinessProbe:
             httpGet:
               port: http-queryapi
@@ -93,6 +115,30 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+        {{- if $values.additionalVolumes }}
+        {{- range $volume := $values.additionalVolumes }}
+        - name: {{ $volume.name }}
+          {{- if $volume.configMap }}
+          configMap:
+            name: {{ $volume.configMap.name }}
+          {{- else if $volume.secret }}
+          secret:
+            secretName: {{ $volume.secret.secretName }}
+          {{- else if $volume.emptyDir }}
+          emptyDir: {}
+          {{- else if $volume.hostPath }}
+          hostPath:
+            path: {{ $volume.hostPath.path }}
+            {{- if $volume.hostPath.type }}
+            type: {{ $volume.hostPath.type }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -7,12 +7,16 @@
   "devDependencies": {
     "@commitlint/cli": "^19.4.0",
     "@commitlint/config-conventional": "^19.2.2",
+    "@types/node": "^22.5.0",
+    "cosmiconfig-typescript-loader": "^5.0.0",
     "git-cliff": "^2.4.0",
-    "husky": "^9.1.4"
+    "husky": "^9.1.4",
+    "typescript": "^5.5.4"
   },
   "scripts": {
     "prepare": "husky install",
     "lint": "./scripts/lint.sh"
   },
-  "packageManager": "yarn@3.6.0+sha256.6da0a4bdb4de78399dd577ff72273ca46152c61399574ffc8e9a5a3c36eab270"
+  "packageManager": "yarn@3.6.0+sha256.6da0a4bdb4de78399dd577ff72273ca46152c61399574ffc8e9a5a3c36eab270",
+  "type": "module"
 }

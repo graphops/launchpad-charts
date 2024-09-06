@@ -1,4 +1,4 @@
-{{- $values := $.Values.indexerAgent }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 apiVersion: v1
@@ -27,11 +27,7 @@ metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
   {{- if $values.service.topologyAwareRouting.enabled }}
   annotations:
-    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
-    service.kubernetes.io/topology-mode: "auto"
-    {{- else }}
     service.kubernetes.io/topology-aware-hints: "auto"
-    {{- end }}
   {{- end }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
@@ -40,10 +36,16 @@ spec:
   type: {{ $values.service.type }}
   ports:
   {{- range $portName, $portNumber := $values.service.ports }}
-    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
-      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
-      protocol: TCP
-      name: {{ $portName }}
+  - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+    targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+    protocol: TCP
+    name: {{ $portName }}
+  {{- end }}
+  {{- if $values.metrics.enabled }}
+  - port: {{ $values.metrics.port }}
+    targetPort: http-metrics
+    protocol: TCP
+    name: http-metrics
   {{- end }}
   selector:
     {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}

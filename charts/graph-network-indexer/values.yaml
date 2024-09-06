@@ -24,6 +24,9 @@ prometheus:
     interval:
     scrapeTimeout:
     relabelings: []
+    metricRelabelings: []
+
+config: {}
 
 grafana:
   # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
@@ -35,71 +38,106 @@ grafana:
 
 # -- Value defaults that apply to both indexer-agent and indexer-service
 indexerDefaults:
-  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
+  metrics:
+    enabled: true
+    address: 0.0.0.0
+    port: 7300
+  postgresConfig:
+    host: "localhost"
+    port: 5432
+    database: "your_database"
   config:
-    # -- (required) URL for a blockchain node that has the Graph Protocol contracts (e.g. Ethereum Mainnet, Goerli)
-    ethereum: null
-    # -- Name of the network that you have specified a node URL for in `ethereum`
-    ethereum-network: "mainnet"
-    # -- (required) Ethereum address of your Indexer
-    indexer-address: null
-    # -- (required) URL for your graph node query endpoint (probably a load balancer address)
-    graph-node-query-endpoint: null
-    # -- (required) URL for your graph node status endpoint (probably a load balancer address)
-    graph-node-status-endpoint: null
-    # -- (required) Hostname for your Postgres indexer metadata database
-    postgres-host: null
-    # -- Name of the Postgres database to use for indexer metadata
-    postgres-database: indexer
-    # -- Specify a plain text username to authenticate with Postgres
-    postgres-username: null
-    # -- (not recommended) Specify a plain text password to authenticate with Postgres. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-    postgres-password: null
-    # -- Port that Postgres is available on
-    postgres-port: 5432
-    # -- (not recommended) Specify a plain text mnemonic for your operator account. Instead, we recommend using a Kubernetes Secret and secretEnv to mount the value as an environment variable.
-    mnemonic: null
-    # -- (required) An endpoint to query the network subgraph
-    network-subgraph-endpoint: null
+    indexer:
+      # -- (required) Ethereum address of your Indexer
+      indexer_address: "your_indexer_address"
+      # We are commenting this example mnemonic because the operator mnemonic should come from the INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC environment variable instead
+      # operator_mnemonic = "anchor zebra vocal chair sample grape inmate loyal window harbor glue teach symbol brown prefer soup spice waste visit reform concert venue silk turtle"
 
-  env: {}
+    graph_node:
+      # -- (required) URL for your graph node query endpoint (probably a load balancer address)
+      query_url: "your_graph_node_query_url"
+      # -- (required) URL for your graph node status endpoint (probably a load balancer address)
+      status_url: "your_graph_node_status_endpoint"
 
-  secretEnv: {}
-    # mnemonic
-    # postgres auth
+    service:
+      host_and_port: "0.0.0.0:7600"
+
+    subgraphs.network:
+      syncing_interval_secs: 60  
+      # # Query URL for the Graph Network subgraph.
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
+
+      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+      # # Locally indexing the subgraph is recommended.
+      # # NOTE: Use `query_url` or `deployment_id` only
+      # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+    subgraphs.escrow:
+      syncing_interval_secs: 60  
+      # # Query URL for the Graph Network subgraph.
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
+
+      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
+      # # Locally indexing the subgraph is recommended.
+      # # NOTE: Use `query_url` or `deployment_id` only
+      # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+    blockchain:
+      chain_id: "valid_blockchain_chain_id"
+      # find TAPVerifier address at https://github.com/semiotic-ai/timeline-aggregation-protocol-contracts/blob/main/addresses.json
+      receipts_verifier_address: "valid_blockchain_receipts_verifier_address"
+    tap.rav_request:
+      trigger_value_divisor: 100
+
+    # -- (required) Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender and the value is the URL of the sender aggregator.
+    # tap.sender_aggregator_endpoints:
+    #   0x0000000000000000000000000000000000000000: "https://sender-aggregator-url.com"
+
+  env: 
+    {}
+
 
 indexerAgent:
   # -- Image for indexer-agent
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
+    tag: "v0.21.4"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config:
-    # -- (required) URL for your graph-node admin API endpoint
-    graph-node-admin-endpoint: null
-    # -- (required) Public HTTPS URL of your indexer-service query endpoint
-    public-indexer-url: null
-    # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
-    index-node-ids: null
-    # -- (required) The gateway collect-receipts endpoint for getting vouchers
-    collect-receipts-endpoint: null
-    # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
-    network-subgraph-deployment: null
-    # -- (required) Contract address of ERC20 used for DAI variable in cost models
-    dai-contract: null
-    # -- (optional) Query endpoint for syncing status of EBO and its contract state.
-    epoch-subgraph-endpoint: null
-
-  env: {}
+  config: 
+    indexer-management-port: 8000
+    ethereum: null
+    # -- Name of the network that you have specified a node URL for in `ethereum`
+    ethereum-network: mainnet
+    # # -- (required) URL for your graph-node admin API endpoint
+    graph-node-admin-endpoint: test
+    # # -- (required) Public HTTPS URL of your indexer-service query endpoint
+    # public-indexer-url: null
+    # # -- (required) A command separated list of graph-node Node IDs to assign subgraphs to
+    # index-node-ids: null
+    # # -- (required) The gateway collect-receipts endpoint for getting vouchers
+    # collect-receipts-endpoint: null
+    # # -- (required) Base58 deployment hash (Qm...) for the Graph Network Subgraph
+    # network-subgraph-deployment: null
+    # # -- (required) Contract address of ERC20 used for DAI variable in cost models
+    # dai-contract: null
+    # # -- (optional) Query endpoint for syncing status of EBO and its contract state.
+    # epoch-subgraph-endpoint: null
 
   secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-agent secret
+    # INDEXER_AGENT_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+    # INDEXER_AGENT_POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username
+    #   key: # your key in the secret
+    # INDEXER_AGENT_POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password
+    #   key: # your key in the secret
 
-  # -- Additional CLI arguments to pass to `indexer-agent`
-  extraArgs: []
+  env: {}
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -124,8 +162,6 @@ indexerAgent:
     ports: # Valid keys are names of ports that are exposed by the Pod
       # -- Service Port to expose Indexer Management API on
       http-mgmtapi: 8000
-      # -- Service Port to expose Metrics on
-      http-metrics: 7300
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -145,6 +181,8 @@ indexerAgent:
 
   tolerations: []
 
+  extraArgs: []
+
   affinityPresets:
     # -- Configure anti-affinity rules to prevent multiple instances on the same host
     antiAffinityByHostname: true
@@ -154,7 +192,7 @@ indexerAgent:
 indexerService:
   # -- Image for indexer-service
   image:
-    repository: ghcr.io/graphprotocol/indexer-service
+    repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion
@@ -163,14 +201,22 @@ indexerService:
   # -- Number of replicas to run
   replicas: 1
 
-  # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config:
-    # -- (required) The address of the signer for vouchers (see https://github.com/graphprotocol/indexer/blob/main/docs/networks.md)
-    client-signer-address: null
-
-  env: {}
+  config: {}
 
   secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-service secret
+    # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+    # POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username will be used to build the postgres url
+    #   key: # your key in the secret
+    # POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password will be used to build the postgres url
+    #   key: # your key in the secret
+
+
+  env: {}
 
   # -- Additional CLI arguments to pass to `indexer-service`
   extraArgs: []
@@ -196,10 +242,8 @@ indexerService:
       enabled: false
     type: ClusterIP
     ports: # Valid keys are names of ports that are exposed by the Pod
-      # -- Service Port to expose Query API on
+      # -- Service Port to expose Indexer Query API on
       http-queryapi: 7600
-      # -- Service Port to expose Metrics on
-      http-metrics: 7300
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -224,3 +268,81 @@ indexerService:
     antiAffinityByHostname: true
 
   affinity: {}
+
+
+indexerTapAgent:
+  # -- Image for indexer-tap-agent
+  image:
+    repository: ghcr.io/graphprotocol/indexer-tap-agent
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  # -- Number of replicas to run
+  replicas: 1
+
+  config: {}
+
+  # -- Additional CLI arguments to pass to `indexer-service`
+  extraArgs: []
+
+  # Increasing the grace termination period prevents Kubernetes
+  # from killing the node process prematurely. Premature shutdown
+  # can lead to data integrity issues
+  # -- Amount of time to wait before force-killing the process
+  terminationGracePeriodSeconds: 10
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports: # Valid keys are names of ports that are exposed by the Pod
+      # -- Service Port to expose Indexer Query API on
+      http-queryapi: 7600
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  secretEnv: {}
+    # -- We recommend that you set the following environment variables in the indexer-service secret
+    # TAP_AGENT_INDEXER__OPERATOR_MNEMONIC:
+    #   secretName: # your secret containing mnemonic
+    #   key: # your key in the secret
+    # POSTGRES_USERNAME:
+    #   secretName: # your secret containing postgres username will be used to build the postgres url
+    #   key: # your key in the secret
+    # POSTGRES_PASSWORD:
+    #   secretName: # your secret containing postgres password will be used to build the postgres url
+    #   key: # your key in the secret

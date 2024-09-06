@@ -1,0 +1,17 @@
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
+{{- $componentName := "tap-agent" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+
+{{/* START ConfigMap */}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  config.toml: |
+    {{ include "graph-network-indexer.config" (dict "componentConfig" $values) | nindent 4 }}
+{{/* END ConfigMap */}}

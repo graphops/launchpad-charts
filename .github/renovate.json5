@@ -42,7 +42,7 @@
         "versioning": "regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
       },
       {
-        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service"],
+        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-rs"],
         "allowedVersions": "!/\\-alpha.*$/",
         "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
       },

@@ -1,0 +1,30 @@
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
+{{- $componentName := "tap-agent" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if $values.service.topologyAwareRouting.enabled }}
+  annotations:
+    service.kubernetes.io/topology-aware-hints: "auto"
+  {{- end }}
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  - port: {{ index $values.service.ports "http-queryapi" }}
+    targetPort: http-queryapi
+    protocol: TCP
+    name: http-queryapi
+  {{- if $values.metrics.enabled }}
+  - port: {{ $values.metrics.port }}
+    targetPort: http-metrics
+    protocol: TCP
+    name: http-metrics
+  {{- end }}
+  selector:
+    {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}

@@ -1,0 +1,170 @@
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
+{{- $componentName := "tap-agent" }}
+{{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+
+{{/* We use a hash of the configuration to automate restarts of dependents */}}
+{{- $graphNetworkConfigHash := include "graph-network-indexer.config" (dict "componentConfig" $values) | sha256sum }}
+
+{{/* START Deployment */}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  replicas: {{ $values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "graph-network-indexer.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: {{ $graphNetworkConfigHash }}
+      {{- with $values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-network-indexer.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-network-indexer.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- if $values.initContainers }}
+      initContainers:
+        {{- toYaml $values.initContainers | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          {{- if $values.env }}
+          {{- range $key, $val := ( omit $values.env "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if $values.secretEnv }}
+          {{- range $key, $val := ( omit $values.secretEnv "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+          {{- end }}
+          {{- end }}
+            - name: TAP_AGENT_DATABASE__POSTGRES_URL
+              value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
+          command:
+          - /usr/local/bin/indexer-tap-agent
+          {{- if $values.configPath }}
+          - --config={{ $values.configPath }}
+          {{- else }}
+          - --config=/etc/indexer-rs/config.toml
+          {{- end }}
+          {{- with $values.extraArgs }}
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http-queryapi
+              {{- with $servicePort := splitList ":" $values.config.service.host_and_port | last }}
+              containerPort: {{ $servicePort | int }}
+              {{- end }}
+              protocol: TCP
+            {{- if $values.metrics.enabled }}
+            - name: http-metrics
+              containerPort: {{ $values.metrics.port }}
+              protocol: TCP
+            {{- end }}
+          volumeMounts:
+          - name: config
+            mountPath: "/etc/indexer-rs"
+            readOnly: true
+          {{- if $values.additionalVolumeMounts }}
+          {{- range $mount := $values.additionalVolumeMounts }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
+            {{- if $mount.readOnly }}
+            readOnly: {{ $mount.readOnly }}
+            {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-config
+        {{- if $values.additionalVolumes }}
+        {{- range $volume := $values.additionalVolumes }}
+        - name: {{ $volume.name }}
+          {{- if $volume.configMap }}
+          configMap:
+            name: {{ $volume.configMap.name }}
+          {{- else if $volume.secret }}
+          secret:
+            secretName: {{ $volume.secret.secretName }}
+          {{- else if $volume.emptyDir }}
+          emptyDir: {}
+          {{- else if $volume.hostPath }}
+          hostPath:
+            path: {{ $volume.hostPath.path }}
+            {{- if $volume.hostPath.type }}
+            type: {{ $volume.hostPath.type }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END Deployment */}}

@@ -1,6 +1,7 @@
-{{- $values := $.Values.indexerAgent }}
+{{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerAgent) }}
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+
 {{/* START StatefulSet */}}
 ---
 apiVersion: apps/v1
@@ -51,26 +52,42 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
-          {{- with (deepCopy $.Values.indexerDefaults.env | mustMerge $values.env) }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
+          {{- if $values.env }}
+          {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
-          {{- end }}
-          {{- with (deepCopy $.Values.indexerDefaults.secretEnv | mustMerge $values.secretEnv) }}
-          {{- range $key, $val := .}}
+          {{- if $values.secretEnv }}
+          {{- range $key, $val := $values.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
-                  optional: false
           {{- end }}
           {{- end }}
           args:
-          {{- with (deepCopy $.Values.indexerDefaults.config | mustMerge $values.config) }}
+            - --graph-node-query-endpoint={{ $values.config.graph_node.query_url }}
+            - --graph-node-status-endpoint={{ $values.config.graph_node.status_url }}
+            - --indexer-address={{ $values.config.indexer.indexer_address | quote }}
+            {{- with (index $values.config "subgraphs.network") }}
+            {{- if hasKey . "query_url" }}
+            - --network-subgraph-endpoint={{ .query_url | quote }}
+            {{- end }}
+            {{- if hasKey . "deployment_id" }}
+            - --network-subgraph-deployment={{ .deployment_id | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with (index $values.config "subgraphs.escrow") }}
+            {{- if hasKey . "query_url" }}
+            - --tap-subgraph-endpoint={{ .query_url | quote }}
+            {{- end }}
+            {{- end }}
+            - --postgres-database={{ $values.postgresConfig.database }}
+            - --postgres-host={{ $values.postgresConfig.host }}
+            - --postgres-port={{ $values.postgresConfig.port }}
+          {{- with $.Values.indexerAgent.config }}
           {{- range $key, $val := .}}
           {{- if not (kindIs "invalid" $val) }}
             - --{{ $key }}={{ $val }}
@@ -82,11 +99,13 @@ spec:
           {{- end }}
           ports:
             - name: http-mgmtapi
-              containerPort: 8000
+              containerPort: {{ index $.Values.indexerAgent.config "indexer-management-port" }}
               protocol: TCP
+            {{- if $values.metrics.enabled }}
             - name: http-metrics
-              containerPort: 7300
+              containerPort: {{ $values.metrics.port }}
               protocol: TCP
+            {{- end }}
           readinessProbe:
             httpGet:
               port: http-mgmtapi

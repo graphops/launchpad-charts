@@ -1,4 +1,4 @@
-{{- $values := $.Values.grafana }}
+{{ $values := $.Values.grafana }}
 {{- if $values.dashboards }}
 apiVersion: v1
 kind: ConfigMap
