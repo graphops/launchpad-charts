@@ -52,6 +52,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-admin-endpoint":"test","indexer-management-port":8000}` |
  | indexerAgent.config.ethereum-network | Name of the network that you have specified a node URL for in `ethereum` | string | `"mainnet"` |
  | indexerAgent.env |  | object | `{}` |
+ | indexerAgent.extraArgs |  | list | `[]` |
  | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.21.4"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |

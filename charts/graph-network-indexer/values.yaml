@@ -181,6 +181,8 @@ indexerAgent:
 
   tolerations: []
 
+  extraArgs: []
+
   affinityPresets:
     # -- Configure anti-affinity rules to prevent multiple instances on the same host
     antiAffinityByHostname: true
