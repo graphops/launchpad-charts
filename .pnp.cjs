@@ -30,9 +30,6 @@ const RAW_RUNTIME_STATE =
           ["@commitlint/cli", "npm:19.4.1"],\
           ["@commitlint/config-conventional", "npm:19.4.1"],\
           ["@types/cosmiconfig", "npm:6.0.0"],\
-          ["@types/node", "npm:22.5.4"],\
-          ["@types/typescript", "npm:2.0.0"],\
-          ["cosmiconfig", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:9.0.0"],\
           ["cosmiconfig-typescript-loader", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:5.0.0"],\
           ["git-cliff", "npm:2.5.0"],\
           ["husky", "npm:9.1.5"],\
@@ -314,16 +311,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["@types/typescript", [\
-      ["npm:2.0.0", {\
-        "packageLocation": "../../../.yarn/berry/cache/@types-typescript-npm-2.0.0-4639092a54-10.zip/node_modules/@types/typescript/",\
-        "packageDependencies": [\
-          ["@types/typescript", "npm:2.0.0"],\
-          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["JSONStream", [\
       ["npm:1.3.5", {\
         "packageLocation": "../../../.yarn/berry/cache/JSONStream-npm-1.3.5-1987f2e6dd-10.zip/node_modules/JSONStream/",\
@@ -429,9 +416,6 @@ const RAW_RUNTIME_STATE =
           ["@commitlint/cli", "npm:19.4.1"],\
           ["@commitlint/config-conventional", "npm:19.4.1"],\
           ["@types/cosmiconfig", "npm:6.0.0"],\
-          ["@types/node", "npm:22.5.4"],\
-          ["@types/typescript", "npm:2.0.0"],\
-          ["cosmiconfig", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:9.0.0"],\
           ["cosmiconfig-typescript-loader", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:5.0.0"],\
           ["git-cliff", "npm:2.5.0"],\
           ["husky", "npm:9.1.5"],\
@@ -554,23 +538,6 @@ const RAW_RUNTIME_STATE =
           "typescript"\
         ],\
         "linkType": "HARD"\
-      }],\
-      ["virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:9.0.0", {\
-        "packageLocation": "./.yarn/__virtual__/cosmiconfig-virtual-f109abfe87/4/.yarn/berry/cache/cosmiconfig-npm-9.0.0-47d78cf275-10.zip/node_modules/cosmiconfig/",\
-        "packageDependencies": [\
-          ["cosmiconfig", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:9.0.0"],\
-          ["@types/typescript", "npm:2.0.0"],\
-          ["env-paths", "npm:2.2.1"],\
-          ["import-fresh", "npm:3.3.0"],\
-          ["js-yaml", "npm:4.1.0"],\
-          ["parse-json", "npm:5.2.0"],\
-          ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
-        ],\
-        "packagePeers": [\
-          "@types/typescript",\
-          "typescript"\
-        ],\
-        "linkType": "HARD"\
       }]\
     ]],\
     ["cosmiconfig-typescript-loader", [\
@@ -606,9 +573,9 @@ const RAW_RUNTIME_STATE =
         "packageDependencies": [\
           ["cosmiconfig-typescript-loader", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:5.0.0"],\
           ["@types/cosmiconfig", "npm:6.0.0"],\
-          ["@types/node", "npm:22.5.4"],\
-          ["@types/typescript", "npm:2.0.0"],\
-          ["cosmiconfig", "virtual:e7798cee8ea39df90cb5313f2b9b2cdf6c6ac46f56b38997f85f72b092ea9744d7873d752a4743e647685dbb1665f535feedc40fb2fec6f1a35a790b0ff1a4ee#npm:9.0.0"],\
+          ["@types/node", null],\
+          ["@types/typescript", null],\
+          ["cosmiconfig", null],\
           ["jiti", "npm:1.21.6"],\
           ["typescript", "patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"]\
         ],\
