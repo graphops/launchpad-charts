@@ -23,13 +23,10 @@
 {{/* Get chart-defined init containers */}}
 {{- $chartInitContainers := include "def.chartInitContainers" $templateCtx | fromYaml }}
 
-{{/* Get user-defined init containers */}}
-{{- $podInitContainers := get (include "utils.templateCollection" (list $podCtx.initContainers $templateCtx) | fromYaml) "result" }}
-
 {{/* Process user-defined containers, merging with chart-defined if they exist */}}
 {{- $finalContainers := list }}
-{{- range $name, $container := $podInitContainers }}
-  {{- if eq ( get $container "enabled" | default "true" ) "true" }}
+{{- range $name, $container := $podCtx.initContainers }}
+  {{- if ne $container.enabled false }}
     {{- $chartContainer := get $chartInitContainers $name }}
     {{- $mergedContainer := dict }}
     {{- if $chartContainer }}
@@ -41,7 +38,7 @@
     {{- if not ( hasKey $mergedContainer "name" ) }}
       {{- $_ := set $mergedContainer "name" $name }}
     {{- end }}
-    {{- range $key, $value := $mergedContainer }}
+    {{- range $key, $value := (omit $mergedContainer "enabled") }}
       {{- if not ( hasPrefix "_" $key ) }}
         {{- $_ := set $cleanedContainer $key $value }}
       {{- end }}
@@ -49,6 +46,7 @@
     {{- $finalContainers = append $finalContainers $cleanedContainer }}
   {{- end }}
 {{- end }}
+
 {{- $finalContainers | toYaml }}
 {{- end }}
 

@@ -72,7 +72,4 @@
 {{ $renderedServiceMonitor | toYaml }}
 {{- end -}}
 
----
-{{ $templateCtx.Pod.volumeMounts | toYaml }}
-
 {{- end }}

@@ -1,6 +1,8 @@
 # Default values for firehose-evm.
 # This is a YAML-formatted file.
 
+
+
 global:
   nameOverride: ""
   fullnameOverride: ""
@@ -50,11 +52,12 @@ firehoseComponentDefaults:
       common-merged-blocks-store-url: null
       common-live-blocks-addr: "relayer:10014"
     args:
+      __separator: "="
       start: "__none"
-      "-c": "/config/config.yaml"
+      "--config-file": "/config/config.yaml"
     argsOrder:
       - start
-      - "-c"
+      - "--config-file"
 
   configMap:
     enabled: true
@@ -65,17 +68,19 @@ firehoseComponentDefaults:
         args:
           {{- range .Pod.fireeth.services }}
           - {{ . }}
-          {{- if contains "node" . }}
-          {{- $nodeArgs := true }}
+          {{- if (contains "node" .) }}
+          {{- $nodeArgs = true }}
           {{- end }}
           {{- end }}
         flags:
-          {{- .Pod.fireeth.config | toYaml | nindent 4 }}
+          {{- range $key, $value := .Pod.fireeth.config }}
+          {{ $key }}: "{{ $value }}"
+          {{- end }}
           {{- if $nodeArgs }}
           {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.node.args | default dict ) ) | fromYamlArray }}
           reader-node-arguments: |
           {{- range $readerNodeArgs }}
-            - {{ . | quote }}
+            {{ . }}
           {{- end }}
           {{- end }}
 
@@ -99,7 +104,17 @@ firehoseComponentDefaults:
   serviceHeadless: '{{ eq .Pod.kind "StatefulSet" | ternary true true }}'
 
   # -- Init containers configuration
-  initContainers: {}
+  initContainers:
+    10-init-nodeport:
+      enabled: false
+      image: lachlanevenson/k8s-kubectl:v1.25.4
+      imagePullPolicy: IfNotPresent
+      resources: {}
+    20-init-envsubst:
+      enabled: false
+      image: blockstack/envsubst:latest
+      imagePullPolicy: IfNotPresent
+      resources: {}
 
   # -- Environment variables
   env: {}
@@ -182,15 +197,18 @@ firehoseComponentDefaults:
 
   # -- Pod-wide security context
   podSecurityContext:
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
     runAsNonRoot: true
     runAsUser: 1000
+    runAsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
+    fsGroup: '{{ .Pod.podSecurityContext.runAsUser }}'
+
+  # -- Container level security context overrides
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
         - ALL
-  # -- Container level security context overrides
-  securityContext: {}
 
   # -- Resource requests and limits
   resources: {}
@@ -280,7 +298,10 @@ firehoseComponentDefaults:
         name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-config'
         defaultMode: 420
     config-processed:
-      enabled: '{{ .Pod.configMap.useEnvSubst }}'
+      enabled: '{{ and .Pod.configMap.useEnvSubst .Pod.configMap.enabled }}'
+      emptyDir: {}
+    env-dir:
+      enabled: '{{ (or (and .Pod.configMap.useEnvSubst .Pod.configMap.enabled) false ) | ternary true false }}'
       emptyDir: {}
 
   volumeMounts:
@@ -308,12 +329,12 @@ firehoseServiceDefaults:
       enabled: true
       spec:
         ports:
-          firehose-grpc:
+          fh-grpc:
             port: '{{ with .Pod.fireeth.config }}{{ if (index . "firehose-grpc-listen-addr") }}{{ splitList ":" (index . "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
             protocol: TCP
 
     ports:
-      firehose-grpc:
+      fh-grpc:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "firehose-grpc-listen-addr") }}{{ splitList ":" (index . "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
@@ -365,12 +386,12 @@ firehoseServiceDefaults:
       enabled: true
       spec:
         ports:
-          index-builder-grpc:
+          index-grpc:
             port: '{{ with .Pod.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
             protocol: TCP
 
     ports:
-      index-builder-grpc:
+      index-grpc:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
@@ -401,16 +422,16 @@ firehoseServiceDefaults:
         metrics.addr: 0.0.0.0
         metrics.port: 6061
         authrpc.port: 8551
-        authrpc.jwtsecret: /jwt/jwt.hex
+#        authrpc.jwtsecret: /jwt/jwt.hex
         authrpc.addr: 0.0.0.0
         authrpc.vhosts: '*'
         datadir: "{node-data-dir}"
         firehose-enabled: "__none"
-        port: EXTERNAL_PORT
-        discovery.port: EXTERNAL_PORT
-        nat: "extip:EXTERNAL_IP"
+#        port: "${EXTERNAL_PORT}"
+#        discovery.port: "${EXTERNAL_PORT}"
+        nat: "extip:${EXTERNAL_IP}"
         sepolia: "__none"
-        networkid: 11155111
+        networkid: "11155111"
         txlookuplimit: 1000
         cache: 8192
         maxpeers: 100
@@ -424,7 +445,7 @@ firehoseServiceDefaults:
     service:
       spec:
         ports:
-          reader-node-grpc:
+          reader-grpc:
             port: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
             protocol: TCP
           node-metrics:
@@ -439,20 +460,16 @@ firehoseServiceDefaults:
 
     # -- Container ports
     ports:
-      reader-node-grpc:
+      reader-grpc:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
         protocol: TCP
 
     # -- Init containers configuration
     initContainers:
       10-init-nodeport:
-        image: lachlanevenson/k8s-kubectl:v1.25.4
-        imagePullPolicy: IfNotPresent
-        resources: {}
-      20-init-snapshot:
-        image: rclone/rclone:1.67.0
-        imagePullPolicy: IfNotPresent
-        resources: {}
+        enabled: true
+      20-init-envsubst:
+        enabled: true
 
     volumeClaimTemplates:
       data-dir:
@@ -461,16 +478,37 @@ firehoseServiceDefaults:
           labels: {}
         spec:
           accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "standard"
+          storageClassName: "openebs-zfs-localpv-compressed-8k"
           resources:
             requests:
               storage: 50Gi
+      node-data-dir:
+        enabled: true
+        metadata:
+          labels: {}
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "openebs-zfs-localpv-compressed-8k"
+          resources:
+            requests:
+              storage: 3Ti
+
 
     volumes:
       data-dir:
         emptyDir: null
         persistentVolumeClaim:
           claimName: data-dir
+      node-data-dir:
+        enabled: true
+        persistentVolumeClaim:
+          claimName: node-data-dir
+
+    volumeMounts:
+      node-data-dir:
+        enabled: true
+        readOnly: false
+        mountPath: '{{ index .Pod.fireeth.config "reader-node-data-dir" }}'
 
     lifecycle:
       preStop:

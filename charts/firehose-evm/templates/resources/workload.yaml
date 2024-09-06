@@ -1,5 +1,4 @@
 {{- define "templates.Workload" }}
-{{- $configHash := "0xdeadbeef"}}
 apiVersion: apps/v1
 kind: {{ .Pod.kind }}
 metadata:
@@ -27,17 +26,64 @@ spec:
     {{- end }}
     {{- end }}
   replicas: {{ .Pod.replicas }}
+
+  {{- with .Pod.updateStrategy }}
+  updateStrategy:
+    {{ . | toYaml | nindent 4 }}
+  {{- end }}
+
+  {{- if eq .Pod.kind "StatefulSet" }}
+
+  {{- with .Pod.podManagementPolicy }}
+  podManagementPolicy: {{ . }}
+  {{- end }}
+
+  {{- with .Pod.serviceName }}
+  serviceName: {{ . }}
+  {{- end }}
+
+  {{- with .Pod.volumeClaimTemplates }}
+  {{- $enabledVolumeClaimTemplates := dict }}
+  {{- range $name, $vc := . }}
+  {{- if ( $vc.enabled | default false ) }}
+  {{- $_ := set $enabledVolumeClaimTemplates $name $vc }}
+  {{- end }}
+  {{- end }}
+  {{- if not (empty $enabledVolumeClaimTemplates) }}
+  volumeClaimTemplates:
+    {{- range $name, $vc := $enabledVolumeClaimTemplates }}
+    - metadata:
+        name: {{ $name }}
+        {{ omit ($vc.metadata | default dict) "name" | toYaml | nindent 8 }}
+
+        {{- with $vc.metadata }}
+        annotations:
+        {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+        {{- range $key, $value := $annotations }}
+          {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        labels:
+        {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+        {{- range $key, $value := $labels }}
+          {{ $key }}: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+      spec:
+        {{ $vc.spec | default dict | toYaml | nindent 8 }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
   template:
     metadata:
       {{- with .Pod }}
       annotations:
+      {{- if .configMap.enabled }}
+        config/hash: {{ .configMap.template | sha256sum }}
+      {{- end }}
       {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
       {{- range $key, $value := $annotations }}
         {{ $key }}: {{ $value | quote }}
-      {{- end }}
-      {{- if not .annotations }}
-        # Add an empty line to ensure annotations block is created if it does not exist
-        {}
       {{- end }}
       {{- end }}
 
@@ -88,9 +134,6 @@ spec:
             matchLabels:
               {{- include "metadata.selectorLabels" $ | nindent 14 }}
         {{- end }}
-      {{- end }}
-      {{- with .Pod.updateStrategy }}
-      updateStrategy: {{ . }}
       {{- end }}
 
       {{- with .Pod.volumes }}
@@ -201,46 +244,4 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
-
-      {{- if eq .Pod.kind "StatefulSet" }}
-      {{- with .Pod.podManagementPolicy }}
-      podManagementPolicy: {{ . }}
-      {{- end }}
-
-      {{- with .Pod.serviceName }}
-      serviceName: {{ . }}
-      {{- end }}
-
-      {{- with .Pod.volumeClaimTemplates }}
-      {{- $enabledVolumeClaimTemplates := dict }}
-      {{- range $name, $vc := . }}
-      {{- if ( $vc.enabled | default false ) }}
-      {{- $_ := set $enabledVolumeClaimTemplates $name $vc }}
-      {{- end }}
-      {{- end }}
-      {{- if not (empty $enabledVolumeClaimTemplates) }}
-      volumeClaimTemplates:
-        {{- range $name, $vc := $enabledVolumeClaimTemplates }}
-        - metadata:
-            name: {{ $name }}
-            {{ omit ($vc.metadata | default dict) "name" | toYaml | nindent 12 }}
-
-            {{- with $vc.metadata }}
-            annotations:
-            {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
-            {{- range $key, $value := $annotations }}
-              {{ $key }}: {{ $value | quote }}
-            {{- end }}
-            labels:
-            {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
-            {{- range $key, $value := $labels }}
-              {{ $key }}: {{ $value | quote }}
-            {{- end }}
-            {{- end }}
-          spec:
-            {{ $vc.spec | default dict | toYaml | nindent 12 }}
-        {{- end }}
-      {{- end }}
-      {{- end }}
-      {{- end }}
 {{- end }}

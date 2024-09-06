@@ -51,7 +51,7 @@ firehoseComponents:
         firehose-grpc-listen-addr: "0.0.0.0:10015"
 ```
 
-Will provision a Deployment, called `read-path-workload` and a StatefulSet called `write-path-workload`, each with its own ConfigMap dynamically generated based on that list of parameters, as well as a range of other Kubernetes resources such as a Service, Service Account, serviceMonitor, etc. 
+Will provision a Deployment, called `read-path-workload` and a StatefulSet called `write-path-workload`, each with its own ConfigMap dynamically generated based on that list of parameters, as well as a range of other Kubernetes resources such as a Service, Service Account, serviceMonitor, etc.
 
 ### firehoseServiceDefaults
 
@@ -118,18 +118,51 @@ firehoseComponents:
         - reader-node
         - merger
 ```
-then the result would be `kind: Deployment`. So it makes sense most of the `firehoseServiceDefaults` are really component specific and do not overlap much with each other.
+then the result would be `kind: Deployment`. So it's intended for most of `firehoseServiceDefaults` to be component specific and do not overlap much with each other.
 
 ### General chart interfaces
 
-Virtually any aspect of both the workload, or any of the other resources can be extended or overridden.
+Virtually any aspect of the workload (StatefulSet or Deployment) can be overriden under the component level key, where you can set things such as `resources:`, `nodeSelector:`, `podSecurityContext:`, `env:` or `labels:`. Note that those often map to keys that are structured in different parts of the workload spec, such as `metadata.labels` or keys from the POD level or the container definition (there is a single main container defined). In general those have been flattened for convenience.
 
-There are three major `.Values` sections:
-- firehoseComponents
+On par with settings workload spec parameters, a firehose component includes a range of different resources such as a Service, ConfigMap, ServiceMonitor, .... Those resources have a corresponding key to override or extend their parameters, or with entra configuration settingsm, as well as an `enabled` boolean to toggle their creation. Example:
 
+```yaml
+# -- ServiceMonitor configuration for Prometheus Operator
+serviceMonitor:
+  # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+  enabled: true
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    # Endpoint overrides, keyed by port name
+    endpoints:
+      metrics-fh:
+        # Override or add any endpoint-specific fields
+        interval: "30s"
+        scrapeTimeout: "10s"
+        path: /metrics
+        honorLabels: true
+        # ... any other endpoint-specific fields
+    # Any other top-level ServiceMonitor spec fields
 
-- firehoseComponentDefaults
-- global
+  # -- Service account configuration
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- Labels to add to the service account
+  labels: {}
+  rbac:
+    create: true
+    rules: []
+    clusterWide: false
+```
+
 
 
 ## Quickstart

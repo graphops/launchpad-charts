@@ -46,7 +46,7 @@ Uses digest if provided, otherwise uses tag. Requires repository.
   {{- if contains "\n" $collection }}
     {{- dict "result" ( tpl $collection $templateCtx ) | toYaml }}
   {{- else }}
-    {{- $tempStr := printf "%s: %s" "result" ( $collection | trimAll "\"" | trimAll "'" ) }}
+    {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
     {{ tpl $tempStr $templateCtx }}
   {{- end }}
 {{- else if kindIs "map" $collection -}}

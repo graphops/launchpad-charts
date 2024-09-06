@@ -118,17 +118,50 @@ firehoseComponents:
         - reader-node
         - merger
 ```
-then the result would be `kind: Deployment`. So it makes sense most of the `firehoseServiceDefaults` are really component specific and do not overlap much with each other.
+then the result would be `kind: Deployment`. So it's intended for most of `firehoseServiceDefaults` to be component specific and do not overlap much with each other.
 
 ### General chart interfaces
 
-Virtually any aspect of both the workload, or any of the other resources can be extended or overridden.
+Virtually any aspect of the workload (StatefulSet or Deployment) can be overriden under the component level key, where you can set things such as `resources:`, `nodeSelector:`, `podSecurityContext:`, `env:` or `labels:`. Note that those often map to keys that are structured in different parts of the workload spec, such as `metadata.labels` or keys from the POD level or the container definition (there is a single main container defined). In general those have been flattened for convenience.
 
-There are three major `.Values` sections:
-- firehoseComponents
+On par with settings workload spec parameters, a firehose component includes a range of different resources such as a Service, ConfigMap, ServiceMonitor, .... Those resources have a corresponding key to override or extend their parameters, or with entra configuration settingsm, as well as an `enabled` boolean to toggle their creation. Example:
 
-- firehoseComponentDefaults
-- global
+```yaml
+# -- ServiceMonitor configuration for Prometheus Operator
+serviceMonitor:
+  # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+  enabled: true
+  metadata:
+    labels: {}
+    annotations: {}
+  spec:
+    # Endpoint overrides, keyed by port name
+    endpoints:
+      metrics-fh:
+        # Override or add any endpoint-specific fields
+        interval: "30s"
+        scrapeTimeout: "10s"
+        path: /metrics
+        honorLabels: true
+        # ... any other endpoint-specific fields
+    # Any other top-level ServiceMonitor spec fields
+
+  # -- Service account configuration
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- Labels to add to the service account
+  labels: {}
+  rbac:
+    create: true
+    rules: []
+    clusterWide: false
+```
 
 ## Quickstart
 
@@ -154,7 +187,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.affinity | Affinity configuration | object | `{}` |
  | firehoseComponentDefaults.annotations | Component level annotations (templated) | object | `{}` |
  | firehoseComponentDefaults.configMap.enabled |  | bool | `true` |
- | firehoseComponentDefaults.configMap.template |  | string | `"{{- $nodeArgs := false }}\nstart:\n  args:\n    {{- range .Pod.fireeth.services }}\n    - {{ . }}\n    {{- if contains \"node\" . }}\n    {{- $nodeArgs := true }}\n    {{- end }}\n    {{- end }}\n  flags:\n    {{- .Pod.fireeth.config \| toYaml \| nindent 4 }}\n    {{- if $nodeArgs }}\n    {{- $readerNodeArgs := include \"utils.generateArgsList\" (dict \"map\" ( .Pod.node.args \| default dict ) ) \| fromYamlArray }}\n    reader-node-arguments: \|\n    {{- range $readerNodeArgs }}\n      - {{ . \| quote }}\n    {{- end }}\n    {{- end }}\n"` |
+ | firehoseComponentDefaults.configMap.template |  | string | `"{{- $nodeArgs := false }}\nstart:\n  args:\n    {{- range .Pod.fireeth.services }}\n    - {{ . }}\n    {{- if (contains \"node\" .) }}\n    {{- $nodeArgs = true }}\n    {{- end }}\n    {{- end }}\n  flags:\n    {{- range $key, $value := .Pod.fireeth.config }}\n    {{ $key }}: \"{{ $value }}\"\n    {{- end }}\n    {{- if $nodeArgs }}\n    {{- $readerNodeArgs := include \"utils.generateArgsList\" (dict \"map\" ( .Pod.node.args \| default dict ) ) \| fromYamlArray }}\n    reader-node-arguments: \|\n    {{- range $readerNodeArgs }}\n      {{ . }}\n    {{- end }}\n    {{- end }}\n"` |
  | firehoseComponentDefaults.configMap.useEnvSubst |  | bool | `false` |
  | firehoseComponentDefaults.env | Environment variables | object | `{}` |
  | firehoseComponentDefaults.envFrom | Environment variables from references | object | `{"SecretKeyRef":{"FIREETH_COMMON_FORKED_BLOCKS_STORE_URL":{"key":"","name":""},"FIREETH_COMMON_INDEX_STORE_URL":{"key":"","name":""},"FIREETH_COMMON_MERGED_BLOCKS_STORE_URL":{"key":"","name":""},"FIREETH_COMMON_ONE_BLOCK_STORE_URL":{"key":"","name":""}}}` |
@@ -167,7 +200,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.envFrom.SecretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.key | Name of the data key in the secret that contains your S3 bucket url for storing one blocks | string | `""` |
  | firehoseComponentDefaults.envFrom.SecretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing one blocks | string | `""` |
  | firehoseComponentDefaults.extraContainers | Extra containers to add to the pod (templated) | object | `{}` |
- | firehoseComponentDefaults.fireeth | Firehose-specific configuration | object | `{"args":{"-c":"/config/config.yaml","start":"__none"},"argsOrder":["start","-c"],"config":{"common-forked-blocks-store-url":null,"common-index-block-sizes":10000,"common-live-blocks-addr":"relayer:10014","common-merged-blocks-store-url":null,"common-one-block-store-url":null,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"log-to-file":false,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}","pprof-listen-addr":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"127.0.0.1","enabled":true,"port":6060},"services":[]}` |
+ | firehoseComponentDefaults.fireeth | Firehose-specific configuration | object | `{"args":{"--config-file":"/config/config.yaml","__separator":"=","start":"__none"},"argsOrder":["start","--config-file"],"config":{"common-forked-blocks-store-url":null,"common-index-block-sizes":10000,"common-live-blocks-addr":"relayer:10014","common-merged-blocks-store-url":null,"common-one-block-store-url":null,"data-dir":"/var/lib/fireeth","firehose-rate-limit-bucket-fill-rate":"1s","firehose-rate-limit-bucket-size":20,"log-to-file":false,"metrics-listen-addr":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}","pprof-listen-addr":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%s:%d\" .addr ( .port \| int ) ) nil }}{{ end }}"},"metrics":{"addr":"0.0.0.0","enabled":true,"port":9102},"pprof":{"addr":"127.0.0.1","enabled":true,"port":6060},"services":[]}` |
  | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false}` |
  | firehoseComponentDefaults.image | Image configuration for firehose-evm | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
@@ -175,18 +208,18 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.image.repository | Docker image repository | string | `"ghcr.io/streamingfast/firehose-ethereum"` |
  | firehoseComponentDefaults.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.6.7-geth-v1.13.15-fh2.4"` |
  | firehoseComponentDefaults.imagePullSecrets | Pull secrets required to fetch images | list | `[]` |
- | firehoseComponentDefaults.initContainers | Init containers configuration | object | `{}` |
+ | firehoseComponentDefaults.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"enabled":false,"image":"lachlanevenson/k8s-kubectl:v1.25.4","imagePullPolicy":"IfNotPresent","resources":{}},"20-init-envsubst":{"enabled":false,"image":"blockstack/envsubst:latest","imagePullPolicy":"IfNotPresent","resources":{}}}` |
  | firehoseComponentDefaults.kind |  | string | `"Deployment"` |
  | firehoseComponentDefaults.labels | Component level labels (templated) | object | `{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/part-of":"{{ .Root.Release.Name }}","version.firehose.graphops.xyz/fireeth":"2.6.7","version.firehose.graphops.xyz/node":"1.13.15","version.firehose.graphops.xyz/protocol":"2.4"}` |
  | firehoseComponentDefaults.lifecycle | Lifecycle hooks | object | `{}` |
  | firehoseComponentDefaults.nodeSelector | Node selector configuration | object | `{}` |
  | firehoseComponentDefaults.podDisruptionBudget | Pod Disruption Budget configuration | object | `{"enabled":true}` |
  | firehoseComponentDefaults.podManagementPolicy | , scaling behavior: (OrderedReady | Parallel) | StatefulSet only | `"OrderedReady"` |
- | firehoseComponentDefaults.podSecurityContext | Pod-wide security context | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true,"runAsNonRoot":true,"runAsUser":1000}` |
+ | firehoseComponentDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":"{{ .Pod.podSecurityContext.runAsUser }}","runAsGroup":"{{ .Pod.podSecurityContext.runAsUser }}","runAsNonRoot":true,"runAsUser":1000}` |
  | firehoseComponentDefaults.ports.metrics-fh.containerPort |  | string | `"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%d\" ( .port \| int ) ) nil }}{{ end }}"` |
  | firehoseComponentDefaults.ports.metrics-fh.protocol |  | string | `"TCP"` |
  | firehoseComponentDefaults.resources | Resource requests and limits | object | `{}` |
- | firehoseComponentDefaults.securityContext | Container level security context overrides | object | `{}` |
+ | firehoseComponentDefaults.securityContext | Container level security context overrides | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"readOnlyRootFilesystem":true}` |
  | firehoseComponentDefaults.service | Service configuration | object | `{"annotations":{},"enabled":true,"labels":{},"spec":{"ports":{"fh-metrics":{"port":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%d\" ( .port \| int ) ) nil }}{{ end }}","protocol":"TCP"}},"type":"ClusterIP"}}` |
  | firehoseComponentDefaults.service.annotations | Additional service annotations | object | `{}` |
  | firehoseComponentDefaults.service.labels | Additional service labels | object | `{}` |
@@ -214,12 +247,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.volumeMounts.data-dir.mountPath |  | string | `"{{ index .Pod.fireeth.config \"data-dir\" }}"` |
  | firehoseComponentDefaults.volumeMounts.data-dir.readOnly |  | bool | `false` |
  | firehoseComponentDefaults.volumes.config-processed.emptyDir |  | object | `{}` |
- | firehoseComponentDefaults.volumes.config-processed.enabled |  | string | `"{{ .Pod.configMap.useEnvSubst }}"` |
+ | firehoseComponentDefaults.volumes.config-processed.enabled |  | string | `"{{ and .Pod.configMap.useEnvSubst .Pod.configMap.enabled }}"` |
  | firehoseComponentDefaults.volumes.config.configMap.defaultMode |  | int | `420` |
  | firehoseComponentDefaults.volumes.config.configMap.name |  | string | `"{{ include \"metadata.fullname\" $ }}-{{ .componentName }}-config"` |
  | firehoseComponentDefaults.volumes.config.enabled |  | string | `"{{ .Pod.configMap.enabled }}"` |
  | firehoseComponentDefaults.volumes.data-dir.emptyDir |  | object | `{}` |
  | firehoseComponentDefaults.volumes.data-dir.enabled |  | bool | `true` |
+ | firehoseComponentDefaults.volumes.env-dir.emptyDir |  | object | `{}` |
+ | firehoseComponentDefaults.volumes.env-dir.enabled |  | string | `"{{ (or (and .Pod.configMap.useEnvSubst .Pod.configMap.enabled) false ) \| ternary true false }}"` |
  | firehoseComponents.grpc.enabled |  | bool | `true` |
  | firehoseComponents.grpc.existingConfigMap |  | string | `""` |
  | firehoseComponents.grpc.fireeth | Firehose-specific configuration | object | `{"services":["firehose"]}` |
@@ -262,18 +297,18 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponents.relayer.nameOverride |  | string | `""` |
  | firehoseComponents.relayer.replicas |  | int | `1` |
  | firehoseServiceDefaults.firehose.fireeth.config.firehose-grpc-listen-addr |  | string | `"0.0.0.0:10015"` |
- | firehoseServiceDefaults.firehose.ports.firehose-grpc.containerPort |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"firehose-grpc-listen-addr\") }}{{ splitList \":\" (index . \"firehose-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
- | firehoseServiceDefaults.firehose.ports.firehose-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.firehose.ports.fh-grpc.containerPort |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"firehose-grpc-listen-addr\") }}{{ splitList \":\" (index . \"firehose-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.firehose.ports.fh-grpc.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.firehose.service.enabled |  | bool | `true` |
- | firehoseServiceDefaults.firehose.service.spec.ports.firehose-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"firehose-grpc-listen-addr\") }}{{ splitList \":\" (index . \"firehose-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
- | firehoseServiceDefaults.firehose.service.spec.ports.firehose-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.firehose.service.spec.ports.fh-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"firehose-grpc-listen-addr\") }}{{ splitList \":\" (index . \"firehose-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.firehose.service.spec.ports.fh-grpc.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.index-builder.fireeth.config.index-builder-grpc-listen-addr |  | string | `"0.0.0.0:10009"` |
  | firehoseServiceDefaults.index-builder.fireeth.config.index-builder-index-size |  | string | `"1000"` |
- | firehoseServiceDefaults.index-builder.ports.index-builder-grpc.containerPort |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"index-builder-grpc-listen-addr\") }}{{ splitList \":\" (index . \"index-builder-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
- | firehoseServiceDefaults.index-builder.ports.index-builder-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.index-builder.ports.index-grpc.containerPort |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"index-builder-grpc-listen-addr\") }}{{ splitList \":\" (index . \"index-builder-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.index-builder.ports.index-grpc.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.index-builder.service.enabled |  | bool | `true` |
- | firehoseServiceDefaults.index-builder.service.spec.ports.index-builder-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"index-builder-grpc-listen-addr\") }}{{ splitList \":\" (index . \"index-builder-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
- | firehoseServiceDefaults.index-builder.service.spec.ports.index-builder-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.index-builder.service.spec.ports.index-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"index-builder-grpc-listen-addr\") }}{{ splitList \":\" (index . \"index-builder-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.index-builder.service.spec.ports.index-grpc.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.merger.fireeth.config.merger-grpc-listen-addr |  | string | `":10012"` |
  | firehoseServiceDefaults.merger.ports.merger-grpc.containerPort |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"merger-grpc-listen-addr\") }}{{ splitList \":\" (index . \"merger-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
  | firehoseServiceDefaults.merger.ports.merger-grpc.protocol |  | string | `"TCP"` |
@@ -286,14 +321,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-grpc-listen-addr |  | string | `"0.0.0.0:10010"` |
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-manager-api-addr |  | string | `"127.0.0.1:10011"` |
  | firehoseServiceDefaults.reader-node.fireeth.config.reader-node-path |  | string | `"/app/geth"` |
- | firehoseServiceDefaults.reader-node.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"image":"lachlanevenson/k8s-kubectl:v1.25.4","imagePullPolicy":"IfNotPresent","resources":{}},"20-init-snapshot":{"image":"rclone/rclone:1.67.0","imagePullPolicy":"IfNotPresent","resources":{}}}` |
+ | firehoseServiceDefaults.reader-node.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"enabled":true},"20-init-envsubst":{"enabled":true}}` |
  | firehoseServiceDefaults.reader-node.kind |  | string | `"StatefulSet"` |
  | firehoseServiceDefaults.reader-node.lifecycle.preStop.exec.command[0] |  | string | `"/usr/local/bin/eth-maintenance"` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.addr" |  | string | `"0.0.0.0"` |
- | firehoseServiceDefaults.reader-node.node.args."authrpc.jwtsecret" |  | string | `"/jwt/jwt.hex"` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.port" |  | int | `8551` |
  | firehoseServiceDefaults.reader-node.node.args."authrpc.vhosts" |  | string | `"*"` |
- | firehoseServiceDefaults.reader-node.node.args."discovery.port" |  | string | `"EXTERNAL_PORT"` |
  | firehoseServiceDefaults.reader-node.node.args."http.addr" |  | string | `"0.0.0.0"` |
  | firehoseServiceDefaults.reader-node.node.args."http.api" |  | string | `"net,web3,eth,debug"` |
  | firehoseServiceDefaults.reader-node.node.args."http.vhosts" |  | string | `"*"` |
@@ -306,9 +339,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.node.args.firehose-enabled |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.http |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.maxpeers |  | int | `100` |
- | firehoseServiceDefaults.reader-node.node.args.nat |  | string | `"extip:EXTERNAL_IP"` |
- | firehoseServiceDefaults.reader-node.node.args.networkid |  | int | `11155111` |
- | firehoseServiceDefaults.reader-node.node.args.port |  | string | `"EXTERNAL_PORT"` |
+ | firehoseServiceDefaults.reader-node.node.args.nat |  | string | `"extip:${EXTERNAL_IP}"` |
+ | firehoseServiceDefaults.reader-node.node.args.networkid |  | string | `"11155111"` |
  | firehoseServiceDefaults.reader-node.node.args.sepolia |  | string | `"__none"` |
  | firehoseServiceDefaults.reader-node.node.args.snapshot |  | string | `"true"` |
  | firehoseServiceDefaults.reader-node.node.args.syncmode |  | string | `"full"` |
@@ -316,22 +348,32 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseServiceDefaults.reader-node.node.metrics.addr |  | string | `"0.0.0.0"` |
  | firehoseServiceDefaults.reader-node.node.metrics.enabled |  | bool | `true` |
  | firehoseServiceDefaults.reader-node.node.metrics.port |  | int | `6061` |
- | firehoseServiceDefaults.reader-node.ports | Container ports | object | `{"reader-node-grpc":{"containerPort":"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}","protocol":"TCP"}}` |
+ | firehoseServiceDefaults.reader-node.ports | Container ports | object | `{"reader-grpc":{"containerPort":"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}","protocol":"TCP"}}` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-auth.port |  | int | `8551` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-auth.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-metrics.port |  | int | `6061` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-metrics.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-mgr.port |  | string | `"{{ splitList \":\" ( index .Pod.fireeth.config \"reader-node-manager-api-addr\" ) \| last \| int }}"` |
  | firehoseServiceDefaults.reader-node.service.spec.ports.node-mgr.protocol |  | string | `"TCP"` |
- | firehoseServiceDefaults.reader-node.service.spec.ports.reader-node-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
- | firehoseServiceDefaults.reader-node.service.spec.ports.reader-node-grpc.protocol |  | string | `"TCP"` |
+ | firehoseServiceDefaults.reader-node.service.spec.ports.reader-grpc.port |  | string | `"{{ with .Pod.fireeth.config }}{{ if (index . \"reader-node-grpc-listen-addr\") }}{{ splitList \":\" (index . \"reader-node-grpc-listen-addr\") \| last \| int }}{{ else }}{{ nil }}{{ end }}{{ end }}"` |
+ | firehoseServiceDefaults.reader-node.service.spec.ports.reader-grpc.protocol |  | string | `"TCP"` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.enabled |  | bool | `true` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.metadata.labels |  | object | `{}` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.spec.accessModes[0] |  | string | `"ReadWriteOnce"` |
  | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.spec.resources.requests.storage |  | string | `"50Gi"` |
- | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.spec.storageClassName |  | string | `"standard"` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.data-dir.spec.storageClassName |  | string | `"openebs-zfs-localpv-compressed-8k"` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.node-data-dir.enabled |  | bool | `true` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.node-data-dir.metadata.labels |  | object | `{}` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.node-data-dir.spec.accessModes[0] |  | string | `"ReadWriteOnce"` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.node-data-dir.spec.resources.requests.storage |  | string | `"3Ti"` |
+ | firehoseServiceDefaults.reader-node.volumeClaimTemplates.node-data-dir.spec.storageClassName |  | string | `"openebs-zfs-localpv-compressed-8k"` |
+ | firehoseServiceDefaults.reader-node.volumeMounts.node-data-dir.enabled |  | bool | `true` |
+ | firehoseServiceDefaults.reader-node.volumeMounts.node-data-dir.mountPath |  | string | `"{{ index .Pod.fireeth.config \"reader-node-data-dir\" }}"` |
+ | firehoseServiceDefaults.reader-node.volumeMounts.node-data-dir.readOnly |  | bool | `false` |
  | firehoseServiceDefaults.reader-node.volumes.data-dir.emptyDir |  | string | `nil` |
  | firehoseServiceDefaults.reader-node.volumes.data-dir.persistentVolumeClaim.claimName |  | string | `"data-dir"` |
+ | firehoseServiceDefaults.reader-node.volumes.node-data-dir.enabled |  | bool | `true` |
+ | firehoseServiceDefaults.reader-node.volumes.node-data-dir.persistentVolumeClaim.claimName |  | string | `"node-data-dir"` |
  | firehoseServiceDefaults.relayer.fireeth.config.relayer-grpc-listen-addr |  | string | `"0.0.0.0:10014"` |
  | firehoseServiceDefaults.relayer.fireeth.config.relayer-max-source-latency |  | string | `"1h"` |
  | firehoseServiceDefaults.relayer.fireeth.config.relayer-source |  | string | `"reader:10010"` |
