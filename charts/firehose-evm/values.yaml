@@ -34,13 +34,13 @@ firehoseComponentDefaults:
 
     # -- Enable support for metrics
     metrics:
-      enabled: false
+      enabled: true
       addr: 0.0.0.0
       port: 9102
 
     # -- Enable pprof interface support for profiling data
     pprof:
-      enabled: false
+      enabled: true
       addr: 127.0.0.1
       port: 6060
 
@@ -135,13 +135,13 @@ firehoseComponentDefaults:
             {{- end }}
           flags:
             {{- range $key, $value := .Pod.fireeth.config }}
-            {{ $key }}: "{{ $value }}"
+            {{ $key }}: {{ $value | quote }}
             {{- end }}
             {{- if $nodeArgs }}
             {{- $readerNodeArgs := include "utils.generateArgsList" (dict "map" ( .Pod.fireeth.nodeArgs | default dict ) "orderList" ( .Pod.fireeth.nodeArgsOrder | default list ) ) | fromYamlArray }}
             reader-node-arguments: |
               {{- range $readerNodeArgs }}
-                {{ . }}
+              {{ . }}
               {{- end }}
               {{- end }}
     # -- Any remaiing key/values can be added and will be
@@ -163,7 +163,10 @@ firehoseComponentDefaults:
       ports:
         fh-metrics:
           port: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
-          protocol: "TCP"
+          protocol: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary "TCP" nil }}{{ end }}'
+        fh-pprof:
+          port: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
+          protocol: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary "TCP" nil }}{{ end }}'
     metadata:
       # -- Additional service labels
       labels: {}

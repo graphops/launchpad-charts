@@ -42,6 +42,9 @@ Uses digest if provided, otherwise uses tag. Requires repository.
 
 {{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
+{{- if not (regexMatch ".*\\{\\{.*" $collection) -}}
+{{- dict "result" $collection | toYaml -}}
+{{- else -}}
   {{/* this is to allow to preserve types other than strings */}}
   {{- if contains "\n" $collection }}
     {{- dict "result" ( tpl $collection $templateCtx ) | toYaml }}
@@ -52,6 +55,7 @@ Uses digest if provided, otherwise uses tag. Requires repository.
     {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
     {{ tpl $tempStr $templateCtx }}
   {{- end }}
+{{- end }}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
@@ -290,7 +294,9 @@ Example:
   {{- if hasKey $override $key -}}
     {{- if eq (index $override $key) nil -}}
       {{/* Skip this item if the override is null */}}
-    {{- else -}}
+    {{- else if empty (index $override $key) -}}
+      {{- $result = append $result $item }}
+    {{- else }}
       {{- $newItem := mergeOverwrite (deepCopy $item) (index $override $key) -}}
       {{- /* Ensure the new item has the defaultFor keys set */ -}}
       {{- range $defaultKey := $defaultFor -}}
@@ -308,14 +314,14 @@ Example:
 {{/* Then, add new items from the override map */}}
 {{- range $key, $value := $override -}}
   {{- if not (hasKey $seenKeys $key) -}}
-    {{- if ne $value nil -}}
+    {{- if and (ne $value nil) (not (empty $value)) -}}
       {{- /* Ensure the new item has the indexKey and defaultFor set */ -}}
       {{- range $defaultKey := $defaultFor -}}
       {{- if not (hasKey $value $defaultKey) }}
       {{- $_ := set $value $defaultKey $key }}
       {{- end }}
-      {{- end }}
       {{- $_ := set $value $indexKey $key -}}
+      {{- end }}
       {{- $result = append $result $value -}}
     {{- end -}}
   {{- end -}}

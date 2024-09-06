@@ -158,11 +158,10 @@ Example:
 {{- $templateCtx := dict "Root" $rootCtx "Pod" $mergedValues "componentName" $componentName }}
 
 {{- $configMapTemplate := deepCopy $templateCtx.Pod.configMap.options.template }}
+{{- $_ := set $templateCtx.Pod.configMap "options" (unset $templateCtx.Pod.configMap.options "template") }}
 
 {{- $1stPassPod := get (include "utils.templateCollection" (list $templateCtx.Pod $templateCtx) | fromYaml) "result" }}
 {{- $_ := set $templateCtx "Pod" $1stPassPod }}
-{{- $2ndPassPod := get (include "utils.templateCollection" (list $1stPassPod $templateCtx) | fromYaml) "result" }}
-{{- $_ := set $templateCtx "Pod" $2ndPassPod }}
 
 {{- $tplConfigMap := get (include "utils.templateCollection" (list $configMapTemplate $templateCtx) | fromYaml) "result" }}
 {{- $_ := set $templateCtx.Pod.configMap.options "template" $tplConfigMap }}
