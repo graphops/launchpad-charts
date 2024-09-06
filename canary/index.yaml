@@ -2676,6 +2676,17 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.1.0/erigon-0.1.0.tgz
       version: 0.1.0
+  firehose-evm:
+    - apiVersion: v2
+      appVersion: v2.6.7
+      created: "2024-09-06T09:32:49Z"
+      description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
+      digest: dee9c39053af645a77dcc3e197d3370e0ab411120afc03a9be3fe147bdaaab25
+      name: firehose-evm
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/firehose-evm-0.1.0-canary.1/firehose-evm-0.1.0-canary.1.tgz
+      version: 0.1.0-canary.1
   generic-app:
     - apiVersion: v2
       appVersion: generic-app
@@ -7098,4 +7109,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-09-06T03:32:42.263291587Z"
+generated: "2024-09-06T09:36:01.582248117Z"
