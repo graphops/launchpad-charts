@@ -308,9 +308,13 @@ firehoseComponentDefaults:
     version.firehose.graphops.xyz/protocol: "2.4"
 
   ports:
-    metrics-fh:
+    fh-metrics:
       containerPort: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
       protocol: TCP
+    fh-pprof:
+      containerPort: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
+      protocol: TCP
+
 
   # -- Init containers configuration
   initContainers:
@@ -554,11 +558,6 @@ firehoseServiceDefaults:
       p2p:
         enabled: true
         port: null
-        spec:
-          ports:
-            node-p2p-tcp:
-              port: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
-              protocol: TCP
 
       config:
         reader-node-grpc-listen-addr: "0.0.0.0:10010"
@@ -717,48 +716,35 @@ firehoseServiceDefaults:
 firehoseComponents:
   grpc:
     enabled: true
-
     replicas: 1
-    nameOverride: ""
-    fullnameOverride: ""
-    existingConfigMap: ""
-
     fireeth:
       services:
         - firehose
 
   relayer:
     enabled: true
-
     replicas: 1
     nameOverride: ""
     fullnameOverride: ""
-
     fireeth:
       services:
         - relayer
 
   merger:
     enabled: true
-
     fireeth:
       services:
         - merger
 
   index-builder:
     enabled: true
-
     fireeth:
       services:
         - index-builder
 
   reader-node:
     enabled: true
-
     replicas: 1
-    nameOverride: ""
-    fullnameOverride: ""
-
     fireeth:
       services:
         - reader-node
