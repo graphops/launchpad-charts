@@ -53,7 +53,7 @@ Uses digest if provided, otherwise uses tag. Requires repository.
     {{- printf "%s: %s" "result" "\"\"" }}
   {{- else }}
     {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
-    {{ tpl $tempStr $templateCtx }}
+    {{- tpl $tempStr $templateCtx }}
   {{- end }}
 {{- end }}
 {{- else if kindIs "map" $collection -}}

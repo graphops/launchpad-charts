@@ -54,7 +54,7 @@ firehoseComponentDefaults:
 
     # -- Provision or use an existing JWT secret
     # If it's enabled and neither existingSecret
-    # or fromLiteral are set, a random secret will
+    # nor fromLiteral are set, a random secret will
     # be generated and then re-used in the future
     jwt:
       # -- Provision or make use of a JWT secret for Node
@@ -101,9 +101,7 @@ firehoseComponentDefaults:
 
     # -- Enable support for metrics on the blockchain node
     nodeMetrics:
-      enabled: true
-      addr: 0.0.0.0
-      port: 6061
+      enabled: false
 
     # -- Command line arguments to pass to the blockchain node
     nodeArgs: {}
@@ -573,28 +571,29 @@ firehoseServiceDefaults:
       nodeArgs:
         __prefix: "--"
         __separator: "="
+        datadir: "{node-data-dir}"
+        firehose-enabled: "__none"
+        networkid: "11155111"
+        sepolia: "__none"
         syncmode: "full"
         snapshot: "true"
         http: "__none"
         http.api: net,web3,eth,debug
         http.addr: 0.0.0.0
+        http.port: 8545
         http.vhosts: "*"
-        metrics.addr: 0.0.0.0
-        metrics.port: 6061
-        authrpc.port: 8551
-#        authrpc.jwtsecret: /jwt/jwt.hex
         authrpc.addr: 0.0.0.0
+        authrpc.port: 8551
         authrpc.vhosts: '*'
-        datadir: "{node-data-dir}"
-        firehose-enabled: "__none"
-        port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
-        discovery.port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
-        nat: '{{ .Pod.fireeth.p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }}'
-        sepolia: "__none"
-        networkid: "11155111"
         txlookuplimit: 1000
         cache: 8192
         maxpeers: 100
+        authrpc.jwtsecret: '{{ with .Pod.fireeth.jwt }}{{ .enabled | ternary "/secrets/jwt/jwt.hex" nil }}{{ end }}'
+        metrics.addr: '{{ with .Pod.fireeth.nodeMetrics }}{{ .enabled | ternary .addr nil }}{{ end }}'
+        metrics.port: '{{ with .Pod.fireeth.nodeMetrics }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
+        port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
+        discovery.port: '{{ .Pod.fireeth.p2p.enabled | ternary "${EXTERNAL_PORT}" nil }}'
+        nat: '{{ .Pod.fireeth.p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }}'
 
       nodeArgsOrder: []
 
@@ -627,28 +626,43 @@ firehoseServiceDefaults:
         useEnvSubst: true
 
     env:
-      MANAGER_API_PORT: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last }}'
+      MANAGER_API_PORT: '{{ with .Pod.fireeth.config }}{{ hasKey . "reader-node-manager-api-addr" | ternary (splitList ":" (index . "reader-node-manager-api-addr") | last | int) nil }}{{ end }}'
 
     service:
       spec:
         ports:
           reader-grpc:
-            port: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+            port: '{{ with .Pod.fireeth.config | default dict }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}null{{ end }}{{ end }}'
             protocol: TCP
           node-metrics:
-            port: 6061
-            protocol: TCP
-          node-auth:
-            port: 8551
-            protocol: TCP
+            port: '{{ with .Pod.fireeth.nodeMetrics }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
+            protocol: '{{ with .Pod.fireeth.nodeMetrics }}{{ .enabled | ternary "TCP" nil }}{{ end }}'
+          node-rpc:
+            port: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "http.port" | ternary (index . "http.port" | int) nil }}{{ end }}'
+            protocol: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "http.port" | ternary "TCP" nil }}{{ end }}'
+          node-authrpc:
+            port: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "authrpc.port" | ternary (index . "authrpc.port" | int) nil }}{{ end }}'
+            protocol: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "authrpc.port" | ternary "TCP" nil }}{{ end }}'
           node-mgr:
-            port: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last | int }}'
-            protocol: TCP
+            port: '{{ with .Pod.fireeth.config }}{{ hasKey . "reader-node-manager-api-addr" | ternary (splitList ":" (index . "reader-node-manager-api-addr") | last) nil }}{{ end }}'
+            protocol: '{{ with .Pod.fireeth.config }}{{ hasKey . "reader-node-manager-api-addr" | ternary "TCP" nil }}{{ end }}'
 
     # -- Container ports
     ports:
       reader-grpc:
         containerPort: '{{ with .Pod.fireeth.config }}{{ if (index . "reader-node-grpc-listen-addr") }}{{ splitList ":" (index . "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+        protocol: TCP
+      node-metrics:
+        containerport: '{{ with .Pod.fireeth.nodeMetrics }}{{ if .port }}{{ .port | int }}{{ else }}null{{ end }}{{ end }}'
+        protocol: TCP
+      node-rpc:
+        containerPort: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "http.port" | ternary (index . "http.port" | int) nil }}{{ end }}'
+        protocol: TCP
+      node-authrpc:
+        containerPort: '{{ with .Pod.fireeth.nodeArgs }}{{ hasKey . "authrpc.port" | ternary (index . "authrpc.port" | int) nil }}{{ end }}'
+        protocol: TCP
+      node-mgr:
+        containerPort: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last | int }}'
         protocol: TCP
 
     # -- Init containers configuration
@@ -695,11 +709,25 @@ firehoseServiceDefaults:
         persistentVolumeClaim:
           claimName: node-data-dir
 
+      jwt-secret:
+        enabled: '{{ .Pod.fireeth.jwt.enabled | default false }}'
+        secret:
+          secretName: '{{ with .Pod.fireeth.jwt }}{{ .existingSecret.name | default (printf "%s-%s-jwt" (include "metadata.fullname" $) $.componentName ) }}{{ end }}'
+          items:
+            - key: '{{ with .Pod.fireeth.jwt }}{{ .existingSecret.key | default "jwt.hex" }}{{ end }}'
+              path: "jwt.hex"
+
     volumeMounts:
+
       node-data-dir:
         enabled: true
         readOnly: false
         mountPath: '{{ index .Pod.fireeth.config "reader-node-data-dir" }}'
+
+      jwt-secret:
+        enabled: '{{ .Pod.fireeth.jwt.enabled | default false }}'
+        readOnly: true
+        mountPath: /secrets/jwt
 
     lifecycle:
       preStop:

@@ -170,8 +170,8 @@ serviceAccount:
 To install the chart with the release name `my-release`:
 
 ```console
-$ helm repo add graphops http://graphops.github.io/launchpad-charts
-$ helm install my-release graphops/{{ template "chart.name" . }}
+helm repo add graphops http://graphops.github.io/launchpad-charts
+helm install my-release graphops/{{ template "chart.name" . }}
 ```
 
 {{ template "graphops.upgradingSection" . }}
