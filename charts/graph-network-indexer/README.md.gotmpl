@@ -6,7 +6,14 @@
 
 ## Introduction
 
-The [Graph Network Indexer](https://github.com/graphprotocol/indexer) components are required for participating in [The Graph's Decentralised Network](https://thegraph.com/explorer). `indexer-agent` performs interactions with the Graph Protocol contracts on-chain, and `indexer-service` intermediates requests and ensures query payment is valid.
+The Graph Network Indexer components are essential for participating in [The Graph's Decentralized Network](https://thegraph.com/explorer). These components enable Indexers to interact with on-chain Graph Protocol contracts, manage data services, and integrate with off-chain systems like TAP.
+
+- **[indexer-agent](https://github.com/graphprotocol/indexer/tree/main/packages/indexer-agent)** handles the on-chain interactions with Graph Protocol contracts, ensuring that indexers can manage their allocations and rewards efficiently.
+
+- **[indexer-service](https://github.com/graphprotocol/indexer-rs/tree/main/service)** intermediates requests and provides data services, acting as the gateway for queries directed at the Indexer.
+
+- **[indexer-tap-agent](https://github.com/graphprotocol/indexer-rs/tree/main/tap-agent)** integrates with [TAP (Timeline Aggregation Protocol)](https://github.com/semiotic-ai/timeline-aggregation-protocol), a trustless, efficient unidirectional micro-payments system.
+
 
 ## Chart Features
 
@@ -14,7 +21,7 @@ The [Graph Network Indexer](https://github.com/graphprotocol/indexer) components
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana)) and a TAP dashboard providing details about query receipts and RAV(Receipt Aggregation Vouchers) redemption
 
 ## Quickstart
 
@@ -27,7 +34,60 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 ## Configuring {{ template "chart.name" . }}
 
-...
+The `indexer-tap-agent` and `indexer-service` components require a combination of a [`config.toml`](https://github.com/graphprotocol/indexer-rs/blob/main/config/minimal-config-example.toml) file and environment variables for their initial setup, while the `indexer-agent` is bootstrapped using a mix of command-line arguments and environment variables.
+
+Since these components share many common parameters, we’ve designed the Helm chart to minimize duplication and prevent user errors. The configuration is structured as follows:
+
+- **`indexerDefaults.config`**: This renders the `config.toml` for both `indexer-tap-agent` and `indexer-service`. Defaults are provided, but they can be overridden by `indexerService.config` or `indexerTapAgent.config` as needed.
+- The common parameters from `indexerDefaults.config` that are relevant to `indexer-agent` are automatically mapped to the required CLI arguments format for the `indexer-agent`.
+- **`indexerAgent.config`**: Parameters specific to the `indexer-agent` that aren’t shared with other components are mapped directly to its CLI format.
+- **Important**: Do not include `indexer-agent`-specific parameters in `indexerDefaults.config` to avoid conflicts, as the format expected by `indexer-service` and `indexer-tap-agent` differs from that of `indexer-agent`.
+
+### Example Configuration:
+Given the following values:
+
+```yaml
+indexerDefaults:
+  config:
+    graph_node:
+      query_url: "your_graph_node_query_url"
+      status_url: "your_graph_node_status_endpoint"
+    indexer:
+      indexer_address: "your_indexer_address"
+```
+This would be rendered in config.toml as:
+
+```toml
+[graph_node]
+query_url = "your_graph_node_query_url"
+status_url = "your_graph_node_status_endpoint"
+
+[indexer]
+indexer_address = "your_indexer_address"
+```
+The same values be rendered for `indexer-agent` as args:
+
+```yaml
+args:
+    - --graph-node-query-endpoint=http://graph-node-query.graph-arbitrum-sepolia.svc.cluster.local.:8000
+    - --graph-node-status-endpoint=http://graph-node-block-ingestor:8030/graphql
+    - --indexer-address="0x32288863Ca0831F4406a905D360Ab1A9a4F0b42D"
+```
+
+
+The three components also share the same connection to the postgres database, which is configured using the `indexerDefaults.postgresConfig` values:
+
+```yaml
+postgresConfig:
+  host: "localhost"
+  port: 5432
+  database: "your_database"
+```
+**Important**: The PostgreSQL username and password are not included in the example above, as the user is expected to provide them via environment variables.
+
+Both `indexer-service` and `indexer-tap-agent` allow for a full PostgreSQL connection string (via `INDEXER_SERVICE_DATABASE__POSTGRES_URL` and `TAP_AGENT_DATABASE__POSTGRES_URL`, respectively). The Helm chart computes these connection strings using a combination of values from `indexerDefaults.postgresConfig` and the `POSTGRES_USERNAME` and `POSTGRES_PASSWORD` environment variables.
+
+In contrast, `indexer-agent` requires each PostgreSQL configuration value (e.g., database, host, port) to be passed individually as either CLI arguments or environment variables. The chart computes the values for the CLI arguments `--postgres-database`, `--postgres-host`, and `--postgres-port`. For the username and password, users must either pass additional CLI arguments ( via `indexerAgent.config` ) or specify the environment variables `INDEXER_AGENT_POSTGRES_USERNAME` and `INDEXER_AGENT_POSTGRES_PASSWORD` (via `env` or `secretEnv`).
 
 {{ template "graphops.upgradingSection" . }}
 

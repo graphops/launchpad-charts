@@ -77,7 +77,6 @@ Generate the configuration for the given component.
 {{- end }}
 {{- if .componentConfig.metrics.enabled }}
 [metrics]
-enabled = true
 port = {{ .componentConfig.metrics.port }}
 {{- end }}
 {{- end }}
