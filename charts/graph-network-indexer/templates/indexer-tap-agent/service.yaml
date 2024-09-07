@@ -1,6 +1,27 @@
 {{ $values := mergeOverwrite (deepCopy .Values.indexerDefaults) (deepCopy .Values.indexerTapAgent) }}
 {{- $componentName := "tap-agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}-headless
+  labels:
+    {{- include "graph-network-indexer.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }}
+      targetPort: {{ $portName }}
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -15,15 +36,17 @@ metadata:
 spec:
   type: {{ $values.service.type }}
   ports:
-  - port: {{ index $values.service.ports "http-queryapi" }}
-    targetPort: http-queryapi
-    protocol: TCP
-    name: http-queryapi
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }}
+      targetPort: {{ $portName }}
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
   {{- if $values.metrics.enabled }}
-  - port: {{ $values.metrics.port }}
-    targetPort: http-metrics
-    protocol: TCP
-    name: http-metrics
+    - port: {{ $values.metrics.port }}
+      targetPort: http-metrics
+      protocol: TCP
+      name: http-metrics
   {{- end }}
   selector:
     {{- include "graph-network-indexer.selectorLabels" . | nindent 4 }}
