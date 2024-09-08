@@ -20,7 +20,7 @@ The Graph Network Indexer components are essential for participating in [The Gra
 - Strong security defaults (non-root execution, ready-only root filesystem, drops all capabilities)
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana)) and a TAP dashboard providing details about query receipts and RAV(Receipt Aggregation Vouchers) redemption
+- Support for configuring Grafana dashboards ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana)) and a TAP dashboard providing details about query receipts and RAV (Receipt Aggregation Vouchers) redemptions.
 
 ## Quickstart
 
