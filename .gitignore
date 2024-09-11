@@ -1,1 +1,15 @@
+# Ignore the entire .yarn directory
+.yarn/*
+# Ignore node_modules since we are using Plug’n’Play
 node_modules
+# Ignore Yarn error logs and backup config files
+.yarnrc.yml.bak
+yarn-error.log
+# Whitelist necessary folders and files for zero-installs
+!.yarn/cache
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+!.pnp.cjs
+!.pnp.loader.mjs

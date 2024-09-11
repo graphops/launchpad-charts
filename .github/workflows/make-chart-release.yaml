@@ -46,11 +46,11 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
 
-      - name: Yarn install
+      - name: Yarn prepare
         run: |
           set -x -e
           corepack enable
-          corepack yarn install
+          corepack yarn prepare
 
       - name: Get chart name
         id: chart_name
