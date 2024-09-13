@@ -19,13 +19,13 @@ To contribute code, there's a few requirements you need to go through first:
 
 ### yarn
 
-This repo is setup for Yarn [zero-installs](https://v3.yarnpkg.com/features/zero-installs), and advises the usage of [Corepack](https://github.com/nodejs/corepack), so make sure you've enabled corepack on your system:
-```
+This repo is set up for Yarn [zero-installs](https://v3.yarnpkg.com/features/zero-installs), and advises the usage of [Corepack](https://github.com/nodejs/corepack), so make sure you've enabled corepack on your system:
+```shell
 corepack enable
 ```
 
 Our Git hooks system and some of our dependencies for tasks such as code generating or generating documentation are being managed by [*husky*](https://github.com/typicode/husky), so that will be required and as such you should run the prepare script to enable husky: 
-```
+```shell
 corepack yarn prepare
 ```
 
