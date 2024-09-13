@@ -7,9 +7,16 @@ node_modules
 yarn-error.log
 # Whitelist necessary folders and files for zero-installs
 !.yarn/cache
+!.yarn/cache/**
 !.yarn/plugins
+!.yarn/plugins/**
 !.yarn/releases
+!.yarn/releases/**
+!.yarn/unplugged
+!.yarn/unplugged/**
 !.yarn/sdks
+!.yarn/sdks/**
 !.yarn/versions
+!.yarn/versions/**
 !.pnp.cjs
 !.pnp.loader.mjs
