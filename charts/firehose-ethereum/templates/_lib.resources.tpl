@@ -70,7 +70,7 @@ Behavior:
 - New endpoints in override are added to the result.
 
 Usage:
-- list $defaults $overrides | include "firehose-evm.serviceMonitorConfig"
+- list $defaults $overrides | include "firehose-ethereum.serviceMonitorConfig"
 
 Example:
 - Input: {
@@ -108,7 +108,7 @@ Behavior:
 - New endpoints in override are added to the result.
 
 Usage:
-- list $defaults $overrides | include "firehose-evm.serviceMonitorConfig"
+- list $defaults $overrides | include "firehose-ethereum.serviceMonitorConfig"
 
 Example:
 - Input: {

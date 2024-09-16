@@ -1,4 +1,4 @@
-# Default values for firehose-evm.
+# Default values for firehose-ethereum.
 # This is a YAML-formatted file.
 
 global:
@@ -12,7 +12,7 @@ global:
 firehoseComponentDefaults:
   # -- Default workload type (Deployment | StatefulSet)
   kind: Deployment
-  # -- Image configuration for firehose-evm
+  # -- Image configuration for firehose-ethereum
   image:
     # -- Docker image repository
     repository: "ghcr.io/streamingfast/firehose-ethereum"

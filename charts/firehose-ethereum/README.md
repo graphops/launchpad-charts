@@ -1,4 +1,4 @@
-# Firehose-Evm Helm Chart
+# Firehose-Ethereum Helm Chart
 
 Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
 
@@ -169,7 +169,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 helm repo add graphops http://graphops.github.io/launchpad-charts
-helm install my-release graphops/firehose-evm
+helm install my-release graphops/firehose-ethereum
 ```
 
 ## Upgrading
@@ -227,7 +227,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.fireeth.services | List of firehose services to launch (reader-node | merger | relayer | ...) | list | `[]` |
  | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":{}}` |
  | firehoseComponentDefaults.horizontalPodAutoscaler.metadata | Anything else will be marge on the final horizontalPodAutoscaler resource template | object | `{"annotations":{},"labels":{}}` |
- | firehoseComponentDefaults.image | Image configuration for firehose-evm | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
+ | firehoseComponentDefaults.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
  | firehoseComponentDefaults.image.pullPolicy | Image pull policy | string | `"IfNotPresent"` |
  | firehoseComponentDefaults.image.repository | Docker image repository | string | `"ghcr.io/streamingfast/firehose-ethereum"` |

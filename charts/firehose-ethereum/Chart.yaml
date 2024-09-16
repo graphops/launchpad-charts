@@ -1,5 +1,5 @@
 apiVersion: v2
-name: firehose-evm
+name: firehose-ethereum
 description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
 
 # A chart can be either an 'application' or a 'library' chart.
