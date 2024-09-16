@@ -18,13 +18,8 @@ metadata:
   namespace: {{ .Root.Release.Namespace }}
 spec:
   selector:
-    {{- with .Pod }}
     matchLabels:
-    {{- $labels := include "metadata.allLabels" $ | fromYaml }}
-    {{- range $key, $value := $labels }}
-      {{ $key }}: {{ $value | quote }}
-    {{- end }}
-    {{- end }}
+      {{- include "metadata.selectorLabels" $ | nindent 6 }}
   replicas: {{ .Pod.replicas }}
 
   {{- with .Pod.updateStrategy }}

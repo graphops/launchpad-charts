@@ -3,8 +3,21 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "metadata.roleName" $ }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  {{- with .Pod.rbac.roleSpec.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  namespace: {{ .Root.Release.Namespace }}
 rules: []
 {{- end }}
 
@@ -13,8 +26,20 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "metadata.clusterRoleName" $ }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  {{- with .Pod.clusterRbac.roleSpec.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
 rules: []
 {{- end }}
 
@@ -23,8 +48,21 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "metadata.roleName" $ }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  {{- with .Pod.rbac.bindingSpec.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  namespace: {{ .Root.Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -40,8 +78,20 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ include "metadata.clusterRoleName" $ }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  {{- with .Pod.clusterRbac.bindingSpec.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

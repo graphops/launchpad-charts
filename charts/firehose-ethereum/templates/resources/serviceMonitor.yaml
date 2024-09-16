@@ -3,20 +3,21 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "metadata.fullname" . }}-{{ .componentName }}
-  labels:
-    {{- include "metadata.labels" . | nindent 4 }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
   {{- with .Pod.serviceMonitor.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
   {{- range $key, $value := $labels }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
   annotations:
-  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
   {{- range $key, $value := $annotations }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}
-  {{- end }}
+  namespace: {{ .Root.Release.Namespace }}
 spec:
   jobLabel: {{ .Root.Release.Name | quote }}
   selector:

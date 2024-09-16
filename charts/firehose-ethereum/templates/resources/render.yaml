@@ -4,18 +4,13 @@
 {{- $templateCtx := include "resources.mergeValues" (dict "Root" $ "componentName" $key ) | fromYaml }}
 {{- $values := deepCopy $templateCtx.Pod }}
 
-{{- if and $values.enabled $values.horizontalPodAutoscaler.enabled }}
-{{- $baseHorizontalPodAutoscaler := include "templates.HorizontalPodAutoscaler" $templateCtx | fromYaml }}
-{{- $finalHorizontalPodAutoscaler := list $baseHorizontalPodAutoscaler (omit $values.horizontalPodAutoscaler "enabled") | include "utils.deepMerge" | fromYaml }}
----
-{{ $finalHorizontalPodAutoscaler | toYaml }}
-{{- end }}
-
 {{- if and $values.enabled $values.configMap.enabled }}
 {{- $baseConfigMap := include "templates.ConfigMap" $templateCtx | fromYaml }}
 {{- $finalConfigMap := list $baseConfigMap (omit $values.configMap "enabled" "options") | include "utils.deepMerge" | fromYaml }}
 ---
 {{ $finalConfigMap | toYaml }}
+---
+{{ $values.configMap | toYaml }}
 {{- end -}}
 
 {{- if $values.enabled }}
