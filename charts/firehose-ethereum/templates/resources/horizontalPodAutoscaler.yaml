@@ -3,8 +3,20 @@ apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "metadata.fullname" $ }}-{{ .componentName }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  {{- with .Pod.horizontalPodAutoscaler.metadata }}
+  {{- $labels = include "metadata.allLabels" ( set ( deepCopy $ ) "labels" .labels ) | fromYaml }}
+  {{- $annotations = include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" .annotations ) | fromYaml }}
+  {{- end }}
   labels:
-    {{- include "metadata.labels" $ | nindent 4 }}
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
   namespace: {{ .Root.Release.Namespace }}
 spec:
   scaleTargetRef:
