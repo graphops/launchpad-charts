@@ -52,7 +52,7 @@ spec:
             - sh
             - -ac
             - |
-              set -ex
+              set -e
               {{- range $alias, $command := $values.aliases }}
               echo "alias {{ $alias }}=\"{{ $command | trim }}\"" >> ~/.bashrc
               {{- end }}
