@@ -64,23 +64,33 @@ indexerDefaults:
 
     subgraphs.network:
       syncing_interval_secs: 60  
-      # # Query URL for the Graph Network subgraph.
-      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
+      # -- (required) Query URL for the Graph Network subgraph.
+      # For optimal performance, it's recommended to locally index the subgraph.
+      # If locally indexed, use a combination of `deployment_id` and `query_url` pointing to your graph-node-query.
+      # If not locally indexed, use the gateway URL.
+      query_url: "http://your-graph-node-query:8000/subgraphs/id/NETWORK_SUBGRAPH"
 
-      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
-      # # Locally indexing the subgraph is recommended.
-      # # NOTE: Use `query_url` or `deployment_id` only
+      # -- (optional) Deployment ID for locally indexed subgraph.
+      # Use this in combination with `query_url` pointing to your graph-node-query.
       # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+      # Example for non-locally indexed subgraph:
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/NETWORK_SUBGRAPH"
 
     subgraphs.escrow:
       syncing_interval_secs: 60  
-      # # Query URL for the Graph Network subgraph.
-      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
+      # -- (required) Query URL for the Graph Escrow subgraph.
+      # For optimal performance, it's recommended to locally index the subgraph.
+      # If locally indexed, use a combination of `deployment_id` and `query_url` pointing to your graph-node-query.
+      # If not locally indexed, use the gateway URL.
+      query_url: "http://your-graph-node-query:8000/subgraphs/id/TAP_ESCROW_SUBGRAPH"
 
-      # # Optional, deployment to look for in the local `graph-node`, if locally indexed.
-      # # Locally indexing the subgraph is recommended.
-      # # NOTE: Use `query_url` or `deployment_id` only
+      # -- (optional) Deployment ID for locally indexed subgraph.
+      # Use this in combination with `query_url` pointing to your graph-node-query.
       # deployment_id: "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+      # Example for non-locally indexed subgraph:
+      # query_url: "https://gateway-arbitrum.network.thegraph.com/api/YOUR_API_KEY/subgraphs/id/TAP_ESCROW_SUBGRAPH"
 
     blockchain:
       chain_id: "valid_blockchain_chain_id"
