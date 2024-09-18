@@ -1,6 +1,6 @@
 apiVersion: v2
 name: graph-toolbox
-description: Deploy a preconfigured toolbox container for to be used alongside the
+description: Deploy a preconfigured toolbox container for to be used alongside the Graph Network Indexer stack
 
 # A chart can be either an 'application' or a 'library' chart.
 #
