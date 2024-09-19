@@ -1412,6 +1412,16 @@ entries:
   graph-toolbox:
     - apiVersion: v2
       appVersion: main
+      created: "2024-09-18T09:18:19Z"
+      description: Deploy a preconfigured toolbox container for to be used alongside the Graph Network Indexer stack
+      digest: 51b1ddccbe41e1515c1e597bc25535e80e12fb0d13512c90c1dde03320d6e572
+      name: graph-toolbox
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-toolbox-0.1.1/graph-toolbox-0.1.1.tgz
+      version: 0.1.1
+    - apiVersion: v2
+      appVersion: main
       created: "2022-10-11T16:49:13Z"
       description: Deploy a preconfigured toolbox container for to be used alongside the
       digest: 1ced6a53af2575d9420354f5e53f89d43ff551f2bb445fdfa7df6e0db559479c
@@ -2738,4 +2748,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-09-11T18:28:00.881380988Z"
+generated: "2024-09-19T10:28:28.283114146Z"
