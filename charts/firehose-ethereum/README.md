@@ -226,11 +226,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.fireeth.services | List of firehose services to launch (reader-node | merger | relayer | ...) | list | `[]` |
  | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":{}}` |
  | firehoseComponentDefaults.horizontalPodAutoscaler.metadata | Anything else will be marge on the final horizontalPodAutoscaler resource template | object | `{"annotations":{},"labels":{}}` |
- | firehoseComponentDefaults.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
+ | firehoseComponentDefaults.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.7.4-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
  | firehoseComponentDefaults.image.pullPolicy | Image pull policy | string | `"IfNotPresent"` |
  | firehoseComponentDefaults.image.repository | Docker image repository | string | `"ghcr.io/streamingfast/firehose-ethereum"` |
- | firehoseComponentDefaults.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.6.7-geth-v1.13.15-fh2.4"` |
+ | firehoseComponentDefaults.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.7.4-geth-v1.13.15-fh2.4"` |
  | firehoseComponentDefaults.imagePullSecrets | Pull secrets required to fetch images | list | `[]` |
  | firehoseComponentDefaults.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"enabled":false,"image":"lachlanevenson/k8s-kubectl:v1.25.4","imagePullPolicy":"IfNotPresent","resources":{}},"20-init-envsubst":{"enabled":false,"image":"blockstack/envsubst:latest","imagePullPolicy":"IfNotPresent","resources":{}}}` |
  | firehoseComponentDefaults.kind | Default workload type (Deployment | StatefulSet) | string | `"Deployment"` |
