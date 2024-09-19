@@ -9,8 +9,6 @@
 {{- $finalConfigMap := list $baseConfigMap (omit $values.configMap "enabled" "options") | include "utils.deepMerge" | fromYaml }}
 ---
 {{ $finalConfigMap | toYaml }}
----
-{{ $values.configMap | toYaml }}
 {{- end -}}
 
 {{- if $values.enabled }}
@@ -85,10 +83,16 @@
 {{ $renderedServiceMonitor | toYaml }}
 {{- end -}}
 
-{{- if and ($values.fireeth.jwt.enabled) (empty $values.fireeth.jwt.existingSecret.name) (empty $values.fireeth.jwt.existingSecret.key) }}
+{{- if and ($values.fireeth.jwt.enabled) (empty $values.fireeth.jwt.existingSecret.name) (empty $values.fireeth.jwt.existingSecret.key) (not (empty $values.fireeth.jwt.fromLiteral)) }}
 {{- $renderedSecret := include "templates.Secret" $templateCtx | fromYaml }}
 ---
 {{ $renderedSecret | toYaml }}
+{{- end -}}
+
+{{- if and ($values.fireeth.jwt.enabled) (empty $values.fireeth.jwt.existingSecret.name) (empty $values.fireeth.jwt.existingSecret.key) (empty $values.fireeth.jwt.fromLiteral) }}
+{{- $renderedJob := include "templates.jwtJob" $templateCtx | fromYaml }}
+---
+{{ $renderedJob | toYaml }}
 {{- end -}}
 
 {{- end }}

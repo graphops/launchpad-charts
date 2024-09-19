@@ -632,6 +632,12 @@ firehoseServiceDefaults:
               - "get"
               - "list"
               - "watch"
+          - apiGroups: [""]
+            resources:
+              - "secrets"
+            verbs:
+              - "get"
+              - "create"
 
     clusterRbac:
       enabled: '{{ .Pod.fireeth.p2p.enabled }}'
