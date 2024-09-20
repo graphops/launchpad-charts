@@ -1,0 +1,59 @@
+{{ define "templates.jwtJob" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "metadata.fullname" $ }}-{{ .componentName }}-generate-jwt-{{ .Root.Release.Revision }}
+  {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+  {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+  labels:
+  {{- range $key, $value := $labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/resource-policy": keep
+  {{- range $key, $value := $annotations }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  namespace: {{ .Root.Release.Namespace }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    metadata:
+      name: {{ include "metadata.fullname" $ }}-{{ .componentName }}-generate-jwt-{{ .Root.Release.Revision }}
+      {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
+      {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
+      labels:
+      {{- range $key, $value := $labels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      annotations:
+      {{- range $key, $value := $annotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "metadata.serviceAccountName" $ }}
+      restartPolicy: OnFailure
+      containers:
+        - name: generate-jwt-secret
+          image: bitnami/kubectl:latest
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SECRET_NAME
+              value: {{ printf "%s-%s-jwt" (include "metadata.fullname" $) .componentName | quote }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              if kubectl -n ${NAMESPACE} get secret ${SECRET_NAME}; then
+                echo "Secret $SECRET_NAME already exists. Skipping creation."
+              else
+                echo "Creating new secret $SECRET_NAME"
+                kubectl -n ${NAMESPACE} create secret generic ${SECRET_NAME} --from-literal=jwt.hex=$(openssl rand -hex 32)
+              fi
+{{- end }}
