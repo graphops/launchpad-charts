@@ -2719,6 +2719,16 @@ entries:
   firehose-ethereum:
     - apiVersion: v2
       appVersion: v2.6.7
+      created: "2024-09-20T00:03:27Z"
+      description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
+      digest: 700611906fdfe654389a08654ba34f7cb351aeb65e756e60dea5c3fda9b8decd
+      name: firehose-ethereum
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/firehose-ethereum-0.1.0-canary.2/firehose-ethereum-0.1.0-canary.2.tgz
+      version: 0.1.0-canary.2
+    - apiVersion: v2
+      appVersion: v2.6.7
       created: "2024-09-16T22:15:30Z"
       description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
       digest: 3f807c2fce80f125aab42ec5a7b93c47cc499f3cfab19151cf1ed03ee98875b1
@@ -7210,4 +7220,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-09-19T10:29:33.181262633Z"
+generated: "2024-09-20T00:12:26.333710034Z"
