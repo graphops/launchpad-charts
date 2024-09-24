@@ -205,16 +205,6 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.2.1-d81324d
-      created: "2024-09-24T18:26:03Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: e9532ca590221d7923a451d3d5f3223f271a21a5832f60ad3f3a6e24d3743fcd
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.5.0/arbitrum-nitro-0.5.0.tgz
-      version: 0.5.0
-    - apiVersion: v2
-      appVersion: v3.2.1-d81324d
       created: "2024-09-24T18:25:28Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: bfc9481a253e175d639c92e3d23f53ab607f1b2a9e3bad3776d61931907f4973
@@ -1197,16 +1187,6 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.5
-      created: "2024-09-24T22:01:12Z"
-      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
-      digest: 878184bfdbce0ad6fd08314a03c3958f7d9e54f19abaf2dadbb11e887293d144
-      name: celo
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.6/celo-0.1.6.tgz
-      version: 0.1.6
-    - apiVersion: v2
-      appVersion: 1.8.5
       created: "2024-09-24T22:00:48Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 5e98202874631c83c3d6328e168ea0b54ee86ea812a7f20d80ea71fb231d906b
@@ -1426,16 +1406,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
-    - apiVersion: v2
-      appVersion: 2.60.8
-      created: "2024-09-24T22:08:19Z"
-      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
-      digest: 10049162222a44cd3a2a48aa93c2f39784c54ab47c77f9f9c45b614168744d82
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.7/erigon-0.10.7.tgz
-      version: 0.10.7
     - apiVersion: v2
       appVersion: 2.60.8
       created: "2024-09-24T22:06:37Z"
@@ -7320,4 +7290,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-09-24T22:12:50.822747398Z"
+generated: "2024-09-24T22:14:40.765102199Z"
