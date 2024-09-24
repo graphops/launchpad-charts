@@ -65,6 +65,7 @@ Selector labels
 {{- define "metadata.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "metadata.name" . }}
 app.kubernetes.io/instance: {{ .Root.Release.Name }}
+app.kubernetes.io/component: '{{ .componentName }}'
 {{- end }}
 
 {{/*

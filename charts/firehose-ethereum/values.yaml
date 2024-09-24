@@ -88,7 +88,6 @@ firehoseComponentDefaults:
       metrics-listen-addr: '{{ with .Pod.fireeth.metrics }}{{ .enabled | ternary (printf "%s:%d" .addr ( .port | int ) ) nil }}{{ end }}'
       pprof-listen-addr: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%s:%d" .addr (.port | int)) nil }}{{ end }}'
       log-to-file: false
-      common-index-block-sizes: 10000
       firehose-rate-limit-bucket-size: 20
       firehose-rate-limit-bucket-fill-rate: "1s"
       common-one-block-store-url: null
@@ -331,12 +330,12 @@ firehoseComponentDefaults:
   # -- Init containers configuration
   initContainers:
     10-init-nodeport:
-      enabled: false
+      enabled: '{{ .Pod.fireeth.p2p.enabled }}'
       image: lachlanevenson/k8s-kubectl:v1.25.4
       imagePullPolicy: IfNotPresent
       resources: {}
     20-init-envsubst:
-      enabled: false
+      enabled: '{{ .Pod.configMap.options.useEnvSubst }}'
       image: blockstack/envsubst:latest
       imagePullPolicy: IfNotPresent
       resources: {}
@@ -346,7 +345,7 @@ firehoseComponentDefaults:
 
   # -- Environment variables from references
   envFrom:
-    SecretKeyRef:
+    secretKeyRef:
       FIREETH_COMMON_ONE_BLOCK_STORE_URL:
         # -- Name of the secret that contains your S3 bucket url for storing one blocks
         name: ""
@@ -362,11 +361,6 @@ firehoseComponentDefaults:
         name: ""
         # -- Name of the data key in the secret that contains your S3 bucket url for storing forked blocks
         key: ""
-      FIREETH_COMMON_INDEX_STORE_URL:
-        # -- Name of the secret that contains your S3 bucket url of your index store
-        name: ""
-        # -- Name of the data key in the secret that contains your S3 bucket url of your index store
-        key: ""
 
   # -- Container level security context overrides
   securityContext:
@@ -375,6 +369,9 @@ firehoseComponentDefaults:
     capabilities:
       drop:
         - ALL
+
+  # -- Container entrypoint
+  command: []
 
   # -- Resource requests and limits
   resources: {}
@@ -462,7 +459,8 @@ firehoseComponentDefaults:
         defaultMode: 420
     config-processed:
       enabled: '{{ and .Pod.configMap.options.useEnvSubst .Pod.configMap.enabled }}'
-      emptyDir: {}
+      emptyDir:
+        medium: Memory
     env-dir:
       enabled: '{{ (or (and .Pod.configMap.options.useEnvSubst .Pod.configMap.enabled) false ) | ternary true false }}'
       emptyDir: {}
@@ -523,7 +521,7 @@ firehoseServiceDefaults:
   relayer:
     fireeth:
       config:
-        relayer-source: "reader:10010"
+        relayer-source: "firehose-ethereum-1-reader:10010"
         relayer-grpc-listen-addr: "0.0.0.0:10014"
         relayer-max-source-latency: 1h
 
@@ -597,8 +595,6 @@ firehoseServiceDefaults:
         __separator: "="
         datadir: "{node-data-dir}"
         firehose-enabled: "__none"
-        networkid: "11155111"
-        sepolia: "__none"
         syncmode: "full"
         snapshot: "true"
         http: "__none"
@@ -609,7 +605,7 @@ firehoseServiceDefaults:
         authrpc.addr: 0.0.0.0
         authrpc.port: 8551
         authrpc.vhosts: '*'
-        txlookuplimit: 1000
+        history.transactions: 1000
         cache: 8192
         maxpeers: 100
         authrpc.jwtsecret: '{{ with .Pod.fireeth.jwt }}{{ .enabled | ternary "/secrets/jwt/jwt.hex" nil }}{{ end }}'
@@ -696,13 +692,6 @@ firehoseServiceDefaults:
       node-mgr:
         containerPort: '{{ splitList ":" ( index .Pod.fireeth.config "reader-node-manager-api-addr" ) | last | int }}'
         protocol: TCP
-
-    # -- Init containers configuration
-    initContainers:
-      10-init-nodeport:
-        enabled: '{{ .Pod.fireeth.p2p.enabled }}'
-      20-init-envsubst:
-        enabled: '{{ .Pod.configMap.options.useEnvSubst }}'
 
     volumeClaimTemplates:
 
