@@ -43,8 +43,8 @@
       },
       {
         "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service-rs"],
-        "allowedVersions": "!/\\-alpha.*$/",
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$"
+        "allowedVersions": "!/\\-rc.*$/",
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-rc\\.(?<prerelease>\\d+))?$"
       },
       {
         "matchPackageNames": ["offchainlabs/arb-node", "offchainlabs/nitro-node"],
