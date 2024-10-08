@@ -4136,16 +4136,6 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v5.3.0
-      created: "2024-10-08T09:05:55Z"
-      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
-      digest: fed36d2c99c655df54d23014f58bb04f670fb23832a2ffd4d88c5df5ce509429
-      name: lighthouse
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.10-canary.1/lighthouse-0.5.10-canary.1.tgz
-      version: 0.5.10-canary.1
-    - apiVersion: v2
-      appVersion: v5.3.0
       created: "2024-08-15T17:25:27Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 8c26e01aa5feb1d915da9cc9f008d9dd4810cfb51254894adfcc7b6a3b26a1b0
@@ -4967,16 +4957,6 @@ entries:
       version: 0.1.0
   nethermind:
     - apiVersion: v2
-      appVersion: 1.29.0
-      created: "2024-10-08T09:06:08Z"
-      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
-      digest: f438d021a4548c12ebf3039b9a71acad26d18ff626baee1e9beea21bf1759b14
-      name: nethermind
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.13/nethermind-0.4.3-canary.13.tgz
-      version: 0.4.3-canary.13
-    - apiVersion: v2
       appVersion: 1.28.0
       created: "2024-08-15T14:05:50Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
@@ -5277,16 +5257,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
-    - apiVersion: v2
-      appVersion: multiarch-v24.9.0
-      created: "2024-10-08T09:06:25Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: 9e95171efbe2348ea9ae3804118ed98e6b48dce462f028a0dc3002f5d111b2eb
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.18-canary.1/nimbus-0.5.18-canary.1.tgz
-      version: 0.5.18-canary.1
     - apiVersion: v2
       appVersion: multiarch-v24.8.0
       created: "2024-09-11T18:23:54Z"
@@ -7380,4 +7350,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-08T09:11:02.232121834Z"
+generated: "2024-10-08T09:14:39.033990062Z"
