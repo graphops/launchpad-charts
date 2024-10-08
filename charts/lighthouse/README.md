@@ -90,7 +90,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | lighthouse.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.initChownData.image.repository | Container repository | string | `"busybox"` |
- | lighthouse.initChownData.image.tag | Container tag | string | `"1.36.1"` |
+ | lighthouse.initChownData.image.tag | Container tag | string | `"1.37.0"` |
  | lighthouse.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | lighthouse.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | lighthouse.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
