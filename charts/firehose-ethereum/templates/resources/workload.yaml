@@ -23,7 +23,7 @@ spec:
   replicas: {{ .Pod.replicas }}
 
   {{- with .Pod.updateStrategy }}
-  {{- if eq .Pod.kind "StatefulSet" }}
+  {{- if eq $.Pod.kind "StatefulSet" }}
   updateStrategy:
   {{- else }}
   strategy:
