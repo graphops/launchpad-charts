@@ -2932,16 +2932,6 @@ entries:
       version: 0.5.0-canary.1
     - apiVersion: v2
       appVersion: 1.0.0
-      created: "2024-10-08T09:07:13Z"
-      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
-      digest: 3502f9ba531eb25e8b9f1cbb4f4b72803498059ab53cc4fbc91f25baccc334c2
-      name: graph-network-indexer
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.8-canary.3/graph-network-indexer-0.2.8-canary.3.tgz
-      version: 0.2.8-canary.3
-    - apiVersion: v2
-      appVersion: 1.0.0
       created: "2024-10-08T09:05:18Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: b021b45c55bb020be352d3af0ceb66ee1de3dedfbb8e91ce1afde227f523bdc1
@@ -4978,16 +4968,6 @@ entries:
   nethermind:
     - apiVersion: v2
       appVersion: 1.29.0
-      created: "2024-10-08T09:07:29Z"
-      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
-      digest: 40877702d8da1d35c2e0b9d301915892676d4cb432d266912a37ee3794567360
-      name: nethermind
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.14/nethermind-0.4.3-canary.14.tgz
-      version: 0.4.3-canary.14
-    - apiVersion: v2
-      appVersion: 1.29.0
       created: "2024-10-08T09:06:08Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
       digest: f438d021a4548c12ebf3039b9a71acad26d18ff626baee1e9beea21bf1759b14
@@ -5297,16 +5277,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
-    - apiVersion: v2
-      appVersion: multiarch-v24.9.0
-      created: "2024-10-08T09:07:47Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: f5cc7ace8f08d4b63744f3deb063ec5dd81a36668ef466bb3bc2615f1731f55e
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.18-canary.2/nimbus-0.5.18-canary.2.tgz
-      version: 0.5.18-canary.2
     - apiVersion: v2
       appVersion: multiarch-v24.9.0
       created: "2024-10-08T09:06:25Z"
@@ -7410,4 +7380,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-08T09:10:43.858283512Z"
+generated: "2024-10-08T09:11:02.232121834Z"
