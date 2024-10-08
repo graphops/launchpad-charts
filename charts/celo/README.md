@@ -65,7 +65,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | celo.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | celo.initChownData.image.repository | Container repository | string | `"busybox"` |
- | celo.initChownData.image.tag | Container tag | string | `"1.36.1"` |
+ | celo.initChownData.image.tag | Container tag | string | `"1.37.0"` |
  | celo.nodeSelector |  | object | `{}` |
  | celo.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | celo.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
