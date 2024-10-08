@@ -1197,6 +1197,16 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.5
+      created: "2024-10-08T09:05:27Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: afb9bd5803bcc5605cdc2d25ced9c8a49ab8a248bbb9095ab1a50004e2a143ea
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.7-canary.1/celo-0.1.7-canary.1.tgz
+      version: 0.1.7-canary.1
+    - apiVersion: v2
+      appVersion: 1.8.5
       created: "2024-09-24T22:01:12Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 878184bfdbce0ad6fd08314a03c3958f7d9e54f19abaf2dadbb11e887293d144
@@ -2920,6 +2930,16 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.0-canary.1/graph-network-indexer-0.5.0-canary.1.tgz
       version: 0.5.0-canary.1
+    - apiVersion: v2
+      appVersion: 1.0.0
+      created: "2024-10-08T09:05:18Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: b021b45c55bb020be352d3af0ceb66ee1de3dedfbb8e91ce1afde227f523bdc1
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.2.8-canary.2/graph-network-indexer-0.2.8-canary.2.tgz
+      version: 0.2.8-canary.2
     - apiVersion: v2
       appVersion: 1.0.0
       created: "2024-10-08T00:10:13Z"
@@ -7330,4 +7350,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-08T00:19:02.452090577Z"
+generated: "2024-10-08T09:08:26.553286249Z"
