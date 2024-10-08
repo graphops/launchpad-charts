@@ -179,10 +179,14 @@ firehoseComponentDefaults:
           port: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary (printf "%d" ( .port | int ) ) nil }}{{ end }}'
           protocol: '{{ with .Pod.fireeth.pprof }}{{ .enabled | ternary "TCP" nil }}{{ end }}'
     metadata:
+      name: '{{ include "metadata.fullname" $ }}-{{ .componentName }}'
       # -- Additional service labels
       labels: {}
       # -- Additional service annotations
       annotations: {}
+
+  # -- Required for StatefulSets
+  serviceName: '{{ include "metadata.fullname" $ }}-{{ .componentName }}-headless'
 
   # -- Also create headless services, mandatory for StatefulSets and true by default
   serviceHeadless: '{{ eq .Pod.kind "StatefulSet" | ternary true true }}'

@@ -27,7 +27,7 @@ spec:
 
 {{- define "templates.ServiceHeadless" }}
 metadata:
-  name: {{ printf "%s-headless" .__svc.metadata.name }}
+  name: {{ .Pod.serviceName }}
   {{- $labels := include "metadata.allLabels" ( set ( deepCopy $ ) "labels" dict ) | fromYaml }}
   {{- $annotations := include "metadata.allAnnotations" ( set ( deepCopy $ ) "annotations" dict ) | fromYaml }}
   {{- with .Pod.service.metadata }}
