@@ -3915,6 +3915,16 @@ entries:
   heimdall:
     - apiVersion: v2
       appVersion: 1.0.9
+      created: "2024-10-09T00:09:55Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: fccf2fd7b368e69608ad40abac3673e154a2186b73fd398fc57fd988ce8e0b06
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.2.2-canary.3/heimdall-1.2.2-canary.3.tgz
+      version: 1.2.2-canary.3
+    - apiVersion: v2
+      appVersion: 1.0.9
       created: "2024-10-08T11:05:33Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
       digest: 523db3824f2659ab85b2d87fe91957c5924b371669fe112d3f9251de37680cd1
@@ -7490,4 +7500,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-09T00:11:30.700742039Z"
+generated: "2024-10-09T00:12:57.379652421Z"
