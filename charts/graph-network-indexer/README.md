@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.1](https://img.shields.io/badge/Version-0.5.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.2](https://img.shields.io/badge/Version-0.5.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.1.0](https://img.shields.io/badge/AppVersion-1.1.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -130,7 +130,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerDefaults.config.indexer.indexer_address | Ethereum address of your Indexer | required | `"your_indexer_address"` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerService.command | Entrypoint command to run | string | `"/usr/local/bin/service"` |
+ | indexerService.command | Entrypoint command to run | string | `"/usr/local/bin/indexer-service-rs"` |
  | indexerService.config |  | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |

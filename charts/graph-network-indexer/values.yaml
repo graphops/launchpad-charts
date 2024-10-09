@@ -209,7 +209,7 @@ indexerService:
     tag: ""
 
   # -- Entrypoint command to run
-  command: /usr/local/bin/service
+  command: /usr/local/bin/indexer-service-rs
 
   # -- Number of replicas to run
   replicas: 1
