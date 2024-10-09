@@ -130,6 +130,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerDefaults.config.indexer.indexer_address | Ethereum address of your Indexer | required | `"your_indexer_address"` |
  | indexerService.affinity |  | object | `{}` |
  | indexerService.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
+ | indexerService.command | Entrypoint command to run | string | `"/usr/local/bin/service"` |
  | indexerService.config |  | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
@@ -148,6 +149,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.tolerations |  | list | `[]` |
  | indexerTapAgent.affinity |  | object | `{}` |
  | indexerTapAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
+ | indexerTapAgent.command | Entrypoint command to run | string | `"/usr/local/bin/tap-agent"` |
  | indexerTapAgent.config |  | object | `{}` |
  | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
  | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":""}` |

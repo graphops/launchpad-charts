@@ -208,6 +208,9 @@ indexerService:
     # @default -- Chart.appVersion
     tag: ""
 
+  # -- Entrypoint command to run
+  command: /usr/local/bin/service
+
   # -- Number of replicas to run
   replicas: 1
 
@@ -288,6 +291,9 @@ indexerTapAgent:
     # -- Overrides the image tag
     # @default -- Chart.appVersion
     tag: ""
+
+  # -- Entrypoint command to run
+  command: /usr/local/bin/tap-agent
 
   # -- Number of replicas to run
   replicas: 1

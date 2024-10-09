@@ -78,7 +78,7 @@ spec:
             - name: TAP_AGENT_DATABASE__POSTGRES_URL
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
           command:
-          - {{ $values.command | default "/usr/local/bin/tap-agent" }}
+          - {{ $values.command }}
           {{- if $values.configPath }}
           - --config={{ $values.configPath }}
           {{- else }}
