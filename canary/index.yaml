@@ -2941,6 +2941,16 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      appVersion: 1.1.0
+      created: "2024-10-09T13:38:28Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 78722ac3275b8ed23edea4d656e215249d07a5459eb4b77e161c7de8535eb821
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.1-canary.1/graph-network-indexer-0.5.1-canary.1.tgz
+      version: 0.5.1-canary.1
+    - apiVersion: v2
       appVersion: 1.0.0
       created: "2024-10-08T16:47:10Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -7540,4 +7550,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-09T11:36:00.502403894Z"
+generated: "2024-10-09T13:43:45.586163432Z"
