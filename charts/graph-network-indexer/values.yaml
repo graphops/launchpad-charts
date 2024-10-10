@@ -293,10 +293,7 @@ indexerTapAgent:
     tag: ""
 
   # -- Entrypoint command to run
-  command: /usr/local/bin/tap-agent
-
-  # -- Number of replicas to run
-  replicas: 1
+  command: /usr/local/bin/indexer-tap-agent
 
   config: {}
 
