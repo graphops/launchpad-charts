@@ -39,12 +39,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
 
       - name: Yarn prepare
         run: |
@@ -70,7 +70,7 @@ jobs:
 
           corepack yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" --strip all -l -t "${{ needs.init.outputs.tag }}" -o "RELEASE-NOTES.md"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.init.outputs.tag }}.release-notes"
           path: RELEASE-NOTES.md
@@ -120,7 +120,7 @@ jobs:
           helm package "charts/${{ needs.init.outputs.name }}"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.init.outputs.tag }}.helm-package"
           path: "${{ needs.init.outputs.tag }}.tgz"

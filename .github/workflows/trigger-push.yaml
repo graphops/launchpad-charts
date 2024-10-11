@@ -18,7 +18,7 @@ jobs:
       release-streams: ${{ steps.list-release-tags.outputs.release-streams }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -29,7 +29,7 @@ jobs:
 
       - name: Get list of changed charts
         id: list-changed-charts
-        uses: tj-actions/changed-files@v41.0.0
+        uses: tj-actions/changed-files@v45
         with:
           files: charts/*/Chart.yaml
 
