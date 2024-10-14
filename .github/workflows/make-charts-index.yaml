@@ -70,7 +70,7 @@ jobs:
             .releases/index.yaml
           done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           name: "chart-index.${{ inputs.repoName }}"
           path: .releases/index.yaml
