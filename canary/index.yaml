@@ -2942,6 +2942,16 @@ entries:
   graph-network-indexer:
     - apiVersion: v2
       appVersion: 1.1.1
+      created: "2024-10-14T23:50:08Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: f6d4e0a1222b25b651dbee22c58844f537da9068d9435eb96f1318a1bbeae759
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.3-canary.4/graph-network-indexer-0.5.3-canary.4.tgz
+      version: 0.5.3-canary.4
+    - apiVersion: v2
+      appVersion: 1.1.1
       created: "2024-10-14T20:36:49Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 5a354af61eae7a3383f08c5e68192c6853f9127c54be486087d8b86a63c28e8c
@@ -3993,6 +4003,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-toolbox-0.1.0/graph-toolbox-0.1.0.tgz
       version: 0.1.0
   heimdall:
+    - apiVersion: v2
+      appVersion: 1.0.10
+      created: "2024-10-14T23:39:56Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 82024691c8cbb9bfa8a6a8980f0c964d44e8320a29367f1f483ecf17091eb704
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.2.3/heimdall-1.2.3.tgz
+      version: 1.2.3
     - apiVersion: v2
       appVersion: 1.0.10
       created: "2024-10-14T23:37:28Z"
@@ -7640,4 +7660,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-14T23:48:03.276375859Z"
+generated: "2024-10-14T23:53:40.43278475Z"
