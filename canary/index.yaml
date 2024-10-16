@@ -5227,6 +5227,16 @@ entries:
       version: 0.1.0
   nethermind:
     - apiVersion: v2
+      appVersion: 1.29.1
+      created: "2024-10-16T14:38:26Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 696435fbac2af632ca304a24f1bed5c6c11e857ee7de82f80e7c9efcdb044597
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.15/nethermind-0.4.3-canary.15.tgz
+      version: 0.4.3-canary.15
+    - apiVersion: v2
       appVersion: 1.29.0
       created: "2024-10-08T09:07:29Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
@@ -7680,4 +7690,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-10-15T00:02:33.756412491Z"
+generated: "2024-10-16T14:47:34.655808565Z"
