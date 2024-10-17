@@ -165,7 +165,7 @@ spec:
               apiVersion: 1
               datasources:
               - name: {{ $.Release.Namespace }}-graph-node-store-{{ $storeName }}
-                uid: {{ $.Release.Namespace }}-graph-node-store-{{ $storeName }}
+                uid: {{ sha256sum (printf "%s-graph-node-store-%s" $.Release.Namespace $storeName) | trunc 40 }}
                 type: postgres
                 url: "$host"
                 port: "$port"
