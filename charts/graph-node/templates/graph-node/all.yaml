@@ -119,21 +119,17 @@ spec:
             - name: DISABLE_BLOCK_INGESTOR
               value: "true"
           {{- end }}
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
+          {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
-          {{- end }}
-          {{- with $values.secretEnv }}
-          {{- range $key, $val := .}}
+          {{- range $key, $val := $values.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
                   optional: false
-          {{- end }}
           {{- end }}
           command:
             - sh
@@ -229,23 +225,17 @@ spec:
             - name: DISABLE_BLOCK_INGESTOR
               value: "true"
           {{- end }}
-          {{- if (or $values.env $values.secretEnv) }}
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
+          {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
-          {{- end }}
-          {{- with $values.secretEnv }}
-          {{- range $key, $val := .}}
+          {{- range $key, $val :=  $values.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
                   optional: false
-          {{- end }}
-          {{- end }}
           {{- end }}
           ports:
             - name: http-query
