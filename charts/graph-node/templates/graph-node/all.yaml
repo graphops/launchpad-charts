@@ -204,6 +204,9 @@ spec:
 
           securityContext:
             privileged: true # required for ulimit change
+        {{- with $values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ $groupName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -274,6 +277,9 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{- with $values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
