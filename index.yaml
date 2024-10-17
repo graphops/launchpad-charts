@@ -85,6 +85,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.2.1-d81324d
+      created: "2024-10-17T19:47:39Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: b7e450c7f4d802cebb3e8780fac1be964d2385f98d00ca7c511352ba599e7ffc
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.5.1/arbitrum-nitro-0.5.1.tgz
+      version: 0.5.1
+    - apiVersion: v2
+      appVersion: v3.2.1-d81324d
       created: "2024-09-24T18:26:03Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: e9532ca590221d7923a451d3d5f3223f271a21a5832f60ad3f3a6e24d3743fcd
@@ -1068,6 +1078,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      appVersion: 1.1.1
+      created: "2024-10-17T19:47:39Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 2082cb4937869ab790a9c0e157c0758da0f740d7103dff9ceebec429cbff793e
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.4/graph-network-indexer-0.5.4.tgz
+      version: 0.5.4
     - apiVersion: v2
       appVersion: 1.1.1
       created: "2024-10-14T23:54:51Z"
@@ -2878,4 +2898,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-10-17T16:38:57.18612812Z"
+generated: "2024-10-17T20:06:36.60548618Z"
