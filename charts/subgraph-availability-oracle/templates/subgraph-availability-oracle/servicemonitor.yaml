@@ -15,6 +15,7 @@ spec:
   selector:
     matchLabels:
       {{- include "subgraph-availability-oracle.selectorLabels" . | nindent 6 }}
+      serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:
   - port: http-metrics
     path: /

@@ -33,6 +33,7 @@ metadata:
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
 spec:
   type: {{ $values.service.type }}
   ports:

@@ -16,6 +16,7 @@ spec:
     matchLabels:
       {{- include "arbitrum-nitro.selectorLabels" . | nindent 6 }}
       {{- $componentLabel | nindent 6 }}
+      serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:
   - port: http-metrics
     path: /debug/metrics/prometheus
