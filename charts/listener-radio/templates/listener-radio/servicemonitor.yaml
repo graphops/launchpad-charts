@@ -12,6 +12,7 @@ spec:
   selector:
     matchLabels:
       {{- include "listener-radio.selectorLabels" . | nindent 6 }}
+      serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
   endpoints:
   - port: http-metrics
     {{- with .Values.service.serviceMonitors.interval }}
