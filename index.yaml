@@ -1221,6 +1221,16 @@ entries:
   graph-node:
     - apiVersion: v2
       appVersion: v0.35.1
+      created: "2024-10-17T16:28:25Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 86161f0d9c71bd42e03f15fb93f4d2569317e9fbae182b9c6f1cfc9e5c4c0d64
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.5.4/graph-node-0.5.4.tgz
+      version: 0.5.4
+    - apiVersion: v2
+      appVersion: v0.35.1
       created: "2024-06-25T17:19:49Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
       digest: 8d825e06bda6fd48c11c5c7af3e1429e5a0c0ba7dcbe70a61d4e508d7e63695e
@@ -2868,4 +2878,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-10-15T00:01:18.291791663Z"
+generated: "2024-10-17T16:38:57.18612812Z"
