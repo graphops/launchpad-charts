@@ -63,13 +63,15 @@ spec:
             - -c
             - |
               set -ex
-
+              apk update && apk add --no-cache dumb-init
+              mv /usr/bin/dumb-init /storage/dumb-init
+              chmod +x /storage/dumb-init
               HEIMDALLD_HOME="/storage"
 
               # If config hasn't been boostrapped already, do it
               if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
                 # Write out init config for Heimdall
-                heimdalld --home $HEIMDALLD_HOME init
+                exec /storage/dumb-init -- heimdalld --home $HEIMDALLD_HOME init
               fi
 
               # Replace init genesis with desired network genesis
@@ -139,7 +141,7 @@ spec:
             - -c
             - |
               set -x
-              exec heimdalld start \
+              exec /storage/dumb-init -- heimdalld start \
                 {{- range $val := initial $heimdallArgs }}
                 {{ $val }} \
                 {{- end }}
@@ -206,7 +208,7 @@ spec:
             - -c
             - |
               set -x;
-              exec heimdalld rest-server \
+              exec /storage/dumb-init -- heimdalld rest-server \
                 {{- range $val := initial $heimdallRestArgs }}
                 {{ $val }} \
                 {{- end }}
