@@ -169,6 +169,11 @@ graphNodeDefaults:
       # -- Name of the data key in the secret that contains your PG password
       key:
 
+  # -- Additional init containers to inject to this graph node group - an array of Container objects
+  extraInitContainers: []
+  # -- Additional containers to inject to this graph node group - an array of Container objects
+  extraContainers: []
+
 # -- Name of the Graph Node Group that should be the block ingestor. Only the first node instance (with index 0) will be configured as the block ingestor.
 blockIngestorGroupName: block-ingestor
 
