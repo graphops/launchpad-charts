@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-set -exuo pipefail
+set -euo pipefail
 
 # Define the required Go version.
 GO_VERSION="1.21.1"
