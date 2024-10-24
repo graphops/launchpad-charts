@@ -61,13 +61,13 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
           {{- if $values.env }}
-          {{- range $key, $val := ( omit $values.env "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
+          {{- range $key, $val := ( omit $values.env "INDEXER_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               value: {{ $val | quote }}
           {{- end }}
           {{- end }}
           {{- if $values.secretEnv }}
-          {{- range $key, $val := ( omit $values.secretEnv "TAP_AGENT_DATABASE__POSTGRES_URL" ) }}
+          {{- range $key, $val := ( omit $values.secretEnv "INDEXER_DATABASE__POSTGRES_URL" ) }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
@@ -75,7 +75,7 @@ spec:
                   key: {{ $val.key | quote }}
           {{- end }}
           {{- end }}
-            - name: TAP_AGENT_DATABASE__POSTGRES_URL
+            - name: INDEXER_DATABASE__POSTGRES_URL
               value: 'postgres://$(POSTGRES_USERNAME):$(POSTGRES_PASSWORD)@{{ index $values.postgresConfig "host" }}:{{ index $values.postgresConfig "port" }}/{{ index $values.postgresConfig "database" }}'
           command:
           - {{ $values.command }}
