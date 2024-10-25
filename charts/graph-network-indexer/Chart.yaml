@@ -19,4 +19,4 @@ version: 0.5.5
 
 # The appVersion field in this chart contains the tags of the various components and their respective versions being deployed.
 # This version should be updated whenever there are changes to any of the component versions.
-appVersion: "indexer-service-rs_1.1.1-indexer-tap-agent_1.1.1-indexer-agent_v0.21.5"
+appVersion: "svc_1.1.1-tap_1.1.1-agent_v0.21.5"

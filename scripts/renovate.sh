@@ -27,7 +27,7 @@ INDEXER_TAP_AGENT_TAG=$(awk '/indexerTapAgent:/, /tag:/{if(/tag:/) print $2}' ./
 INDEXER_AGENT_TAG=$(awk '/indexerAgent:/, /tag:/{if(/tag:/) print $2}' ./charts/graph-network-indexer/values.yaml | sed 's/"//g')
 
 # Construct the appVersion string
-APP_VERSION="indexer-service-rs_${INDEXER_SERVICE_RS_TAG}-indexer-tap-agent_${INDEXER_TAP_AGENT_TAG}-indexer-agent_${INDEXER_AGENT_TAG}"
+APP_VERSION="svc_${INDEXER_SERVICE_RS_TAG}-tap_${INDEXER_TAP_AGENT_TAG}-agent_${INDEXER_AGENT_TAG}"
 
 # Update the Chart.yaml with the new appVersion
 sed -i "s/^appVersion: .*/appVersion: \"${APP_VERSION}\"/" "$(pwd)/charts/graph-network-indexer/Chart.yaml"
