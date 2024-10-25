@@ -50,7 +50,7 @@ indexerDefaults:
     indexer:
       # -- (required) Ethereum address of your Indexer
       indexer_address: "your_indexer_address"
-      # We are commenting this example mnemonic because the operator mnemonic should come from the INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC environment variable instead
+      # We are commenting this example mnemonic because the operator mnemonic should come from the INDEXER_INDEXER__OPERATOR_MNEMONIC environment variable instead
       # operator_mnemonic = "anchor zebra vocal chair sample grape inmate loyal window harbor glue teach symbol brown prefer soup spice waste visit reform concert venue silk turtle"
 
     graph_node:
@@ -204,9 +204,7 @@ indexerService:
   image:
     repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
+    tag: "1.1.1"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-service-rs
@@ -218,7 +216,7 @@ indexerService:
 
   secretEnv: {}
     # -- We recommend that you set the following environment variables in the indexer-service secret
-    # INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+    # INDEXER_INDEXER__OPERATOR_MNEMONIC:
     #   secretName: # your secret containing mnemonic
     #   key: # your key in the secret
     # POSTGRES_USERNAME:
@@ -288,9 +286,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    # -- Overrides the image tag
-    # @default -- Chart.appVersion
-    tag: ""
+    tag: "1.1.1"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
@@ -350,7 +346,7 @@ indexerTapAgent:
 
   secretEnv: {}
     # -- We recommend that you set the following environment variables in the indexer-service secret
-    # TAP_AGENT_INDEXER__OPERATOR_MNEMONIC:
+    # INDEXER_INDEXER__OPERATOR_MNEMONIC:
     #   secretName: # your secret containing mnemonic
     #   key: # your key in the secret
     # POSTGRES_USERNAME:
