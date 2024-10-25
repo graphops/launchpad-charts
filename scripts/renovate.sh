@@ -18,21 +18,6 @@ curl -o "$HOME/go.tar" -L "https://golang.org/dl/go$GO_VERSION.linux-amd64.tar.g
 tar -C "$HOME" -xzf "$HOME/go.tar"
 echo "Go $GO_VERSION has been successfully installed."
 
-# Update appVersion in graph-network-indexer Chart.yaml
-echo "Updating appVersion in graph-network-indexer Chart.yaml..."
-
-# Extract image tags from values.yaml
-INDEXER_SERVICE_RS_TAG=$(awk '/indexerService:/, /tag:/{if(/tag:/) print $2}' ./charts/graph-network-indexer/values.yaml | sed 's/"//g')
-INDEXER_TAP_AGENT_TAG=$(awk '/indexerTapAgent:/, /tag:/{if(/tag:/) print $2}' ./charts/graph-network-indexer/values.yaml | sed 's/"//g')
-INDEXER_AGENT_TAG=$(awk '/indexerAgent:/, /tag:/{if(/tag:/) print $2}' ./charts/graph-network-indexer/values.yaml | sed 's/"//g')
-
-# Construct the appVersion string
-APP_VERSION="svc_${INDEXER_SERVICE_RS_TAG}-tap_${INDEXER_TAP_AGENT_TAG}-agent_${INDEXER_AGENT_TAG}"
-
-# Update the Chart.yaml with the new appVersion
-sed -i "s/^appVersion: .*/appVersion: \"${APP_VERSION}\"/" "$(pwd)/charts/graph-network-indexer/Chart.yaml"
-
-echo "appVersion has been updated successfully."
 
 # Add Go binaries to PATH.
 export PATH="$PATH:$EXPECTED_GO_PATH/bin"

@@ -17,6 +17,6 @@ type: application
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
 version: 0.5.5
 
-# The appVersion field in this chart contains the tags of the various components and their respective versions being deployed.
-# This version should be updated whenever there are changes to any of the component versions.
-appVersion: "svc_1.1.1-tap_1.1.1-agent_v0.21.5"
+# The appVersion field is intentionally left empty. Component versions are managed separately
+# and can be found in the values.yaml file or individual component configurations.
+appVersion: ""
