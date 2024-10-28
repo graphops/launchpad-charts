@@ -92,7 +92,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | tolerations |  | list | `[]` |
- | volumeClaimSpec.accessModes[0] |  | string | `"ReadWriteOnce"` |
+ | volumeClaimSpec.accessModes[0] |  | string | `"ReadWriteOncePod"` |
  | volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"50Gi"` |
  | volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `""` |
 

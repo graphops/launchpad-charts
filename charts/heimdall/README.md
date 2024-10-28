@@ -83,7 +83,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.service.topologyAwareRouting.enabled |  | bool | `false` |
  | heimdall.service.type |  | string | `"ClusterIP"` |
  | heimdall.tolerations |  | list | `[]` |
- | heimdall.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
+ | heimdall.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage | object | `{"accessModes":["ReadWriteOncePod"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | heimdall.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Heimdall | string | `"300Gi"` |
  | heimdall.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for heimdall | string | `nil` |
  | nameOverride |  | string | `""` |

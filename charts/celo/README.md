@@ -82,7 +82,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.service.type |  | string | `"ClusterIP"` |
  | celo.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | celo.tolerations |  | list | `[]` |
- | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1.5Ti"}},"storageClassName":null}` |
+ | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOncePod"],"resources":{"requests":{"storage":"1.5Ti"}},"storageClassName":null}` |
  | celo.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"1.5Ti"` |
  | celo.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | fullnameOverride |  | string | `""` |
