@@ -8,7 +8,7 @@ fullnameOverride: ""
 imagePullSecrets: []
 
 volumeClaimSpec:
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteOncePod"]
   # -- The storage class to use when provisioning a persistent volume
   storageClassName: "" 
   resources:

@@ -2,7 +2,7 @@
 
 Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.7](https://img.shields.io/badge/Version-0.1.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.5](https://img.shields.io/badge/AppVersion-1.8.5-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.5](https://img.shields.io/badge/AppVersion-1.8.5-informational?style=flat-square)
 
 ## Features
 
@@ -82,7 +82,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.service.type |  | string | `"ClusterIP"` |
  | celo.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | celo.tolerations |  | list | `[]` |
- | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"1.5Ti"}},"storageClassName":null}` |
+ | celo.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOncePod"],"resources":{"requests":{"storage":"1.5Ti"}},"storageClassName":null}` |
  | celo.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"1.5Ti"` |
  | celo.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | fullnameOverride |  | string | `""` |

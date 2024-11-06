@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.18](https://img.shields.io/badge/Version-0.5.18-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v24.9.0](https://img.shields.io/badge/AppVersion-multiarch--v24.9.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v24.9.0](https://img.shields.io/badge/AppVersion-multiarch--v24.9.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -137,7 +137,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
  | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `[]` |
  | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/ | string | `""` |
- | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
+ | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOncePod"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
