@@ -2961,6 +2961,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2024-11-06T22:48:43Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 5d0620b90cf71511281bf9306fbc3c4e3d3f6da1aa077078cad95d196c74f97e
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.7/graph-network-indexer-0.5.7.tgz
+      version: 0.5.7
+    - apiVersion: v2
       created: "2024-11-06T21:01:37Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: d561dff0eb31b2bc1468ece79fd4259f91b0843c87cfe5b0158d7283c2a9573e
@@ -5750,6 +5759,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v24.10.0
+      created: "2024-11-06T23:05:44Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 1eea3b639221f614d2c175d66b847f681122827af9b9ec2eca503ab9ca092f5b
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.19-canary.2/nimbus-0.5.19-canary.2.tgz
+      version: 0.5.19-canary.2
+    - apiVersion: v2
+      appVersion: multiarch-v24.10.0
       created: "2024-10-29T03:40:21Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 9216fe6f78a5f1193db24b973ca15afe266c460326749b5f7f46a43fe41d4484
@@ -7941,4 +7960,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-11-06T22:51:35.095057929Z"
+generated: "2024-11-06T23:08:52.211063414Z"
