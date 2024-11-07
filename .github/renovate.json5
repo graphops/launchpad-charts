@@ -34,8 +34,8 @@
       // thorax/erigon released a few versions following YYYY.MM.DD versioning pattern
       // we want to exclude those
       {
-        "matchPackageNames": ["thorax/erigon"],
-        "allowedVersions": "<2000"
+        "matchPackageNames": ["erigontech/erigon"],
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
       },
       {
         "matchPackageNames": ["statusim/nimbus-eth2"],

@@ -6,7 +6,7 @@ fullnameOverride: ""
 
 image:
   # -- Image for Erigon
-  repository: thorax/erigon
+  repository: docker.io/erigontech/erigon
   pullPolicy: IfNotPresent
   # -- Overrides the image tag
   # @default -- Chart.appVersion
