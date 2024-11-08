@@ -1477,6 +1477,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v2.60.9
+      created: "2024-11-07T20:12:20Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: b7e870548c5e459edd96d6773e4951eade2c54ba243a8f652fae52ab33d6b67a
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.8-canary.1/erigon-0.10.8-canary.1.tgz
+      version: 0.10.8-canary.1
+    - apiVersion: v2
       appVersion: 2.60.8
       created: "2024-09-24T22:08:19Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -2960,6 +2970,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2024-11-08T04:38:53Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 8c7d4d85fa1ced62aa7045125b99cbe9cef4dac28868241e20f303e35f537e8b
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.8-canary.1/graph-network-indexer-0.5.8-canary.1.tgz
+      version: 0.5.8-canary.1
     - apiVersion: v2
       created: "2024-11-06T22:48:43Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -7990,4 +8009,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-11-06T23:36:48.953210048Z"
+generated: "2024-11-08T04:41:35.738298217Z"
