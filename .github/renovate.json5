@@ -35,7 +35,8 @@
       // we want to exclude those
       {
         "matchPackageNames": ["erigontech/erigon"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$"
+        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$",
+        "allowedVersions": "<200"
       },
       {
         "matchPackageNames": ["statusim/nimbus-eth2"],
