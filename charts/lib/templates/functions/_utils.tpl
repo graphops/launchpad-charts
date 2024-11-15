@@ -191,35 +191,17 @@ Usage:
 
 {{- $_ := set $.__lib.config "templateCtx" $templateCtx }}
 
+{{- $templatedValues := dict }}
+{{- range $component, $values := $templateCtx.ComponentValues }}
+{{- $_ := set $templateCtx "Self" $values }}
+{{- $templatedValues := get (include "lib.utils.templateCollection" (list $values $templateCtx) | fromJson) "result" }}
+{{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
+{{- end }}
+
 {{- $1stPassPod := get (include "lib.utils.templateCollection" (list $templateCtx.ComponentValues $templateCtx) | fromJson) "result" }}
 
-{{- $_ := set $.__lib.config.templateCtx "ComponentValues" $1stPassPod }}
+{{- $_ := set $.__lib.config.templateCtx "ComponentValues" $templateCtx.ComponentValues }}
 
-{{/*
-
-{{ $_ := set $rootCtx "Chart" ( $rootCtx.Chart | toJson | fromJson ) }}
-{{- range $key, $value := $rootCtx.Chart }}
-
-{{ $newKey := printf "%s%s" ( $key | substr 0 1 | upper ) ( $key | substr 1 -1 ) }}
-{{ $_ := set $rootCtx.Chart $newKey $value }}
-{{ $_ := unset $rootCtx.Chart $key }}
-{{- end }}
-{{ $_ := set $rootCtx.Chart "APIVersion" $rootCtx.Chart.ApiVersion }}
-{{ $_ := unset $rootCtx.Chart "ApiVersion" }}
-
-{{- $templateCtx := dict "Root" $rootCtx "Pod" $mergedValues "componentName" $componentName }}
-
-{{- $configMapTemplate := deepCopy $templateCtx.Pod.configMap.options.template }}
-{{- $_ := set $templateCtx.Pod.configMap "options" (unset $templateCtx.Pod.configMap.options "template") }}
-
-{{- $1stPassPod := get (include "utils.templateCollection" (list $templateCtx.Pod $templateCtx) | fromJson) "result" }}
-{{- $_ := set $templateCtx "Pod" $1stPassPod }}
-
-{{- $tplConfigMap := get (include "utils.templateCollection" (list $configMapTemplate $templateCtx) | fromJson) "result" }}
-{{- $_ := set $templateCtx.Pod.configMap.options "template" $tplConfigMap }}
-
-{{- $templateCtx | toJson }}
-*/}}
 {{- end }}
 
 

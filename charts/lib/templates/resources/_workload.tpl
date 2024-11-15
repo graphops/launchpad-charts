@@ -3,7 +3,7 @@ resourceKeys:
   - workload
 {{- end }}
 
-{{ define "lib.resources.workload.skeleton" }}
+{{ define "lib.resources.workload.defaults" }}
 {{ print `
 apiVersion: v1
 kind: Deployment
@@ -13,4 +13,8 @@ metadata:
 spec:
   replicas: 1
 ` }}
+{{- end }}
+
+{{ define "lib.resources.workload.render" }}
+
 {{- end }}
