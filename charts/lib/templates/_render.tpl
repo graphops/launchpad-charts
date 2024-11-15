@@ -1,7 +1,5 @@
 {{ define "lib.render" }}
-{{ include "lib.init._loadConfig" $ }}
-{{ include "lib.init._loadResources" $ }}
-{{ include "lib.resources.mergeValues" $ }}
+{{ include "lib.init._init" $ }}
 {{- $templateCtx := $.__lib.config.templateCtx }}
 {{- range $component, $componentValues := $templateCtx.ComponentValues }}
 {{- $_ := set $templateCtx "Self" $componentValues }}
@@ -11,15 +9,14 @@
 {{- $resource := index $componentValues $resourceKey }}
 {{- $resourcesList := list }}
 {{- if eq (kindOf $resource) "map" }}
-{{- $resourcesList := append $resourcesList $resource }}
+{{- $resourcesList = append $resourcesList $resource }}
 {{- else if eq (kindOf $resource) "slice" }}
-{{- $resourcesList := concat $resourcesList $resource }}
+{{- $resourcesList = concat $resourcesList $resource }}
 {{- end }}
-{{- $base := tpl (index $.__lib.resources $resourceName "skeleton") $templateCtx }}
-{{- $result := list $base $resource | include "lib.utils.deepMerge" | fromYaml -}}
-{{ fail (printf "%v" $base) }}
+{{- $base := tpl (index $.__lib.resources $resourceName "defaults") $templateCtx | fromYaml }}
+{{- $result := list $base $resource | include "lib.utils.deepMerge" | fromJson }}
+---
 {{ $result | toYaml }}
------------
 {{- end }}
 {{- end }}
 {{- end }}
