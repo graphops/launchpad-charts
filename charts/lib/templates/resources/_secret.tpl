@@ -4,7 +4,7 @@ resourceKeys:
   - secrets
 {{- end }}
 
-{{ define "lib.resources.secret.skeleton" }}
+{{ define "lib.resources.secret.defaults" }}
 {{ print `
 apiVersion: v1
 kind: Secret
