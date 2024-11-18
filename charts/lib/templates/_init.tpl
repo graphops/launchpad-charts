@@ -5,10 +5,13 @@
 
 
 {{- define "lib.init._init" -}}
-{{ include "lib.init._loadConfig" $ }}
-{{ include "lib.init._loadResources" $ }}
-{{ include "lib.resources.mergeValues" $ }}
-{{- end -}}
+{{/* Initialize state store */}}
+{{- $_ := set $ "__lib" dict }}
+{{- include "lib.init._setTemplateCtx" $ -}}
+{{- include "lib.init._loadConfig" $ -}}
+{{- include "lib.init._loadResources" $ -}}
+{{- include "lib.resources.mergeValues" $ -}}
+{{- end }}
 
 {{/*
 Load and validate the library configuration.
@@ -16,14 +19,11 @@ Returns the validated config as a dict.
 Usage: {{ include "lib.loadConfig" . }}
 */}}
 {{- define "lib.init._loadConfig" }}
-  {{/* Initialize state store */}}
-  {{- $_ := set $ "__lib" dict }}
-
   {{/* First try to load from lib.config.yaml */}}
-  {{- $configFile := .Files.Get "_lib.config.yaml" -}}
-  {{- if not $configFile -}}
+  {{- $configFile := .Files.Get "_lib.config.yaml" }}
+  {{- if not $configFile }}
     {{- include "lib.error.fail" "_lib.config.yaml is required but was not found in the chart root dir" }}
-  {{- end -}}
+  {{- end }}
 
   {{/* Parse YAML */}}
   {{- $config := fromYaml $configFile }}
@@ -32,10 +32,17 @@ Usage: {{ include "lib.loadConfig" . }}
   {{- end }}
   {{- $_ := set $.__lib "config" $config }}
 
+  {{- if $.Values.debug }}
+    {{- include "lib.debug.function" (dict
+      "name" "init._loadConfig"
+      "args" (list "_lib.config.yaml")
+      "result" $config)
+    }}
+  {{- end }}
+
   {{/* Process Config */}}
   {{- include "lib.init._processConfig" $ }}
 {{- end -}}
-
 
 {{- define "lib.init._processConfig" }}
 {{- $config := $.__lib.config }}
@@ -43,8 +50,9 @@ Usage: {{ include "lib.loadConfig" . }}
 {{/* Process components layout */}}
 {{- if and
     (hasKey $config "components")
-    (kindIs "slice" $config.components) -}}
-  {{- $_ := set $.__lib.config "structureType" "static-components" }}
+    (kindIs "slice" $config.components) }}
+  {{- $_ := set $.__lib.config "components" $config.components }}
+  {{- $_ := set $.__lib.config "componentLayering" $config.componentLayering }}
 {{- else if and
     (eq $config.dynamicComponents true)
     (hasKey $config "tlkComponents") }}
@@ -53,24 +61,72 @@ Usage: {{ include "lib.loadConfig" . }}
   {{- fail (printf "\n\n!!ERROR!! %s\n" "Failed _lib.config.yaml validation of components section") }}
 {{- end }}
 
-{{- $_ := set $.__lib.config "inheritLists" (dict "statefulNode" (list "erigonDefaults" "statefulNode") "rpcdaemon" (list "erigonDefaults" "rpcdaemon")) }}
+{{- if $.Values.debug }}
+  {{- include "lib.debug.function" (dict
+    "name" "init._processConfig"
+    "args" list
+    "result" $config)
+  }}
+{{- end }}
 
 {{- end }}
 
 {{- define "lib.init._loadResources" }}
 {{- $resources := dict }}
 
-{{- $_ := set $resources "secret" (include "lib.resources.secret" $ | fromYaml) }}
-{{- $_ := set $resources.secret "defaults" (include "lib.resources.secret.defaults" $) }}
-
-{{- $_ := set $resources "workload" (include "lib.resources.workload" $ | fromYaml) }}
-{{- $_ := set $resources.workload "defaults" (include "lib.resources.workload.defaults" $) }}
+{{- $files := $.Subcharts.lib.Files.Glob "kubernetesResources/**/config.yaml" }}
+{{- range $path, $_ := $files }}
+  {{/* Split path into segments */}}
+  {{- $segments := splitList "/" $path }}
+  {{/* Get directory name (4th segment since path starts with charts/lib/kubernetesResources/) */}}
+  {{- $dirName := index $segments 1 }}
+  {{/* Get file name (last segment) */}}
+  {{- $fileName := base $path }}
+  {{- $res := ($.Subcharts.lib.Files.Get $path | fromYaml) }}
+  {{- $_ := set $resources $dirName $res }}
+  {{- range $path, $_ := $.Subcharts.lib.Files.Glob (printf "%s/%s/*" "kubernetesResources" $dirName) }}
+  {{- $fileName := base $path }}
+  {{- if eq $fileName "base.yaml" }}
+  {{- $_ := set $res "defaults" ($.Subcharts.lib.Files.Get $path) }}
+  {{- end }}
+  {{- if eq $fileName "transforms.tpl" }}
+  {{- $_ := set $res "transforms" ($.Subcharts.lib.Files.Get $path) }}
+  {{- end }}
+  {{- end }}
+  {{- $_ := set $resources $dirName $res }}
+{{- end }}
 
 {{- $_ := set $.__lib "resources" $resources }}
 
 {{- $_ := set $.__lib "resourceKeysMap" dict }}
 {{- range $resKey, $res := $resources }}
 {{- $_ := set $.__lib.resourceKeysMap $resKey $res.resourceKeys }}
+
+{{- if $.Values.debug }}
+  {{- include "lib.debug.function" (dict
+    "name" "init._loadResources"
+    "args" list
+    "result" (list $resources $.__lib.resourceKeysMap))
+  }}
 {{- end }}
+{{- end }}
+
+{{- end }}
+
+{{- define "lib.init._setTemplateCtx" }}
+
+{{- $rootCtx := deepCopy (omit $ "__lib") }}
+{{ $_ := set $rootCtx "Chart" ( $rootCtx.Chart | toJson | fromJson ) }}
+{{- range $key, $value := $rootCtx.Chart }}
+{{ $newKey := printf "%s%s" ( $key | substr 0 1 | upper ) ( $key | substr 1 -1 ) }}
+{{ $_ := set $rootCtx.Chart $newKey $value }}
+{{ $_ := unset $rootCtx.Chart $key }}
+{{- end }}
+{{ $_ := set $rootCtx.Chart "APIVersion" $rootCtx.Chart.ApiVersion }}
+{{ $_ := unset $rootCtx.Chart "ApiVersion" }}
+
+{{- $templateCtx := dict "Root" $rootCtx "ComponentValues" dict }}
+
+{{ $_ := set $.__lib "templateCtx" $templateCtx }}
 
 {{- end }}
