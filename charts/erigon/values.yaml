@@ -118,12 +118,7 @@ statefulNode:
   # These will be directly copied into the StatefulSet manifest.
 
   # -- Sets a readinessProbe configuration for the container
-  readinessProbe:
-    # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
-    # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
-    # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
-    grpc:
-      port: 9090 # named ports not supported yet by grpc probes
+  readinessProbe: {}
 
   # -- Sets a livenessProbe configuration for the container
   livenessProbe: {}

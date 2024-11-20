@@ -256,6 +256,12 @@ spec:
           {{- if $values.readinessProbe }}
           readinessProbe:
             {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            tcpSocket:
+              port: http-nimbus
+            initialDelaySeconds: 10
+            periodSeconds: 10
           {{- end }}
           {{- if $values.livenessProbe }}
           livenessProbe:

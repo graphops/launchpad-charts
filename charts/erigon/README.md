@@ -176,7 +176,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{"grpc":{"port":9090}}` |
+ | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
  | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
