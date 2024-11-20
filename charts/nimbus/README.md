@@ -128,6 +128,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | nimbus.resources |  | object | `{}` |
+ | nimbus.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
  | nimbus.service.ports.http-nimbus | Service Port to expose JSON-RPC interface on | int | `5052` |
  | nimbus.service.topologyAwareRouting.enabled |  | bool | `false` |
@@ -137,6 +138,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
  | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `[]` |
  | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/ | string | `""` |
+ | nimbus.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
  | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |

@@ -25,6 +25,15 @@ spec:
         name: storage
       spec:
         {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  {{- if eq $values.updateStrategyType "OnDelete" }}
+  updateStrategy:
+    type: OnDelete
+  {{- else if eq $values.updateStrategyType "RollingUpdate" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: {{ default 0 ($values.rollingUpdatePartition | atoi) }}
+  {{- end }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
