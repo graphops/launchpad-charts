@@ -178,6 +178,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
  | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
+ | statefulNode.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
@@ -187,6 +188,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.type |  | string | `"ClusterIP"` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | statefulNode.tolerations |  | list | `[]` |
+ | statefulNode.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
  | statefulNode.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
  | statefulNode.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
  | statefulNode.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for Erigon | string | `nil` |

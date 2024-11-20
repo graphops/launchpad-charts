@@ -107,6 +107,12 @@ statefulNode:
   # -- Amount of time to wait before force-killing the Erigon process
   terminationGracePeriodSeconds: 60
 
+  # -- Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate)
+  updateStrategyType: RollingUpdate
+
+  # -- When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher
+  rollingUpdatePartition: 0
+
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
