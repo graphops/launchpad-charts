@@ -119,6 +119,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
  | nimbus.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | nimbus.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
+ | nimbus.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | nimbus.nodeSelector |  | object | `{}` |
  | nimbus.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nimbus.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -127,12 +128,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | nimbus.readinessProbe | Sets a readinessProbe configuration for the container | object | `{"initialDelaySeconds":10,"periodSeconds":10,"tcpSocket":{"port":"http-nimbus"}}` |
  | nimbus.resources |  | object | `{}` |
  | nimbus.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
  | nimbus.service.ports.http-nimbus | Service Port to expose JSON-RPC interface on | int | `5052` |
  | nimbus.service.topologyAwareRouting.enabled |  | bool | `false` |
  | nimbus.service.type |  | string | `"ClusterIP"` |
+ | nimbus.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |

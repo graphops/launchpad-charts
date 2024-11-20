@@ -113,6 +113,24 @@ statefulNode:
   # -- When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher
   rollingUpdatePartition: 0
 
+  # Probes configuration for the containers in the StatefulSet
+  # Users can directly define readiness, liveness, and startup probes below.
+  # These will be directly copied into the StatefulSet manifest.
+
+  # -- Sets a readinessProbe configuration for the container
+  readinessProbe:
+    # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+    # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+    # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+    grpc:
+      port: 9090 # named ports not supported yet by grpc probes
+
+  # -- Sets a livenessProbe configuration for the container
+  livenessProbe: {}
+
+  # -- Sets a startupProbe configuration for the container
+  startupProbe: {}
+
   # -- Annotations for the `Pod`
   podAnnotations: {}
 

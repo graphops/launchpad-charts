@@ -32,7 +32,7 @@ spec:
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
-      partition: {{ default 0 ($values.rollingUpdatePartition | atoi) }}
+      partition: {{ default 0 ($values.rollingUpdatePartition | quote | atoi) }}
   {{- end }}
   template:
     metadata:
@@ -253,11 +253,18 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
+          {{- if $values.readinessProbe }}
           readinessProbe:
-            tcpSocket:
-              port: http-nimbus
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $values.livenessProbe }}
+          livenessProbe:
+            {{ toYaml $values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $values.startupProbe }}
+          startupProbe:
+            {{ toYaml $values.startupProbe | nindent 12 }}
+          {{- end }}
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
