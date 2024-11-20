@@ -128,7 +128,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
- | nimbus.readinessProbe | Sets a readinessProbe configuration for the container | object | `{"initialDelaySeconds":10,"periodSeconds":10,"tcpSocket":{"port":"http-nimbus"}}` |
+ | nimbus.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | nimbus.resources |  | object | `{}` |
  | nimbus.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |

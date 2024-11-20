@@ -255,6 +255,13 @@ spec:
           {{- if $values.readinessProbe }}
           readinessProbe:
             {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+            grpc:
+              port: 9090 # named ports not supported yet by grpc probes
           {{- end }}
           {{- if $values.livenessProbe }}
           livenessProbe:

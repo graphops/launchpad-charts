@@ -114,11 +114,7 @@ nimbus:
   # These will be directly copied into the StatefulSet manifest.
 
   # -- Sets a readinessProbe configuration for the container
-  readinessProbe:
-    tcpSocket:
-      port: http-nimbus
-    initialDelaySeconds: 10
-    periodSeconds: 10
+  readinessProbe: {}
 
   # -- Sets a livenessProbe configuration for the container
   livenessProbe: {}
