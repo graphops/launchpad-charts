@@ -167,6 +167,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
  | statefulNode.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
+ | statefulNode.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -175,6 +176,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{"grpc":{"port":9090}}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
  | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
@@ -186,6 +188,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.ports.ws-rpc | Service Port to expose WS-RPC interface on | int | `8546` |
  | statefulNode.service.topologyAwareRouting.enabled |  | bool | `false` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |
+ | statefulNode.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | statefulNode.tolerations |  | list | `[]` |
  | statefulNode.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
