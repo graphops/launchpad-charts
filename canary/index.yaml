@@ -1488,6 +1488,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v2.60.10
+      created: "2024-11-20T19:35:36Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: a599272613a52bccbf9b34e9cb4088c71594dfd514c5b9e196f3f2c4fdb2dec5
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.10-canary.2/erigon-0.10.10-canary.2.tgz
+      version: 0.10.10-canary.2
+    - apiVersion: v2
+      appVersion: v2.60.10
       created: "2024-11-20T16:25:07Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: b5fb04397d8601125dd5bd4d82f47aed1294de3e72f2d640d03fea3212ede78b
@@ -5893,6 +5903,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v24.10.0
+      created: "2024-11-20T19:35:22Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 60f7a2ffe40aeec69a385a80a2fe3f4deb2b309ae9d60b587b550173474dd2e2
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.20-canary.2/nimbus-0.5.20-canary.2.tgz
+      version: 0.5.20-canary.2
+    - apiVersion: v2
+      appVersion: multiarch-v24.10.0
       created: "2024-11-20T16:26:56Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: b503f6e55900b4d2501a057e50135a5ff9401342d8ccad00b4d674d16fc1214f
@@ -8154,4 +8174,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-11-20T16:35:57.038613419Z"
+generated: "2024-11-20T19:41:17.052446332Z"
