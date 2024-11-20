@@ -143,6 +143,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | arbitrum.restoreSnapshot.extraTarArgs | A string with extra arguments to tar command (i.e. "--strip-components=1") | string | `"--strip-components=2"` |
  | arbitrum.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `"https://snapshot.arbitrum.foundation/arb1/classic-archive.tar"` |
  | arbitrum.restoreSnapshot.subpath | Path where the snapshot should be unpacked to, relative to the volume root | string | `"db"` |
+ | arbitrum.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | arbitrum.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6070` |
  | arbitrum.service.ports.http-rpc | Service Port to expose JSON-RPC interface on | int | `8547` |
  | arbitrum.service.ports.ws-rpc | Service Port to expose WebSockets interface on | int | `8548` |
@@ -150,6 +151,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | arbitrum.service.type |  | string | `"ClusterIP"` |
  | arbitrum.terminationGracePeriodSeconds | Amount of time to wait before force-killing the arbitrum process | int | `60` |
  | arbitrum.tolerations |  | list | `[]` |
+ | arbitrum.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
  | arbitrum.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for arbitrum storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"750G"}},"storageClassName":null}` |
  | arbitrum.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for arbitrum | string | `"750G"` |
  | arbitrum.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for arbitrum | string | `nil` |
