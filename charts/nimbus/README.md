@@ -109,6 +109,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | nimbus.executionClientUrl | URL to the Execution Client Engine API. Will use configured JWT to authenticate. | string | `""` |
  | nimbus.extraArgs | Additional CLI arguments | list | `[]` |
+ | nimbus.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
+ | nimbus.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | nimbus.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |

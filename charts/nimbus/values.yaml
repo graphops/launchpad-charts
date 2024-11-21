@@ -199,3 +199,8 @@ nimbus:
       tag: "1.37.0"
       # -- Container pull policy
       pullPolicy: IfNotPresent
+
+  # -- Additional init containers to inject to this graph node group - an array of Container objects
+  extraInitContainers: []
+  # -- Additional containers to inject to this graph node group - an array of Container objects
+  extraContainers: []
