@@ -10,6 +10,9 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 spec:
   clusterIP: None # Headless service
+  # Allow the P2P Service to forward traffic even if the POD is not Ready
+  # Usefull for ReadinessProbes that require synced state
+  publishNotReadyAddresses: true
   ports:
   {{- range $portName, $portNumber := $values.service.ports }}
     - port: {{ $portNumber }} # the port we expose on the Service, user configurable
