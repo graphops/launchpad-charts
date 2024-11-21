@@ -191,6 +191,11 @@ statefulNode:
         # -- Container pull policy
         pullPolicy: IfNotPresent
 
+  # -- Additional init containers to inject to this graph node group - an array of Container objects
+  extraInitContainers: []
+  # -- Additional containers to inject to this graph node group - an array of Container objects
+  extraContainers: []
+
 rpcdaemon:
   # -- Enable a Deployment of rpcdaemon that can be scaled independently
   enabled: true
