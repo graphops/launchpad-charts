@@ -3081,6 +3081,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2024-11-21T02:01:52Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 93a864866b30b7f1eecb3d09f4ef1aa6375fa3e663dd67d9df66a3175731da77
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.9-canary.2/graph-network-indexer-0.5.9-canary.2.tgz
+      version: 0.5.9-canary.2
+    - apiVersion: v2
       created: "2024-11-18T19:36:16Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 6dafaa698b0e83f53b16d11c845bb4bb7a09d7befc5db4c30f7d24d99d6ea789
@@ -6845,6 +6854,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.11.0
+      created: "2024-11-21T02:01:01Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: ae0af4b28421f9ce9f3bb9929dc94e2cf94cf1fcb34ede2c6d3eef19a0b1ad18
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.4/proxyd-0.6.4.tgz
+      version: 0.6.4
+    - apiVersion: v2
+      appVersion: v4.11.0
       created: "2024-11-21T02:00:12Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
       digest: 514382958776cef8e00f7ea18fa949022788443419d20f9a5048b3e35fcddfde
@@ -8244,4 +8263,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-11-21T02:05:17.681004245Z"
+generated: "2024-11-21T02:07:26.225597636Z"
