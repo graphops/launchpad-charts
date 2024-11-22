@@ -137,12 +137,13 @@ statefulNode:
     fsGroup: 101337
 
   service:
-    # -- Toggle for topology aware routing
     topologyAwareRouting:
+      # -- Toggle for topology aware routing
       enabled: false
-    # -- Toggle publishing not ready addresses for headless and p2p services
     publishNotReadyAddresses:
+      # -- Toggle publishing not ready addresses for headless service
       headless: false
+      # -- Toggle publishing not ready addresses for p2p service
       p2p: false
     type: ClusterIP
     ports:

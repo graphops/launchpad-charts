@@ -188,8 +188,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | statefulNode.service.ports.ws-rpc | Service Port to expose WS-RPC interface on | int | `8546` |
- | statefulNode.service.publishNotReadyAddresses | Toggle publishing not ready addresses for headless and p2p services | object | `{"headless":false,"p2p":false}` |
- | statefulNode.service.topologyAwareRouting | Toggle for topology aware routing | object | `{"enabled":false}` |
+ | statefulNode.service.publishNotReadyAddresses.headless | Toggle publishing not ready addresses for headless service | bool | `false` |
+ | statefulNode.service.publishNotReadyAddresses.p2p | Toggle publishing not ready addresses for p2p service | bool | `false` |
+ | statefulNode.service.topologyAwareRouting.enabled | Toggle for topology aware routing | bool | `false` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |
  | statefulNode.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
