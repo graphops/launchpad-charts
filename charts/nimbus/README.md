@@ -135,8 +135,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
  | nimbus.service.ports.http-nimbus | Service Port to expose JSON-RPC interface on | int | `5052` |
- | nimbus.service.publishNotReadyAddresses | Toggle publishing not ready addresses for headless and p2p services | object | `{"headless":false,"p2p":false}` |
- | nimbus.service.topologyAwareRouting | Toggle for topology aware routing | object | `{"enabled":false}` |
+ | nimbus.service.publishNotReadyAddresses.headless | Toggle publishing not ready addresses for headless service | bool | `false` |
+ | nimbus.service.publishNotReadyAddresses.p2p | Toggle publishing not ready addresses for p2p service | bool | `false` |
+ | nimbus.service.topologyAwareRouting.enabled | Toggle for topology aware routing | bool | `false` |
  | nimbus.service.type |  | string | `"ClusterIP"` |
  | nimbus.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
