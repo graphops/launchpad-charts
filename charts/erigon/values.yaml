@@ -137,8 +137,13 @@ statefulNode:
     fsGroup: 101337
 
   service:
+    # -- Toggle for topology aware routing
     topologyAwareRouting:
       enabled: false
+    # -- Toggle publishing not ready addresses for headless and p2p services
+    publishNotReadyAddresses:
+      headless: false
+      p2p: false
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
