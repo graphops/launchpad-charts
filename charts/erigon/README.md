@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.10.9](https://img.shields.io/badge/Version-0.10.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.60.10](https://img.shields.io/badge/AppVersion-v2.60.10-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.10.10](https://img.shields.io/badge/Version-0.10.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.60.10](https://img.shields.io/badge/AppVersion-v2.60.10-informational?style=flat-square)
 
 ## Features
 
@@ -161,12 +161,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
+ | statefulNode.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
+ | statefulNode.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | statefulNode.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | statefulNode.jwt | JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
  | statefulNode.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
  | statefulNode.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
  | statefulNode.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
+ | statefulNode.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | statefulNode.nodeSelector |  | object | `{}` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -175,18 +178,24 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
  | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
+ | statefulNode.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
  | statefulNode.service.ports.ws-rpc | Service Port to expose WS-RPC interface on | int | `8546` |
- | statefulNode.service.topologyAwareRouting.enabled |  | bool | `false` |
+ | statefulNode.service.publishNotReadyAddresses.headless | Toggle publishing not ready addresses for headless service | bool | `false` |
+ | statefulNode.service.publishNotReadyAddresses.p2p | Toggle publishing not ready addresses for p2p service | bool | `false` |
+ | statefulNode.service.topologyAwareRouting.enabled | Toggle for topology aware routing | bool | `false` |
  | statefulNode.service.type |  | string | `"ClusterIP"` |
+ | statefulNode.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | statefulNode.terminationGracePeriodSeconds | Amount of time to wait before force-killing the Erigon process | int | `60` |
  | statefulNode.tolerations |  | list | `[]` |
+ | statefulNode.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
  | statefulNode.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
  | statefulNode.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
  | statefulNode.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume for Erigon | string | `nil` |

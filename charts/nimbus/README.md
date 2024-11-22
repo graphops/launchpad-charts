@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.19](https://img.shields.io/badge/Version-0.5.19-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v24.10.0](https://img.shields.io/badge/AppVersion-multiarch--v24.10.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.20](https://img.shields.io/badge/Version-0.5.20-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v24.10.0](https://img.shields.io/badge/AppVersion-multiarch--v24.10.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -109,6 +109,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | nimbus.executionClientUrl | URL to the Execution Client Engine API. Will use configured JWT to authenticate. | string | `""` |
  | nimbus.extraArgs | Additional CLI arguments | list | `[]` |
+ | nimbus.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
+ | nimbus.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | nimbus.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -119,6 +121,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
  | nimbus.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | nimbus.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
+ | nimbus.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | nimbus.nodeSelector |  | object | `{}` |
  | nimbus.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | nimbus.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
@@ -127,16 +130,22 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | nimbus.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | nimbus.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | nimbus.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | nimbus.resources |  | object | `{}` |
+ | nimbus.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | nimbus.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `8008` |
  | nimbus.service.ports.http-nimbus | Service Port to expose JSON-RPC interface on | int | `5052` |
- | nimbus.service.topologyAwareRouting.enabled |  | bool | `false` |
+ | nimbus.service.publishNotReadyAddresses.headless | Toggle publishing not ready addresses for headless service | bool | `false` |
+ | nimbus.service.publishNotReadyAddresses.p2p | Toggle publishing not ready addresses for p2p service | bool | `false` |
+ | nimbus.service.topologyAwareRouting.enabled | Toggle for topology aware routing | bool | `false` |
  | nimbus.service.type |  | string | `"ClusterIP"` |
+ | nimbus.startupProbe | Sets a startupProbe configuration for the container | object | `{}` |
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
  | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `[]` |
  | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/ | string | `""` |
+ | nimbus.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
  | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
  | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |

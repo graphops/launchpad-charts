@@ -107,6 +107,25 @@ statefulNode:
   # -- Amount of time to wait before force-killing the Erigon process
   terminationGracePeriodSeconds: 60
 
+  # -- Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate)
+  updateStrategyType: RollingUpdate
+
+  # -- When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher
+  rollingUpdatePartition: 0
+
+  # Probes configuration for the containers in the StatefulSet
+  # Users can directly define readiness, liveness, and startup probes below.
+  # These will be directly copied into the StatefulSet manifest.
+
+  # -- Sets a readinessProbe configuration for the container
+  readinessProbe: {}
+
+  # -- Sets a livenessProbe configuration for the container
+  livenessProbe: {}
+
+  # -- Sets a startupProbe configuration for the container
+  startupProbe: {}
+
   # -- Annotations for the `Pod`
   podAnnotations: {}
 
@@ -119,7 +138,13 @@ statefulNode:
 
   service:
     topologyAwareRouting:
+      # -- Toggle for topology aware routing
       enabled: false
+    publishNotReadyAddresses:
+      # -- Toggle publishing not ready addresses for headless service
+      headless: false
+      # -- Toggle publishing not ready addresses for p2p service
+      p2p: false
     type: ClusterIP
     ports:
       # Valid keys are names of ports that are exposed by the Pod that (see templates/stateful-node/statefulset.yaml)
@@ -171,6 +196,11 @@ statefulNode:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
+
+  # -- Additional init containers to inject to this graph node group - an array of Container objects
+  extraInitContainers: []
+  # -- Additional containers to inject to this graph node group - an array of Container objects
+  extraContainers: []
 
 rpcdaemon:
   # -- Enable a Deployment of rpcdaemon that can be scaled independently

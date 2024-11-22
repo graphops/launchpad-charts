@@ -25,6 +25,15 @@ spec:
         name: storage
       spec:
         {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  {{- if eq $values.updateStrategyType "OnDelete" }}
+  updateStrategy:
+    type: OnDelete
+  {{- else if eq $values.updateStrategyType "RollingUpdate" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: {{ default 0 ($values.rollingUpdatePartition | quote | atoi) }}
+  {{- end }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -176,6 +185,9 @@ spec:
             - name: tmp
               mountPath: /tmp
       {{- end }}
+      {{- with $values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -244,15 +256,31 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
+          {{- if $values.readinessProbe }}
+          readinessProbe:
+            {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- else }}
           readinessProbe:
             tcpSocket:
               port: http-nimbus
             initialDelaySeconds: 10
             periodSeconds: 10
+          {{- end }}
+          {{- if $values.livenessProbe }}
+          livenessProbe:
+            {{ toYaml $values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $values.startupProbe }}
+          startupProbe:
+            {{ toYaml $values.startupProbe | nindent 12 }}
+          {{- end }}
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{- with $values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

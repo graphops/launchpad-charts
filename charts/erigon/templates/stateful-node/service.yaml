@@ -10,6 +10,7 @@ metadata:
     {{- $componentLabel | nindent 4 }}
 spec:
   clusterIP: None # Headless service
+  publishNotReadyAddresses: {{ default false $values.service.publishNotReadyAddresses.headless }}
   ports:
   {{- range $portName, $portNumber := $values.service.ports }}
     - port: {{ $portNumber }} # the port we expose on the Service, user configurable
@@ -64,6 +65,7 @@ metadata:
 spec:
   type: NodePort
   externalTrafficPolicy: Local
+  publishNotReadyAddresses: {{ default false $values.service.publishNotReadyAddresses.p2p }}
   ports:
     - name: tcp-p2p
       port: {{ include "erigon.p2pPort" $values }}

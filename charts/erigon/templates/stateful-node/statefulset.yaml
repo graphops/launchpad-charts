@@ -25,6 +25,15 @@ spec:
         name: storage
       spec:
         {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  {{- if eq $values.updateStrategyType "OnDelete" }}
+  updateStrategy:
+    type: OnDelete
+  {{- else if eq $values.updateStrategyType "RollingUpdate" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: {{ default 0 ($values.rollingUpdatePartition | quote | atoi) }}
+  {{- end }}
   template:
     metadata:
       {{- with $values.podAnnotations }}
@@ -162,6 +171,9 @@ spec:
             - name: env-nodeport
               mountPath: /env
       {{- end }}
+      {{- with $values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -243,16 +255,32 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
+          {{- if $values.readinessProbe }}
+          readinessProbe:
+            {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- else }}
           readinessProbe:
             # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
             # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
             # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
             grpc:
               port: 9090 # named ports not supported yet by grpc probes
+          {{- end }}
+          {{- if $values.livenessProbe }}
+          livenessProbe:
+            {{ toYaml $values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $values.startupProbe }}
+          startupProbe:
+            {{ toYaml $values.startupProbe | nindent 12 }}
+          {{- end }}
           {{- with $values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+      {{- with $values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with $values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
