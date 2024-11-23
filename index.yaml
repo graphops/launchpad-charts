@@ -2924,6 +2924,16 @@ entries:
       version: 0.1.0
   subgraph-radio:
     - apiVersion: v2
+      appVersion: 1.0.7
+      created: "2024-11-23T00:01:37Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: cc557c1dd6d2d07bacbf32175314b871cf5952a3b0ba07697e700939fb4fd0de
+      name: subgraph-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.15/subgraph-radio-0.2.15.tgz
+      version: 0.2.15
+    - apiVersion: v2
       appVersion: 1.0.6
       created: "2024-10-17T19:47:39Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
@@ -3073,4 +3083,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-11-22T18:11:49.303078065Z"
+generated: "2024-11-23T00:08:54.700061774Z"
