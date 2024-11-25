@@ -1,4 +1,4 @@
-{{- define "lib.utils.deepMerge" -}}
+{{- define "common.utils.deepMerge" -}}
 {{/*
 deepMerge: A versatile helper function for deep merging of multiple maps.
 Purpose:
@@ -15,10 +15,10 @@ Usage:
 {{- if eq $length 0 -}}
   {{- dict | toJson -}}
 {{- else if eq $length 1 -}}
-  {{- get ( include "lib.utils.removeNulls" ( index . 0 ) | fromJson ) "result" | toJson -}}
+  {{- get ( include "common.utils.removeNulls" ( index . 0 ) | fromJson ) "result" | toJson -}}
 {{- else -}}
   {{- $last := index . (sub $length 1) -}}
-  {{- $initial := slice . 0 (sub $length 1) | include "lib.utils.deepMerge" | fromJson -}}
+  {{- $initial := slice . 0 (sub $length 1) | include "common.utils.deepMerge" | fromJson -}}
 
 {{/* Merge two maps excluding keys set to null */}}
   {{- $merged := dict -}}
@@ -28,7 +28,7 @@ Usage:
       {{- if hasKey $last $key -}}
         {{- $overrideValue := index $last $key -}}
         {{- if and (kindIs "map" $baseValue) (kindIs "map" $overrideValue) -}}
-          {{- $nestedMerge := list $baseValue $overrideValue | include "lib.utils.deepMerge" | fromJson -}}
+          {{- $nestedMerge := list $baseValue $overrideValue | include "common.utils.deepMerge" | fromJson -}}
           {{- $_ := set $merged $key $nestedMerge -}}
         {{- else -}}
           {{- $_ := set $merged $key $overrideValue -}}
@@ -50,14 +50,14 @@ Usage:
 {{- end -}}
 
 
-{{- define "lib.utils.removeNulls" -}}
+{{- define "common.utils.removeNulls" -}}
   {{- $value := . -}}
   {{- $result := dict -}}
   {{- if kindIs "map" $value -}}
     {{- $newMap := dict -}}
     {{- range $k, $v := $value -}}
       {{- if not (eq $v nil) -}}
-        {{- $nestedResult := include "lib.utils.removeNulls" $v | fromJson -}}
+        {{- $nestedResult := include "common.utils.removeNulls" $v | fromJson -}}
         {{- if $nestedResult -}}
           {{- if kindIs "map" $nestedResult -}}
             {{- if hasKey $nestedResult "result" -}}
@@ -79,7 +79,7 @@ Usage:
     {{- $newSlice := list -}}
     {{- range $v := $value -}}
       {{- if not (eq $v nil) -}}
-        {{- $nestedResult := include "lib.utils.removeNulls" $v | fromJson -}}
+        {{- $nestedResult := include "common.utils.removeNulls" $v | fromJson -}}
         {{- if $nestedResult -}}
           {{- if kindIs "map" $nestedResult -}}
             {{- if hasKey $nestedResult "result" -}}
@@ -105,7 +105,7 @@ Usage:
   {{- $result | toJson -}}
 {{- end -}}
 
-{{- define "lib.utils.templateCollection" -}}
+{{- define "common.utils.templateCollection" -}}
 {{/*
   This helper function templates all string elements within a collection, element by element.
   It is meant to be used for collections (maps or lists). Can also be used with primitive values.
@@ -149,64 +149,68 @@ Usage:
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "lib.utils.templateCollection" | fromJson -}}
+    {{- $processedValue := list $value $templateCtx | include "common.utils.templateCollection" | fromJson -}}
     {{- $result = set $result $key $processedValue.result -}}
   {{- end -}}
-  {{- include "lib.utils.removeNulls" $result -}}
+  {{- include "common.utils.removeNulls" $result -}}
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "lib.utils.templateCollection" | fromJson -}}
+    {{- $processedValue := list $value $templateCtx | include "common.utils.templateCollection" | fromJson -}}
     {{- $result = append $result $processedValue.result -}}
   {{- end -}}
-  {{- include "lib.utils.removeNulls" $result -}}
+  {{- include "common.utils.removeNulls" $result -}}
 {{- else -}}
   {{- dict "result" $collection | toJson -}}
 {{- end -}}
 
 {{- end -}}
 
-{{- define "lib.resources.mergeValues" }}
+{{- define "common.resources.mergeValues" }}
 
-{{- $templateCtx := $.__lib.templateCtx }}
+{{- $templateCtx := $.__common.templateCtx }}
 
 {{- $mergedValues := dict }}
-{{- range $component := $.__lib.config.components }}
+{{- range $component := $.__common.config.components }}
 {{- $mergeList := list }}
-{{- range $key := index $.__lib.config.componentLayering (printf "%v" $component) }}
+{{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
 {{- $mergeList = append $mergeList (index $.Values $key) }}
 {{- end }}
 {{- $mergeList = append $mergeList (index $.Values (printf "%v" $component)) }}
-{{- $mergedValues = (deepCopy $mergeList) | include "lib.utils.deepMerge" | fromJson }}
+{{- $mergedValues = (deepCopy $mergeList) | include "common.utils.deepMerge" | fromJson }}
 {{ $_ := set $templateCtx.ComponentValues (printf "%v" $component) $mergedValues }}
 {{- end }}
 
-{{- $_ := set $.__lib.config "templateCtx" $templateCtx }}
+{{- $_ := set $.__common.config "templateCtx" $templateCtx }}
 
 {{- $templatedValues := dict }}
 {{- range $component, $values := $templateCtx.ComponentValues }}
 {{- $_ := set $templateCtx "Self" $values }}
-{{- $templatedValues := get (include "lib.utils.templateCollection" (list $values $templateCtx) | fromJson) "result" }}
+{{- $templatedValues := get (include "common.utils.templateCollection" (list $values $templateCtx) | fromJson) "result" }}
 {{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
 {{- end }}
 
-{{- $1stPassPod := get (include "lib.utils.templateCollection" (list $templateCtx.ComponentValues $templateCtx) | fromJson) "result" }}
+{{- $1stPassPod := get (include "common.utils.templateCollection" (list $templateCtx.ComponentValues $templateCtx) | fromJson) "result" }}
 ​
 {{- if $.Values.debug -}}
-  {{- include "lib.debug.function" (dict
+  {{- include "common.debug.function" (dict
     "name" "resources.mergeValues"
     "args" list
     "result" $templateCtx)
   -}}
 {{- end -}}
 
-{{- $_ := set $.__lib.config.templateCtx "ComponentValues" $templateCtx.ComponentValues }}
+{{- $_ := set $.__common.config.templateCtx "ComponentValues" $templateCtx.ComponentValues }}
 
 {{- end }}
 
 
 
-{{- define "lib.utils.transformMapToList" -}}
+
+
+
+
+{{- define "common.utils.transformMapToList" -}}
 {{- $ := index . 0 -}}
 {{- $base := index . 1 -}}
 {{- $paths := index . 2 -}}
