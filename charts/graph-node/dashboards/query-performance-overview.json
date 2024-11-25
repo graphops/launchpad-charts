@@ -1523,8 +1523,8 @@
     ]
   },
   "timezone": "",
-  "title": "Graph Query Performances",
-  "uid": "graph-query-performances",
+  "title": "Graph Query Performance Overview",
+  "uid": "graph-query-performance-overview",
   "version": 1,
   "weekStart": ""
 }
