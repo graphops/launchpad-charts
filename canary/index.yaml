@@ -3091,6 +3091,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2024-11-25T22:06:24Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 940a8180a303e15455ebdf5d1cad9e314b358a6ca896f441da680502d1161e25
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.10-canary.1/graph-network-indexer-0.5.10-canary.1.tgz
+      version: 0.5.10-canary.1
+    - apiVersion: v2
       created: "2024-11-21T02:02:23Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: aa19ac6c5e92f5a02daac1ed27a789dbe48940e0c963397c425efa4940d7b64d
@@ -6892,6 +6901,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.11.1
+      created: "2024-11-25T20:06:45Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+      digest: 2bea25265253fdd725f0d60aae9ed14db80e9ef4034c9b19710652d6a0166958
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.5-canary.1/proxyd-0.6.5-canary.1.tgz
+      version: 0.6.5-canary.1
+    - apiVersion: v2
       appVersion: v4.11.0
       created: "2024-11-21T02:01:01Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
@@ -8322,4 +8341,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-11-24T18:23:06.441804116Z"
+generated: "2024-11-25T22:11:48.59352071Z"
