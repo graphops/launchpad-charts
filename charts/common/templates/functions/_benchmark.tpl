@@ -1,4 +1,4 @@
-{{- define "lib.benchmark" -}}
+{{- define "common.benchmark" -}}
   {{/* Create large test data */}}
   {{- $largeData := dict -}}
   {{- range untilStep 0 1000 1 -}}
@@ -14,8 +14,8 @@
 
   {{/* Approach 2: Direct context
   {{- range untilStep 0 100 1 -}}
-    {{- $_ := set . "__lib_data" $largeData -}}
-    {{- $accessed := .__lib_data -}}
+    {{- $_ := set . "__common_data" $largeData -}}
+    {{- $accessed := .__common_data -}}
   {{- end -}}
    */}}
 {{- end -}}
