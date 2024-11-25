@@ -268,5 +268,66 @@ Usage:
 {{- end -}}
 
 {{/* Store result directly in global context */}}
-{{- $_ := set $.__lib "fcallResult" $base -}}
+{{- $_ := set $.__common "fcallResult" $base -}}
+{{- end -}}
+
+
+{{- define "common.utils.pruneOutput" -}}
+{{- if kindIs "map" . -}}
+    {{- if hasKey . "__enabled" -}}
+        {{- if not .__enabled -}}
+        {{- else -}}
+            {{- $result := dict -}}
+            {{- range $k, $v := . -}}
+                {{- if not (hasPrefix "__" $k) -}}
+                    {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
+                        {{- $processed := include "common.utils.pruneOutput" $v | fromJson -}}
+                        {{- if or (not (eq $processed.result nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
+                            {{- $_ := set $result $k $processed.result -}}
+                        {{- end -}}
+                    {{- else -}}
+                        {{- if not (eq $v nil) -}}
+                            {{- $_ := set $result $k $v -}}
+                        {{- end -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+            {{- dict "result" $result | toJson -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $result := dict -}}
+        {{- range $k, $v := . -}}
+            {{- if not (hasPrefix "__" $k) -}}
+                {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
+                    {{- $processed := include "common.utils.pruneOutput" $v | fromJson -}}
+                    {{- if or (not (eq $processed.result nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
+                        {{- $_ := set $result $k $processed.result -}}
+                    {{- end -}}
+                {{- else -}}
+                    {{- if not (eq $v nil) -}}
+                        {{- $_ := set $result $k $v -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- dict "result" $result | toJson -}}
+    {{- end -}}
+{{- else if kindIs "slice" . -}}
+    {{- $result := list -}}
+    {{- range $v := . -}}
+        {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
+            {{- $processed := include "common.utils.pruneOutput" $v | fromJson -}}
+            {{- if or (not (eq $processed.result nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
+                {{- $result = append $result $processed.result -}}
+            {{- end -}}
+        {{- else -}}
+            {{- if not (eq $v nil) -}}
+                {{- $result = append $result $v -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+    {{- dict "result" $result | toJson -}}
+{{- else -}}
+    {{- dict "result" . | toJson -}}
+{{- end -}}
 {{- end -}}

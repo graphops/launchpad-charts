@@ -21,7 +21,8 @@
 {{- $_ := tpl $transformsTpl (list $ $result) }}
 {{- $result = $.__common.fcallResult }}
 {{- end }}
-{{ $result | toYaml }}
+{{- $prunedResult := index (include "common.utils.pruneOutput" $result | fromJson) "result" }}
+{{ $prunedResult | toYaml }}
 ---
 {{- end }}
 {{- end }}
