@@ -133,17 +133,15 @@ Usage:
 {{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
 {{- if not (regexMatch ".*\\{\\{.*" $collection) -}}
-{{- dict "result" $collection | toJson -}}
+{{- printf "{\"result\": %v}" $collection -}}
 {{- else -}}
   {{/* this is to allow to preserve types other than strings */}}
-  {{- if contains "\n" $collection }}
-    {{- dict "result" ( tpl $collection $templateCtx ) | toJson }}
   {{/* to preserve empty strings, relevant for apiGroups in Roles */}}
-  {{- else if empty $collection }}
-    {{- printf "%s: %s" "result" "\"\"" }}
+  {{- if empty $collection }}
+    {{- print "{\"result\": \"\"}" }}
   {{- else }}
     {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
-    {{- tpl $tempStr $templateCtx }}
+    {{- tpl $tempStr $templateCtx | fromYaml | toJson }}
   {{- end }}
 {{- end }}
 {{- else if kindIs "map" $collection -}}
@@ -187,6 +185,13 @@ Usage:
 {{- range $component, $values := $templateCtx.ComponentValues }}
 {{- $_ := set $templateCtx "Self" $values }}
 {{- $templatedValues := get (include "common.utils.templateCollection" (list $values $templateCtx) | fromJson) "result" }}
+{{- if $.Values.debug -}}
+  {{- include "common.debug.function" (dict
+    "name" (printf "%s%s" "Templating component values for " $component)
+    "args" (list $templateCtx)
+    "result" $templatedValues)
+  -}}
+{{- end -}}
 {{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
 {{- end }}
 

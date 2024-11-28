@@ -1,5 +1,9 @@
 {{- define "common.render" }}
+{{- if $.Values.debug }}
+{{- include "common.init._init" $ }}
+{{- else }}
 {{- $_ := include "common.init._init" $ }}
+{{- end }}
 {{- $templateCtx := $.__common.config.templateCtx }}
 {{- range $component, $componentValues := $templateCtx.ComponentValues }}
 {{- $_ := set $templateCtx "Self" $componentValues }}
