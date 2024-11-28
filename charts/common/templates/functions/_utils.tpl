@@ -124,42 +124,43 @@ Usage:
     {{- $templatedCollection | fromJson }}
 */}}
 
-{{- $collection := index . 0 }}
+{{- $ = index . 0 }}
+{{- $collection := index . 1 }}
 {{- if not (empty $collection) }}
 {{- $collection = deepCopy $collection -}}
 {{- end }}
-{{- $templateCtx := deepCopy ( index . 1 ) -}}
+{{- $templateCtx := index . 2 -}}
 
 {{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
 {{- if not (regexMatch ".*\\{\\{.*" $collection) -}}
-{{- printf "{\"result\": %v}" $collection -}}
+{{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- else -}}
-  {{/* this is to allow to preserve types other than strings */}}
-  {{/* to preserve empty strings, relevant for apiGroups in Roles */}}
-  {{- if empty $collection }}
-    {{- print "{\"result\": \"\"}" }}
+  {{- $templatedVal := tpl $collection $templateCtx }}
+  {{- if contains "\n" $templatedVal }}
+    {{- $_ := set $.__common "fcallResult" (dict "result" $templatedVal) }}
   {{- else }}
-    {{- $tempStr := printf "%s: %v" "result" ( $collection ) }}
-    {{- tpl $tempStr $templateCtx | fromYaml | toJson }}
+    {{- $_ := set $.__common "fcallResult" (printf "result: %v" $templatedVal | fromYaml) }}
   {{- end }}
 {{- end }}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "common.utils.templateCollection" | fromJson -}}
-    {{- $result = set $result $key $processedValue.result -}}
+    {{- $_ := list $ $value $templateCtx | include "common.utils.templateCollection" -}}
+    {{- $processedValue := $.__common.fcallResult.result -}}
+    {{- $result = set $result $key $processedValue -}}
   {{- end -}}
-  {{- include "common.utils.removeNulls" $result -}}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $result) -}}
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
-    {{- $processedValue := list $value $templateCtx | include "common.utils.templateCollection" | fromJson -}}
-    {{- $result = append $result $processedValue.result -}}
+    {{- $_ := list $ $value $templateCtx | include "common.utils.templateCollection" -}}
+    {{- $processedValue := $.__common.fcallResult.result -}}
+    {{- $result = append $result $processedValue -}}
   {{- end -}}
-  {{- include "common.utils.removeNulls" $result -}}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $result) -}}
 {{- else -}}
-  {{- dict "result" $collection | toJson -}}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- end -}}
 
 {{- end -}}
@@ -184,7 +185,8 @@ Usage:
 {{- $templatedValues := dict }}
 {{- range $component, $values := $templateCtx.ComponentValues }}
 {{- $_ := set $templateCtx "Self" $values }}
-{{- $templatedValues := get (include "common.utils.templateCollection" (list $values $templateCtx) | fromJson) "result" }}
+{{- $_ := include "common.utils.templateCollection" (list $ $values $templateCtx) }}
+{{- $templatedValues := $.__common.fcallResult.result }}
 {{- if $.Values.debug -}}
   {{- include "common.debug.function" (dict
     "name" (printf "%s%s" "Templating component values for " $component)
@@ -195,8 +197,6 @@ Usage:
 {{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
 {{- end }}
 
-{{- $1stPassPod := get (include "common.utils.templateCollection" (list $templateCtx.ComponentValues $templateCtx) | fromJson) "result" }}
-​
 {{- if $.Values.debug -}}
   {{- include "common.debug.function" (dict
     "name" "resources.mergeValues"
@@ -208,11 +208,6 @@ Usage:
 {{- $_ := set $.__common.config.templateCtx "ComponentValues" $templateCtx.ComponentValues }}
 
 {{- end }}
-
-
-
-
-
 
 
 {{- define "common.utils.transformMapToList" -}}
@@ -335,4 +330,58 @@ Usage:
 {{- else -}}
     {{- dict "result" . | toJson -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "common.utils.generateArgsList" -}}
+{{/*
+generateArgsList: A helper function to generate command-line arguments from a dictionary.
+Purpose:
+- Converts a dictionary of key-value pairs into a list of formatted command-line arguments.
+- Handles special "__none" value to generate flags without values.
+- Allows custom prefixing and separation of key-value pairs.
+- Supports explicit custom ordering of some arguments with a list of keys.
+  Ordered args come first, followed by remaining ones in the order provided by range.
+- Optionally evaluates templating on the resulting strings
+Parameters:
+- map: Map of key-value pairs to convert to arguments
+- orderList: List of keys to determine argument order (optional, default: [])
+- <map>.__prefix: String to prepend to each key (optional, default: "")
+- <map>.__separator: String to separate key and value (optional, default: " ")
+Usage example:
+  {{- $args := dict ".__prefix" "--" ".__separator" "=" "map" (dict "foo" "bar" "flag" "__none" "num" 42) "orderList" (list "flag" "foo") -}}
+  {{- $result := include "utils.generateArgsList" $args | fromJson -}}
+  Result: ["--flag", "--foo=bar", "--num=42"]
+*/}}
+{{- $map := .map -}}
+{{- $orderList := default list .orderList -}}
+{{- $prefix := default "" $map.__prefix -}}
+{{- $separator := default " " $map.__separator -}}
+{{- $templateCtx := deepCopy ( .templateCtx | default dict ) }}
+
+{{- $result := list -}}
+{{/* Process ordered arguments first */}}
+{{- range $key := $orderList -}}
+  {{- if hasKey $map $key -}}
+    {{- $value := index $map $key -}}
+    {{- if eq (printf "%v" $value) "__none" -}}
+      {{- $result = append $result (printf "%s%s" $prefix $key) -}}
+    {{- else -}}
+      {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+    {{- end -}}
+    {{- $map = omit $map $key -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Process remaining arguments excluding the internal "__" ones */}}
+{{- range $key, $value := $map -}}
+  {{- if not (hasPrefix "__" $key) -}}
+    {{- if eq (printf "%v" $value) "__none" -}}
+      {{- $result = append $result (printf "%s%s" $prefix $key) -}}
+    {{- else -}}
+      {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $result | toJson -}}
 {{- end -}}
