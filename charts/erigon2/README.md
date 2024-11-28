@@ -14,10 +14,23 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
+ | erigonDefaults.config.args."authrpc.addr" |  | string | `"0.0.0.0"` |
+ | erigonDefaults.config.args."authrpc.vhosts" |  | string | `"*"` |
+ | erigonDefaults.config.args."http.addr" |  | string | `"0.0.0.0"` |
+ | erigonDefaults.config.args."http.vhosts" |  | string | `"*"` |
+ | erigonDefaults.config.args."metrics.addr" |  | string | `"0.0.0.0"` |
+ | erigonDefaults.config.args."private.api.addr" |  | string | `"0.0.0.0:9090"` |
+ | erigonDefaults.config.args.__prefix |  | string | `"--"` |
+ | erigonDefaults.config.args.__separator |  | string | `"="` |
+ | erigonDefaults.config.args.datadir |  | string | `"/storage"` |
+ | erigonDefaults.config.args.healthcheck |  | string | `"__none"` |
+ | erigonDefaults.config.args.http |  | string | `"__none"` |
+ | erigonDefaults.config.args.metrics |  | string | `"__none"` |
+ | erigonDefaults.config.argsOrder |  | list | `[]` |
  | erigonDefaults.workload.kind |  | string | `"StatefulSet"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[0] |  | string | `"sh"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[1] |  | string | `"-ac"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"set -ex;\nexec erigon \\\n  --datadir=/storage \\\n  --private.api.addr=0.0.0.0:9090 \\\n  --http \\\n  --http.addr=0.0.0.0 \\\n  --http.vhosts=* \\\n  --authrpc.addr=0.0.0.0 \\\n  --authrpc.vhosts=* \\\n  --metrics \\\n  --metrics.addr=0.0.0.0 \\\n  --healthcheck\n"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"{{- $__parameters := dict\n  \"map\" ( .Self.config.args \| default dict )\n  \"orderList\" ( .Self.config.argsOrder \| default list )\n}}\n{{- $args := include \"common.utils.generateArgsList\" $__parameters \| fromJsonArray }}\nset -ex;\nexec erigon \\\n{{- range $flag := $args }}\n  {{ $flag }} \\\n{{- end }}\n"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.containerPort |  | int | `9090` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.protocol |  | string | `"TCP"` |
@@ -51,7 +64,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.mountPath |  | string | `"/tmp"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.name |  | string | `"tmp"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.fsGroup |  | int | `101337` |
- | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | int | `101337` |
+ | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | string | `"{{ .Self.workload.spec.template.spec.securityContext.runAsUser }}"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsNonRoot |  | bool | `true` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsUser |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.terminationGracePeriodSeconds |  | string | `"60"` |
@@ -60,14 +73,9 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.updateStrategy.type |  | string | `"RollingUpdate"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.accessModes[0] |  | string | `"ReadWriteOnce"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
- | erigonDefaults.workload.spec.volumeClaimTemplates.storage.storageClassName |  | string | `"{{ default \"test\" $.Root.Values.global.storageClassName }}"` |
- | global.storageClassName | Set a default storage class to use everywhere | string | `"ceph-block"` |
+ | erigonDefaults.workload.spec.volumeClaimTemplates.storage.storageClassName |  | string | `"{{ default nil .Root.Values.globals.storageClassName }}"` |
+ | globals.storageClassName | Set a default storage class to use everywhere | string | `nil` |
  | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
- | rpcdaemon.args.--config-file |  | string | `"/config/config.yaml"` |
- | rpcdaemon.args.__separator |  | string | `"="` |
- | rpcdaemon.args.start |  | string | `"__none"` |
- | rpcdaemon.argsOrder[0] |  | string | `"start"` |
- | rpcdaemon.argsOrder[1] |  | string | `"--config-file"` |
  | rpcdaemon.clusterRbac | Cluster scoped RBAC role and binding configuration Used by the P2P init-container | object | `{"__enabled":false,"bindingSpec":{"roleRef":{}},"roleSpec":null}` |
  | rpcdaemon.configMap | ConfigMap customization | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}},"options":{"useEnvSubst":false}}` |
  | rpcdaemon.configMap.__enabled | Create a ConfigMap (highly recommended) | bool | `true` |
