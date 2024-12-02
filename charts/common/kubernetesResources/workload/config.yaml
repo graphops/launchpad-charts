@@ -1,2 +1,3 @@
 resourceKeys:
-  - workload
+  single:
+    - workload
