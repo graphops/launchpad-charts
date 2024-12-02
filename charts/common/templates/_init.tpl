@@ -1,16 +1,22 @@
-{{- define "common.error.fail" }}
-{{- $message := . -}}
-{{- printf "\n\n!!ERROR!! %s \n\n" $message | fail }}
-{{- end }}
-
-
+{{/* Performs initialization, loading of resources and initial merges */}}
 {{- define "common.init._init" -}}
 {{/* Initialize state store */}}
 {{- $_ := set $ "__common" dict }}
-{{- include "common.init._setTemplateCtx" $ -}}
-{{- include "common.init._loadConfig" $ -}}
-{{- include "common.init._loadResources" $ -}}
-{{- include "common.resources.mergeValues" $ -}}
+{{/* Define the ordered steps */}}
+{{- $initSteps := list
+"common.init._setTemplateCtx"
+"common.init._loadConfig"
+"common.init._loadResources"
+"common.resources.mergeValues"
+}}
+{{/* execute them with conditional output omission */}}
+{{- range $step := $initSteps }}
+{{- if $.Values.__debug }}
+{{- include (printf "%s" $step) $ -}}
+{{- else }}
+{{- $_ := include (printf "%s" $step) $ -}}
+{{- end }}
+{{- end }}
 {{- end }}
 
 {{/*

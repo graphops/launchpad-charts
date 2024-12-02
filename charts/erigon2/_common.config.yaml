@@ -1,0 +1,11 @@
+dynamicComponents: false
+
+components:
+  - statefulNode
+  - rpcdaemon
+
+componentLayering:
+  statefulNode:
+    - erigonDefaults
+  rpcdaemon:
+    - erigonDefaults

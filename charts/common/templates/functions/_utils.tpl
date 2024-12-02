@@ -137,7 +137,7 @@ Usage:
 {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- else -}}
   {{- $templatedVal := tpl $collection $templateCtx }}
-  {{- if contains "\n" $templatedVal }}
+  {{- if contains "\n" (trim $templatedVal) }}
     {{- $_ := set $.__common "fcallResult" (dict "result" $templatedVal) }}
   {{- else }}
     {{- $_ := set $.__common "fcallResult" (printf "result: %v" $templatedVal | fromYaml) }}
@@ -187,6 +187,11 @@ Usage:
 {{- $_ := set $templateCtx "Self" $values }}
 {{- $_ := include "common.utils.templateCollection" (list $ $values $templateCtx) }}
 {{- $templatedValues := $.__common.fcallResult.result }}
+{{/* TODO: Temporarily template thrice until future work */}}
+{{- $_ := include "common.utils.templateCollection" (list $ $templatedValues $templateCtx) }}
+{{- $templatedValues = $.__common.fcallResult.result }}
+{{- $_ := include "common.utils.templateCollection" (list $ $templatedValues $templateCtx) }}
+{{- $templatedValues = $.__common.fcallResult.result }}
 {{- if $.Values.debug -}}
   {{- include "common.debug.function" (dict
     "name" (printf "%s%s" "Templating component values for " $component)
@@ -244,18 +249,25 @@ Usage:
                     {{- $resultList := list -}}
                     {{/* Handle defaultFor outside inner loop if present */}}
                     {{- $hasDefaults := hasKey $pathObj "defaultFor" -}}
+                    {{- $hasIndexKey := and (hasKey $pathObj "indexKey") (not (empty $pathObj.indexKey)) -}}
                     {{- $defaults := index $pathObj "defaultFor" | default list -}}
                     {{- range $key, $value := $current -}}
                         {{/* We need deepCopy here to prevent reference sharing between list items */}}
                         {{- $newObj := deepCopy $value -}}
-                        {{- $_ := set $newObj $pathObj.indexKey $key -}}
+                        {{- if $hasIndexKey -}}
+                        {{/* Strip any suffix after @ from the key, the
+                             driver here is that often there is no single
+                             unique parameter to use as indexKey */}}
+                        {{- $baseKey := regexReplaceAll "@.*$" $key "" -}}
+                        {{- $_ := set $newObj $pathObj.indexKey $baseKey -}}
                         {{/* Apply defaults if any exist */}}
                         {{- if $hasDefaults -}}
                             {{- range $defaultKey := $defaults -}}
                                 {{- if not (hasKey $newObj $defaultKey) -}}
-                                    {{- $_ := set $newObj $defaultKey $key -}}
+                                    {{- $_ := set $newObj $defaultKey $baseKey -}}
                                 {{- end -}}
                             {{- end -}}
+                        {{- end -}}
                         {{- end -}}
                         {{- $resultList = append $resultList $newObj -}}
                     {{- end -}}

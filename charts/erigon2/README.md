@@ -15,45 +15,114 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | erigonDefaults.config.args."authrpc.addr" |  | string | `"0.0.0.0"` |
+ | erigonDefaults.config.args."authrpc.jwtsecret" |  | string | `""` |
+ | erigonDefaults.config.args."authrpc.port" |  | int | `8551` |
  | erigonDefaults.config.args."authrpc.vhosts" |  | string | `"*"` |
+ | erigonDefaults.config.args."db.pagesize" |  | string | `"8KB"` |
+ | erigonDefaults.config.args."db.read.concurrency" |  | int | `16` |
  | erigonDefaults.config.args."http.addr" |  | string | `"0.0.0.0"` |
+ | erigonDefaults.config.args."http.api" |  | string | `"eth,debug,net,trace,erigon,engine"` |
+ | erigonDefaults.config.args."http.compression" |  | bool | `true` |
+ | erigonDefaults.config.args."http.corsdomain" |  | string | `"*"` |
+ | erigonDefaults.config.args."http.enabled" |  | bool | `true` |
+ | erigonDefaults.config.args."http.port" |  | int | `8545` |
  | erigonDefaults.config.args."http.vhosts" |  | string | `"*"` |
- | erigonDefaults.config.args."metrics.addr" |  | string | `"0.0.0.0"` |
- | erigonDefaults.config.args."private.api.addr" |  | string | `"0.0.0.0:9090"` |
+ | erigonDefaults.config.args."metrics.addr" |  | string | `"{{ with .Self.config.metrics }}{{ .enabled \| ternary (.addr \| quote) nil }}{{ end }}"` |
+ | erigonDefaults.config.args."metrics.port" |  | string | `"{{ with .Self.config.metrics }}{{ .enabled \| ternary (.port \| int) nil }}{{ end }}"` |
+ | erigonDefaults.config.args."p2p.allowed-ports" |  | string | `"{{- if .Self.config.p2p.enabled }}\n{{- $strList := list }}\n{{- range $proto, $port := .Self.config.p2p.protocols }}\n{{- if not (empty $port) }}\n{{- $strList = append $strList $proto }}\n{{- else }}\n{{- $strList = append $strList (printf \"${EXTERNAL_PORT_%s}\" $proto) }}\n{{- end }}\n{{- end }}\n{{- printf (join \",\" $strList) }}\n{{- else }}\n{{- print \"null\" }}\n{{- end }}\n"` |
+ | erigonDefaults.config.args."p2p.protocol" |  | string | `"{{ join \",\" (keys .Self.config.p2p.protocols) }}"` |
+ | erigonDefaults.config.args."pprof.addr" |  | string | `"{{ with .Self.config.pprof }}{{ .enabled \| ternary (.addr \| quote) nil }}{{ end }}"` |
+ | erigonDefaults.config.args."pprof.port" |  | string | `"{{ with .Self.config.pprof }}{{ .enabled \| ternary (.port \| int) nil }}{{ end }}"` |
+ | erigonDefaults.config.args."private.api.addr" |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled \| ternary \"0.0.0.0:9090\" \"127.0.0.1:9090\" }}"` |
+ | erigonDefaults.config.args."rpc.batch.concurrency" |  | int | `16` |
+ | erigonDefaults.config.args."rpc.returndata.limit" |  | int | `4096000` |
+ | erigonDefaults.config.args."torrent.download.rate" |  | string | `"100mb"` |
+ | erigonDefaults.config.args."torrent.download.slots" |  | int | `6` |
+ | erigonDefaults.config.args."torrent.port" |  | string | `nil` |
+ | erigonDefaults.config.args."trace.maxtraces" |  | int | `1000000` |
+ | erigonDefaults.config.args."ws.compression" |  | bool | `true` |
+ | erigonDefaults.config.args."ws.port" |  | int | `8546` |
  | erigonDefaults.config.args.__prefix |  | string | `"--"` |
  | erigonDefaults.config.args.__separator |  | string | `"="` |
  | erigonDefaults.config.args.datadir |  | string | `"/storage"` |
  | erigonDefaults.config.args.healthcheck |  | string | `"__none"` |
- | erigonDefaults.config.args.http |  | string | `"__none"` |
- | erigonDefaults.config.args.metrics |  | string | `"__none"` |
+ | erigonDefaults.config.args.metrics |  | string | `"{{ .Self.config.metrics.enabled \| ternary (print \"__none\") nil }}"` |
+ | erigonDefaults.config.args.nat |  | string | `"{{ .Self.config.p2p.enabled \| ternary \"extip:${EXTERNAL_IP}\" nil }}"` |
+ | erigonDefaults.config.args.port |  | string | `"{{ tpl (index .Self.config.args \"p2p.allowed-ports\") $ \| splitList \",\" \| first }}"` |
+ | erigonDefaults.config.args.ws |  | bool | `true` |
  | erigonDefaults.config.argsOrder |  | list | `[]` |
+ | erigonDefaults.config.jwt | Provision or use an existing JWT secret If it's enabled and neither existingSecret nor fromLiteral are set, a random secret will be generated and then re-used in the future | object | `{"enabled":false,"existingSecret":{"key":null,"name":null},"fromLiteral":null}` |
+ | erigonDefaults.config.jwt.enabled | Provision or make use of a JWT secret for Node | bool | `false` |
+ | erigonDefaults.config.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":null,"name":null}` |
+ | erigonDefaults.config.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
+ | erigonDefaults.config.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
+ | erigonDefaults.config.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
+ | erigonDefaults.config.metrics | Enable support for metrics | object | `{"addr":"0.0.0.0","enabled":true,"port":9102}` |
+ | erigonDefaults.config.p2p | Enable a NodePort for P2P support in node | object | `{"enabled":false,"protocols":{"67":"","68":""},"torrents":{"enabled":true,"nodePort":null}}` |
+ | erigonDefaults.config.p2p.enabled | Expose P2P port via NodePort | bool | `false` |
+ | erigonDefaults.config.p2p.protocols | NodePorts must be unique, or left as empty string "" to be obtained dynamically.  | object | `{"67":"","68":""}` |
+ | erigonDefaults.config.p2p.torrents.enabled | Enable for torrents NodePort | bool | `true` |
+ | erigonDefaults.config.p2p.torrents.nodePort | Specify nodePort to use or Leave null for dynamic | string | `nil` |
+ | erigonDefaults.config.pprof | Enable pprof interface support for profiling data | object | `{"addr":"127.0.0.1","enabled":true,"port":6070}` |
+ | erigonDefaults.services.default.__enabled |  | bool | `true` |
+ | erigonDefaults.services.default.spec.ports.portName.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.default.spec.selector |  | string | `nil` |
+ | erigonDefaults.services.default.spec.type |  | string | `"ClusterIP"` |
+ | erigonDefaults.services.p2p.__enabled |  | bool | `true` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"67\") }}{{ end }}"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.name |  | string | `"p2p-tcp-67"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.nodePort |  | string | `"{{- with .Self.config.p2p }}\n{{- if and (hasKey .protocols \"67\") (not (empty (index .protocols \"67\"))) }}\n{{ index .protocols \"67\" \| int }}\n{{- else }}\nnull\n{{- end }}\n{{- end }}\n"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.port |  | int | `30301` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.targetPort |  | string | `nil` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"68\") }}{{ end }}"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.name |  | string | `"p2p-tcp-68"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.nodePort |  | string | `"{{- with .Self.config.p2p }}\n{{- if and (hasKey .protocols \"68\") (not (empty (index .protocols \"68\"))) }}\n{{ index .protocols \"68\" \| int }}\n{{- else }}\nnull\n{{- end }}\n{{- end }}\n"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.port |  | int | `30302` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.targetPort |  | string | `nil` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"67\") }}{{ end }}"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.name |  | string | `"p2p-udp-67"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.nodePort |  | string | `"{{- with .Self.config.p2p }}\n{{- if and (hasKey .protocols \"67\") (not (empty (index .protocols \"67\"))) }}\n{{ index .protocols \"67\" \| int }}\n{{- else }}\nnull\n{{- end }}\n{{- end }}\n"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.port |  | int | `30301` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.protocol |  | string | `"UDP"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.targetPort |  | string | `nil` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"68\") }}{{ end }}"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.name |  | string | `"p2p-udp-68"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.nodePort |  | string | `"{{- with .Self.config.p2p }}\n{{- if and (hasKey .protocols \"68\") (not (empty (index .protocols \"68\"))) }}\n{{ index .protocols \"68\" \| int }}\n{{- else }}\nnull\n{{- end }}\n{{- end }}\n"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.port |  | int | `30302` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.protocol |  | string | `"UDP"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-68.targetPort |  | string | `nil` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-tcp.__enabled |  | bool | `true` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-tcp.containerPort |  | int | `42069` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-tcp.name |  | string | `"tcp-torrent"` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-tcp.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-udp.__enabled |  | bool | `false` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-udp.containerPort |  | int | `42069` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-udp.name |  | string | `"udp-torrent"` |
+ | erigonDefaults.services.p2p.spec.ports.torrent-udp.protocol |  | string | `"UDP"` |
  | erigonDefaults.workload.kind |  | string | `"StatefulSet"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[0] |  | string | `"sh"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[1] |  | string | `"-ac"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"{{- $__parameters := dict\n  \"map\" ( .Self.config.args \| default dict )\n  \"orderList\" ( .Self.config.argsOrder \| default list )\n}}\n{{- $args := include \"common.utils.generateArgsList\" $__parameters \| fromJsonArray }}\nset -ex;\nexec erigon \\\n{{- range $flag := $args }}\n  {{ $flag }} \\\n{{- end }}\n"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.containerPort |  | int | `9090` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"{{- $args := dict }}\n{{- range $arg, $value := .Self.config.args }}\n{{- $_ := set $args $arg (tpl (printf \"%v\" $value) $) }}\n{{- end }}\n{{- $__parameters := dict\n  \"map\" $args\n  \"orderList\" ( .Self.config.argsOrder \| default list )\n}}\n{{- $argsList := include \"common.utils.generateArgsList\" $__parameters \| fromJsonArray }}\nset -ex;\nexec erigon \\\n{{ join \" \\\\\\n\" $argsList }}\n"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.containerPort |  | string | `"{{- $privateAddr := default nil (index .ComponentValues.statefulNode.config.args \"private.api.addr\") }}\n{{- if $privateAddr }}{{ $privateAddr \| splitList \":\" \| last \| int }}{{ else }}{{ nil }}{{ end }}\n"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-engineapi.containerPort |  | int | `8551` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-engineapi.__enabled |  | bool | `true` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-engineapi.containerPort |  | string | `"{{ index .Self.config.args \"authrpc.port\" }}"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-engineapi.name |  | string | `"http-engineapi"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-engineapi.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-jsonrpc.containerPort |  | int | `8545` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-jsonrpc.__enabled |  | string | `"{{ index .Self.config.args \"http.enabled\" }}"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-jsonrpc.containerPort |  | string | `"{{ index .Self.config.args \"http.port\" }}"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-jsonrpc.name |  | string | `"http-jsonrpc"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-jsonrpc.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-metrics.containerPort |  | int | `6060` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-metrics.containerPort |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-metrics.name |  | string | `"http-metrics"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.http-metrics.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.tcp-p2p.name |  | string | `"tcp-p2p"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.tcp-p2p.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.tcp-torrent.containerPort |  | int | `42069` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.tcp-torrent.name |  | string | `"tcp-torrent"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.tcp-torrent.protocol |  | string | `"TCP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.udp-p2p.name |  | string | `"udp-p2p"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.udp-p2p.protocol |  | string | `"UDP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.udp-torrent.containerPort |  | int | `42069` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.udp-torrent.name |  | string | `"udp-torrent"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.udp-torrent.protocol |  | string | `"UDP"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.ws-rpc.containerPort |  | int | `8546` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.ws-rpc.__enabled |  | string | `"{{ index .Self.config.args \"ws\" }}"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.ws-rpc.containerPort |  | string | `"{{ index .Self.config.args \"ws.port\" }}"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.ws-rpc.name |  | string | `"ws-rpc"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.ws-rpc.protocol |  | string | `"TCP"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.readinessProbe.grpc.port |  | int | `9090` |
@@ -64,7 +133,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.mountPath |  | string | `"/tmp"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.name |  | string | `"tmp"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.fsGroup |  | int | `101337` |
- | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | string | `"{{ .Self.workload.spec.template.spec.securityContext.runAsUser }}"` |
+ | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsNonRoot |  | bool | `true` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsUser |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.terminationGracePeriodSeconds |  | string | `"60"` |
@@ -75,94 +144,9 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.storageClassName |  | string | `"{{ default nil .Root.Values.globals.storageClassName }}"` |
  | globals.storageClassName | Set a default storage class to use everywhere | string | `nil` |
- | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
- | rpcdaemon.clusterRbac | Cluster scoped RBAC role and binding configuration Used by the P2P init-container | object | `{"__enabled":false,"bindingSpec":{"roleRef":{}},"roleSpec":null}` |
- | rpcdaemon.configMap | ConfigMap customization | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}},"options":{"useEnvSubst":false}}` |
- | rpcdaemon.configMap.__enabled | Create a ConfigMap (highly recommended) | bool | `true` |
- | rpcdaemon.configMap.metadata | Any remaiing key/values can be added and will be merged with the templated ConfigMap resource | object | `{"annotations":{},"labels":{}}` |
- | rpcdaemon.configMap.options | ConfigMap specific options | object | `{"useEnvSubst":false}` |
- | rpcdaemon.configMap.options.useEnvSubst | Run an envsubst initcontainer at runtime | bool | `false` |
- | rpcdaemon.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"__enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":{}}` |
- | rpcdaemon.horizontalPodAutoscaler.metadata | Anything else will be marge on the final horizontalPodAutoscaler resource template | object | `{"annotations":{},"labels":{}}` |
- | rpcdaemon.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
- | rpcdaemon.image.digest | Overrides the image reference using a specific digest | string | `""` |
- | rpcdaemon.image.pullPolicy | Image pull policy | string | `"IfNotPresent"` |
- | rpcdaemon.image.repository | Docker image repository | string | `"ghcr.io/streamingfast/firehose-ethereum"` |
- | rpcdaemon.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.6.7-geth-v1.13.15-fh2.4"` |
- | rpcdaemon.imagePullSecrets | Pull secrets required to fetch images | list | `[]` |
- | rpcdaemon.kind | Additional CLI arguments to pass to `rpcdaemon` | string | `"Deployment"` |
- | rpcdaemon.podDisruptionBudget | Pod Disruption Budget configuration | object | `{"__enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":null}` |
- | rpcdaemon.rbac | RBAC role and binding configuration | object | `{"__enabled":"{{ default false .Self.serviceAccount.__enabled }}","bindingSpec":{"metadata":{"annotations":{},"labels":{}},"roleRef":{}},"roleSpec":{"metadata":{"annotations":{},"labels":{}}}}` |
- | rpcdaemon.replicaCount | Number of replicas to run | int | `2` |
- | rpcdaemon.secret.__enabled |  | bool | `true` |
- | rpcdaemon.service | Service customization | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}},"spec":{"ports":{"fh-metrics":{"port":24,"protocol":"TCP"}},"type":"ClusterIP"}}` |
- | rpcdaemon.service.__enabled | Create a Service | bool | `true` |
- | rpcdaemon.service.metadata.annotations | Additional service annotations | object | `{}` |
- | rpcdaemon.service.metadata.labels | Additional service labels | object | `{}` |
- | rpcdaemon.service.spec | Any other key/values will be merged with the final Service resource `spec.ports` is a key-value map, with the port name as key, and the spec as value | object | `{"ports":{"fh-metrics":{"port":24,"protocol":"TCP"}},"type":"ClusterIP"}` |
- | rpcdaemon.service.spec.ports | Service ports configuration | object | `{"fh-metrics":{"port":24,"protocol":"TCP"}}` |
- | rpcdaemon.service.spec.type | Service type | string | `"ClusterIP"` |
- | rpcdaemon.serviceAccount | Service account configuration | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}}}` |
- | rpcdaemon.serviceAccount.__enabled | Specifies whether a service account should be created | bool | `true` |
- | rpcdaemon.serviceAccount.metadata | Rest spec | object | `{"annotations":{},"labels":{}}` |
- | rpcdaemon.serviceAccount.metadata.annotations | Annotations to add to the service account | object | `{}` |
- | rpcdaemon.serviceAccount.metadata.labels | Labels to add to the service account | object | `{}` |
- | rpcdaemon.serviceHeadless | Also create headless services, mandatory for StatefulSets and true by default | string | `"{{ eq .Self.workload.kind \"StatefulSet\" \| ternary true true }}"` |
- | rpcdaemon.serviceMonitor | ServiceMonitor configuration for Prometheus Operator | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}},"spec":{"endpoints":{"metrics-fh":{"honorLabels":true,"interval":"30s","path":"/metrics","scrapeTimeout":"10s"}}}}` |
- | rpcdaemon.serviceMonitor.__enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `true` |
- | rpcdaemon.serviceP2P | Creates a NodePort service (used in P2P support) if a nodePort isn't specified, kubernetes will dinamically attribute one | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{}},"spec":{"ports":{"p2p-tcp":{"nodePort":null,"port":32222,"protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":30303,"protocol":"UDP","targetPort":null}}}}` |
- | rpcdaemon.serviceP2P.metadata.annotations | Additional service annotations | object | `{}` |
- | rpcdaemon.serviceP2P.metadata.labels | Additional service labels | object | `{}` |
- | rpcdaemon.serviceP2P.spec | Any other key/values will be merged with the final Service resource `spec.ports` is a key-value map, with the port name as key, and the spec as value | object | `{"ports":{"p2p-tcp":{"nodePort":null,"port":32222,"protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":30303,"protocol":"UDP","targetPort":null}}}` |
- | rpcdaemon.serviceP2P.spec.ports | Service ports configuration | object | `{"p2p-tcp":{"nodePort":null,"port":32222,"protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":30303,"protocol":"UDP","targetPort":null}}` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-tcp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-tcp.port | default is to use nodePort if specified, or 30303 | mandatory | `32222` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-tcp.targetPort | default is to use the port's name | optional | `nil` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-udp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-udp.port | default is to use nodePort if specified, or 30303 | mandatory | `30303` |
- | rpcdaemon.serviceP2P.spec.ports.p2p-udp.targetPort | default is to use the port's name | optional | `nil` |
- | rpcdaemon.workload.__enabled |  | bool | `true` |
- | rpcdaemon.workload.imagePullSecrets |  | list | `[]` |
+ | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `false` |
  | rpcdaemon.workload.kind |  | string | `"Deployment"` |
- | rpcdaemon.workload.serviceName | Required for StatefulSets | string | `"template"` |
- | rpcdaemon.workload.spec.template.spec.affinity |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.containers.main.annotations |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.containers.main.command |  | list | `[]` |
- | rpcdaemon.workload.spec.template.spec.containers.main.env |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_FORKED_BLOCKS_STORE_URL.key | Name of the data key in the secret that contains your S3 bucket url for storing forked blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_FORKED_BLOCKS_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing forked blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_MERGED_BLOCKS_STORE_URL.key | Name of the data key in the secret that contains your S3 bucket url for storing merged blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_MERGED_BLOCKS_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing merged blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.key | Name of the data key in the secret that contains your S3 bucket url for storing one blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.envFrom.secretKeyRef.FIREETH_COMMON_ONE_BLOCK_STORE_URL.name | Name of the secret that contains your S3 bucket url for storing one blocks | string | `""` |
- | rpcdaemon.workload.spec.template.spec.containers.main.labels."app.kubernetes.io/part-of" |  | string | `"{{ .Root.Release.Name }}"` |
- | rpcdaemon.workload.spec.template.spec.containers.main.ports.fh-metrics.containerPort |  | int | `32222` |
- | rpcdaemon.workload.spec.template.spec.containers.main.ports.fh-metrics.protocol |  | string | `"TCP"` |
- | rpcdaemon.workload.spec.template.spec.containers.main.ports.fh-pprof.containerPort |  | int | `30303` |
- | rpcdaemon.workload.spec.template.spec.containers.main.ports.fh-pprof.protocol |  | string | `"TCP"` |
- | rpcdaemon.workload.spec.template.spec.containers.main.resources |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.containers.main.securityContext.allowPrivilegeEscalation |  | bool | `false` |
- | rpcdaemon.workload.spec.template.spec.containers.main.securityContext.capabilities.drop[0] |  | string | `"ALL"` |
- | rpcdaemon.workload.spec.template.spec.containers.main.securityContext.readOnlyRootFilesystem |  | bool | `true` |
- | rpcdaemon.workload.spec.template.spec.containers.main.volumeMounts.data-dir.__enabled |  | bool | `true` |
- | rpcdaemon.workload.spec.template.spec.containers.main.volumeMounts.data-dir.mountPath |  | string | `"/mnt"` |
- | rpcdaemon.workload.spec.template.spec.containers.main.volumeMounts.data-dir.readOnly |  | bool | `false` |
- | rpcdaemon.workload.spec.template.spec.lifecycle |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.nodeSelector |  | object | `{}` |
- | rpcdaemon.workload.spec.template.spec.podManagementPolicy |  | string | `"OrderedReady"` |
- | rpcdaemon.workload.spec.template.spec.podSecurityContext.fsGroup |  | string | `"{{ .Self.workload.spec.template.spec.podSecurityContext.runAsUser }}"` |
- | rpcdaemon.workload.spec.template.spec.podSecurityContext.runAsGroup |  | string | `"{{ .Self.workload.spec.template.spec.podSecurityContext.runAsUser }}"` |
- | rpcdaemon.workload.spec.template.spec.podSecurityContext.runAsNonRoot |  | bool | `true` |
- | rpcdaemon.workload.spec.template.spec.podSecurityContext.runAsUser |  | int | `1000` |
- | rpcdaemon.workload.spec.template.spec.terminationGracePeriodSeconds |  | int | `10` |
- | rpcdaemon.workload.spec.template.spec.tolerations |  | list | `[]` |
- | rpcdaemon.workload.spec.template.spec.topologySpreadConstraints |  | list | `[]` |
- | rpcdaemon.workload.spec.template.spec.updateStrategy.type |  | string | `"RollingUpdate"` |
- | rpcdaemon.workload.spec.template.spec.volumes.config.__enabled |  | string | `"{{ .Self.configMap.__enabled }}"` |
- | rpcdaemon.workload.spec.template.spec.volumes.config.configMap.defaultMode |  | int | `420` |
- | rpcdaemon.workload.spec.template.spec.volumes.config.configMap.name |  | string | `"template"` |
- | rpcdaemon.workload.spec.template.spec.volumes.data-dir.__enabled |  | bool | `true` |
- | rpcdaemon.workload.spec.template.spec.volumes.data-dir.emptyDir |  | object | `{}` |
+ | statefulNode.__enabled |  | bool | `true` |
  | statefulNode.workload.__enabled |  | bool | `true` |
  | statefulNode.workload.replicaCount |  | int | `1` |
  | statefulNode.workload.test |  | string | `"{{ .ComponentValues.statefulNode.replicaCount }}"` |

@@ -1,3 +1,5 @@
 resourceKeys:
-  - service
-  - services
+  single:
+    - service
+  multiple:
+    - services
