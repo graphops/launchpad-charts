@@ -1,0 +1,283 @@
+globals:
+  # -- Set a default storage class to use everywhere
+  storageClassName: null
+
+statefulNode:
+  __enabled: true
+  workload:
+    __enabled: true
+    replicaCount: 1
+    test: '{{ .ComponentValues.statefulNode.replicaCount }}'
+
+rpcdaemon:
+  # -- Enable a Deployment of rpcdaemon that can be scaled independently
+  __enabled: false
+  workload:
+    kind: Deployment
+
+erigonDefaults:
+  config:
+    # -- Enable support for metrics
+    metrics:
+      enabled: true
+      addr: 0.0.0.0
+      port: 9102
+
+    # -- Enable pprof interface support for profiling data
+    pprof:
+      enabled: true
+      addr: 127.0.0.1
+      port: 6070
+
+    # -- Enable a NodePort for P2P support in node
+    p2p:
+      # -- Expose P2P port via NodePort
+      enabled: false
+      # -- protocol versions to use, as "protocolVersion: NodePort", i.e. "67: 30301"
+      # -- NodePorts must be unique, or left as empty string "" to be obtained dynamically.
+      #
+      protocols:
+        67: ""
+        68: ""
+      torrents:
+        # -- Enable for torrents NodePort
+        enabled: true
+        # -- Specify nodePort to use or Leave null for dynamic
+        nodePort: null
+
+    # -- Provision or use an existing JWT secret
+    # If it's enabled and neither existingSecret
+    # nor fromLiteral are set, a random secret will
+    # be generated and then re-used in the future
+    jwt:
+      # -- Provision or make use of a JWT secret for Node
+      enabled: false
+      # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+      existingSecret:
+        # -- Name of the Secret resource in the same namespace
+        name: null
+        # -- Data key for the JWT in the Secret
+        key: null
+      # -- Use this literal value for the JWT
+      fromLiteral: null
+
+    args:
+      __separator: "="
+      __prefix: "--"
+      datadir: /storage
+      db.read.concurrency: 16
+      db.pagesize: 8KB
+      rpc.batch.concurrency: 16
+      rpc.returndata.limit: 4096000
+      trace.maxtraces: 1000000
+      healthcheck: "__none"
+      http.enabled: true
+      http.addr: 0.0.0.0
+      http.port: 8545
+      http.compression: true
+      http.vhosts: "*"
+      http.corsdomain: "*"
+      http.api: "eth,debug,net,trace,erigon,engine"
+      authrpc.addr: 0.0.0.0
+      authrpc.port: 8551
+      authrpc.vhosts: "*"
+      authrpc.jwtsecret: ""
+      ws: true
+      ws.port: 8546
+      ws.compression: true
+      private.api.addr: '{{ .ComponentValues.rpcdaemon.__enabled | ternary "0.0.0.0:9090" "127.0.0.1:9090" }}'
+      metrics: '{{ .Self.config.metrics.enabled | ternary (print "__none") nil }}'
+      metrics.addr: '{{ with .Self.config.metrics }}{{ .enabled | ternary (.addr | quote) nil }}{{ end }}'
+      metrics.port: '{{ with .Self.config.metrics }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
+      pprof.addr: '{{ with .Self.config.pprof }}{{ .enabled | ternary (.addr | quote) nil }}{{ end }}'
+      pprof.port: '{{ with .Self.config.pprof }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
+      p2p.protocol: '{{ join "," (keys .Self.config.p2p.protocols) }}'
+      p2p.allowed-ports: |
+        {{- if .Self.config.p2p.enabled }}
+        {{- $strList := list }}
+        {{- range $proto, $port := .Self.config.p2p.protocols }}
+        {{- if not (empty $port) }}
+        {{- $strList = append $strList $proto }}
+        {{- else }}
+        {{- $strList = append $strList (printf "${EXTERNAL_PORT_%s}" $proto) }}
+        {{- end }}
+        {{- end }}
+        {{- printf (join "," $strList) }}
+        {{- else }}
+        {{- print "null" }}
+        {{- end }}
+      port: '{{ tpl (index .Self.config.args "p2p.allowed-ports") $ | splitList "," | first }}'
+      nat: '{{ .Self.config.p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }}'
+      torrent.port:
+      torrent.download.slots: 6
+      torrent.download.rate: 100mb
+    argsOrder: []
+  services:
+    default:
+      __enabled: true
+      spec:
+        type: ClusterIP
+        ports:
+          portName:
+            protocol: TCP
+        selector:
+    p2p:
+      __enabled: true
+      spec:
+        ports:
+          p2p-udp-67:
+            __enabled: '{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols "67") }}{{ end }}'
+            name: p2p-udp-67
+            targetPort: null
+            port: 30301
+            nodePort: |
+              {{- with .Self.config.p2p }}
+              {{- if and (hasKey .protocols "67") (not (empty (index .protocols "67"))) }}
+              {{ index .protocols "67" | int }}
+              {{- else }}
+              null
+              {{- end }}
+              {{- end }}
+            protocol: UDP
+          p2p-tcp-67:
+            __enabled: '{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols "67") }}{{ end }}'
+            name: p2p-tcp-67
+            targetPort: null
+            port: 30301
+            nodePort: |
+              {{- with .Self.config.p2p }}
+              {{- if and (hasKey .protocols "67") (not (empty (index .protocols "67"))) }}
+              {{ index .protocols "67" | int }}
+              {{- else }}
+              null
+              {{- end }}
+              {{- end }}
+            protocol: TCP
+          p2p-udp-68:
+            __enabled: '{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols "68") }}{{ end }}'
+            name: p2p-udp-68
+            targetPort: null
+            port: 30302
+            nodePort: |
+              {{- with .Self.config.p2p }}
+              {{- if and (hasKey .protocols "68") (not (empty (index .protocols "68"))) }}
+              {{ index .protocols "68" | int }}
+              {{- else }}
+              null
+              {{- end }}
+              {{- end }}
+            protocol: UDP
+          p2p-tcp-68:
+            __enabled: '{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols "68") }}{{ end }}'
+            name: p2p-tcp-68
+            targetPort: null
+            port: 30302
+            nodePort: |
+              {{- with .Self.config.p2p }}
+              {{- if and (hasKey .protocols "68") (not (empty (index .protocols "68"))) }}
+              {{ index .protocols "68" | int }}
+              {{- else }}
+              null
+              {{- end }}
+              {{- end }}
+            protocol: TCP
+          torrent-udp:
+            __enabled: false
+            name: udp-torrent
+            containerPort: 42069
+            protocol: UDP
+          torrent-tcp:
+            __enabled: true
+            name: tcp-torrent
+            containerPort: 42069
+            protocol: TCP
+  workload:
+    kind: StatefulSet
+    spec:
+      volumeClaimTemplates:
+        storage:
+          accessModes: ["ReadWriteOnce"]
+          storageClassName: '{{ default nil .Root.Values.globals.storageClassName }}'
+          resources:
+            requests:
+              # -- The amount of disk space to provision for Erigon
+              storage: 3Ti
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          partition: 0
+      template:
+        spec:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101337
+            runAsGroup: 101337
+            fsGroup: 101337
+          terminationGracePeriodSeconds: "60"
+          volumes:
+            tmp:
+              emptyDir: {}
+          containers:
+            erigon:
+              securityContext:
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              command:
+                - sh
+                - -ac
+                - |
+                  {{- $args := dict }}
+                  {{- range $arg, $value := .Self.config.args }}
+                  {{- $_ := set $args $arg (tpl (printf "%v" $value) $) }}
+                  {{- end }}
+                  {{- $__parameters := dict
+                    "map" $args
+                    "orderList" ( .Self.config.argsOrder | default list )
+                  }}
+                  {{- $argsList := include "common.utils.generateArgsList" $__parameters | fromJsonArray }}
+                  set -ex;
+                  exec erigon \
+                  {{ join " \\\n" $argsList }}
+              ports:
+                grpc-erigon:
+                  __enabled: '{{ .ComponentValues.rpcdaemon.__enabled }}'
+                  name: grpc-erigon
+                  containerPort: |
+                    {{- $privateAddr := default nil (index .ComponentValues.statefulNode.config.args "private.api.addr") }}
+                    {{- if $privateAddr }}{{ $privateAddr | splitList ":" | last | int }}{{ else }}{{ nil }}{{ end }}
+                  protocol: TCP
+                http-metrics:
+                  __enabled: '{{ .Self.config.metrics.enabled }}'
+                  name: http-metrics
+                  containerPort: '{{ .Self.config.metrics.port | int }}'
+                  protocol: TCP
+                http-jsonrpc:
+                  __enabled: '{{ index .Self.config.args "http.enabled" }}'
+                  name: http-jsonrpc
+                  containerPort: '{{ index .Self.config.args "http.port" }}'
+                  protocol: TCP
+                ws-rpc:
+                  __enabled: '{{ index .Self.config.args "ws" }}'
+                  name: ws-rpc
+                  containerPort: '{{ index .Self.config.args "ws.port" }}'
+                  protocol: TCP
+                http-engineapi:
+                  __enabled: true
+                  name: http-engineapi
+                  containerPort: '{{ index .Self.config.args "authrpc.port" }}'
+                  protocol: TCP
+              volumeMounts:
+                storage:
+                  name: storage
+                  mountPath: /storage
+                tmp:
+                  name: tmp
+                  mountPath: /tmp
+              readinessProbe:
+                # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+                # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+                # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+                grpc:
+                  port: 9090 # named ports not supported yet by grpc probes
