@@ -3,6 +3,7 @@
 
 {{- $paths := list }}
 
+{{/* TODO: write a function to guarantee the paths are sorted alphabetically */}}
 {{- $containers := dig "spec" "template" "spec" "containers" dict $input }}
 {{- range $containerName, $container := $containers }}
 {{- $containerPaths := list

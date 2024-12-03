@@ -1,3 +1,5 @@
+{{- $ := index . 0 }}
+{{- $ctx := index . 1 }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:

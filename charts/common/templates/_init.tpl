@@ -117,6 +117,14 @@ Usage: {{ include "common.loadConfig" . }}
 {{- end }}
 {{- end }}
 
+{{- $_ := set $.__common "initContainers" dict }}
+{{- $files := $.Subcharts.common.Files.Glob "initContainers/*.{yaml,yml}" }}
+{{- range $path, $_ := $files }}
+{{- $initContainer := $.Subcharts.common.Files.Get $path | fromYaml }}
+{{- $initContainerName := regexReplaceAll "\\.(yaml|yml)$" (base $path) "" }}
+{{- $_ := set $.__common.initContainers $initContainerName $initContainer }}
+{{- end }}
+
 {{- end }}
 
 {{- define "common.init._setTemplateCtx" }}
