@@ -1,4 +1,4 @@
-{{*/ FIXME: find a solution for initContainers without requiring global context /*}}
+{{/* FIXME: find a solution for initContainers without requiring global context */}}
 {{- $ := index . 0 }}
 {{- $ctx := index . 1 }}
 apiVersion: v1
