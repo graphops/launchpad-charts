@@ -65,9 +65,29 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.p2p.torrents.nodePort | Specify nodePort to use or Leave null for dynamic | string | `nil` |
  | erigonDefaults.config.pprof | Enable pprof interface support for profiling data | object | `{"addr":"127.0.0.1","enabled":true,"port":6070}` |
  | erigonDefaults.services.default.__enabled |  | bool | `true` |
- | erigonDefaults.services.default.spec.ports.portName.protocol |  | string | `"TCP"` |
- | erigonDefaults.services.default.spec.selector |  | string | `nil` |
+ | erigonDefaults.services.default.spec.ports.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
+ | erigonDefaults.services.default.spec.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |
+ | erigonDefaults.services.default.spec.ports.grpc-erigon.port |  | int | `9090` |
+ | erigonDefaults.services.default.spec.ports.grpc-erigon.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.default.spec.ports.http-engineapi.__enabled |  | bool | `true` |
+ | erigonDefaults.services.default.spec.ports.http-engineapi.name |  | string | `"http-engineapi"` |
+ | erigonDefaults.services.default.spec.ports.http-engineapi.port |  | string | `"{{ index .Self.config.args \"authrpc.port\" \| int }}"` |
+ | erigonDefaults.services.default.spec.ports.http-engineapi.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.default.spec.ports.http-jsonrpc.__enabled |  | string | `"{{ index .Self.config.args \"http.enabled\" }}"` |
+ | erigonDefaults.services.default.spec.ports.http-jsonrpc.name |  | string | `"http-jsonrpc"` |
+ | erigonDefaults.services.default.spec.ports.http-jsonrpc.port |  | string | `"{{ index .Self.config.args \"http.port\" \| int }}"` |
+ | erigonDefaults.services.default.spec.ports.http-jsonrpc.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.name |  | string | `"http-metrics"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.port |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.protocol |  | string | `"TCP"` |
+ | erigonDefaults.services.default.spec.ports.ws-rpc.__enabled |  | string | `"{{ index .Self.config.args \"ws\" }}"` |
+ | erigonDefaults.services.default.spec.ports.ws-rpc.name |  | string | `"ws-rpc"` |
+ | erigonDefaults.services.default.spec.ports.ws-rpc.port |  | string | `"{{ index .Self.config.args \"ws.port\" \| int }}"` |
+ | erigonDefaults.services.default.spec.ports.ws-rpc.protocol |  | string | `"TCP"` |
  | erigonDefaults.services.default.spec.type |  | string | `"ClusterIP"` |
+ | erigonDefaults.services.headless.__enabled |  | bool | `true` |
+ | erigonDefaults.services.headless.spec.type |  | string | `"None"` |
  | erigonDefaults.services.p2p.__enabled |  | bool | `true` |
  | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"67\") }}{{ end }}"` |
  | erigonDefaults.services.p2p.spec.ports.p2p-tcp-67.name |  | string | `"p2p-tcp-67"` |
@@ -133,7 +153,6 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.mountPath |  | string | `"/tmp"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.name |  | string | `"tmp"` |
  | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.__enabled |  | bool | `true` |
- | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.mykey |  | string | `"test"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.fsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsNonRoot |  | bool | `true` |
