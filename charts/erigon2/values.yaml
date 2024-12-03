@@ -7,7 +7,6 @@ statefulNode:
   workload:
     __enabled: true
     replicaCount: 1
-    test: '{{ .ComponentValues.statefulNode.replicaCount }}'
 
 rpcdaemon:
   # -- Enable a Deployment of rpcdaemon that can be scaled independently
@@ -116,11 +115,38 @@ erigonDefaults:
     default:
       __enabled: true
       spec:
-        type: ClusterIP
-        ports:
-          portName:
+        ports: &svcPorts
+          grpc-erigon:
+            __enabled: '{{ .ComponentValues.rpcdaemon.__enabled }}'
+            name: grpc-erigon
+            port: 9090
             protocol: TCP
-        selector:
+          http-metrics:
+            __enabled: '{{ .Self.config.metrics.enabled }}'
+            name: http-metrics
+            port: '{{ .Self.config.metrics.port | int }}'
+            protocol: TCP
+          http-jsonrpc:
+            __enabled: '{{ index .Self.config.args "http.enabled" }}'
+            name: http-jsonrpc
+            port: '{{ index .Self.config.args "http.port" | int }}'
+            protocol: TCP
+          ws-rpc:
+            __enabled: '{{ index .Self.config.args "ws" }}'
+            name: ws-rpc
+            port: '{{ index .Self.config.args "ws.port" | int }}'
+            protocol: TCP
+          http-engineapi:
+            __enabled: true
+            name: http-engineapi
+            port: '{{ index .Self.config.args "authrpc.port" | int }}'
+            protocol: TCP
+    headless:
+      __enabled: true
+      spec:
+        ClusterIP: None
+        ports:
+          <<: *svcPorts
     p2p:
       __enabled: true
       spec:
@@ -217,6 +243,9 @@ erigonDefaults:
           volumes:
             tmp:
               emptyDir: {}
+          initContainers:
+            10-init-nodeport@common:
+              __enabled: true
           containers:
             erigon:
               securityContext:
