@@ -1,0 +1,24 @@
+image: blockstack/envsubst:latest
+command: ["/bin/sh", "-c"]
+args:
+  - |
+    ENV_DIR="/env"
+
+    if [ -d /env ]; then
+      set -o allexport
+      for env_file in "$ENV_DIR"/*; do
+        [ -f "$env_file" ] && source "$env_file"
+      done
+      set +o allexport
+    fi
+
+    for file in /config-input/*.yaml; do
+      envsubst < $file > /config-output/$(basename $file)
+    done
+volumeMounts:
+  - name: config
+    mountPath: /config-input
+  - name: config-processed
+    mountPath: /config-output
+  - name: env-dir
+    mountPath: /env

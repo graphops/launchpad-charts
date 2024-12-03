@@ -1,0 +1,99 @@
+image: ghcr.io/graphops/docker-builds/init-toolbox:main
+env:
+  - name: POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: NODE_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: spec.nodeName
+  - name: SITES
+    value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
+  - name: FILTER_KEY
+    value: type
+  - name: FILTER_VALUE
+    value: p2p
+command:
+  - sh
+  - -c
+  - |
+    set -ex
+
+    # Build the label selector string
+    LABEL_SELECTOR="pod in (${POD_NAME})"
+
+    # Add optional filter if both key and value are provided
+    if [ -n "${FILTER_KEY}" ] && [ -n "${FILTER_VALUE}" ]; then
+        LABEL_SELECTOR="${LABEL_SELECTOR}, ${FILTER_KEY} in (${FILTER_VALUE})"
+    fi
+
+    # Get the service that matches our filters
+    SERVICE_PORTS=$(kubectl get services -l "${LABEL_SELECTOR}" -o jsonpath='{.items[0].spec.ports[*]}')
+
+    # Get external IP using the same logic as before
+    export EXTERNAL_IP=""
+    until [ -n "$EXTERNAL_IP" ]; do
+        for SITE in $SITES; do
+            if [ -z "$EXTERNAL_IP" ]; then
+                EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+                if [ -n "$EXTERNAL_IP" ]; then
+                    break
+                fi
+            fi
+        done
+        if [ -z "$EXTERNAL_IP" ]; then
+            sleep 1
+        fi
+    done
+    export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"}
+
+    # Initialize the output file
+    > /env/init-nodeport
+
+    # Write the external IP first
+    echo "EXTERNAL_IP=$EXTERNAL_IP" >> /env/init-nodeport
+
+    # Process each port in the service
+    echo "$SERVICE_PORTS" | jq -c '.[]' | while read -r port; do
+        PORT_NAME=$(echo "$port" | jq -r '.name')
+        NODE_PORT=$(echo "$port" | jq -r '.nodePort')
+
+        # Convert port name to uppercase and replace hyphens with underscores for environment variable
+        ENV_PORT_NAME=$(echo "$PORT_NAME" | tr '[:lower:]-' '[:upper:]_')
+
+        # Write each port to the file
+        echo "EXTERNAL_PORT_${ENV_PORT_NAME}=$NODE_PORT" >> /env/init-nodeport
+    done
+
+    # Display the results
+    cat /env/init-nodeport
+
+
+
+    set -ex;
+    export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+    export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+    until [ -n "$EXTERNAL_IP" ]; do
+      for SITE in $SITES; do
+        if [ -z "$EXTERNAL_IP" ]; then
+          # Attempt to retrieve the external IP using the current site
+          EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+          # If a valid IP is retrieved, exit the loop
+          if [ -n "$EXTERNAL_IP" ]; then
+            break
+          fi
+        fi
+      done
+      # Sleep for a second before retrying if EXTERNAL_IP is still not set
+      if [ -z "$EXTERNAL_IP" ]; then
+        sleep 1
+      fi
+    done
+    export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
+    echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+    echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+    cat /env/init-nodeport;
+volumeMounts:
+  - name: env-dir
+    mountPath: /env

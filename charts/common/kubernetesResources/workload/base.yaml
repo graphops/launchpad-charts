@@ -1,7 +1,25 @@
+{{*/ FIXME: find a solution for initContainers without requiring global context /*}}
+{{- $ := index . 0 }}
+{{- $ctx := index . 1 }}
 apiVersion: v1
 kind: Deployment
 metadata:
   name: test
-  namespace: '{{ .Root.Release.Namespace }}'
+  namespace: '{{ $ctx.Root.Release.Namespace }}'
 spec:
   replicas: 1
+  {{- $userInitContainers := dig "workload" "spec" "template" "spec" "initContainers" dict $ctx.Self }}
+  {{- $initContainers := dict }}
+  {{- range $key := (keys $userInitContainers) }}
+    {{- if hasSuffix "@common" $key }}
+      {{- $name := trimSuffix "@common" $key }}
+      {{- $_ := set $initContainers $key (index $.__common.initContainers $name) }}
+    {{- end }}
+  {{- end }}
+  {{- if empty (keys $initContainers) }}
+  {{- else }}
+  template:
+    spec:
+      initContainers:
+        {{ $initContainers | toYaml | nindent 8 }}
+  {{- end }}

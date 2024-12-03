@@ -33,7 +33,7 @@
 {{- end }}
 {{- end }}
 {{- range $resource := $resourcesList }}
-{{- $base := tpl (index $.__common.resources $resourceName "defaults") $templateCtx | fromYaml }}
+{{- $base := tpl (index $.__common.resources $resourceName "defaults") (list $ $templateCtx) | fromYaml }}
 {{- $result := list $base $resource | include "common.utils.deepMerge" | fromJson }}
 {{- if hasKey (index $.__common.resources $resourceName) "transforms" }}
 {{- $transformsTpl := index $.__common.resources $resourceName "transforms" }}

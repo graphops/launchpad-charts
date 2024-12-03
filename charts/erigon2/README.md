@@ -132,6 +132,8 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.storage.name |  | string | `"storage"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.mountPath |  | string | `"/tmp"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.name |  | string | `"tmp"` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.__enabled |  | bool | `true` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.mykey |  | string | `"test"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.fsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsNonRoot |  | bool | `true` |
