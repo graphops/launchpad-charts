@@ -173,7 +173,11 @@ Usage:
 {{- range $component := $.__common.config.components }}
 {{- $mergeList := list }}
 {{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
+{{- $_ := (list $ $.Values $key) | include "common.utils.getNestedValue" }}
+{{- $mergeObj := $.__common.fcallResult }}
+{{- if $mergeObj }}
 {{- $mergeList = append $mergeList (index $.Values $key) }}
+{{- end }}
 {{- end }}
 {{- $mergeList = append $mergeList (index $.Values (printf "%v" $component)) }}
 {{- $mergedValues = (deepCopy $mergeList) | include "common.utils.deepMerge" | fromJson }}
@@ -396,4 +400,25 @@ Usage example:
 {{- end -}}
 
 {{- $result | toJson -}}
+{{- end -}}
+
+{{- /* Helper function to get nested value with nil checks */}}
+{{- define "common.utils.getNestedValue" -}}
+{{- $ := index . 0 }}
+{{- $root := index . 1 -}}
+{{- $path := index . 2 -}}
+{{- $value := $root -}}
+{{- $valid := true -}}
+{{- $parts := splitList "." (trimPrefix "." $path) -}}
+{{- range $part := $parts -}}
+    {{- if and $valid (hasKey $value $part) -}}
+        {{- $value = index $value $part -}}
+    {{- else -}}
+        {{- $valid = false -}}
+    {{- end -}}
+{{- end -}}
+{{- if not $valid -}}
+    {{- $value = nil -}}
+{{- end -}}
+{{- $_ := set $.__common "fcallResult" $value -}}
 {{- end -}}
