@@ -64,6 +64,9 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.p2p.torrents.enabled | Enable for torrents NodePort | bool | `true` |
  | erigonDefaults.config.p2p.torrents.nodePort | Specify nodePort to use or Leave null for dynamic | string | `nil` |
  | erigonDefaults.config.pprof | Enable pprof interface support for profiling data | object | `{"addr":"127.0.0.1","enabled":true,"port":6070}` |
+ | erigonDefaults.podDisruptionBudget.__enabled |  | bool | `true` |
+ | erigonDefaults.podDisruptionBudget.metadata.name |  | string | `"Vinces-PDB-{{ add 1 1 }}"` |
+ | erigonDefaults.podDisruptionBudget.spec.someSpec |  | string | `"test"` |
  | erigonDefaults.services.default.__enabled |  | bool | `true` |
  | erigonDefaults.services.default.spec.ports.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
  | erigonDefaults.services.default.spec.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |
@@ -77,7 +80,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.default.spec.ports.http-jsonrpc.name |  | string | `"http-jsonrpc"` |
  | erigonDefaults.services.default.spec.ports.http-jsonrpc.port |  | string | `"{{ index .Self.config.args \"http.port\" \| int }}"` |
  | erigonDefaults.services.default.spec.ports.http-jsonrpc.protocol |  | string | `"TCP"` |
- | erigonDefaults.services.default.spec.ports.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.__enabled |  | string | `"{{ .metricsEnabled }}"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.name |  | string | `"http-metrics"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.port |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.protocol |  | string | `"TCP"` |
@@ -99,7 +102,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.headless.spec.ports.<<.http-jsonrpc.name |  | string | `"http-jsonrpc"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-jsonrpc.port |  | string | `"{{ index .Self.config.args \"http.port\" \| int }}"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-jsonrpc.protocol |  | string | `"TCP"` |
- | erigonDefaults.services.headless.spec.ports.<<.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
+ | erigonDefaults.services.headless.spec.ports.<<.http-metrics.__enabled |  | string | `"{{ .metricsEnabled }}"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.name |  | string | `"http-metrics"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.port |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.protocol |  | string | `"TCP"` |
@@ -121,6 +124,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.protocol |  | string | `"TCP"` |
  | erigonDefaults.services.p2p.spec.ports.p2p-tcp-68.targetPort |  | string | `nil` |
  | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.__enabled |  | string | `"{{ with .Self.config.p2p }}{{ and (.enabled) (hasKey .protocols \"67\") }}{{ end }}"` |
+ | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.__whateverkey |  | string | `"somevalue"` |
  | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.name |  | string | `"p2p-udp-67"` |
  | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.nodePort |  | string | `"{{- with .Self.config.p2p }}\n{{- if and (hasKey .protocols \"67\") (not (empty (index .protocols \"67\"))) }}\n{{ index .protocols \"67\" \| int }}\n{{- else }}\nnull\n{{- end }}\n{{- end }}\n"` |
  | erigonDefaults.services.p2p.spec.ports.p2p-udp-67.port |  | int | `30301` |
@@ -140,6 +144,8 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.p2p.spec.ports.torrent-udp.containerPort |  | int | `42069` |
  | erigonDefaults.services.p2p.spec.ports.torrent-udp.name |  | string | `"udp-torrent"` |
  | erigonDefaults.services.p2p.spec.ports.torrent-udp.protocol |  | string | `"UDP"` |
+ | erigonDefaults.services.p2p.spec.type |  | string | `"NodePort"` |
+ | erigonDefaults.workload.__enabled |  | bool | `true` |
  | erigonDefaults.workload.kind |  | string | `"StatefulSet"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[0] |  | string | `"sh"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[1] |  | string | `"-ac"` |
@@ -172,6 +178,11 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.mountPath |  | string | `"/tmp"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.volumeMounts.tmp.name |  | string | `"tmp"` |
  | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.__enabled |  | bool | `true` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.10-init-nodeport@common.image |  | string | `"OCI"` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.myOtherInitcontainer.command |  | string | `"shell script here\n"` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.myOtherInitcontainer.env.anotherenv |  | string | `"something"` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.myOtherInitcontainer.env.myenv |  | string | `"thisworks"` |
+ | erigonDefaults.workload.spec.template.spec.initContainers.myOtherInitcontainer.image |  | string | `"registry.io/myimage"` |
  | erigonDefaults.workload.spec.template.spec.securityContext.fsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsGroup |  | int | `101337` |
  | erigonDefaults.workload.spec.template.spec.securityContext.runAsNonRoot |  | bool | `true` |
@@ -184,11 +195,9 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.storageClassName |  | string | `"{{ default nil .Root.Values.globals.storageClassName }}"` |
  | globals.storageClassName | Set a default storage class to use everywhere | string | `nil` |
- | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `false` |
+ | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `true` |
  | rpcdaemon.workload.kind |  | string | `"Deployment"` |
  | statefulNode.__enabled |  | bool | `true` |
- | statefulNode.workload.__enabled |  | bool | `true` |
- | statefulNode.workload.replicaCount |  | int | `1` |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.11.3](https://github.com/norwoodj/helm-docs/releases/v1.11.3)
