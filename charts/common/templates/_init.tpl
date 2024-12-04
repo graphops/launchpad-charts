@@ -54,6 +54,7 @@ Usage: {{ include "common.loadConfig" . }}
 {{- $config := $.__common.config }}
 
 {{/* Process components layout */}}
+
 {{- if and
     (hasKey $config "components")
     (kindIs "slice" $config.components) }}
@@ -61,8 +62,16 @@ Usage: {{ include "common.loadConfig" . }}
   {{- $_ := set $.__common.config "componentLayering" $config.componentLayering }}
 {{- else if and
     (eq $config.dynamicComponents true)
-    (hasKey $config "tlkComponents") }}
+    (hasKey $config "componentsKey") }}
   {{- $_ := set $.__common.config "structureType" "dynamic-components" }}
+  {{/* components will be the subkeys found in componentsKey */}}
+  {{- $components := keys (index $.Values $config.componentsKey) }}
+  {{/* componentLayering is expected to be a template that returns the layering map for the components, JSON Serialized.
+      the templating context, at this moment, does not include .Self or .ComponentValues for obvious reasons.
+      As such, this is templated with the global context $ */}}
+  {{- $componentLayering := tpl $config.componentLayering $ | fromJson }}
+  {{- $_ := set $.__common.config "components" $components }}
+  {{- $_ := set $.__common.config "componentLayering" $componentLayering }}
 {{- else }}
   {{- fail (printf "\n\n!!ERROR!! %s\n" "Failed _common.config.yaml validation of components section") }}
 {{- end }}
