@@ -11,14 +11,17 @@ Usage:
 - For two maps: list $map1 $map2 | include "utils.deepMerge"
 - For multiple maps: list $map1 $map2 $map3 ... | include "utils.deepMerge"
 */ -}}
-{{- $length := len . -}}
+{{- $ := index . 0 }}
+{{- $args := slice . 1 (len .) }}
+{{- $length := len $args -}}
 {{- if eq $length 0 -}}
-  {{- dict | toJson -}}
+  {{- $_ := set $.__common "fcallResult" dict -}}
 {{- else if eq $length 1 -}}
-  {{- get ( include "common.utils.removeNulls" ( index . 0 ) | fromJson ) "result" | toJson -}}
+  {{- get ( include "common.utils.removeNulls" ( index $args 0 ) | fromJson ) "result" | toJson -}}
 {{- else -}}
-  {{- $last := index . (sub $length 1) -}}
-  {{- $initial := slice . 0 (sub $length 1) | include "common.utils.deepMerge" | fromJson -}}
+  {{- $last := index $args (sub $length 1) -}}
+  {{- $_ := (concat (list $) (slice $args 0 (sub $length 1))) | include "common.utils.deepMerge" -}}
+  {{- $initial := $.__common.fcallResult -}}
 
 {{/* Merge two maps excluding keys set to null */}}
   {{- $merged := dict -}}
@@ -28,7 +31,8 @@ Usage:
       {{- if hasKey $last $key -}}
         {{- $overrideValue := index $last $key -}}
         {{- if and (kindIs "map" $baseValue) (kindIs "map" $overrideValue) -}}
-          {{- $nestedMerge := list $baseValue $overrideValue | include "common.utils.deepMerge" | fromJson -}}
+          {{- $_ := (list $ $baseValue $overrideValue) | include "common.utils.deepMerge" -}}
+          {{- $nestedMerge := $.__common.fcallResult -}}
           {{- $_ := set $merged $key $nestedMerge -}}
         {{- else -}}
           {{- $_ := set $merged $key $overrideValue -}}
@@ -45,7 +49,7 @@ Usage:
     {{- end -}}
   {{- end -}}
 
-  {{- $merged | toJson -}}
+  {{- $_ := set $.__common "fcallResult" $merged -}}
 {{- end -}}
 {{- end -}}
 
@@ -130,23 +134,21 @@ Usage:
 {{- $collection = deepCopy $collection -}}
 {{- end }}
 {{- $templateCtx := index . 2 -}}
+{{- $componentName := index . 3 -}}
 
 {{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
 {{- if not (regexMatch ".*\\{\\{.*" $collection) -}}
 {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- else -}}
-  {{- $templatedVal := tpl $collection $templateCtx }}
-  {{- if contains "\n" (trim $templatedVal) }}
-    {{- $_ := set $.__common "fcallResult" (dict "result" $templatedVal) }}
-  {{- else }}
-    {{- $_ := set $.__common "fcallResult" (printf "result: %v" $templatedVal | fromYaml) }}
-  {{- end }}
+  {{- (list $ $collection $templateCtx $componentName) | include "common.utils.evaluateTemplate" }}
+  {{- $value := $.__common.fcallResult.result }}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $value) }}
 {{- end }}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
-    {{- $_ := list $ $value $templateCtx | include "common.utils.templateCollection" -}}
+    {{- $_ := (list $ $value $templateCtx $componentName) | include "common.utils.templateCollection" -}}
     {{- $processedValue := $.__common.fcallResult.result -}}
     {{- $result = set $result $key $processedValue -}}
   {{- end -}}
@@ -154,7 +156,7 @@ Usage:
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
-    {{- $_ := list $ $value $templateCtx | include "common.utils.templateCollection" -}}
+    {{- $_ := (list $ $value $templateCtx $componentName) | include "common.utils.templateCollection" -}}
     {{- $processedValue := $.__common.fcallResult.result -}}
     {{- $result = append $result $processedValue -}}
   {{- end -}}
@@ -171,7 +173,7 @@ Usage:
 
 {{- $mergedValues := dict }}
 {{- range $component := $.__common.config.components }}
-{{- $mergeList := list }}
+{{- $mergeList := list $ }}
 {{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
 {{- $_ := (list $ $.Values $key) | include "common.utils.getNestedValue" }}
 {{- $mergeObj := $.__common.fcallResult }}
@@ -180,30 +182,9 @@ Usage:
 {{- end }}
 {{- end }}
 {{- $mergeList = append $mergeList (index $.Values (printf "%v" $component)) }}
-{{- $mergedValues = (deepCopy $mergeList) | include "common.utils.deepMerge" | fromJson }}
+{{- $_ := (deepCopy $mergeList) | include "common.utils.deepMerge" }}
+{{- $mergedValues = $.__common.fcallResult }}
 {{ $_ := set $templateCtx.ComponentValues (printf "%v" $component) $mergedValues }}
-{{- end }}
-
-{{- $_ := set $.__common.config "templateCtx" $templateCtx }}
-
-{{- $templatedValues := dict }}
-{{- range $component, $values := $templateCtx.ComponentValues }}
-{{- $_ := set $templateCtx "Self" $values }}
-{{- $_ := include "common.utils.templateCollection" (list $ $values $templateCtx) }}
-{{- $templatedValues := $.__common.fcallResult.result }}
-{{/* TODO: Temporarily template thrice until future work */}}
-{{- $_ := include "common.utils.templateCollection" (list $ $templatedValues $templateCtx) }}
-{{- $templatedValues = $.__common.fcallResult.result }}
-{{- $_ := include "common.utils.templateCollection" (list $ $templatedValues $templateCtx) }}
-{{- $templatedValues = $.__common.fcallResult.result }}
-{{- if $.Values.debug -}}
-  {{- include "common.debug.function" (dict
-    "name" (printf "%s%s" "Templating component values for " $component)
-    "args" (list $templateCtx)
-    "result" $templatedValues)
-  -}}
-{{- end -}}
-{{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
 {{- end }}
 
 {{- if $.Values.debug -}}
@@ -214,7 +195,28 @@ Usage:
   -}}
 {{- end -}}
 
-{{- $_ := set $.__common.config.templateCtx "ComponentValues" $templateCtx.ComponentValues }}
+{{- $_ := set $.__common.config "templateCtx" $templateCtx }}
+
+{{- end }}
+
+{{- define "common.resources.templateValues" }}
+
+{{- $templateCtx := $.__common.templateCtx }}
+
+{{- $templatedValues := dict }}
+{{- range $component, $values := $templateCtx.ComponentValues }}
+{{- $_ := set $templateCtx "Self" $values }}
+{{- $_ := (list $ $values $templateCtx $component) | include "common.utils.templateCollection" }}
+{{- $templatedValues := $.__common.fcallResult.result }}
+{{- if $.Values.debug -}}
+  {{- include "common.debug.function" (dict
+    "name" (printf "%s%s" "Templating component values for " $component)
+    "args" (list $templateCtx)
+    "result" $templatedValues)
+  -}}
+{{- end -}}
+{{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $templatedValues }}
+{{- end }}
 
 {{- end }}
 
@@ -365,7 +367,7 @@ Parameters:
 - <map>.__separator: String to separate key and value (optional, default: " ")
 Usage example:
   {{- $args := dict ".__prefix" "--" ".__separator" "=" "map" (dict "foo" "bar" "flag" "__none" "num" 42) "orderList" (list "flag" "foo") -}}
-  {{- $result := include "utils.generateArgsList" $args | fromJson -}}
+  {{- $result := include "utils.generateArgsList" $args | fromYamlArray -}}
   Result: ["--flag", "--foo=bar", "--num=42"]
 */}}
 {{- $map := .map -}}
@@ -381,7 +383,9 @@ Usage example:
     {{- $value := index $map $key -}}
     {{- if eq (printf "%v" $value) "__none" -}}
       {{- $result = append $result (printf "%s%s" $prefix $key) -}}
-    {{- else -}}
+    {{- else if (kindIs "int" $value) -}}
+      {{- $result = append $result (printf "%s%s%s%d" $prefix $key $separator $value) -}}
+    {{- else }}
       {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
     {{- end -}}
     {{- $map = omit $map $key -}}
@@ -389,17 +393,20 @@ Usage example:
 {{- end -}}
 
 {{/* Process remaining arguments excluding the internal "__" ones */}}
+{{- fail (printf "%v" (kindOf (index $map "rpc.returndata.limit"))) }}
 {{- range $key, $value := $map -}}
   {{- if not (hasPrefix "__" $key) -}}
     {{- if eq (printf "%v" $value) "__none" -}}
       {{- $result = append $result (printf "%s%s" $prefix $key) -}}
+    {{- else if (kindIs "int" $value) -}}
+      {{- $result = append $result (printf "%s%s%s%d" $prefix $key $separator $value) -}}
     {{- else -}}
       {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
-{{- $result | toJson -}}
+{{- $result | toYaml -}}
 {{- end -}}
 
 {{- /* Helper function to get nested value with nil checks */}}
@@ -418,7 +425,92 @@ Usage example:
     {{- end -}}
 {{- end -}}
 {{- if not $valid -}}
-    {{- $value = nil -}}
+    {{- $value = "__nil" -}}
 {{- end -}}
 {{- $_ := set $.__common "fcallResult" $value -}}
 {{- end -}}
+
+
+{{- define "common.utils.preprocessTemplate" -}}
+{{- $ := index . 0 }}
+{{- $template := index . 1 }}
+{{- $templateCtx := index . 2 }}
+{{- $componentName := index . 3 }}
+
+{{/* Extract @ declarations */}}
+{{- $pattern := `@(type|needs)\(.*?\)` -}}
+
+{{- $result := dict "type" nil "template" $template }}
+{{- $dependencies := list }}
+
+{{- range $match := regexFindAll $pattern $template -1 -}}
+  {{- $directive := trimAll "@()" (regexFind `@(type|needs)` $match) }}
+  {{- $directiveArgs := trimAll "()" (regexFind `\(.*?\)` $match) }}
+
+  {{- if eq $directive "type" }}
+    {{- $_ := set $result "type" $directiveArgs }}
+  {{- else if eq $directive "needs" }}
+    {{- $parts := splitList " as " $directiveArgs -}}
+    {{- $path := index $parts 0 -}}
+    {{- $varName := index $parts 1 -}}
+    {{- $dependencies = append $dependencies (dict "key" $path "var" $varName "evalResult" nil) }}
+  {{- end }}
+{{- end -}}
+
+{{- range $dep := $dependencies }}
+  {{- (list $ $templateCtx $dep.key) | include "common.utils.getNestedValue" }}
+  {{- $value := $.__common.fcallResult }}
+  {{- $resolvedValue := "" }}
+  {{- if $value }}
+    {{/* As $value can be a map with has at some nesting level a template value, we always evaluate */}}
+    {{- (list $ $value $templateCtx $componentName) | include "common.utils.templateCollection" }}
+    {{- $resolvedValue = $.__common.fcallResult.result }}
+  {{- else }}
+    {{- $resolvedValue = "__nil" }}
+  {{- end }}
+  {{- $_ := set $dep "evalResult" $resolvedValue }}
+{{- end }}
+
+{{- $templateHeader := "" }}
+{{- range $dep := $dependencies }}
+  {{- $header := (printf "{{- $__serialized := %s -}}{{- $%s := index ( $__serialized | fromJson ) \"value\" -}}" ( dict "value" $dep.evalResult | toJson | quote ) $dep.var) }}
+  {{- if not (empty $templateHeader) }}
+    {{- $templateHeader = printf "%s\n%s" $templateHeader $header}}
+  {{- else }}
+    {{- $templateHeader = $header }}
+  {{- end }}
+{{- end }}
+
+{{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|needs)\(.*?\)[\s\n]*` $template "" }}
+{{- $finalTemplate := printf "%s\n%s" $templateHeader $cleanTemplate }}
+
+{{- $_ := set $result "template" $finalTemplate }}
+
+{{- $_ := set $.__common "fcallResult" $result }}
+{{- end -}}
+
+
+{{- define "common.utils.evaluateTemplate" -}}
+{{- $ = index . 0 }}
+{{- $template := index . 1 }}
+{{- $templateCtx := index . 2 -}}
+{{- $componentName := index . 3 -}}
+{{- $type := "" }}
+
+{{/* Process the template */}}
+{{- if (regexMatch `@(needs|type)\(.*?\)` $template )}}
+{{- (list $ $template $templateCtx $componentName) | include "common.utils.preprocessTemplate" -}}
+{{- $template = $.__common.fcallResult.template }}
+{{- $type = default "" $.__common.fcallResult.type }}
+{{- end }}
+{{- $_ := set $templateCtx "Self" (index $templateCtx.ComponentValues $componentName) }}
+{{- $templatedVal := (tpl $template $templateCtx) }}
+{{- if $type }}
+  {{- $_ := set $.__common "fcallResult" (printf "result: !!%s %v" $type $templatedVal | fromYaml) }}
+{{- else if contains "\n" (trim $templatedVal) }}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $templatedVal) }}
+{{- else }}
+  {{- $_ := set $.__common "fcallResult" (printf "result: %v" $templatedVal | fromYaml) }}
+{{- end }}
+
+{{- end }}
