@@ -19,7 +19,8 @@ erigonDefaults:
     # -- Enable support for metrics
     metrics:
       enabled: true
-      addr: 0.0.0.0
+      __test: "1.1.1.1"
+      addr: '{{ $metricsAddr }} @needs(.Root.Values.erigonDefaults.config.metrics.__test as metricsAddr)'
       port: 9102
 
     # -- Enable pprof interface support for profiling data
@@ -67,8 +68,8 @@ erigonDefaults:
       db.read.concurrency: 16
       db.pagesize: 8KB
       rpc.batch.concurrency: 16
-      rpc.returndata.limit: 4096000
-      trace.maxtraces: 1000000
+      rpc.returndata.limit: '{{- print "4096000" -}} @type(str)'
+      trace.maxtraces: !!int 1000000
       healthcheck: "__none"
       http.enabled: true
       http.addr: 0.0.0.0
@@ -78,19 +79,19 @@ erigonDefaults:
       http.corsdomain: "*"
       http.api: "eth,debug,net,trace,erigon,engine"
       authrpc.addr: 0.0.0.0
-      authrpc.port: 8551
+      authrpc.port: '{{- print "8551" -}}'
       authrpc.vhosts: "*"
       authrpc.jwtsecret: ""
       ws: true
       ws.port: 8546
       ws.compression: true
-      private.api.addr: '{{ .ComponentValues.rpcdaemon.__enabled | ternary "0.0.0.0:9090" "127.0.0.1:9090" }}'
-      metrics: '{{ .Self.config.metrics.enabled | ternary (print "__none") nil }}'
-      metrics.addr: '{{ with .Self.config.metrics }}{{ .enabled | ternary (.addr | quote) nil }}{{ end }}'
-      metrics.port: '{{ with .Self.config.metrics }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
-      pprof.addr: '{{ with .Self.config.pprof }}{{ .enabled | ternary (.addr | quote) nil }}{{ end }}'
-      pprof.port: '{{ with .Self.config.pprof }}{{ .enabled | ternary (.port | int) nil }}{{ end }}'
-      p2p.protocol: '{{ join "," (keys .Self.config.p2p.protocols) }}'
+      private.api.addr: '{{ $rpcdaemonEnabled | ternary "0.0.0.0:9090" "127.0.0.1:9090" }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
+      metrics: '{{ $metrics.enabled | ternary (print "__none") nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.addr: '{{ $metrics.enabled | ternary (.addr | quote) nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.port: '{{ $metrics.enabled | ternary (.port | int) nil }} @needs(.Self.config.metrics as metrics)'
+      pprof.addr: '{{ $pprof.enabled | ternary (.addr | quote) nil }} @needs(.Self.config.pprof as pprof)'
+      pprof.port: '{{ $pprof.enabled | ternary (.port | int) nil }} @needs(.Self.config.pprof as pprof)'
+      p2p.protocol: '{{ join "," (keys $p2p.protocols) }} @needs(.Self.config.p2p as p2p)'
       p2p.allowed-ports: |
         {{- if .Self.config.p2p.enabled }}
         {{- $strList := list }}
@@ -106,7 +107,7 @@ erigonDefaults:
         {{- print "null" }}
         {{- end }}
       port: '{{ tpl (index .Self.config.args "p2p.allowed-ports") $ | splitList "," | first }}'
-      nat: '{{ .Self.config.p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }}'
+      nat: '{{ $p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }} @needs(.Self.config.p2p as p2p)'
       torrent.port:
       torrent.download.slots: 6
       torrent.download.rate: 100mb
@@ -117,7 +118,7 @@ erigonDefaults:
       spec:
         ports: &svcPorts
           grpc-erigon:
-            __enabled: '{{ .ComponentValues.rpcdaemon.__enabled }}'
+            __enabled: '{{ $rpcdaemonEnabled }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
             name: grpc-erigon
             port: 9090
             protocol: TCP
@@ -125,6 +126,7 @@ erigonDefaults:
             __enabled: '{{ .Self.config.metrics.enabled }}'
             name: http-metrics
             port: '{{ .Self.config.metrics.port | int }}'
+            port2: '{{- print "4096000" -}} @type(int)'
             protocol: TCP
           http-jsonrpc:
             __enabled: '{{ index .Self.config.args "http.enabled" }}'
@@ -257,18 +259,17 @@ erigonDefaults:
                 - sh
                 - -ac
                 - |
-                  {{- $args := dict }}
-                  {{- range $arg, $value := .Self.config.args }}
-                  {{- $_ := set $args $arg (tpl (printf "%v" $value) $) }}
-                  {{- end }}
                   {{- $__parameters := dict
                     "map" $args
-                    "orderList" ( .Self.config.argsOrder | default list )
+                    "orderList" ( $argsOrder | default list )
                   }}
                   {{- $argsList := include "common.utils.generateArgsList" $__parameters | fromJsonArray }}
                   set -ex;
                   exec erigon \
-                  {{ join " \\\n" $argsList }}
+                  {{ join " \\\n" (initial $argsList) }}
+                  {{ (last $argsList) }}
+                  @needs(.Self.config.args as args)
+                  @needs(.Self.config.argsOrder as argsOrder)
               ports:
                 grpc-erigon:
                   __enabled: '{{ .ComponentValues.rpcdaemon.__enabled }}'

@@ -8,6 +8,7 @@
 "common.init._loadConfig"
 "common.init._loadResources"
 "common.resources.mergeValues"
+"common.resources.templateValues"
 }}
 {{/* execute them with conditional output omission */}}
 {{- range $step := $initSteps }}

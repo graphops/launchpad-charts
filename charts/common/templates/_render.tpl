@@ -34,15 +34,18 @@
 {{- end }}
 {{- range $resource := $resourcesList }}
 {{- $base := tpl (index $.__common.resources $resourceName "defaults") (list $ $templateCtx) | fromYaml }}
-{{- $result := list $base $resource | include "common.utils.deepMerge" | fromJson }}
+{{- $_ := (list $ $base $resource) | include "common.utils.deepMerge" }}
+{{- $result := $.__common.fcallResult }}
 {{- if hasKey (index $.__common.resources $resourceName) "transforms" }}
 {{- $transformsTpl := index $.__common.resources $resourceName "transforms" }}
 {{- $_ := tpl $transformsTpl (list $ $result) }}
 {{- $result = $.__common.fcallResult }}
 {{- end }}
 {{/* FIXME: Corner case is forcing prunning twice to mitigate */}}
-{{- $prunedResult := index (include "common.utils.pruneOutput" $result | fromJson) "result" }}
-{{- $prunedResult = index (include "common.utils.pruneOutput" $prunedResult | fromJson) "result" }}
+{{- $_ := (list $ $result) | include "common.utils.pruneOutput" }}
+{{- $prunedResult := $.__common.fcallResult }}
+{{- $_ := (list $ $prunedResult) | include "common.utils.pruneOutput" }}
+{{- $prunedResult := $.__common.fcallResult }}
 {{ $prunedResult | toYaml }}
 ---
 {{- end }}
