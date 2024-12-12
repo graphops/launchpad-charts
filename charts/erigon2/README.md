@@ -16,7 +16,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 |-----|-------------|------|---------|
  | erigonDefaults.config.args."authrpc.addr" |  | string | `"0.0.0.0"` |
  | erigonDefaults.config.args."authrpc.jwtsecret" |  | string | `""` |
- | erigonDefaults.config.args."authrpc.port" |  | string | `"{{- print \"8551\" -}} @type(str)"` |
+ | erigonDefaults.config.args."authrpc.port" |  | string | `"{{- print \"8551\" -}}"` |
  | erigonDefaults.config.args."authrpc.vhosts" |  | string | `"*"` |
  | erigonDefaults.config.args."db.pagesize" |  | string | `"8KB"` |
  | erigonDefaults.config.args."db.read.concurrency" |  | int | `16` |
@@ -30,12 +30,12 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.args."metrics.addr" |  | string | `"{{ $metrics.enabled \| ternary (.addr \| quote) nil }} @needs(.Self.config.metrics as metrics)"` |
  | erigonDefaults.config.args."metrics.port" |  | string | `"{{ $metrics.enabled \| ternary (.port \| int) nil }} @needs(.Self.config.metrics as metrics)"` |
  | erigonDefaults.config.args."p2p.allowed-ports" |  | string | `"{{- if .Self.config.p2p.enabled }}\n{{- $strList := list }}\n{{- range $proto, $port := .Self.config.p2p.protocols }}\n{{- if not (empty $port) }}\n{{- $strList = append $strList $proto }}\n{{- else }}\n{{- $strList = append $strList (printf \"${EXTERNAL_PORT_%s}\" $proto) }}\n{{- end }}\n{{- end }}\n{{- printf (join \",\" $strList) }}\n{{- else }}\n{{- print \"null\" }}\n{{- end }}\n"` |
- | erigonDefaults.config.args."p2p.protocol" |  | string | `"{{ join \",\" (keys .Self.config.p2p.protocols) }}"` |
- | erigonDefaults.config.args."pprof.addr" |  | string | `"{{ with .Self.config.pprof }}{{ .enabled \| ternary (.addr \| quote) nil }}{{ end }}"` |
- | erigonDefaults.config.args."pprof.port" |  | string | `"{{ with .Self.config.pprof }}{{ .enabled \| ternary (.port \| int) nil }}{{ end }}"` |
+ | erigonDefaults.config.args."p2p.protocol" |  | string | `"{{ join \",\" (keys $p2p.protocols) }} @needs(.Self.config.p2p as p2p)"` |
+ | erigonDefaults.config.args."pprof.addr" |  | string | `"{{ $pprof.enabled \| ternary (.addr \| quote) nil }} @needs(.Self.config.pprof as pprof)"` |
+ | erigonDefaults.config.args."pprof.port" |  | string | `"{{ $pprof.enabled \| ternary (.port \| int) nil }} @needs(.Self.config.pprof as pprof)"` |
  | erigonDefaults.config.args."private.api.addr" |  | string | `"{{ $rpcdaemonEnabled \| ternary \"0.0.0.0:9090\" \"127.0.0.1:9090\" }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)"` |
  | erigonDefaults.config.args."rpc.batch.concurrency" |  | int | `16` |
- | erigonDefaults.config.args."rpc.returndata.limit" |  | int | `4096000` |
+ | erigonDefaults.config.args."rpc.returndata.limit" |  | string | `"{{- print \"4096000\" -}} @type(str)"` |
  | erigonDefaults.config.args."torrent.download.rate" |  | string | `"100mb"` |
  | erigonDefaults.config.args."torrent.download.slots" |  | int | `6` |
  | erigonDefaults.config.args."torrent.port" |  | string | `nil` |
@@ -46,8 +46,8 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.args.__separator |  | string | `"="` |
  | erigonDefaults.config.args.datadir |  | string | `"/storage"` |
  | erigonDefaults.config.args.healthcheck |  | string | `"__none"` |
- | erigonDefaults.config.args.metrics |  | string | `"{{ .Self.config.metrics.enabled \| ternary (print \"__none\") nil }}"` |
- | erigonDefaults.config.args.nat |  | string | `"{{ .Self.config.p2p.enabled \| ternary \"extip:${EXTERNAL_IP}\" nil }}"` |
+ | erigonDefaults.config.args.metrics |  | string | `"{{ $metrics.enabled \| ternary (print \"__none\") nil }} @needs(.Self.config.metrics as metrics)"` |
+ | erigonDefaults.config.args.nat |  | string | `"{{ $p2p.enabled \| ternary \"extip:${EXTERNAL_IP}\" nil }} @needs(.Self.config.p2p as p2p)"` |
  | erigonDefaults.config.args.port |  | string | `"{{ tpl (index .Self.config.args \"p2p.allowed-ports\") $ \| splitList \",\" \| first }}"` |
  | erigonDefaults.config.args.ws |  | bool | `true` |
  | erigonDefaults.config.argsOrder |  | list | `[]` |
@@ -57,7 +57,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
  | erigonDefaults.config.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
  | erigonDefaults.config.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
- | erigonDefaults.config.metrics | Enable support for metrics | object | `{"__test":"1.1.1.1","addr":"{{ $metricsAddr }} @needs(.Root.Values.erigonDefaults.config.metrics.__test as metricsAddr) @type(str)","enabled":true,"port":9102}` |
+ | erigonDefaults.config.metrics | Enable support for metrics | object | `{"__test":"1.1.1.1","addr":"{{ $metricsAddr }} @needs(.Root.Values.erigonDefaults.config.metrics.__test as metricsAddr)","enabled":true,"port":9102}` |
  | erigonDefaults.config.p2p | Enable a NodePort for P2P support in node | object | `{"enabled":false,"protocols":{"67":"","68":""},"torrents":{"enabled":true,"nodePort":null}}` |
  | erigonDefaults.config.p2p.enabled | Expose P2P port via NodePort | bool | `false` |
  | erigonDefaults.config.p2p.protocols | NodePorts must be unique, or left as empty string "" to be obtained dynamically.  | object | `{"67":"","68":""}` |
@@ -65,7 +65,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.p2p.torrents.nodePort | Specify nodePort to use or Leave null for dynamic | string | `nil` |
  | erigonDefaults.config.pprof | Enable pprof interface support for profiling data | object | `{"addr":"127.0.0.1","enabled":true,"port":6070}` |
  | erigonDefaults.services.default.__enabled |  | bool | `true` |
- | erigonDefaults.services.default.spec.ports.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
+ | erigonDefaults.services.default.spec.ports.grpc-erigon.__enabled |  | string | `"{{ $rpcdaemonEnabled }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)"` |
  | erigonDefaults.services.default.spec.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |
  | erigonDefaults.services.default.spec.ports.grpc-erigon.port |  | int | `9090` |
  | erigonDefaults.services.default.spec.ports.grpc-erigon.protocol |  | string | `"TCP"` |
@@ -80,6 +80,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.default.spec.ports.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.name |  | string | `"http-metrics"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.port |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
+ | erigonDefaults.services.default.spec.ports.http-metrics.port2 |  | string | `"{{- print \"4096000\" -}} @type(int)"` |
  | erigonDefaults.services.default.spec.ports.http-metrics.protocol |  | string | `"TCP"` |
  | erigonDefaults.services.default.spec.ports.ws-rpc.__enabled |  | string | `"{{ index .Self.config.args \"ws\" }}"` |
  | erigonDefaults.services.default.spec.ports.ws-rpc.name |  | string | `"ws-rpc"` |
@@ -87,7 +88,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.default.spec.ports.ws-rpc.protocol |  | string | `"TCP"` |
  | erigonDefaults.services.headless.__enabled |  | bool | `true` |
  | erigonDefaults.services.headless.spec.ClusterIP |  | string | `"None"` |
- | erigonDefaults.services.headless.spec.ports.<<.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
+ | erigonDefaults.services.headless.spec.ports.<<.grpc-erigon.__enabled |  | string | `"{{ $rpcdaemonEnabled }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)"` |
  | erigonDefaults.services.headless.spec.ports.<<.grpc-erigon.name |  | string | `"grpc-erigon"` |
  | erigonDefaults.services.headless.spec.ports.<<.grpc-erigon.port |  | int | `9090` |
  | erigonDefaults.services.headless.spec.ports.<<.grpc-erigon.protocol |  | string | `"TCP"` |
@@ -102,6 +103,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.__enabled |  | string | `"{{ .Self.config.metrics.enabled }}"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.name |  | string | `"http-metrics"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.port |  | string | `"{{ .Self.config.metrics.port \| int }}"` |
+ | erigonDefaults.services.headless.spec.ports.<<.http-metrics.port2 |  | string | `"{{- print \"4096000\" -}} @type(int)"` |
  | erigonDefaults.services.headless.spec.ports.<<.http-metrics.protocol |  | string | `"TCP"` |
  | erigonDefaults.services.headless.spec.ports.<<.ws-rpc.__enabled |  | string | `"{{ index .Self.config.args \"ws\" }}"` |
  | erigonDefaults.services.headless.spec.ports.<<.ws-rpc.name |  | string | `"ws-rpc"` |
@@ -143,7 +145,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.kind |  | string | `"StatefulSet"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[0] |  | string | `"sh"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.command[1] |  | string | `"-ac"` |
- | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"{{- $__parameters := dict\n  \"map\" $args\n  \"orderList\" ( $argsOrder \| default list )\n}}\n{{- $argsList := include \"common.utils.generateArgsList\" $__parameters \| fromYamlArray }}\nset -ex;\nexec erigon \\\n{{ join \" \\\\\\n\" (initial $argsList) }}\n{{ (last $argsList) }}\n@needs(.Self.config.args as args)\n@needs(.Self.config.argsOrder as argsOrder)\n"` |
+ | erigonDefaults.workload.spec.template.spec.containers.erigon.command[2] |  | string | `"{{- $__parameters := dict\n  \"map\" $args\n  \"orderList\" ( $argsOrder \| default list )\n}}\n{{- $argsList := include \"common.utils.generateArgsList\" $__parameters \| fromJsonArray }}\nset -ex;\nexec erigon \\\n{{ join \" \\\\\\n\" (initial $argsList) }}\n{{ (last $argsList) }}\n@needs(.Self.config.args as args)\n@needs(.Self.config.argsOrder as argsOrder)\n"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.__enabled |  | string | `"{{ .ComponentValues.rpcdaemon.__enabled }}"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.containerPort |  | string | `"{{- $privateAddr := default nil (index .ComponentValues.statefulNode.config.args \"private.api.addr\") }}\n{{- if $privateAddr }}{{ $privateAddr \| splitList \":\" \| last \| int }}{{ else }}{{ nil }}{{ end }}\n"` |
  | erigonDefaults.workload.spec.template.spec.containers.erigon.ports.grpc-erigon.name |  | string | `"grpc-erigon"` |

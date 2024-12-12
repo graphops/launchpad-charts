@@ -42,8 +42,10 @@
 {{- $result = $.__common.fcallResult }}
 {{- end }}
 {{/* FIXME: Corner case is forcing prunning twice to mitigate */}}
-{{- $prunedResult := index (include "common.utils.pruneOutput" $result | fromJson) "result" }}
-{{- $prunedResult = index (include "common.utils.pruneOutput" $prunedResult | fromJson) "result" }}
+{{- $_ := (list $ $result) | include "common.utils.pruneOutput" }}
+{{- $prunedResult := $.__common.fcallResult }}
+{{- $_ := (list $ $prunedResult) | include "common.utils.pruneOutput" }}
+{{- $prunedResult := $.__common.fcallResult }}
 {{ $prunedResult | toYaml }}
 ---
 {{- end }}
