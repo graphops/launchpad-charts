@@ -22,4 +22,4 @@ version: 0.5.11
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=sigp/lighthouse
-appVersion: "v6.0.0"
+appVersion: "v6.0.1"
