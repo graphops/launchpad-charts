@@ -128,9 +128,9 @@ nimbus:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
   service:
     topologyAwareRouting:
