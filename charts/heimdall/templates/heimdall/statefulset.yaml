@@ -64,11 +64,21 @@ spec:
             - |
               set -ex
 
+              echo "https://mirror.csclub.uwaterloo.ca/alpine/v3.14/main" > /etc/apk/repositories
+              echo "https://mirror.csclub.uwaterloo.ca/alpine/v3.14/community" >> /etc/apk/repositories
+              apk update
+
+              # Install lz4 dynamically
+              if ! apk add --no-cache lz4; then
+                echo "Failed to install lz4. Trying manual download..."
+                wget https://dl-cdn.alpinelinux.org/alpine/v3.14/main/x86_64/lz4-1.9.3-r0.apk
+                apk add --allow-untrusted lz4-1.9.3-r0.apk || { echo "Failed to install lz4 manually. Exiting."; exit 1; }
+              fi
+
               HEIMDALLD_HOME="/storage"
 
-              # If config hasn't been boostrapped already, do it
+              # If config hasn't been bootstrapped already, do it
               if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
-                # Write out init config for Heimdall
                 heimdalld --home $HEIMDALLD_HOME init
               fi
 
@@ -92,10 +102,12 @@ spec:
               if [ "${BOOTSTRAP}" = 1 ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 if [ ! -f "$HEIMDALLD_HOME/from_snapshot" ] || [ "$(cat $HEIMDALLD_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   mkdir -p ${HEIMDALLD_HOME}/data
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C ${HEIMDALLD_HOME}/data
+                  wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                  lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
+                  tar -xvf snapshot.tar -C ${HEIMDALLD_HOME}/data || { echo "Extraction failed. Exiting."; exit 1; }
                   echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
                 fi
-              fi
+              fi 
           volumeMounts:
             - name: storage
               mountPath: /storage
