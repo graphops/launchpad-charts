@@ -1109,6 +1109,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2024-12-17T22:06:30Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 5711deb02e9feb9d2d4da15eedd030b647c58c29f590a93d761285f3f945a90f
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.11/graph-network-indexer-0.5.11.tgz
+      version: 0.5.11
+    - apiVersion: v2
       created: "2024-12-02T01:48:41Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: cc5362c251b5f6dec5abd677e5d3f7bf1e63abd455f3ae4bfa721fdce0d239fd
@@ -1776,6 +1785,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   lighthouse:
+    - apiVersion: v2
+      appVersion: v6.0.1
+      created: "2024-12-17T22:13:41Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 1cddb62686b216bf6aca8b95481d0776f2291de11e0766a7a0b81de211f41ae5
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.5.12/lighthouse-0.5.12.tgz
+      version: 0.5.12
     - apiVersion: v2
       appVersion: v6.0.0
       created: "2024-12-11T15:41:57Z"
@@ -3142,4 +3161,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2024-12-12T16:59:07.976854017Z"
+generated: "2024-12-17T22:20:14.525624032Z"
