@@ -115,7 +115,7 @@ indexerAgent:
     tag: "v0.21.11"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
-  config: 
+  config:
     indexer-management-port: 8000
     ethereum: null
     # -- Name of the network that you have specified a node URL for in `ethereum`
