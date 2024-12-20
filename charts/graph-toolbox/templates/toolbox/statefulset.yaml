@@ -53,8 +53,15 @@ spec:
             - -ac
             - |
               set -e
+              {{- if not (empty $values.aliases) }}
+              cat << 'EOF' >> ~/.bashrc
               {{- range $alias, $command := $values.aliases }}
-              echo "alias {{ $alias }}=\"{{ $command | trim }}\"" >> ~/.bashrc
+              alias {{ $alias }}=$(cat << 'EOA'
+              {{ $command | trim }}
+              EOA
+              )
+              {{- end }}
+              EOF
               {{- end }}
               mkdir -p ~/.config/graph-cli
               echo "api = '{{ required "Missing configuration" $values.config.indexer.indexerAgentManagementUrl }}'" > ~/.config/graph-cli/indexing.toml
