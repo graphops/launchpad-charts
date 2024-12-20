@@ -1217,6 +1217,16 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.7
+      created: "2024-12-19T03:23:31Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: 66608c7cda854bf201429c86754534963ae78f999d263ebea41d3bdc62040c5f
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.8/celo-0.1.8.tgz
+      version: 0.1.8
+    - apiVersion: v2
+      appVersion: 1.8.7
       created: "2024-12-19T02:59:12Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 382b67b392cfce2d4ea79ee4a13ca43e7d43cf8e8310703ea992386caec03742
@@ -6270,6 +6280,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v24.12.0
+      created: "2024-12-18T00:35:26Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 0bbb59a37f10f0ec4230ceb9995ba0663b9879139232f0a14075dd8dfb3ef968
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.5.22/nimbus-0.5.22.tgz
+      version: 0.5.22
+    - apiVersion: v2
+      appVersion: multiarch-v24.12.0
       created: "2024-12-18T00:34:37Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 7ee3a557595902e47ffa08f6656795f14e526d0281b3782bf346bd11a7507fe9
@@ -8731,4 +8751,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2024-12-20T03:09:33.490891706Z"
+generated: "2024-12-20T03:12:10.617126623Z"
