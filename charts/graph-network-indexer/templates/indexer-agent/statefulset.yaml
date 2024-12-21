@@ -2,6 +2,44 @@
 {{- $componentName := "agent" }}
 {{- $componentLabel := include "graph-network-indexer.componentLabelFor" $componentName }}
 
+{{/* Compute command line arguments */}}
+{{- $args := dict }}
+{{/* Populate base arguments */}}
+{{- $_ := set $args "graph-node-query-endpoint" (dict "value" $values.config.graph_node.query_url) }}
+{{- $_ := set $args "graph-node-status-endpoint" (dict "value" $values.config.graph_node.status_url) }}
+{{- $_ := set $args "indexer-address" (dict "value" $values.config.indexer.indexer_address "quote" true) }}
+
+{{/* Add network subgraph configs if they exist */}}
+{{- with (index $values.config "subgraphs.network") }}
+{{- if hasKey . "query_url" }}
+{{- $_ := set $args "network-subgraph-endpoint" (dict "value" .query_url "quote" true) }}
+{{- end }}
+{{- if hasKey . "deployment_id" }}
+{{- $_ := set $args "network-subgraph-deployment" (dict "value" .deployment_id "quote" true) }}
+{{- end }}
+{{- end }}
+
+{{/* Add escrow subgraph configs if they exist */}}
+{{- with (index $values.config "subgraphs.escrow") }}
+{{- if hasKey . "query_url" }}
+{{- $_ := set $args "tap-subgraph-endpoint" (dict "value" .query_url "quote" true) }}
+{{- end }}
+{{- end }}
+
+{{/* Add postgres configs */}}
+{{- $_ := set $args "postgres-database" (dict "value" $values.postgresConfig.database) }}
+{{- $_ := set $args "postgres-host" (dict "value" $values.postgresConfig.host) }}
+{{- $_ := set $args "postgres-port" (dict "value" $values.postgresConfig.port) }}
+
+{{/* Merge in indexerAgent.config values */}}
+{{- with $.Values.indexerAgent.config }}
+{{- range $key, $val := . }}
+{{- if not (kindIs "invalid" $val) }}
+{{- $_ := set $args $key (dict "value" $val) }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{/* START StatefulSet */}}
 ---
 apiVersion: apps/v1
@@ -66,33 +104,10 @@ spec:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
           {{- end }}
-          {{- end }}
+          {{- end }}    
           args:
-            - --graph-node-query-endpoint={{ $values.config.graph_node.query_url }}
-            - --graph-node-status-endpoint={{ $values.config.graph_node.status_url }}
-            - --indexer-address={{ $values.config.indexer.indexer_address | quote }}
-            {{- with (index $values.config "subgraphs.network") }}
-            {{- if hasKey . "query_url" }}
-            - --network-subgraph-endpoint={{ .query_url | quote }}
-            {{- end }}
-            {{- if hasKey . "deployment_id" }}
-            - --network-subgraph-deployment={{ .deployment_id | quote }}
-            {{- end }}
-            {{- end }}
-            {{- with (index $values.config "subgraphs.escrow") }}
-            {{- if hasKey . "query_url" }}
-            - --tap-subgraph-endpoint={{ .query_url | quote }}
-            {{- end }}
-            {{- end }}
-            - --postgres-database={{ $values.postgresConfig.database }}
-            - --postgres-host={{ $values.postgresConfig.host }}
-            - --postgres-port={{ $values.postgresConfig.port }}
-          {{- with $.Values.indexerAgent.config }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
-            - --{{ $key }}={{ $val }}
-          {{- end }}
-          {{- end }}
+          {{- range $key, $val := $args }}
+            - --{{ $key }}={{ if $val.quote }}{{ printf "%q" $val.value }}{{ else }}{{ $val.value }}{{ end }}
           {{- end }}
           {{- with $values.extraArgs }}
             {{- toYaml (. | default list) | nindent 12 }}
