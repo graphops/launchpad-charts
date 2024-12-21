@@ -56,10 +56,10 @@ spec:
               {{- if not (empty $values.aliases) }}
               cat << 'EOF' >> ~/.bashrc
               {{- range $alias, $command := $values.aliases }}
-              alias {{ $alias }}=$(cat << 'EOA'
+              alias {{ $alias }}="$(cat << 'EOA'
               {{ $command | trim }}
               EOA
-              )
+              )"
               {{- end }}
               EOF
               {{- end }}
