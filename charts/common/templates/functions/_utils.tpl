@@ -138,10 +138,10 @@ Usage:
 
 {{/* Process the collection */}}
 {{- if kindIs "string" $collection -}}
-{{- if not (regexMatch ".*\\{\\{.*" $collection) -}}
-{{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
-{{- else -}}
+{{- if regexMatch ".*\\{\\{.*" $collection -}}
   {{- $_ := (list $ $collection $templateCtx $componentName) | include "common.utils.evaluateTemplate" }}
+{{- else -}}
+  {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- end }}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
@@ -174,8 +174,7 @@ Usage:
 {{- $mergeList := list $ }}
 {{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
 {{- $_ := (list $ $.Values (list $key)) | include "common.utils.getNestedValue" }}
-{{- $mergeObj := $.__common.fcallResult }}
-{{- if $mergeObj }}
+{{- if hasKey $.Values $key }}
 {{- $mergeList = append $mergeList (index $.Values $key) }}
 {{- end }}
 {{- end }}
@@ -286,13 +285,13 @@ Usage:
 {{- $_ := set $.__common "fcallResult" $base -}}
 {{- end -}}
 
-
 {{- define "common.utils.pruneOutput" -}}
 {{- $ := index . 0 }}
 {{- $obj := index . 1 }}
 {{- if kindIs "map" $obj -}}
     {{- if hasKey $obj "__enabled" -}}
         {{- if not $obj.__enabled -}}
+            {{- $_ := set $.__common "fcallResult" nil -}}
         {{- else -}}
             {{- $result := dict -}}
             {{- range $k, $v := $obj -}}
@@ -337,7 +336,7 @@ Usage:
         {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
             {{- $_ := (list $ $v) | include "common.utils.pruneOutput" -}}
             {{- $processed := $.__common.fcallResult -}}
-            {{- if or (not (eq $processed nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
+            {{- if $processed -}}
                 {{- $result = append $result $processed -}}
             {{- end -}}
         {{- else -}}
@@ -385,10 +384,8 @@ Usage example:
     {{- $value := index $map $key -}}
     {{- if eq (printf "%v" $value) "__none" -}}
       {{- $result = append $result (printf "%s%s" $prefix $key) -}}
-    {{- else if (kindIs "int" $value) -}}
-      {{- $result = append $result (printf "%s%s%s%d" $prefix $key $separator $value) -}}
     {{- else }}
-      {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+      {{- $result = append $result (printf "%s%s%s%s" $prefix $key $separator ($value | toYaml)) -}}
     {{- end -}}
     {{- $map = omit $map $key -}}
   {{- end -}}
@@ -399,15 +396,13 @@ Usage example:
   {{- if not (hasPrefix "__" $key) -}}
     {{- if eq (printf "%v" $value) "__none" -}}
       {{- $result = append $result (printf "%s%s" $prefix $key) -}}
-    {{- else if (kindIs "int" $value) -}}
-      {{- $result = append $result (printf "%s%s%s%d" $prefix $key $separator $value) -}}
     {{- else -}}
-      {{- $result = append $result (printf "%s%s%s%v" $prefix $key $separator $value) -}}
+      {{- $result = append $result (printf "%s%s%s%s" $prefix $key $separator ($value | toYaml)) -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
-{{- $result | toJson -}}
+{{- $result | toYaml -}}
 {{- end -}}
 
 {{- /* Helper function to get nested value with nil checks */}}
@@ -419,17 +414,19 @@ Usage example:
 {{- $value := $root -}}
 {{- $valid := true -}}
 {{- range $key := $pathList -}}
-    {{- if and $valid (hasKey $value $key) -}}
+    {{- if and $valid (kindIs "map" $value) (hasKey $value $key) -}}
         {{- $value = index $value $key -}}
     {{- else -}}
         {{- $valid = false -}}
+        {{- fail (printf "Missing key %s on %v\n values: " $key $pathList ($root | toYaml)) }}
     {{- end -}}
 {{- end -}}
 {{- if not $valid -}}
-    {{- $value = "__nil" -}}
+    {{- $_ := set $.__common "fcallResult" (dict "value" "" "error" true) -}}
+{{- else -}}
+    {{- $_ := set $.__common "fcallResult" (dict "value" $value "error" false) -}}
 {{- end -}}
-{{- $_ := set $.__common "fcallResult" $value -}}
-{{- end -}}
+{{- end }}
 
 
 {{- define "common.utils.preprocessTemplate" -}}
@@ -466,28 +463,48 @@ Usage example:
 {{- range $dep := $dependencies }}
   {{- $_ := (list $ $dep.key) | include "common.utils.splitPath" }}
   {{- $listPath := $.__common.fcallResult }}
-  {{- (list $ $templateCtx $listPath) | include "common.utils.getNestedValue" }}
-  {{- $value := $.__common.fcallResult }}
-  {{- $resolvedValue := "" }}
-  {{- if not (and (eq (kindOf $value) "string") (eq $value "__nil")) }}
-    {{/* As $value can be a map with has at some nesting level a template value, we always evaluate */}}
-    {{- $evalTemplateCtx := deepCopy $templateCtx }}
-    {{- $_ := set $evalTemplateCtx "Self" (index (printf ".ComponentValues.%s" $dep.componentName)) }}
-    {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
-    {{- $resolvedValue = $.__common.fcallResult.result }}
-  {{- else }}
-    {{- $resolvedValue = "__nil" }}
+  {{/* Replace Self with a normalized path, to use the listPath as a cache key */}}
+  {{- $cacheKeyList := $listPath }}
+  {{- if eq (index $listPath 0) "Self" }}
+  {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $cacheKeyList 1) }}
   {{- end }}
-  {{- $_ := set $dep "evalResult" $resolvedValue }}
+  {{- $cacheKey := join "@" $cacheKeyList }}
+  {{/* if value is already cached, use that */}}
+  {{- if hasKey $.__common.cache $cacheKey }}
+    {{- $_ := set $dep "evalResult" (index $.__common.cache $cacheKey) }}
+    {{- $_ := set $dep "evalFailed" false }}
+  {{- else }}
+    {{- (list $ $templateCtx $listPath) | include "common.utils.getNestedValue" }}
+    {{- if not $.__common.fcallResult.error }}
+      {{- $value := $.__common.fcallResult.value }}
+      {{/* As $value can be a map with has at some nesting level a template value, we always evaluate */}}
+      {{- $evalTemplateCtx := deepCopy $templateCtx }}
+      {{- $_ := set $evalTemplateCtx "Self" (index $evalTemplateCtx.ComponentValues (printf "%s" $dep.componentName)) }}
+      {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
+      {{- $_ := set $dep "evalResult" $.__common.fcallResult.result }}
+      {{- $_ := set $dep "evalFailed" false }}
+      {{/* Save resolved value in cache */}}
+      {{- $_ := set $.__common.cache $cacheKey $dep.evalResult }}
+    {{- else }}
+      {{- fail (printf "Failed to evaluate %s on %s, getting paths %v" $dep.var $dep.key $listPath) }}
+      {{- $_ := set $dep "evalFailed" true }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 
+{{- $resolvedVars := dict }}
 {{- $templateHeader := "" }}
 {{- range $dep := $dependencies }}
-  {{- $header := (printf "{{- $__serialized := %s -}}{{- $%s := index ( $__serialized | fromJson ) \"value\" -}}" ( dict "value" $dep.evalResult | toJson | quote ) $dep.var) }}
+  {{- $header := (printf "{{- $%s := index .__deps \"%s\" -}}" $dep.var $dep.var) }}
   {{- if not (empty $templateHeader) }}
     {{- $templateHeader = printf "%s\n%s" $templateHeader $header}}
   {{- else }}
     {{- $templateHeader = $header }}
+  {{- end }}
+  {{- if $dep.evalFailed }}
+  {{- fail (printf "Failed to evaluate %s on $s" $dep.var $dep.key) }}
+  {{- else }}
+    {{ $_ := set $resolvedVars $dep.var $dep.evalResult }}
   {{- end }}
 {{- end }}
 
@@ -495,6 +512,7 @@ Usage example:
 {{- $finalTemplate := printf "%s\n%s" $templateHeader $cleanTemplate }}
 
 {{- $_ := set $result "template" $finalTemplate }}
+{{- $_ := set $result "depsContext" $resolvedVars }}
 
 {{- $_ := set $.__common "fcallResult" $result }}
 {{- end -}}
@@ -503,13 +521,14 @@ Usage example:
 {{- define "common.utils.evaluateTemplate" -}}
 {{- $ = index . 0 }}
 {{- $template := index . 1 }}
-{{- $templateCtx := index . 2 -}}
+{{- $templateCtx := deepCopy (index . 2) -}}
 {{- $componentName := index . 3 -}}
 {{- $type := "" }}
 {{/* Process the template */}}
 {{- if (regexMatch `@(needs|type)\(.*?\)` $template )}}
 {{- (list $ $template $templateCtx $componentName) | include "common.utils.preprocessTemplate" -}}
 {{- $template = $.__common.fcallResult.template }}
+{{- $templateCtx = mergeOverwrite $templateCtx (dict "__deps" $.__common.fcallResult.depsContext) }}
 {{- $type = default "" $.__common.fcallResult.type }}
 {{- end }}
 {{- $_ := set $templateCtx "Self" (index $templateCtx.ComponentValues $componentName) }}

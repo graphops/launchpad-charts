@@ -2,6 +2,7 @@
 {{- define "common.init._init" -}}
 {{/* Initialize state store */}}
 {{- $_ := set $ "__common" dict }}
+{{- $_ := set $.__common "cache" dict }}
 {{/* Define the ordered steps */}}
 {{- $initSteps := list
 "common.init._setTemplateCtx"

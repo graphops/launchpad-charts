@@ -41,10 +41,7 @@
 {{- $_ := tpl $transformsTpl (list $ $result) }}
 {{- $result = $.__common.fcallResult }}
 {{- end }}
-{{/* FIXME: Corner case is forcing prunning twice to mitigate */}}
 {{- $_ := (list $ $result) | include "common.utils.pruneOutput" }}
-{{- $prunedResult := $.__common.fcallResult }}
-{{- $_ := (list $ $prunedResult) | include "common.utils.pruneOutput" }}
 {{- $prunedResult := $.__common.fcallResult }}
 {{ $prunedResult | toYaml }}
 ---
