@@ -6,11 +6,17 @@
 
 ## Introduction
 
-This is generic chart for deploying applications using `Deployment`s or `StatefulSet`s, alongside `Service`s, `ConfigMap`s and `Secret`s.
+This is a generic chart for deploying applications using `Deployment`s or `StatefulSet`s, alongside `Service`s, `ConfigMap`s, and `Secret`s.
 
 ## Chart Features
 
 - Actively maintained by [GraphOps](https://graphops.xyz) [and contributors](https://github.com/graphops/launchpad-charts/graphs/contributors)
+- Supports multiple applications within a single release
+- Flexible configuration for `ConfigMap`s and `Secret`s
+- Init containers for pre-deployment operations
+- Robust security configurations with `ServiceAccount`s and RBAC
+- Comprehensive pod scheduling options including node selectors, tolerations, and affinity rules
+- Customizable resource requests and limits
 
 ## Quickstart
 
@@ -23,7 +29,291 @@ $ helm install my-release graphops/{{ template "chart.name" . }}
 
 ## Configuring {{ template "chart.name" . }}
 
-...
+This section provides a comprehensive guide to configuring the {{ template "chart.name" . }} chart. Refer to the `values.yaml` file for all available configuration options.
+
+### Applications Deployment
+
+You can deploy one or more applications by configuring the `apps` section. Each application can be enabled or disabled, and configured to use either a `Deployment` or `StatefulSet`.
+
+```yaml
+apps:
+  example-app:
+    enabled: true
+    kind: Deployment
+    replicaCount: 3
+    annotations:
+      app.kubernetes.io/component: frontend
+    imagePullSecrets:
+      - name: my-regcred
+    ...
+```
+
+### ConfigMaps and Secrets
+
+#### Creating ConfigMaps
+
+Define your `ConfigMap`s under the `configMaps` section using a local name (`lname`). This allows you to reference them within your application containers.
+
+```yaml
+configMaps:
+  app-config:
+    data:
+      config.yaml: |-
+        key: value
+```
+
+#### Creating Secrets
+
+Define your `Secret`s under the `secrets` section using a local name (`lname`). Secrets are used to store sensitive information such as passwords and API keys.
+
+```yaml
+secrets:
+  db-creds:
+    data:
+      password: s3cr3t
+```
+
+#### Referencing ConfigMaps and Secrets
+
+Use the `lname` to reference `ConfigMap`s and `Secret`s within your application configurations.
+
+**ConfigMap Mounts:**
+
+```yaml
+configMapMounts:
+  /config:
+    lname: app-config
+```
+
+**Secret Environment Variables:**
+
+```yaml
+secretEnv:
+  DB_PASSWORD:
+    lname: db-creds
+    key: password
+```
+
+**When to Use `fullname`:**
+
+Use `fullname` when referencing external resources or when you need to avoid naming collisions across different releases.
+
+### Init Container Operations
+
+Configure init containers to perform operations before your main application containers start. This is managed under the `initOperations` section.
+
+```yaml
+initOperations:
+  enabled: true
+  passthroughMountPath: /init-passthrough
+  steps:
+    config-prep:
+      enabled: true
+      image: busybox
+      command:
+        - sh
+        - -c
+        - envsubst < /config/template.yaml > /init-passthrough/config.yaml
+      env:
+        API_PORT: "8080"
+        LOG_LEVEL: "debug"
+      envRaw:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+      secretEnv:
+        DB_PASSWORD:
+          lname: db-creds
+          key: password
+      configMapMounts:
+        /config:
+          lname: app-config
+      secretMounts:
+        /secrets:
+          lname: app-secrets
+```
+
+### Service Accounts and RBAC
+
+The chart can create `ServiceAccount`s with associated `Role`s and `RoleBinding`s to manage permissions.
+
+```yaml
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: "arn:aws:iam::123456789:role/app-role"
+  name: "app-sa"
+  role:
+    rules:
+      - apiGroups: [""]
+        resources: ["pods", "services"]
+        verbs: ["get", "list", "watch"]
+```
+
+### Containers Configuration
+
+Configure each container with specific settings such as image repository, ports, commands, environment variables, and resource limits.
+
+```yaml
+containers:
+  app:
+    image:
+      repository: company/app
+      tag: v1.2.3
+      pullPolicy: IfNotPresent
+    ports:
+      http: 8080
+      metrics: 9090
+    command:
+      - /bin/app
+      - serve
+    args:
+      - --config
+      - /init-passthrough/config.yaml
+    env:
+      NODE_ENV: production
+      LOG_FORMAT: json
+      API_PORT: "8080"
+    envRaw:
+      - name: POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
+    secretEnv:
+      DB_PASSWORD:
+        lname: db-creds
+        key: password
+      API_KEY:
+        lname: api-secrets
+        key: key
+    secretMounts:
+      /app/secrets:
+        lname: app-secrets
+      /app/certs:
+        lname: tls-certs
+    configMapMounts:
+      /app/config:
+        lname: app-config
+    volumeClaimMounts:
+      /app/data:
+        lname: data
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+    preInstallPod:
+      enabled: true
+      command: "python /app/db-migrate.py"
+    preUpgradePod:
+      enabled: true
+      command: "python /app/db-backup.py"
+```
+
+### Services Configuration
+
+Define how your applications are exposed within the Kubernetes cluster.
+
+**Default Service:**
+
+```yaml
+service:
+  enabled: true
+  annotations:
+    prometheus.io/scrape: "true"
+  type: ClusterIP
+  ports:
+    http: 8080
+    metrics: 9090
+```
+
+**Additional Services:**
+
+```yaml
+services:
+  metrics:
+    enabled: true
+    type: ClusterIP
+    ports:
+      prometheus: 9090
+```
+
+### Ingress Configuration
+
+Configure ingress resources to expose your applications externally.
+
+```yaml
+ingress:
+  main:
+    enabled: false
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      kubernetes.io/tls-acme: "true"
+    tls:
+      - secretName: chart-example-tls
+        hosts:
+          - chart-example.local
+    rules:
+      - host: chart-example.local
+        paths:
+          - path: /
+            targetApp: app1
+            serviceName: ""
+            servicePort: 80
+```
+
+### Pod Security and Scheduling
+
+Enhance the security and scheduling of your pods using various Kubernetes features.
+
+```yaml
+podSecurityContext:
+  fsGroup: 2000
+
+nodeSelector:
+  kubernetes.io/arch: amd64
+  kubernetes.io/os: linux
+
+tolerations:
+  - key: "node-role.kubernetes.io/master"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/e2e-az-name
+              operator: In
+              values:
+                - e2e-az1
+                - e2e-az2
+
+injectPodYaml:
+  terminationGracePeriodSeconds: 60
+  dnsPolicy: ClusterFirst
+```
+
+### Volume Claims
+
+Specify persistent storage for your applications, especially when using `StatefulSet`s.
+
+```yaml
+volumeClaims:
+  data:
+    accessModes: [ReadWriteOnce]
+    resources:
+      requests:
+        storage: 1Gi
+```
 
 {{ template "graphops.upgradingSection" . }}
 

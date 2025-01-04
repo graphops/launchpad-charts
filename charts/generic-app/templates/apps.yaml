@@ -104,19 +104,19 @@ spec:
           image: {{ $step.image }}
           command: {{ toYaml $step.command | nindent 12 }}
           env:
-          {{- range $key, $val := $step.env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with $step.envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := $step.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: init-passthrough
@@ -143,19 +143,19 @@ spec:
           args: {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-          {{- range $key, $val := .env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with .envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := .secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
           {{- if $initOperations.enabled }}
@@ -214,19 +214,19 @@ spec:
           image: {{ $step.image }}
           command: {{ toYaml $step.command | nindent 12 }}
           env:
-          {{- range $key, $val := $step.env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with $step.envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := $step.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: init-passthrough
@@ -253,19 +253,19 @@ spec:
           args: {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-          {{- range $key, $val := .env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with .envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := .secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
           {{- if $initOperations.enabled }}
@@ -371,19 +371,19 @@ spec:
           image: {{ $step.image }}
           command: {{ toYaml $step.command | nindent 12 }}
           env:
-          {{- range $key, $val := $step.env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with $step.envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := $step.secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := $step.env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with $step.envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: init-passthrough
@@ -413,19 +413,19 @@ spec:
           args: {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-          {{- range $key, $val := .env }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- with .envRaw }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           {{- range $key, $val := .secretEnv }}
             - name: {{ $key | quote }}
               valueFrom:
                 secretKeyRef:
                   name: {{ or $val.fullname (printf "%s-%s" $fullName $val.lname) | quote }}
                   key: {{ $val.key | quote }}
+          {{- end }}
+          {{- range $key, $val := .env }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- with .envRaw }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
           {{- if $initOperations.enabled }}
