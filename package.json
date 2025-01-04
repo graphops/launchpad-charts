@@ -8,7 +8,8 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "git-cliff": "^2.5.0",
-    "husky": "^9.1.5"
+    "husky": "^9.1.5",
+    "q": "^1.5.1"
   },
   "scripts": {
     "prepare": "husky",
