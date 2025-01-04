@@ -30,7 +30,8 @@ const RAW_RUNTIME_STATE =
           ["@commitlint/cli", "npm:19.5.0"],\
           ["@commitlint/config-conventional", "npm:19.5.0"],\
           ["git-cliff", "npm:2.5.0"],\
-          ["husky", "npm:9.1.5"]\
+          ["husky", "npm:9.1.5"],\
+          ["q", "npm:1.5.1"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -402,7 +403,8 @@ const RAW_RUNTIME_STATE =
           ["@commitlint/cli", "npm:19.5.0"],\
           ["@commitlint/config-conventional", "npm:19.5.0"],\
           ["git-cliff", "npm:2.5.0"],\
-          ["husky", "npm:9.1.5"]\
+          ["husky", "npm:9.1.5"],\
+          ["q", "npm:1.5.1"]\
         ],\
         "linkType": "SOFT"\
       }]\
@@ -1182,6 +1184,15 @@ const RAW_RUNTIME_STATE =
         "packageLocation": "./.yarn/cache/picocolors-npm-1.1.0-ea12a640bd-a2ad60d94d.zip/node_modules/picocolors/",\
         "packageDependencies": [\
           ["picocolors", "npm:1.1.0"]\
+        ],\
+        "linkType": "HARD"\
+      }]\
+    ]],\
+    ["q", [\
+      ["npm:1.5.1", {\
+        "packageLocation": "./.yarn/cache/q-npm-1.5.1-a28b3cfeaf-70c4a30b30.zip/node_modules/q/",\
+        "packageDependencies": [\
+          ["q", "npm:1.5.1"]\
         ],\
         "linkType": "HARD"\
       }]\

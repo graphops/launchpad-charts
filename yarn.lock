@@ -339,6 +339,7 @@ __metadata:
     "@commitlint/config-conventional": "npm:^19.5.0"
     git-cliff: "npm:^2.5.0"
     husky: "npm:^9.1.5"
+    q: "npm:^1.5.1"
   languageName: unknown
   linkType: soft
 
@@ -999,6 +1000,13 @@ __metadata:
   version: 1.1.0
   resolution: "picocolors@npm:1.1.0"
   checksum: 10/a2ad60d94d185c30f2a140b19c512547713fb89b920d32cc6cf658fa786d63a37ba7b8451872c3d9fc34883971fb6e5878e07a20b60506e0bb2554dce9169ccb
+  languageName: node
+  linkType: hard
+
+"q@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "q@npm:1.5.1"
+  checksum: 10/70c4a30b300277165cd855889cd3aa681929840a5940413297645c5691e00a3549a2a4153131efdf43fe8277ee8cf5a34c9636dcb649d83ad47f311a015fd380
   languageName: node
   linkType: hard
 
