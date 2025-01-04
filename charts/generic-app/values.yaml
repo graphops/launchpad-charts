@@ -19,196 +19,267 @@ secrets: {}
   #       plaintext content
 
 # -- Applications to deploy
-apps: {}
-  # lnameOfApp:
-  #   enabled: true
+apps:
+  # -- Example app configuration
+  example-app:
+    # -- Enable/disable this app deployment
+    enabled: false
 
-  #   kind: StatefulSet
+    # -- Kubernetes workload type - can be Deployment or StatefulSet
+    kind: StatefulSet
     
-  #   replicaCount: 1
+    # -- Number of pod replicas to run
+    replicaCount: 1
 
-  #   annotations:
-  #     test: hekki
+    # -- Pod/deployment annotations
+    annotations:
+      app.kubernetes.io/component: api
+      prometheus.io/scrape: "true"
 
+    # -- Image pull secrets for accessing private registries
+    imagePullSecrets:
+      - name: regcred
 
-  #   imagePullSecrets:
-  #     - name: secret-name
+    # -- Volume claim templates (only used when kind=StatefulSet)
+    volumeClaims:
+      # -- Name of the volume claim
+      data:
+        # -- Access modes for the volume
+        accessModes: [ReadWriteOnce]
+        # -- Storage resource requests
+        resources:
+          requests:
+            storage: 1Gi
 
-  #   volumeClaims:
-  #     data:
-  #       accessModes: [ReadWriteOnce]
-  #       resources:
-  #         requests:
-  #           storage: 1Gi
-
-  #   initOperations:
-  #     enabled: true
-  #     passthroughMountPath: /init-passthrough
+    # -- Init container operations configuration
+    initOperations:
+      # -- Enable init containers
+      enabled: true
+      # -- Mount path for sharing data between init containers
+      passthroughMountPath: /init-passthrough
       
-  #     steps:
-  #       exampleEnvsubstStep: 
-  #         enabled: true
+      # -- Init container steps to run
+      steps:
+        # -- Example init step
+        config-prep:
+          # -- Enable this init step
+          enabled: true
+          # -- Container image for init step
+          image: busybox
+          # -- Command to run in init container
+          command:
+            - sh
+            - -c
+            - envsubst < /config/template.yaml > /init-passthrough/config.yaml
 
-  #         image: bhgedigital/envsubst
+          # -- Environment variables
+          env:
+            API_PORT: "8080"
+            LOG_LEVEL: "debug"
+          
+          # -- Raw environment variable declarations
+          envRaw:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
 
-  #         command:
-  #           - sh
-  #           - -c
-  #           - set -ex &&
-  #             envsubst < /some/input/file.yaml > /init-passthrough/output.yaml &&
-  #             echo "Done!"
+          # -- Environment variables from secrets
+          secretEnv:
+            DB_PASSWORD:
+              lname: db-creds
+              key: password
+            API_KEY:
+              lname: api-secrets
+              key: key
 
-  #         env:
-  #           LOG_LEVEL: debug
-  #           IPFS_LOGGING_FMT: nocolor
-  #           EXTERNAL_LB_IP: "123.123.123.123"
+          # -- ConfigMap volume mounts
+          configMapMounts:
+            /config:
+              lname: app-config
+              
+          # -- Secret volume mounts  
+          secretMounts:
+            /secrets:
+              lname: app-secrets
 
+    # -- Container configurations
+    containers:
+      # -- Main application container
+      app:
+        # -- Container image configuration
+        image:
+          repository: company/app
+          tag: v1.2.3
+          pullPolicy: IfNotPresent
 
-  #         envRaw:
-  #           - name: POD_NAME
-  #             valueFrom:
-  #               fieldRef:
-  #                 fieldPath: metadata.name
+        # -- Container ports to expose
+        ports:
+          http: 8080
+          metrics: 9090
 
-  #         secretEnv:
-  #           KEEP_ETHEREUM_PASSWORD:
-  #             lname: passphrase
-  #             key: passphrase
+        # -- Container command
+        command:
+          - /bin/app
+          - serve
 
-  #         configMapMounts:
-  #           /mounts/config:
-  #             lname: config
+        # -- Container arguments
+        args:
+          - --config
+          - /init-passthrough/config.yaml
 
-  #   containers:
-  #     app:
-  #       image:
-  #         repository: repo/image
-  #         tag: latest
-  #         pullPolicy: IfNotPresent
+        # -- Environment variables
+        env:
+          NODE_ENV: production
+          LOG_FORMAT: json
+          API_PORT: "8080"
 
-  #       imagePullSecrets: []
+        # -- Raw environment variable declarations
+        envRaw:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
 
-  #       ports:
-  #         tcp-3919: 3919
+        # -- Environment variables from secrets
+        secretEnv:
+          DB_PASSWORD:
+            lname: db-creds
+            key: password
+          API_KEY:
+            lname: api-secrets
+            key: key
 
-  #       command:
-  #         - keep-client
+        # -- Secret volume mounts
+        secretMounts:
+          /app/secrets:
+            lname: app-secrets
+          /app/certs:
+            lname: tls-certs
 
-  #       args:
-  #         - -config
-  #         - /init-passthrough/config.toml
-  #         - start
+        # -- ConfigMap volume mounts
+        configMapMounts:
+          /app/config:
+            lname: app-config
 
-  #       env:
-  #         LOG_LEVEL: debug
-  #         IPFS_LOGGING_FMT: nocolor
-  #         EXTERNAL_LB_IP: "123.123.123.123"
+        # -- Persistent volume claim mounts (only for StatefulSets)
+        volumeClaimMounts:
+          /app/data:
+            lname: data
 
-  #       envRaw:
-  #         - name: POD_NAME
-  #           valueFrom:
-  #             fieldRef:
-  #               fieldPath: metadata.name
+        # -- Container security context
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
 
-  #       secretEnv:
-  #         KEEP_ETHEREUM_PASSWORD:
-  #           lname: passphrase
-  #           key: passphrase
+        # -- Container resource requests/limits
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
 
-  #       secretMounts:
-  #         /mounts/wallet:
-  #           lname: wallet
+        # -- Pre-install pod configuration
+        preInstallPod:
+          enabled: true
+          command: "python /app/db-migrate.py"
 
-  #       configMapMounts:
-  #         /mounts/config:
-  #           lname: config
+        # -- Pre-upgrade pod configuration  
+        preUpgradePod:
+          enabled: true
+          command: "python /app/db-backup.py"
 
-  #       volumeClaimMounts:
-  #         /mounts/data:
-  #           lname: data
+    # -- Default service configuration
+    service:
+      enabled: true
+      annotations:
+        prometheus.io/scrape: "true"
+      type: ClusterIP
+      ports:
+        http: 8080
+        metrics: 9090
 
-  #       securityContext: {}
-  #         # capabilities:
-  #         #   drop:
-  #         #   - ALL
-  #         # readOnlyRootFilesystem: true
-  #         # runAsNonRoot: true
-  #         # runAsUser: 1000
+    # -- Additional named services
+    services:
+      metrics:
+        enabled: true
+        type: ClusterIP
+        ports:
+          prometheus: 9090
 
-  #       resources: {}
-  #         # We usually recommend not to specify default resources and to leave this as a conscious
-  #         # choice for the user. This also increases chances charts run on environments with little
-  #         # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  #         # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  #         # limits:
-  #         #   cpu: 100m
-  #         #   memory: 128Mi
-  #         # requests:
-  #         #   cpu: 100m
-  #         #   memory: 128Mi
-  #       preInstallPod:
-  #         enabled: false
-  #         command: []
+    # -- Service account configuration
+    serviceAccount:
+      create: true
+      annotations:
+        eks.amazonaws.com/role-arn: "arn:aws:iam::123456789:role/app-role"
+      name: "app-sa"
+      role:
+        rules:
+          - apiGroups: [""]
+            resources: ["pods", "services"]
+            verbs: ["get", "list", "watch"]
 
-  #       preUpgradePod:
-  #         enabled: false
-  #         command: []
+    # -- Pod security context
+    podSecurityContext:
+      fsGroup: 2000
 
+    # -- Node selector
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      kubernetes.io/os: linux
 
-  #   service:
-  #     enabled: true
-  #     annotations: {}
-  #     type: ClusterIP
-  #     ports:
-  #       tcp-3919: 3919
+    # -- Pod tolerations
+    tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
 
-  #   # These are named services, additional to the default service above
-  #   # services:
-  #   #   external: # name
-  #   #     enabled: true
-  #   #     type: NodePort
-  #   #     ports:
-  #   #       tcp-3003: 3003
+    # -- Pod affinity rules
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/e2e-az-name
+                  operator: In
+                  values:
+                    - e2e-az1
+                    - e2e-az2
 
+    # -- Additional pod spec fields
+    injectPodYaml:
+      terminationGracePeriodSeconds: 60
+      dnsPolicy: ClusterFirst
 
-  #   serviceAccount:
-  #     # Specifies whether a service account should be created
-  #     create: true
-  #     # Annotations to add to the service account
-  #     annotations: {}
-  #     # Optionally create an attach role:
-  #     # role:
-  #     #   rules:
-  #     #     - apiGroups: [""] # "" indicates the core API group
-  #     #       resources: ["services"]
-  #     #       verbs: ["get", "list"]
-  #     # The name of the service account to use.
-  #     # If not set and create is true, a name is generated using the fullname template
-  #     name:
-
-  #   podSecurityContext: {}
-  #     # fsGroup: 2000
-
-  #   nodeSelector: {}
-
-  #   tolerations: []
-
-  #   affinity: {}
-
-  #   # Inject YAML into pod definition
-  #   # injectPodYaml: {}
-
-# -- Ingress
+# -- Ingress configuration
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  # Example ingress configuration
+  example-ingress:  # ingress name
+    enabled: false
+    
+    # -- Ingress class name (required for k8s >= 1.18)
+    ingressClassName: nginx
+    
+    # -- Ingress annotations
+    annotations: {}
+      # kubernetes.io/tls-acme: "true"
+    
+    # -- TLS configuration
+    tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+    
+    # -- Ingress rules
+    rules: []
+    # - host: chart-example.local
+    #   paths:
+    #   - path: /
+    #     pathType: Prefix    # One of: Prefix, Exact, ImplementationSpecific
+    #     targetAppName: app1     # Name of the app from apps section
+    #     serviceName: ""     # Optional - name of the named service, empty for default service
+    #     servicePortName: 80     # Port number from the service
 

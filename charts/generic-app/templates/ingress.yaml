@@ -1,41 +1,60 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "app.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
+{{- $labels := include "app.labels" . }}
+{{- range $ingressName, $ingressContext := .Values.ingress }}
+{{- if .enabled }}
+{{- $fullName := include "app.fullname" $ }}
+{{- $fullComponentName := printf "%s-%s" (include "app.fullname" $) $ingressName }}
+
+---
+### Ingress {{ $ingressName }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
-  labels:
-    {{- include "app.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
+  name: {{ $fullComponentName }}
+  labels: {{- $labels | nindent 4 }}
+  {{- with .annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
-  tls:
-  {{- range .Values.ingress.tls }}
-    - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
+  {{- if .ingressClassName }}
+  ingressClassName: {{ .ingressClassName }}
   {{- end }}
-{{- end }}
+  {{- with .tls }}
+  tls:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- range .rules }}
     - host: {{ .host | quote }}
       http:
         paths:
         {{- range .paths }}
-          - path: {{ . }}
+          - path: {{ .path }}
+            pathType: {{ default "Prefix" .pathType }}
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              service:
+                {{- $targetApp := get $.Values.apps .targetAppName }}
+                {{- if not $targetApp }}
+                {{- fail (printf "Target app '%s' not found in .Values.apps" .targetAppName) }}
+                {{- end }}
+                {{- /* Get the target service - either named or default */}}
+                {{- $targetService := .serviceName | default "" }}
+                {{- $services := or $targetApp.services dict }}
+                {{- $services := set $services "" $targetApp.service }}
+                {{- if not (get $services $targetService) }}
+                {{- fail (printf "Service '%s' not found in app '%s'" $targetService .targetAppName) }}
+                {{- end }}
+                {{- $serviceConfig := get $services $targetService }}
+                {{- if not $serviceConfig.enabled }}
+                {{- fail (printf "Service '%s' in app '%s' is not enabled" $targetService .targetAppName) }}
+                {{- end }}
+                {{- $targetServiceName := printf "%s-%s%s" $fullName .targetAppName (ternary (printf "-%s" $targetService) "" (empty $targetService | not)) }}
+                name: {{ $targetServiceName }}
+                port:
+                  {{- if not (get $serviceConfig.ports (.servicePortName | )) }}
+                  {{- fail (printf "Port '%s' not found in service '%s' of app '%s'" .servicePortName $targetService .targetAppName) }}
+                  {{- end }}
+                  number: {{ get $serviceConfig.ports .servicePortName }}
         {{- end }}
   {{- end }}
+{{- end }}
 {{- end }}
