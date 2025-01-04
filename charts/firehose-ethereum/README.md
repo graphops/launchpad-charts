@@ -225,11 +225,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.fireeth.services | List of firehose services to launch (reader-node | merger | relayer | ...) | list | `[]` |
  | firehoseComponentDefaults.horizontalPodAutoscaler | Horizontal Pod Autoscaler configuration | object | `{"enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":{}}` |
  | firehoseComponentDefaults.horizontalPodAutoscaler.metadata | Anything else will be marge on the final horizontalPodAutoscaler resource template | object | `{"annotations":{},"labels":{}}` |
- | firehoseComponentDefaults.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.6.7-geth-v1.13.15-fh2.4"}` |
+ | firehoseComponentDefaults.image | Image configuration for firehose-ethereum | object | `{"digest":"","pullPolicy":"IfNotPresent","repository":"ghcr.io/streamingfast/firehose-ethereum","tag":"v2.8.3-geth-v1.13.15-fh2.4"}` |
  | firehoseComponentDefaults.image.digest | Overrides the image reference using a specific digest | string | `""` |
  | firehoseComponentDefaults.image.pullPolicy | Image pull policy | string | `"IfNotPresent"` |
  | firehoseComponentDefaults.image.repository | Docker image repository | string | `"ghcr.io/streamingfast/firehose-ethereum"` |
- | firehoseComponentDefaults.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.6.7-geth-v1.13.15-fh2.4"` |
+ | firehoseComponentDefaults.image.tag | Overrides the image reference using a tag digest takes precedence over tag if both are set | string | `"v2.8.3-geth-v1.13.15-fh2.4"` |
  | firehoseComponentDefaults.imagePullSecrets | Pull secrets required to fetch images | list | `[]` |
  | firehoseComponentDefaults.initContainers | Init containers configuration | object | `{"10-init-nodeport":{"enabled":"{{ .Pod.fireeth.p2p.enabled }}","image":"lachlanevenson/k8s-kubectl:v1.25.4","imagePullPolicy":"IfNotPresent","resources":{}},"20-init-envsubst":{"enabled":"{{ .Pod.configMap.options.useEnvSubst }}","image":"blockstack/envsubst:latest","imagePullPolicy":"IfNotPresent","resources":{}}}` |
  | firehoseComponentDefaults.kind | Default workload type (Deployment | StatefulSet) | string | `"Deployment"` |
@@ -237,7 +237,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.lifecycle | Lifecycle hooks | object | `{}` |
  | firehoseComponentDefaults.nodeSelector | Node selector configuration | object | `{}` |
  | firehoseComponentDefaults.podDisruptionBudget | Pod Disruption Budget configuration | object | `{"enabled":false,"metadata":{"annotations":{},"labels":{}},"spec":null}` |
- | firehoseComponentDefaults.podManagementPolicy | (StatefulSet only), scaling behavior: (OrderedReady | Parallel) | string | `"OrderedReady"` |
+ | firehoseComponentDefaults.podManagementPolicy | , scaling behavior: (OrderedReady | Parallel) | StatefulSet only | `"OrderedReady"` |
  | firehoseComponentDefaults.podSecurityContext | Pod-wide security context | object | `{"fsGroup":"{{ .Pod.podSecurityContext.runAsUser }}","runAsGroup":"{{ .Pod.podSecurityContext.runAsUser }}","runAsNonRoot":true,"runAsUser":1000}` |
  | firehoseComponentDefaults.ports | Container level ports configuration | object | `{"fh-metrics":{"containerPort":"{{ with .Pod.fireeth.metrics }}{{ .enabled \| ternary (printf \"%d\" ( .port \| int ) ) nil }}{{ end }}","protocol":"TCP"},"fh-pprof":{"containerPort":"{{ with .Pod.fireeth.pprof }}{{ .enabled \| ternary (printf \"%d\" ( .port \| int ) ) nil }}{{ end }}","protocol":"TCP"}}` |
  | firehoseComponentDefaults.rbac | RBAC role and binding configuration | object | `{"bindingSpec":{"metadata":{"annotations":{},"labels":{}},"roleRef":{}},"enabled":"{{ .Pod.serviceAccount.enabled }}","roleSpec":{"metadata":{"annotations":{},"labels":{}}}}` |
@@ -265,10 +265,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | firehoseComponentDefaults.serviceP2P.spec | Any other key/values will be merged with the final Service resource `spec.ports` is a key-value map, with the port name as key, and the spec as value | object | `{"ports":{"p2p-tcp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"UDP","targetPort":null}}}` |
  | firehoseComponentDefaults.serviceP2P.spec.ports | Service ports configuration | object | `{"p2p-tcp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"TCP","targetPort":null},"p2p-udp":{"nodePort":null,"port":"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}","protocol":"UDP","targetPort":null}}` |
  | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
- | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.port | (mandatory) default is to use nodePort if specified, or 30303 | string | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.port | default is to use nodePort if specified, or 30303 | mandatory | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
  | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-tcp.targetPort | default is to use the port's name | optional | `nil` |
  | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.nodePort | nodePort to use, if left null a dynamic one will be atributed | optional | `nil` |
- | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.port | (mandatory) default is to use nodePort if specified, or 30303 | string | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
+ | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.port | default is to use nodePort if specified, or 30303 | mandatory | `"{{ with .Pod.serviceP2P.spec.ports }}{{ default (30303 \| int) (index . \"p2p-tcp\" \"nodePort\" \| int) }}{{ end }}"` |
  | firehoseComponentDefaults.serviceP2P.spec.ports.p2p-udp.targetPort | default is to use the port's name | optional | `nil` |
  | firehoseComponentDefaults.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | firehoseComponentDefaults.tolerations | Tolerations configuration | list | `[]` |
