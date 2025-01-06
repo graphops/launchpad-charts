@@ -1,5 +1,5 @@
 globals:
-  # -- Set a default storage class to use everywhere
+  # -- Set a default storage class to use everywhere by default
   storageClassName: null
 
 statefulNode:
