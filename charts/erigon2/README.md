@@ -57,7 +57,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.config.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `nil` |
  | erigonDefaults.config.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `nil` |
  | erigonDefaults.config.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
- | erigonDefaults.config.metrics | Enable support for metrics | object | `{"addr":"{{ $metricsAddr }} @needs(.Root.Values.erigonDefaults.config.metrics.__test as metricsAddr)","enabled":true,"port":9102}` |
+ | erigonDefaults.config.metrics | Enable support for metrics | object | `{"addr":"0.0.0.0","enabled":true,"port":9102}` |
  | erigonDefaults.config.p2p | Enable a NodePort for P2P support in node | object | `{"enabled":false,"protocols":{"67":"","68":""},"torrents":{"enabled":true,"nodePort":null}}` |
  | erigonDefaults.config.p2p.enabled | Expose P2P port via NodePort | bool | `false` |
  | erigonDefaults.config.p2p.protocols | NodePorts must be unique, or left as empty string "" to be obtained dynamically.  | object | `{"67":"","68":""}` |
@@ -184,7 +184,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.accessModes[0] |  | string | `"ReadWriteOnce"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.resources.requests.storage | The amount of disk space to provision for Erigon | string | `"3Ti"` |
  | erigonDefaults.workload.spec.volumeClaimTemplates.storage.storageClassName |  | string | `"{{ default nil .Root.Values.globals.storageClassName }}"` |
- | globals.storageClassName | Set a default storage class to use everywhere | string | `nil` |
+ | globals.storageClassName | Set a default storage class to use everywhere by default | string | `nil` |
  | rpcdaemon.__enabled | Enable a Deployment of rpcdaemon that can be scaled independently | bool | `false` |
  | rpcdaemon.workload.kind |  | string | `"Deployment"` |
  | statefulNode.__enabled |  | bool | `true` |

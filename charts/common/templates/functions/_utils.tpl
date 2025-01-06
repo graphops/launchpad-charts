@@ -1,16 +1,42 @@
 {{- define "common.utils.deepMerge" -}}
 {{/*
-deepMerge: A versatile helper function for deep merging of multiple maps.
+deepMerge: Recursively merges multiple maps with null-key cleanup
+
+Arguments:
+- First argument ($): Global context where results will be stored
+- Remaining arguments: Maps to merge
+
 Purpose:
-- Performs a deep merge of two or more maps.
-- Accepts a variable number of input maps. Later maps in the input list take precedence over earlier ones.
-  (i.e., values from maps listed last will override those from maps listed first)
-- Removes keys set to null in higher-precedence maps.
-- Maintains empty maps and slices from higher-precedence maps.
+- Performs a recursive (deep) merge of two or more maps
+- Processes maps from left to right, with right-most values taking precedence
+- Removes any keys whose values are explicitly set to null in overriding maps
+- Preserves empty maps and slices from higher-precedence maps
+- Stores result in $.__common.fcallResult (where $ is the global context)
+
+Behavior:
+1. Single map: Returns the map after null cleanup
+2. Two maps: Performs deep merge with null cleanup
+3. Multiple maps: Recursively merges from left to right
+
 Usage:
-- For two maps: list $map1 $map2 | include "utils.deepMerge"
-- For multiple maps: list $map1 $map2 $map3 ... | include "utils.deepMerge"
-*/ -}}
+  {{ list $ $map1 $map2 ... | include "common.utils.deepMerge" }}
+  Result will be in $.__common.fcallResult }}
+
+Example:
+  Input:
+    $: <global context>
+    map1: {a: 1, b: {x: 1, y: 2}}
+    map2: {b: {x: null, z: 3}}
+    
+  Call:
+    {{ list $ map1 map2 | include "common.utils.deepMerge" }}
+    
+  Result (in $.__common.fcallResult):
+    {a: 1, b: {y: 2, z: 3}}
+
+Note: This function modifies the global context by storing its result in 
+      $.__common.fcallResult. Always access the result from there after calling.
+*/}}
 {{- $ := index . 0 }}
 {{- $args := slice . 1 (len .) }}
 {{- $length := len $args -}}
@@ -57,21 +83,43 @@ Usage:
 
 
 {{- define "common.utils.removeNulls" -}}
-  {{- $ := index . 0 }}
-  {{- $value := index . 1 -}}
-  {{- $result := dict -}}
-  {{- if kindIs "map" $value -}}
+{{/*
+removeNulls: Recursively removes null values from maps and slices
+Purpose:
+- Traverses data structures (maps and slices) removing null values
+- Preserves empty maps and non-null values
+- Stores result in $.__common.fcallResult.result
+
+Arguments:
+- First argument ($): Global context where results will be stored
+- Second argument: Value to process (map, slice, or primitive)
+
+Returns: (in $.__common.fcallResult)
+  {result: <processed_value>}
+
+Example:
+  Input: {a: null, b: {x: null, y: 1}, c: [null, 1, {z: null}]}
+  Result: {result: {b: {y: 1}, c: [1, {}]}}
+*/}}
+{{- $ := index . 0 }}
+{{- $value := index . 1 -}}
+{{- $result := dict -}}
+
+{{/* Handle map type */}}
+{{- if kindIs "map" $value -}}
     {{- $newMap := dict -}}
     {{- range $k, $v := $value -}}
       {{- if not (eq $v nil) -}}
+        {{/* Recursively process non-null values */}}
         {{- $_ := (list $ $v) | include "common.utils.removeNulls" -}}
         {{- $nestedResult := $.__common.fcallResult -}}
         {{- if $nestedResult -}}
           {{- if kindIs "map" $nestedResult -}}
+            {{/* Handle nested map results */}}
             {{- if hasKey $nestedResult "result" -}}
               {{- $newMap = set $newMap $k (get $nestedResult "result") -}}
             {{- else -}}
-              {{- /* Preserve empty maps */ -}}
+              {{/* Preserve empty maps */}}
               {{- $newMap = set $newMap $k dict -}}
             {{- end -}}
           {{- else -}}
@@ -83,18 +131,22 @@ Usage:
       {{- end -}}
     {{- end -}}
     {{- $result = set $result "result" $newMap -}}
-  {{- else if kindIs "slice" $value -}}
+
+{{/* Handle slice type */}}
+{{- else if kindIs "slice" $value -}}
     {{- $newSlice := list -}}
     {{- range $v := $value -}}
       {{- if not (eq $v nil) -}}
+        {{/* Recursively process non-null values */}}
         {{- $_ := (list $ $v) | include "common.utils.removeNulls" -}}
         {{- $nestedResult := $.__common.fcallResult -}}
         {{- if $nestedResult -}}
           {{- if kindIs "map" $nestedResult -}}
+            {{/* Handle nested map results */}}
             {{- if hasKey $nestedResult "result" -}}
               {{- $newSlice = append $newSlice (get $nestedResult "result") -}}
             {{- else -}}
-              {{- /* Preserve empty maps */ -}}
+              {{/* Preserve empty maps */}}
               {{- $newSlice = append $newSlice dict -}}
             {{- end -}}
           {{- else -}}
@@ -106,43 +158,56 @@ Usage:
       {{- end -}}
     {{- end -}}
     {{- $result = set $result "result" $newSlice -}}
-  {{- else -}}
+
+{{/* Handle primitive types */}}
+{{- else -}}
     {{- if not (eq $value nil) -}}
       {{- $result = set $result "result" $value -}}
     {{- end -}}
-  {{- end -}}
-  {{- $_ := set $.__common "fcallResult" $result -}}
+{{- end -}}
+{{- $_ := set $.__common "fcallResult" $result -}}
 {{- end -}}
 
 {{- define "common.utils.templateCollection" -}}
 {{/*
-  This helper function templates all string elements within a collection, element by element.
-  It is meant to be used for collections (maps or lists). Can also be used with primitive values.
-  When used with a primitive value, returns a templated string or the other types non-templated.
+templateCollection: Recursively processes templates in collections
+Purpose:
+- Templates all string elements within maps and lists
+- Preserves non-string values unchanged
+- Processes nested structures recursively
+- Stores result in $.__common.fcallResult
 
-  Parameters:
-    . (list): list of two elements:
-    0. collection: The collection containing elements to be templated
-    1. templateCtx: The context to use for templating
+Arguments:
+- First argument ($): Global context where results will be stored
+- Second argument: Collection to process
+- Third argument: Template context to use
+- Fourth argument: Component name (for debugging)
 
-  Usage:
+Example:
+  Input: 
+    collection: {key: "{{ .Values.something }}", nested: {value: "static"}}
+    templateCtx: {Values: {something: "processed"}}
+  Result: {key: "processed", nested: {value: "static"}}
 */}}
 
 {{- $ = index . 0 }}
 {{- $collection := index . 1 }}
 {{- if not (empty $collection) }}
-{{- $collection = deepCopy $collection -}}
+  {{- $collection = deepCopy $collection -}}
 {{- end }}
 {{- $templateCtx := index . 2 -}}
 {{- $componentName := index . 3 -}}
 
-{{/* Process the collection */}}
+{{/* Process based on type */}}
 {{- if kindIs "string" $collection -}}
-{{- if regexMatch ".*\\{\\{.*" $collection -}}
-  {{- $_ := (list $ $collection $templateCtx $componentName) | include "common.utils.evaluateTemplate" }}
-{{- else -}}
-  {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
-{{- end }}
+  {{/* Only process strings containing template syntax */}}
+  {{- if regexMatch ".*\\{\\{.*" $collection -}}
+    {{- $_ := (list $ $collection $templateCtx $componentName) | include "common.utils.evaluateTemplate" }}
+  {{- else -}}
+    {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
+  {{- end }}
+
+{{/* Process maps recursively */}}
 {{- else if kindIs "map" $collection -}}
   {{- $result := dict -}}
   {{- range $key, $value := $collection -}}
@@ -151,6 +216,8 @@ Usage:
     {{- $result = set $result $key $processedValue -}}
   {{- end -}}
   {{- $_ := set $.__common "fcallResult" (dict "result" $result) -}}
+
+{{/* Process slices recursively */}}
 {{- else if kindIs "slice" $collection -}}
   {{- $result := list -}}
   {{- range $value := $collection -}}
@@ -159,41 +226,75 @@ Usage:
     {{- $result = append $result $processedValue -}}
   {{- end -}}
   {{- $_ := set $.__common "fcallResult" (dict "result" $result) -}}
+
+{{/* Pass through other types unchanged */}}
 {{- else -}}
   {{- $_ := set $.__common "fcallResult" (dict "result" $collection) -}}
 {{- end -}}
-
 {{- end -}}
 
-{{- define "common.resources.mergeValues" }}
+{{- define "common.resources.mergeValues" -}}
+{{/*
+mergeValues: Merges component values based on layering configuration
+Purpose:
+- Processes each component's values through configured layers
+- Applies deep merge strategy for each layer
+- Stores results in templateCtx.ComponentValues
 
+Arguments:
+- Global context with:
+  - Values: Source values
+  - __common.config.components: List of components to process
+  - __common.config.componentLayering: Map of component to layer keys
+  - __common.templateCtx: Context for storing results
+
+Example:
+  Config:
+    components: ["app", "db"]
+    componentLayering:
+      app: ["common", "base"]
+  Values:
+    common: {replicas: 1}
+    base: {image: "nginx"}
+    app: {port: 80}
+  Result in templateCtx.ComponentValues:
+    app: {replicas: 1, image: "nginx", port: 80}
+*/}}
 {{- $templateCtx := $.__common.templateCtx }}
 
 {{- $mergedValues := dict }}
 {{- range $component := $.__common.config.components }}
-{{- $mergeList := list $ }}
-{{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
-{{- $_ := (list $ $.Values (list $key)) | include "common.utils.getNestedValue" }}
-{{- if hasKey $.Values $key }}
-{{- $mergeList = append $mergeList (index $.Values $key) }}
+    {{/* Build merge list starting with global context */}}
+    {{- $mergeList := list $ }}
+    
+    {{/* Add each layer's values */}}
+    {{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
+        {{- $_ := (list $ $.Values (list $key)) | include "common.utils.getNestedValue" }}
+        {{- if hasKey $.Values $key }}
+            {{- $mergeList = append $mergeList (index $.Values $key) }}
+        {{- end }}
+    {{- end }}
+    
+    {{/* Add component-specific values last (highest precedence) */}}
+    {{- $mergeList = append $mergeList (index $.Values (printf "%v" $component)) }}
+    
+    {{/* Perform the merge */}}
+    {{- $_ := $mergeList | include "common.utils.deepMerge" }}
+    {{- $mergedValues = $.__common.fcallResult }}
+    {{- $_ := set $templateCtx.ComponentValues (printf "%v" $component) $mergedValues }}
 {{- end }}
-{{- end }}
-{{- $mergeList = append $mergeList (index $.Values (printf "%v" $component)) }}
-{{- $_ := $mergeList | include "common.utils.deepMerge" }}
-{{- $mergedValues = $.__common.fcallResult }}
-{{ $_ := set $templateCtx.ComponentValues (printf "%v" $component) $mergedValues }}
-{{- end }}
+
+{{/* Debug output if enabled */}}
 {{- if $.Values.debug -}}
-  {{- include "common.debug.function" (dict
-    "name" "resources.mergeValues"
-    "args" list
-    "result" $templateCtx)
-  -}}
+    {{- include "common.debug.function" (dict
+        "name" "resources.mergeValues"
+        "args" list
+        "result" $templateCtx)
+    -}}
 {{- end -}}
 
 {{- $_ := set $.__common.config "templateCtx" $templateCtx }}
-
-{{- end }}
+{{- end -}}
 
 {{- define "common.resources.templateValues" }}
 
@@ -218,6 +319,44 @@ Usage:
 
 
 {{- define "common.utils.transformMapToList" -}}
+{{/*
+transformMapToList: Converts map structures to lists at specified paths
+Purpose:
+- Transforms map structures into lists at specified paths
+- Supports adding index keys from map keys
+- Handles default values for transformed items
+- Preserves map keys as specified index fields
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($base): Base object to transform
+- Third argument ($paths): List of path objects with:
+  - path: Dot-notation path to transform
+  - indexKey: Key to store original map key (optional)
+  - defaultFor: List of keys to default to map key (optional)
+
+Example:
+  Input:
+    base:
+      spec:
+        containers:
+          main: {image: "nginx"}
+          sidecar: {image: "proxy"}
+    paths:
+      - path: "spec.containers"
+        indexKey: "name"
+        defaultFor: ["id"]
+  
+  Result:
+    spec:
+      containers:
+        - name: "main"
+          id: "main"
+          image: "nginx"
+        - name: "sidecar"
+          id: "sidecar"
+          image: "proxy"
+*/}}
 {{- $ := index . 0 -}}
 {{- $base := index . 1 -}}
 {{- $paths := index . 2 -}}
@@ -286,23 +425,66 @@ Usage:
 {{- end -}}
 
 {{- define "common.utils.pruneOutput" -}}
+{{/*
+pruneOutput: Cleans up object structure by removing special fields and disabled sections
+Purpose:
+- Removes fields prefixed with "__" (internal use)
+- Removes entire objects where __enabled=false
+- Removes null values
+- Processes nested maps and slices recursively
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($obj): Object to process
+
+Returns: (in $.__common.fcallResult)
+- Cleaned object or nil if disabled
+
+Example:
+  Input:
+    obj:
+      __enabled: true
+      __internal: "hidden"
+      visible: "shown"
+      section:
+        __enabled: false
+        data: "hidden"
+      nested:
+        deep: null
+        valid: "kept"
+  
+  Result:
+    {
+      visible: "shown",
+      nested: {
+        valid: "kept"
+      }
+    }
+*/}}
 {{- $ := index . 0 }}
 {{- $obj := index . 1 }}
+
+{{/* Handle map type */}}
 {{- if kindIs "map" $obj -}}
+    {{/* Check if object is explicitly disabled */}}
     {{- if hasKey $obj "__enabled" -}}
         {{- if not $obj.__enabled -}}
             {{- $_ := set $.__common "fcallResult" nil -}}
         {{- else -}}
+            {{/* Process enabled object */}}
             {{- $result := dict -}}
             {{- range $k, $v := $obj -}}
+                {{/* Skip internal fields */}}
                 {{- if not (hasPrefix "__" $k) -}}
                     {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
+                        {{/* Recursively process nested structures */}}
                         {{- $_ := (list $ $v) | include "common.utils.pruneOutput" -}}
                         {{- $processed := $.__common.fcallResult -}}
                         {{- if or (not (eq $processed nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
                             {{- $_ := set $result $k $processed -}}
                         {{- end -}}
                     {{- else -}}
+                        {{/* Keep non-null values */}}
                         {{- if not (eq $v nil) -}}
                             {{- $_ := set $result $k $v -}}
                         {{- end -}}
@@ -312,6 +494,7 @@ Usage:
             {{- $_ := set $.__common "fcallResult" $result -}}
         {{- end -}}
     {{- else -}}
+        {{/* Process object without explicit enabled flag */}}
         {{- $result := dict -}}
         {{- range $k, $v := $obj -}}
             {{- if not (hasPrefix "__" $k) -}}
@@ -330,6 +513,8 @@ Usage:
         {{- end -}}
         {{- $_ := set $.__common "fcallResult" $result -}}
     {{- end -}}
+
+{{/* Handle slice type */}}
 {{- else if kindIs "slice" $obj -}}
     {{- $result := list -}}
     {{- range $v := $obj -}}
@@ -346,6 +531,8 @@ Usage:
         {{- end -}}
     {{- end -}}
     {{- $_ := set $.__common "fcallResult" $result -}}
+
+{{/* Handle primitive types */}}
 {{- else -}}
     {{- $_ := set $.__common "fcallResult" $obj -}}
 {{- end -}}
@@ -405,79 +592,165 @@ Usage example:
 {{- $result | toYaml -}}
 {{- end -}}
 
-{{- /* Helper function to get nested value with nil checks */}}
 {{- define "common.utils.getNestedValue" -}}
+{{/*
+getNestedValue: Safely retrieves nested values from a map using a path list
+Purpose:
+- Traverses nested maps using a list of keys
+- Performs nil checks at each level
+- Returns error state if path is invalid
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($root): Root object to traverse
+- Third argument ($pathList): List of keys forming the path
+
+Returns: (in $.__common.fcallResult)
+  {
+    value: <found value or empty string>,
+    error: <boolean indicating success>
+  }
+
+Example:
+  Input:
+    root:
+      level1:
+        level2: "value"
+    pathList: ["level1", "level2"]
+  
+  Result:
+    {
+      value: "value",
+      error: false
+    }
+
+Error Handling:
+- Returns error=true if any key in path doesn't exist
+- Fails with error message showing missing key and full path
+*/}}
 {{- $ := index . 0 }}
 {{- $root := index . 1 -}}
 {{- $pathList := index . 2 -}}
 
 {{- $value := $root -}}
 {{- $valid := true -}}
+
+{{/* Traverse path */}}
 {{- range $key := $pathList -}}
     {{- if and $valid (kindIs "map" $value) (hasKey $value $key) -}}
         {{- $value = index $value $key -}}
     {{- else -}}
         {{- $valid = false -}}
-        {{- fail (printf "Missing key %s on %v\n values: " $key $pathList ($root | toYaml)) }}
+        {{- fail (printf "Missing key %s on %v\n values: %s" $key $pathList ($root | toYaml)) }}
     {{- end -}}
 {{- end -}}
+
+{{/* Set result */}}
 {{- if not $valid -}}
     {{- $_ := set $.__common "fcallResult" (dict "value" "" "error" true) -}}
 {{- else -}}
     {{- $_ := set $.__common "fcallResult" (dict "value" $value "error" false) -}}
 {{- end -}}
-{{- end }}
+{{- end -}}
 
 
 {{- define "common.utils.preprocessTemplate" -}}
+{{/*
+preprocessTemplate: Processes template directives and resolves dependencies
+Purpose:
+- Extracts and processes @type and @needs directives
+- Resolves template dependencies with caching
+- Builds template context with resolved variables
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($template): Template string with directives
+- Third argument ($templateCtx): Template context
+- Fourth argument ($componentName): Current component name
+
+Directives:
+- @type(type): Specifies the output type (e.g., "int", "bool")
+- @needs(path as varName): Declares dependency and assigns to variable
+
+Example:
+  Input:
+    template: |
+      @type(int)
+      @needs(Values.replicas as count)
+      {{ $count }}
+    templateCtx:
+      Values:
+        replicas: 3
+
+  Result: {
+    type: "int",
+    template: "{{- $count := index .__deps \"count\" -}}\n{{ $count }}",
+    depsContext: {count: 3}
+  }
+
+Cache:
+- Uses $.__common.cache to store resolved dependencies
+- Cache keys are normalized paths (ComponentValues.component.path)
+*/}}
 {{- $ := index . 0 }}
 {{- $template := index . 1 }}
 {{- $templateCtx := index . 2 }}
 {{- $componentName := index . 3 }}
 
-{{/* Extract @ declarations */}}
+{{/* Extract directive declarations */}}
 {{- $pattern := `@(type|needs)\(.*?\)` -}}
-
 {{- $result := dict "type" nil "template" $template }}
 {{- $dependencies := list }}
 
+{{/* Process directives */}}
 {{- range $match := regexFindAll $pattern $template -1 -}}
   {{- $directive := trimAll "@()" (regexFind `@(type|needs)` $match) }}
   {{- $directiveArgs := trimAll "()" (regexFind `\(.*?\)` $match) }}
 
+  {{/* Handle type directive */}}
   {{- if eq $directive "type" }}
     {{- $_ := set $result "type" $directiveArgs }}
+  
+  {{/* Handle needs directive */}}
   {{- else if eq $directive "needs" }}
     {{- $parts := splitList " as " $directiveArgs -}}
     {{- $path := index $parts 0 -}}
-    {{/* .ComponentValues.<component> paths need to be evaluated with .Self as <component>  */}}
+    {{/* Handle ComponentValues paths */}}
     {{- $evalComponentName := $componentName }}
     {{- if hasPrefix "ComponentValues." (trimPrefix "." $path) }}
       {{- $evalComponentName = regexFind "ComponentValues[.]([^.]+)" $path | trimPrefix "ComponentValues." }}
     {{- end }}
     {{- $varName := index $parts 1 -}}
-    {{- $dependencies = append $dependencies (dict "key" $path "var" $varName "componentName" $evalComponentName "evalResult" nil) }}
+    {{- $dependencies = append $dependencies (dict 
+      "key" $path 
+      "var" $varName 
+      "componentName" $evalComponentName 
+      "evalResult" nil) }}
   {{- end }}
 {{- end -}}
 
+{{/* Resolve dependencies */}}
 {{- range $dep := $dependencies }}
+  {{/* Split path and normalize for caching */}}
   {{- $_ := (list $ $dep.key) | include "common.utils.splitPath" }}
   {{- $listPath := $.__common.fcallResult }}
   {{/* Replace Self with a normalized path, to use the listPath as a cache key */}}
   {{- $cacheKeyList := $listPath }}
   {{- if eq (index $listPath 0) "Self" }}
-  {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $cacheKeyList 1) }}
+    {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $listPath 1) }}
   {{- end }}
   {{- $cacheKey := join "@" $cacheKeyList }}
-  {{/* if value is already cached, use that */}}
+
+  {{/* Use cached value or resolve */}}
   {{- if hasKey $.__common.cache $cacheKey }}
     {{- $_ := set $dep "evalResult" (index $.__common.cache $cacheKey) }}
     {{- $_ := set $dep "evalFailed" false }}
   {{- else }}
+    {{/* Resolve and cache new value */}}
     {{- (list $ $templateCtx $listPath) | include "common.utils.getNestedValue" }}
     {{- if not $.__common.fcallResult.error }}
       {{- $value := $.__common.fcallResult.value }}
-      {{/* As $value can be a map with has at some nesting level a template value, we always evaluate */}}
+      {{/* Process nested templates */}}
       {{- $evalTemplateCtx := deepCopy $templateCtx }}
       {{- $_ := set $evalTemplateCtx "Self" (index $evalTemplateCtx.ComponentValues (printf "%s" $dep.componentName)) }}
       {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
@@ -492,6 +765,7 @@ Usage example:
   {{- end }}
 {{- end }}
 
+{{/* Build final template */}}
 {{- $resolvedVars := dict }}
 {{- $templateHeader := "" }}
 {{- range $dep := $dependencies }}
@@ -504,35 +778,70 @@ Usage example:
   {{- if $dep.evalFailed }}
   {{- fail (printf "Failed to evaluate %s on $s" $dep.var $dep.key) }}
   {{- else }}
-    {{ $_ := set $resolvedVars $dep.var $dep.evalResult }}
+    {{- $_ := set $resolvedVars $dep.var $dep.evalResult }}
   {{- end }}
 {{- end }}
 
+{{/* Clean and combine template */}}
 {{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|needs)\(.*?\)[\s\n]*` $template "" }}
 {{- $finalTemplate := printf "%s\n%s" $templateHeader $cleanTemplate }}
 
+{{/* Set result */}}
 {{- $_ := set $result "template" $finalTemplate }}
 {{- $_ := set $result "depsContext" $resolvedVars }}
-
 {{- $_ := set $.__common "fcallResult" $result }}
 {{- end -}}
 
 
 {{- define "common.utils.evaluateTemplate" -}}
+{{/*
+evaluateTemplate: Processes and evaluates templates with directives
+Purpose:
+- Handles template preprocessing (@type, @needs)
+- Evaluates processed template with context
+- Formats output based on type directive
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($template): Template string
+- Third argument ($templateCtx): Template context
+- Fourth argument ($componentName): Current component name
+
+Returns: (in $.__common.fcallResult)
+  {result: <evaluated_template>} or
+  <typed_value> if @type directive present
+
+Example:
+  Input:
+    template: |
+      @type(int)
+      @needs(Values.count as n)
+      {{ mul $n 2 }}
+    templateCtx:
+      Values:
+        count: 21
+  
+  Result: 42 (as integer)
+*/}}
 {{- $ = index . 0 }}
 {{- $template := index . 1 }}
 {{- $templateCtx := deepCopy (index . 2) -}}
 {{- $componentName := index . 3 -}}
 {{- $type := "" }}
-{{/* Process the template */}}
+
+{{/* Preprocess if directives present */}}
 {{- if (regexMatch `@(needs|type)\(.*?\)` $template )}}
 {{- (list $ $template $templateCtx $componentName) | include "common.utils.preprocessTemplate" -}}
 {{- $template = $.__common.fcallResult.template }}
 {{- $templateCtx = mergeOverwrite $templateCtx (dict "__deps" $.__common.fcallResult.depsContext) }}
 {{- $type = default "" $.__common.fcallResult.type }}
 {{- end }}
+
+{{/* Set Self context and evaluate */}}
 {{- $_ := set $templateCtx "Self" (index $templateCtx.ComponentValues $componentName) }}
 {{- $templatedVal := (tpl $template $templateCtx) }}
+
+{{/* Format result based on type */}}
 {{- if not (empty $type) }}
   {{- $_ := set $.__common "fcallResult" (printf "result: !!%s %s" $type $templatedVal | fromYaml) }}
 {{- else if contains "\n" (trim $templatedVal) }}
@@ -540,36 +849,94 @@ Usage example:
 {{- else }}
   {{- $_ := set $.__common "fcallResult" (printf "result: %s" $templatedVal | fromYaml) }}
 {{- end }}
-
 {{- end }}
 
 {{- define "common.utils.splitPath" -}}
+{{/*
+splitPath: Splits a dot notation path into a list of segments
+Purpose:
+- Converts dot notation paths into list of segments
+- Handles both dot notation and bracket notation
+- Preserves dots within bracketed segments
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($path): Path string to split
+
+Returns: (in $.__common.fcallResult)
+  List of path segments
+
+Example:
+  Input paths:
+    "foo.bar"           -> ["foo", "bar"]
+    "foo[bar.baz]"      -> ["foo", "bar.baz"]
+    "foo.bar[x.y.z].q"  -> ["foo", "bar", "x.y.z", "q"]
+
+Note:
+- Brackets are used to preserve dots in segment names
+- Leading dots are trimmed
+*/}}
 {{- $ := index . 0 }}
 {{- $path := index . 1 }}
 {{- $path = trimPrefix "." $path -}}
+
+{{/* Split path using regex pattern */}}
 {{- $matches := regexFindAll `\[([^\]]+)\]|([^.\[\]]+)` $path -1 -}}
 {{- $result := list -}}
+
+{{/* Process matches into segments */}}
 {{- range $match := $matches -}}
     {{- $key := regexReplaceAll `^\[(.+)\]$` $match "$1" -}}
     {{- $result = append $result $key -}}
 {{- end -}}
+
 {{- $_ := set $.__common "fcallResult" $result -}}
 {{- end -}}
 
 {{- define "common.utils.joinPath" -}}
+{{/*
+joinPath: Joins path segments into a dot notation path
+Purpose:
+- Combines list of segments into a single path string
+- Automatically handles bracketing for segments containing dots
+- Creates valid dot notation paths
+
+Arguments:
+- First argument ($): Global context
+- Second argument ($listKeys): List of path segments
+
+Returns: (in $.__common.fcallResult)
+  Combined path string
+
+Example:
+  Input segments:
+    ["foo", "bar"]        -> "foo.bar"
+    ["foo", "bar.baz"]    -> "foo[bar.baz]"
+    ["a", "b.c.d", "e"]   -> "a[b.c.d].e"
+
+Note:
+- Segments containing dots are automatically bracketed
+- Empty input results in empty string
+*/}}
 {{- $ := index . 0 }}
 {{- $listKeys := index . 1 }}
 {{- $result := "" -}}
+
+{{/* Process each segment */}}
 {{- range $key := $listKeys -}}
     {{- if contains "." $key -}}
+        {{/* Bracket segments containing dots */}}
         {{- $result = printf "%s[%s]" $result $key -}}
     {{- else -}}
         {{- if empty $result -}}
+            {{/* First segment */}}
             {{- $result = $key -}}
         {{- else -}}
+            {{/* Add dot separator for normal segments */}}
             {{- $result = printf "%s.%s" $result $key -}}
         {{- end -}}
     {{- end -}}
 {{- end -}}
+
 {{- $_ := set $.__common "fcallResult" $result -}}
 {{- end -}}
