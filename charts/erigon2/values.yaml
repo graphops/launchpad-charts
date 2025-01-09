@@ -84,15 +84,15 @@ erigonDefaults:
       ws: true
       ws.port: 8546
       ws.compression: true
-      private.api.addr: '{{ $rpcdaemonEnabled | ternary "0.0.0.0:9090" "127.0.0.1:9090" }} @uses(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
-      metrics: '{{ $metrics.enabled | ternary (print "__none") nil }} @uses(.Self.config.metrics as metrics)'
-      metrics.addr: '{{ $metrics.enabled | ternary (.addr | quote) nil }} @uses(.Self.config.metrics as metrics)'
-      metrics.port: '{{ $metrics.enabled | ternary (.port | int) nil }} @uses(.Self.config.metrics as metrics)'
-      pprof.addr: '{{ $pprof.enabled | ternary (.addr | quote) nil }} @uses(.Self.config.pprof as pprof)'
-      pprof.port: '{{ $pprof.enabled | ternary (.port | int) nil }} @uses(.Self.config.pprof as pprof)'
+      private.api.addr: '{{ $rpcdaemonEnabled | ternary "0.0.0.0:9090" "127.0.0.1:9090" }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
+      metrics: '{{ $metrics.enabled | ternary (print "__none") nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.addr: '{{ $metrics.enabled | ternary (.addr | quote) nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.port: '{{ $metrics.enabled | ternary (.port | int) nil }} @needs(.Self.config.metrics as metrics)'
+      pprof.addr: '{{ $pprof.enabled | ternary (.addr | quote) nil }} @needs(.Self.config.pprof as pprof)'
+      pprof.port: '{{ $pprof.enabled | ternary (.port | int) nil }} @needs(.Self.config.pprof as pprof)'
       p2p.protocol: |
         {{ join "," (keys $p2p.protocols) }}
-        @uses(.Self.config.p2p as p2p)
+        @needs(.Self.config.p2p as p2p)
       p2p.allowed-ports: |
         {{- if $p2p.enabled }}
         {{- $strList := list }}
@@ -107,13 +107,16 @@ erigonDefaults:
         {{- else }}
         nil
         {{- end }}
-        @uses(.Self.config.p2p as p2p)
+        @needs(.Self.config.p2p as p2p)
       port: |
-        {{ fail (.ComponentValues | toYaml) }}
+        {{- if $p2p.enabled }}
         {{ $allowedPorts | splitList "," | first }}
-        @requires(.Self.config.args[p2p.allowed-ports] as allowedPorts)
-        @if(.Self.config.p2p.enabled)
-      nat: '{{ $p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }} @uses(.Self.config.p2p as p2p)'
+        {{- else }}
+        nil
+        {{- end }}
+        @needs(.Self.config.args[p2p.allowed-ports] as allowedPorts)
+        @needs(.Self.config.p2p as p2p)
+      nat: '{{ $p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }} @needs(.Self.config.p2p as p2p)'
       torrent.port:
       torrent.download.slots: 6
       torrent.download.rate: 100mb
@@ -124,29 +127,29 @@ erigonDefaults:
       spec:
         ports: &svcPorts
           grpc-erigon:
-            __enabled: '{{ $rpcdaemonEnabled | toYaml }} @uses(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
+            __enabled: '{{ $rpcdaemonEnabled | toYaml }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
             name: grpc-erigon
             port: 9090
             protocol: TCP
           http-metrics:
-            __enabled: '{{ $metrics.enabled }} @uses(.Self.config.metrics as metrics)'
+            __enabled: '{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)'
             name: http-metrics
-            port: '{{ $metrics.port | int }} @uses(.Self.config.metrics as metrics)'
+            port: '{{ $metrics.port | int }} @needs(.Self.config.metrics as metrics)'
             protocol: TCP
           http-jsonrpc:
-            __enabled: '{{ index $args "http.enabled" }} @uses(.Self.config.args as args)'
+            __enabled: '{{ index $args "http.enabled" }} @needs(.Self.config.args as args)'
             name: http-jsonrpc
-            port: '{{ index $args "http.port" | int }} @uses(.Self.config.args as args)'
+            port: '{{ index $args "http.port" | int }} @needs(.Self.config.args as args)'
             protocol: TCP
           ws-rpc:
-            __enabled: '{{ index $args "ws" }} @uses(.Self.config.args as args)'
+            __enabled: '{{ index $args "ws" }} @needs(.Self.config.args as args)'
             name: ws-rpc
-            port: '{{ index $args "ws.port" | int }} @uses(.Self.config.args as args)'
+            port: '{{ index $args "ws.port" | int }} @needs(.Self.config.args as args)'
             protocol: TCP
           http-engineapi:
             __enabled: true
             name: http-engineapi
-            port: '{{ index $args "authrpc.port" | int }} @uses(.Self.config.args as args)'
+            port: '{{ index $args "authrpc.port" | int }} @needs(.Self.config.args as args)'
             protocol: TCP
     headless:
       __enabled: false
@@ -159,7 +162,7 @@ erigonDefaults:
       spec:
         ports:
           p2p-udp-67:
-            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "67") }} @uses(.Self.config.p2p as p2p)'
+            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "67") }} @needs(.Self.config.p2p as p2p)'
             name: p2p-udp-67
             targetPort: null
             port: 30301
@@ -169,10 +172,10 @@ erigonDefaults:
               {{- else }}
               null
               {{- end }}
-              @uses(.Self.config.p2p as p2p)
+              @needs(.Self.config.p2p as p2p)
             protocol: UDP
           p2p-tcp-67:
-            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "67") }} @uses(.Self.config.p2p as p2p)'
+            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "67") }} @needs(.Self.config.p2p as p2p)'
             name: p2p-tcp-67
             targetPort: null
             port: 30301
@@ -182,10 +185,10 @@ erigonDefaults:
               {{- else }}
               null
               {{- end }}
-              @uses(.Self.config.p2p as p2p)
+              @needs(.Self.config.p2p as p2p)
             protocol: TCP
           p2p-udp-68:
-            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "68") }} @uses(.Self.config.p2p as p2p)'
+            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "68") }} @needs(.Self.config.p2p as p2p)'
             name: p2p-udp-68
             targetPort: null
             port: 30302
@@ -195,10 +198,10 @@ erigonDefaults:
               {{- else }}
               null
               {{- end }}
-              @uses(.Self.config.p2p as p2p)
+              @needs(.Self.config.p2p as p2p)
             protocol: UDP
           p2p-tcp-68:
-            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "68") }} @uses(.Self.config.p2p as p2p)'
+            __enabled: '{{ and ($p2p.enabled) (hasKey $p2p.protocols "68") }} @needs(.Self.config.p2p as p2p)'
             name: p2p-tcp-68
             targetPort: null
             port: 30302
@@ -208,7 +211,7 @@ erigonDefaults:
               {{- else }}
               null
               {{- end }}
-              @uses(.Self.config.p2p as p2p)
+              @needs(.Self.config.p2p as p2p)
             protocol: TCP
           torrent-udp:
             __enabled: false
@@ -270,36 +273,36 @@ erigonDefaults:
                   exec erigon \
                   {{ join " \\\n" (initial $argsList) }}
                   {{ (last $argsList) }}
-                  @uses(.Self.config.args as args)
-                  @uses(.Self.config.argsOrder as argsOrder)
+                  @needs(.Self.config.args as args)
+                  @needs(.Self.config.argsOrder as argsOrder)
               ports:
                 grpc-erigon:
-                  __enabled: '{{ $rpcdaemonEnabled }} @uses(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
+                  __enabled: '{{ $rpcdaemonEnabled }} @needs(.ComponentValues.rpcdaemon.__enabled as rpcdaemonEnabled)'
                   name: grpc-erigon
                   containerPort: |
                     {{- $privateAddr := default nil (index $args "private.api.addr") }}
                     {{- if $privateAddr }}{{ $privateAddr | splitList ":" | last | int }}{{ else }}{{ nil }}{{ end }}
-                    @uses(.ComponentValues.statefulNode.config.args as args)
+                    @needs(.ComponentValues.statefulNode.config.args as args)
                   protocol: TCP
                 http-metrics:
-                  __enabled: '{{ $metrics.enabled }} @uses(.Self.config.metrics as metrics)'
+                  __enabled: '{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)'
                   name: http-metrics
-                  containerPort: '{{ $metrics.port | int }} @uses(.Self.config.metrics as metrics)'
+                  containerPort: '{{ $metrics.port | int }} @needs(.Self.config.metrics as metrics)'
                   protocol: TCP
                 http-jsonrpc:
-                  __enabled: '{{ index $args "http.enabled" }} @uses(.Self.config.args as args)'
+                  __enabled: '{{ index $args "http.enabled" }} @needs(.Self.config.args as args)'
                   name: http-jsonrpc
-                  containerPort: '{{ index $args "http.port" }} @uses(.Self.config.args as args)'
+                  containerPort: '{{ index $args "http.port" }} @needs(.Self.config.args as args)'
                   protocol: TCP
                 ws-rpc:
-                  __enabled: '{{ index $args "ws" }} @uses(.Self.config.args as args)'
+                  __enabled: '{{ index $args "ws" }} @needs(.Self.config.args as args)'
                   name: ws-rpc
-                  containerPort: '{{ index $args "ws.port" }} @uses(.Self.config.args as args)'
+                  containerPort: '{{ index $args "ws.port" }} @needs(.Self.config.args as args)'
                   protocol: TCP
                 http-engineapi:
                   __enabled: true
                   name: http-engineapi
-                  containerPort: '{{ index $args "authrpc.port" }} @uses(.Self.config.args as args)'
+                  containerPort: '{{ index $args "authrpc.port" }} @needs(.Self.config.args as args)'
                   protocol: TCP
               volumeMounts:
                 storage:
