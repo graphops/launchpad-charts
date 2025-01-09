@@ -1,196 +1,237 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "github>graphops/renovate-config"
-    ],
-
-    "separateMajorMinor": false,
-
-    "commitBodyTable": true,
-
-    "semanticCommitType": "feat",
-
-    "ignorePaths": [
-    ],
-
-    "ignoreDeps": [
-    ],
-
-    "pinDigests": true,
-
-    "enabledManagers": ["helm-values", "helmv3", "regex"],
-
-    "regexManagers": [
-      {
-        "datasourceTemplate": "docker",
-        "fileMatch": ["^charts/.*/Chart\\.yaml$"],
-        "matchStrings": [
-          "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)\""
-        ]
-      }
-    ],
-
-    "packageRules": [
-      // thorax/erigon released a few versions following YYYY.MM.DD versioning pattern
-      // we want to exclude those
-      {
-        "matchPackageNames": ["erigontech/erigon"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$",
-        "allowedVersions": "<200"
-      },
-      {
-        "matchPackageNames": ["statusim/nimbus-eth2"],
-        "versioning": "regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$"
-      },
-      {
-        "matchPackageNames": ["ghcr.io/graphprotocol/indexer-service-rs"],
-        "allowedVersions": "!/\\-rc.*$/",
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-rc\\.(?<prerelease>\\d+))?$"
-      },
-      {
-        "matchPackageNames": ["offchainlabs/arb-node", "offchainlabs/nitro-node"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>[a-zA-Z0-9]+))?$"
-      },
-      {
-        "matchPackageNames": ["nethermind/nethermind"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-unstable)?$"
-      },
-      {
-        "matchPackageNames": ["ghcr.io/graphops/listener-radio"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$",
-        "ignoreUnstable": false
-      },
-      {
-        "matchPackageNames": ["ghcr.io/graphops/subgraph-radio"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$",
-        "ignoreUnstable": false
-      },
-      {
-        "matchPackageNames": ["ghcr.io/graphprotocol/availability-oracle"],
-        "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$",
-        "ignoreUnstable": false
-      },
-      // Group our dependencies
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/arbitrum*/**"],
-        "groupName": "Arbitrum dependencies",
-        "groupSlug": "arbitrum",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/avalanche/**"],
-        "groupName": "Avalanche dependencies",
-        "groupSlug": "avalanche",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": "",
-        "enabled": false
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/celo/**"],
-        "groupName": "Celo dependencies",
-        "groupSlug": "celo",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/erigon/**"],
-        "groupName": "Erigon dependencies",
-        "groupSlug": "erigon",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/graph-*/**"],
-        "groupName": "Graph dependencies",
-        "groupSlug": "graph",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/heimdall/**"],
-        "groupName": "Heimdall dependencies",
-        "groupSlug": "heimdall",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/lighthouse/**"],
-        "groupName": "Lighthouse dependencies",
-        "groupSlug": "lighthouse",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/nethermind/**"],
-        "groupName": "Nethermind dependencies",
-        "groupSlug": "nethermind",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/nimbus/**"],
-        "groupName": "Nimbus dependencies",
-        "groupSlug": "nimbus",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/openebs-*/**"],
-        "groupName": "OpenEBS dependencies",
-        "groupSlug": "openebs",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/proxyd/**"],
-        "groupName": "Proxyd dependencies",
-        "groupSlug": "proxyd",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/subgraph-radio/**"],
-        "groupName": "Subgraph-radio dependencies",
-        "groupSlug": "subgraphRadio",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/listener-radio/**"],
-        "groupName": "listener-radio dependencies",
-        "groupSlug": "listenerRadio",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      },
-      {
-        "description": "Group dependencies",
-        "matchPaths": ["charts/subgraph-availability-oracle/**"],
-        "groupName": "Subgraph-availability-oracle dependencies",
-        "groupSlug": "subgraphAvailabilityOracle",
-        "commitMessageTopic": "{{groupSlug}} dependencies",
-        "commitMessageExtra": ""
-      }
-    ],
-
-    "postUpgradeTasks": {
-      "commands": [
-        "bash scripts/renovate.sh"
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'github>graphops/renovate-config',
+  ],
+  separateMajorMinor: false,
+  commitBodyTable: true,
+  semanticCommitType: 'feat',
+  ignorePaths: [],
+  ignoreDeps: [],
+  pinDigests: true,
+  enabledManagers: [
+    'helm-values',
+    'helmv3',
+    'custom.regex',
+  ],
+  customManagers: [
+    {
+      customType: 'regex',
+      datasourceTemplate: 'docker',
+      fileMatch: [
+        '^charts/.*/Chart\\.yaml$',
       ],
-      "fileFilters": ["charts/**/README.md", "charts/**/README.md.gotmpl", "charts/**/Chart.yaml"],
-      "executionMode": "update"
-    }
+      matchStrings: [
+        '#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\"?(?<currentValue>[\\w+\\.\\-]*)"',
+      ],
+    },
+  ],
+  packageRules: [
+    {
+      matchPackageNames: [
+        'erigontech/erigon',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$',
+      allowedVersions: '<200',
+    },
+    {
+      matchPackageNames: [
+        'statusim/nimbus-eth2',
+      ],
+      versioning: 'regex:^(?<compatibility>.*)-v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)?$',
+    },
+    {
+      matchPackageNames: [
+        'ghcr.io/graphprotocol/indexer-service-rs',
+      ],
+      allowedVersions: '!/\\-rc.*$/',
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-rc\\.(?<prerelease>\\d+))?$',
+    },
+    {
+      matchPackageNames: [
+        'offchainlabs/arb-node',
+        'offchainlabs/nitro-node',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<build>[a-zA-Z0-9]+))?$',
+    },
+    {
+      matchPackageNames: [
+        'nethermind/nethermind',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-unstable)?$',
+    },
+    {
+      matchPackageNames: [
+        'ghcr.io/graphops/listener-radio',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$',
+      ignoreUnstable: false,
+    },
+    {
+      matchPackageNames: [
+        'ghcr.io/graphops/subgraph-radio',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$',
+      ignoreUnstable: false,
+    },
+    {
+      matchPackageNames: [
+        'ghcr.io/graphprotocol/availability-oracle',
+      ],
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-alpha\\.(?<prerelease>\\d+))?$',
+      ignoreUnstable: false,
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/arbitrum*/**',
+      ],
+      groupName: 'Arbitrum dependencies',
+      groupSlug: 'arbitrum',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/avalanche/**',
+      ],
+      groupName: 'Avalanche dependencies',
+      groupSlug: 'avalanche',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+      enabled: false,
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/celo/**',
+      ],
+      groupName: 'Celo dependencies',
+      groupSlug: 'celo',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/erigon/**',
+      ],
+      groupName: 'Erigon dependencies',
+      groupSlug: 'erigon',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/graph-*/**',
+      ],
+      groupName: 'Graph dependencies',
+      groupSlug: 'graph',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/heimdall/**',
+      ],
+      groupName: 'Heimdall dependencies',
+      groupSlug: 'heimdall',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/lighthouse/**',
+      ],
+      groupName: 'Lighthouse dependencies',
+      groupSlug: 'lighthouse',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/nethermind/**',
+      ],
+      groupName: 'Nethermind dependencies',
+      groupSlug: 'nethermind',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/nimbus/**',
+      ],
+      groupName: 'Nimbus dependencies',
+      groupSlug: 'nimbus',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/openebs-*/**',
+      ],
+      groupName: 'OpenEBS dependencies',
+      groupSlug: 'openebs',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/proxyd/**',
+      ],
+      groupName: 'Proxyd dependencies',
+      groupSlug: 'proxyd',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/subgraph-radio/**',
+      ],
+      groupName: 'Subgraph-radio dependencies',
+      groupSlug: 'subgraphRadio',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/listener-radio/**',
+      ],
+      groupName: 'listener-radio dependencies',
+      groupSlug: 'listenerRadio',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/subgraph-availability-oracle/**',
+      ],
+      groupName: 'Subgraph-availability-oracle dependencies',
+      groupSlug: 'subgraphAvailabilityOracle',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+  ],
+  postUpgradeTasks: {
+    commands: [
+      'bash scripts/renovate.sh',
+    ],
+    fileFilters: [
+      'charts/**/README.md',
+      'charts/**/README.md.gotmpl',
+      'charts/**/Chart.yaml',
+    ],
+    executionMode: 'update',
+  },
 }
