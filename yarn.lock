@@ -23,7 +23,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/cli@npm:^19.5.0":
+"@commitlint/cli@npm:^19.6.1":
   version: 19.6.1
   resolution: "@commitlint/cli@npm:19.6.1"
   dependencies:
@@ -40,7 +40,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commitlint/config-conventional@npm:^19.5.0":
+"@commitlint/config-conventional@npm:^19.6.0":
   version: 19.6.0
   resolution: "@commitlint/config-conventional@npm:19.6.0"
   dependencies:
@@ -304,10 +304,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "charts@workspace:."
   dependencies:
-    "@commitlint/cli": "npm:^19.5.0"
-    "@commitlint/config-conventional": "npm:^19.5.0"
-    git-cliff: "npm:^2.5.0"
-    husky: "npm:^9.1.5"
+    "@commitlint/cli": "npm:^19.6.1"
+    "@commitlint/config-conventional": "npm:^19.6.0"
+    git-cliff: "npm:^2.7.0"
+    husky: "npm:^9.1.7"
     q: "npm:^1.5.1"
   languageName: unknown
   linkType: soft
@@ -493,9 +493,9 @@ __metadata:
   linkType: hard
 
 "fast-uri@npm:^3.0.1":
-  version: 3.0.3
-  resolution: "fast-uri@npm:3.0.3"
-  checksum: 10/92487c75848b03edc45517fca0148287d342c30818ce43d556391db774d8e01644fb6964315a3336eec5a90f301b218b21f71fb9b2528ba25757435a20392c95
+  version: 3.0.5
+  resolution: "fast-uri@npm:3.0.5"
+  checksum: 10/21bd8d523c32d16242a6037ae440ddc1905b6b045fdb971e8d8b6443a0ddde3fbce59ca3e6a4a79e5afadcbed79756cf9cb5f9f96a211e1b67c0255315ce12ac
   languageName: node
   linkType: hard
 
@@ -566,7 +566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"git-cliff@npm:^2.5.0":
+"git-cliff@npm:^2.7.0":
   version: 2.7.0
   resolution: "git-cliff@npm:2.7.0"
   dependencies:
@@ -625,7 +625,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"husky@npm:^9.1.5":
+"husky@npm:^9.1.7":
   version: 9.1.7
   resolution: "husky@npm:9.1.7"
   bin:
