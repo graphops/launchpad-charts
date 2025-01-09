@@ -204,6 +204,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.3.2-9d70997
+      created: "2025-01-09T23:30:36Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 5564e84d5004b3abc1c9c12fdcfc3c9d9df1fff1ab658f53ac7d85aff197b727
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.5.2-canary.1/arbitrum-nitro-0.5.2-canary.1.tgz
+      version: 0.5.2-canary.1
+    - apiVersion: v2
       appVersion: v3.2.1-d81324d
       created: "2024-10-17T19:47:39Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -1536,6 +1546,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.61.0
+      created: "2025-01-09T23:30:45Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: d7439014771bb3367d4e807bca3420ce7596fb277b64052d7f6d2822d5120bcf
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.11-canary.1/erigon-0.10.11-canary.1.tgz
+      version: 0.10.11-canary.1
     - apiVersion: v2
       appVersion: v2.60.10
       created: "2024-11-22T17:59:18Z"
@@ -8819,4 +8839,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2025-01-09T22:23:33.156210549Z"
+generated: "2025-01-09T23:33:33.752961464Z"
