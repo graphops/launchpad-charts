@@ -698,34 +698,70 @@ Cache:
 {{- $componentName := index . 3 }}
 
 {{/* Extract directive declarations */}}
-{{- $pattern := `@(type|needs)\(.*?\)` -}}
+{{- $pattern := `@(type|uses|requires)\(.*?\)` -}}
 {{- $result := dict "type" nil "template" $template }}
 {{- $dependencies := list }}
 
 {{/* Process directives */}}
 {{- range $match := regexFindAll $pattern $template -1 -}}
-  {{- $directive := trimAll "@()" (regexFind `@(type|needs)` $match) }}
+  {{- $directive := trimAll "@()" (regexFind `@(type|uses|requires)` $match) }}
   {{- $directiveArgs := trimAll "()" (regexFind `\(.*?\)` $match) }}
 
   {{/* Handle type directive */}}
   {{- if eq $directive "type" }}
     {{- $_ := set $result "type" $directiveArgs }}
   
-  {{/* Handle needs directive */}}
-  {{- else if eq $directive "needs" }}
-    {{- $parts := splitList " as " $directiveArgs -}}
-    {{- $path := index $parts 0 -}}
+  {{/* Handle uses and requires directives */}}
+  {{- else }}
+    {{/* Split arguments by comma, handling JSON objects carefully */}}
+    {{- $args := list }}
+    {{- $current := "" }}
+    {{- $depth := 0 }}
+    {{- range $char := splitList "" $directiveArgs }}
+      {{- if eq $char "{" }}
+        {{- $depth = add $depth 1 }}
+      {{- else if eq $char "}" }}
+        {{- $depth = sub $depth 1 }}
+      {{- else if and (eq $char ",") (eq $depth 0) }}
+        {{- $args = append $args (trim $current) }}
+        {{- $current = "" }}
+        {{- continue }}
+      {{- end }}
+      {{- $current = printf "%s%s" $current $char }}
+    {{- end }}
+    {{- if not (empty $current) }}
+      {{- $args = append $args (trim $current) }}
+    {{- end }}
+    {{- $pathAndVar := splitList " as " (index $args 0) }}
+    {{- $path := index $pathAndVar 0 }}
+    {{- $varName := index $pathAndVar 1 }}
+    
+    {{/* Parse optional parameters */}}
+    {{- $defaultValue := nil }}
+    {{- $errorMsg := "" }}
+    {{- range $arg := slice $args 1 }}
+      {{- if hasPrefix "default=" $arg }}
+        {{- $defaultJson := trimPrefix "default=" $arg }}
+        {{- $defaultValue = printf "{\"value\":%s}" $defaultJson | fromJson | get "value" }}
+      {{- else if hasPrefix "msg=" $arg }}
+        {{- $errorMsg = trimPrefix "msg=" $arg }}
+      {{- end }}
+    {{- end }}
+
     {{/* Handle ComponentValues paths */}}
     {{- $evalComponentName := $componentName }}
     {{- if hasPrefix "ComponentValues." (trimPrefix "." $path) }}
       {{- $evalComponentName = regexFind "ComponentValues[.]([^.]+)" $path | trimPrefix "ComponentValues." }}
     {{- end }}
-    {{- $varName := index $parts 1 -}}
+
     {{- $dependencies = append $dependencies (dict 
       "key" $path 
       "var" $varName 
       "componentName" $evalComponentName 
-      "evalResult" nil) }}
+      "evalResult" nil
+      "directive" $directive
+      "default" $defaultValue
+      "errorMsg" $errorMsg) }}
   {{- end }}
 {{- end -}}
 
@@ -759,8 +795,19 @@ Cache:
       {{/* Save resolved value in cache */}}
       {{- $_ := set $.__common.cache $cacheKey $dep.evalResult }}
     {{- else }}
-      {{- fail (printf "Failed to evaluate %s on %s, getting paths %v" $dep.var $dep.key $listPath) }}
-      {{- $_ := set $dep "evalFailed" true }}
+      {{- if eq $dep.directive "requires" }}
+        {{- $errMsg := printf "Failed to evaluate required path %s" $dep.key }}
+        {{- if not (empty $dep.errorMsg) }}
+          {{- $errMsg = printf "%s: %s" $errMsg $dep.errorMsg }}
+        {{- end }}
+        {{- fail $errMsg }}
+      {{- else }}
+        {{/* For uses directive, set default value */}}
+        {{- $_ := set $dep "evalResult" $dep.default }}
+        {{- $_ := set $dep "evalFailed" false }}
+        {{/* Cache the default value */}}
+        {{- $_ := set $.__common.cache $cacheKey $dep.default }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -783,7 +830,7 @@ Cache:
 {{- end }}
 
 {{/* Clean and combine template */}}
-{{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|needs)\(.*?\)[\s\n]*` $template "" }}
+{{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|uses|requires)\(.*?\)[\s\n]*` $template "" }}
 {{- $finalTemplate := printf "%s\n%s" $templateHeader $cleanTemplate }}
 
 {{/* Set result */}}
@@ -830,7 +877,7 @@ Example:
 {{- $type := "" }}
 
 {{/* Preprocess if directives present */}}
-{{- if (regexMatch `@(needs|type)\(.*?\)` $template )}}
+{{- if (regexMatch `@(type|uses|requires)\(.*?\)` $template )}}
 {{- (list $ $template $templateCtx $componentName) | include "common.utils.preprocessTemplate" -}}
 {{- $template = $.__common.fcallResult.template }}
 {{- $templateCtx = mergeOverwrite $templateCtx (dict "__deps" $.__common.fcallResult.depsContext) }}
