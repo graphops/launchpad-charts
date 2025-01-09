@@ -697,54 +697,81 @@ Cache:
 {{- $templateCtx := index . 2 }}
 {{- $componentName := index . 3 }}
 
-{{/* Extract directive declarations */}}
-{{- $pattern := `@(type|needs)\(.*?\)` -}}
+{{/* Extract @ declarations */}}
+{{- $pattern := `@(type|requires|uses|if|ifnot)\(.*?\)` -}}
+
 {{- $result := dict "type" nil "template" $template }}
-{{- $dependencies := list }}
+{{- $directives := list }}
+{{- $hasConditional := false }}
 
 {{/* Process directives */}}
 {{- range $match := regexFindAll $pattern $template -1 -}}
-  {{- $directive := trimAll "@()" (regexFind `@(type|needs)` $match) }}
+  {{- $directive := trimAll "@()" (regexFind `@(type|requires|uses|if|ifnot)` $match) }}
   {{- $directiveArgs := trimAll "()" (regexFind `\(.*?\)` $match) }}
 
   {{/* Handle type directive */}}
   {{- if eq $directive "type" }}
     {{- $_ := set $result "type" $directiveArgs }}
-  
-  {{/* Handle needs directive */}}
-  {{- else if eq $directive "needs" }}
-    {{- $parts := splitList " as " $directiveArgs -}}
+  {{- else if or (eq $directive "if") (eq $directive "ifnot") }}
+    {{- if $hasConditional }}
+      {{- fail "Only one @if or @ifnot directive is allowed per template" }}
+    {{- end }}
+    {{- $hasConditional = true }}
+  {{- end }}
+    {{- $parts := splitList "," $directiveArgs -}}
     {{- $path := index $parts 0 -}}
-    {{/* Handle ComponentValues paths */}}
+    {{- $directiveInfo := dict "key" $path "componentName" $componentName "evalResult" nil "directive" $directive "default" nil -}}
+    {{- range $part := slice $parts 1 }}
+      {{- if hasPrefix "default=" $part }}
+        {{- $_ := set $directiveInfo "default" (trimPrefix "default=" $part) }}
+      {{- else if hasPrefix "error=" $part }}
+        {{- $_ := set $directiveInfo "errorMsg" (trimPrefix "error=" $part) }}
+      {{- end }}
+    {{- end }}
+    {{- $directives = append $directives $directiveInfo }}
+  {{- else if or (eq $directive "requires") (eq $directive "uses") }}
+    {{- $parts := splitList "," $directiveArgs -}}
+    {{- $pathParts := splitList " as " (index $parts 0) -}}
+    {{- $path := index $pathParts 0 -}}
+    {{- $varName := index $pathParts 1 -}}
+    {{/* .ComponentValues.<component> paths need to be evaluated with .Self as <component>  */}}
     {{- $evalComponentName := $componentName }}
     {{- if hasPrefix "ComponentValues." (trimPrefix "." $path) }}
       {{- $evalComponentName = regexFind "ComponentValues[.]([^.]+)" $path | trimPrefix "ComponentValues." }}
     {{- end }}
-    {{- $varName := index $parts 1 -}}
-    {{- $dependencies = append $dependencies (dict 
-      "key" $path 
-      "var" $varName 
-      "componentName" $evalComponentName 
-      "evalResult" nil) }}
+    {{- $directiveInfo := dict "key" $path "var" $varName "componentName" $evalComponentName "evalResult" nil "directive" $directive -}}
+    {{- if eq $directive "requires" }}
+      {{- range $part := slice $parts 1 }}
+        {{- if hasPrefix "msg=" $part }}
+          {{- $_ := set $directiveInfo "errorMsg" (trimPrefix "msg=" $part) }}
+        {{- end }}
+      {{- end }}
+    {{- else }}
+      {{- range $part := slice $parts 1 }}
+        {{- if hasPrefix "default=" $part }}
+          {{- $_ := set $directiveInfo "default" (trimPrefix "default=" $part) }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- $directives = append $directives $directiveInfo }}
   {{- end }}
 {{- end -}}
 
-{{/* Resolve dependencies */}}
-{{- range $dep := $dependencies }}
+{{/* Resolve directives */}}
+{{- range $dir := $directives }}
   {{/* Split path and normalize for caching */}}
-  {{- $_ := (list $ $dep.key) | include "common.utils.splitPath" }}
+  {{- $_ := (list $ $dir.key) | include "common.utils.splitPath" }}
   {{- $listPath := $.__common.fcallResult }}
   {{/* Replace Self with a normalized path, to use the listPath as a cache key */}}
   {{- $cacheKeyList := $listPath }}
   {{- if eq (index $listPath 0) "Self" }}
-    {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $listPath 1) }}
+  {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $cacheKeyList 1) }}
   {{- end }}
   {{- $cacheKey := join "@" $cacheKeyList }}
-
-  {{/* Use cached value or resolve */}}
+  {{/* if value is already cached, use that */}}
   {{- if hasKey $.__common.cache $cacheKey }}
-    {{- $_ := set $dep "evalResult" (index $.__common.cache $cacheKey) }}
-    {{- $_ := set $dep "evalFailed" false }}
+    {{- $_ := set $dir "evalResult" (index $.__common.cache $cacheKey) }}
+    {{- $_ := set $dir "evalFailed" false }}
   {{- else }}
     {{/* Resolve and cache new value */}}
     {{- (list $ $templateCtx $listPath) | include "common.utils.getNestedValue" }}
@@ -752,15 +779,69 @@ Cache:
       {{- $value := $.__common.fcallResult.value }}
       {{/* Process nested templates */}}
       {{- $evalTemplateCtx := deepCopy $templateCtx }}
-      {{- $_ := set $evalTemplateCtx "Self" (index $evalTemplateCtx.ComponentValues (printf "%s" $dep.componentName)) }}
+      {{- $_ := set $evalTemplateCtx "Self" (index $evalTemplateCtx.ComponentValues (printf "%s" $dir.componentName)) }}
       {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
-      {{- $_ := set $dep "evalResult" $.__common.fcallResult.result }}
-      {{- $_ := set $dep "evalFailed" false }}
+      {{- $_ := set $dir "evalResult" $.__common.fcallResult.result }}
+      {{- $_ := set $dir "evalFailed" false }}
       {{/* Save resolved value in cache */}}
-      {{- $_ := set $.__common.cache $cacheKey $dep.evalResult }}
+      {{- $_ := set $.__common.cache $cacheKey $dir.evalResult }}
+    {{- end }}
+  {{- end }}
+  {{/* Now process the directives, starting with the ones that determine output bypassing template */}} 
+  {{- $resolved := false }}
+  {{/* For if/ifnot directives, validate boolean and check failing conditions */}}
+  {{- if or (eq $dir.directive "if") (eq $dir.directive "ifnot") }}
+    {{- if $dir.evalFailed }}
+      {{- if (eq $dir.default nil) }}
+        {{- fail (printf "Path %s not defined and no default provided, got %v" $dir.key $dir.evalResult) }}
+      {{- else }}
+        {{- if eq $dir.default "true" }}
+          {{- $_ := set $dir "evalResult" true }}
+        {{- else if eq $dir.default "false" }}
+          {{- $_ := set $dir "evalResult" false }}
+        {{- else }}
+          {{- fail (printf "Default value for %s must be 'true' or 'false', got %v" $dir.key $dir.default) }}
+        {{- end }}
+      {{- end }}
+    {{- else if not (kindIs "bool" $dir.evalResult) }}
+      {{- fail (printf "Path %s must evaluate to a boolean, got %v" $dir.key $dir.evalResult) }}
+    {{- end }}
+    {{- if eq $dir.directive "if" }}
+      {{- if not $dir.evalResult }}
+        {{- $_ := set $result "template" "{{ nil }}" }}
+        {{- $resolved = true }}
+      {{- end }}
     {{- else }}
-      {{- fail (printf "Failed to evaluate %s on %s, getting paths %v" $dep.var $dep.key $listPath) }}
-      {{- $_ := set $dep "evalFailed" true }}
+      {{- if $dir.evalResult }}
+        {{- $_ := set $result "template" "{{ nil }}" }}
+        {{- $resolved = true }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if $resolved }}
+    {{/* Set result */}}
+    {{- $_ := set $result "template" $dir.template }}
+    {{- $_ := set $result "depsContext" dict }}
+    {{- $_ := set $.__common "fcallResult" $result }}
+  {{- else }}
+  {{/* Handle the remaining directives */}}
+    {{- if eq $dir.directive "requires" }}
+      {{- if $dir.evalFailed }}
+        {{- $errorMsg := "" }}
+        {{- if hasKey $dir "errorMsg" }}
+          {{- $errorMsg = printf ": %s" $dir.errorMsg }}
+        {{- end }}
+        {{- fail (printf "Failed to evaluate %s on %s, getting paths %v%s" $dir.var $dir.key $listPath $errorMsg) }}
+      {{- end }}
+    {{- else if eq $dir.directive "uses" }}
+      {{- if $dir.evalFailed }}
+        {{- if hasKey $dir "default" }}
+          {{- $_ := set $dir "evalResult" ($dir.default | fromJson) }}
+          {{- $_ := set $dir "evalFailed" false }}
+        {{- else }}
+          {{- $_ := set $dir "evalResult" nil }}
+        {{- end }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -768,27 +849,28 @@ Cache:
 {{/* Build final template */}}
 {{- $resolvedVars := dict }}
 {{- $templateHeader := "" }}
-{{- range $dep := $dependencies }}
-  {{- $header := (printf "{{- $%s := index .__deps \"%s\" -}}" $dep.var $dep.var) }}
-  {{- if not (empty $templateHeader) }}
-    {{- $templateHeader = printf "%s\n%s" $templateHeader $header}}
-  {{- else }}
-    {{- $templateHeader = $header }}
-  {{- end }}
-  {{- if $dep.evalFailed }}
-  {{- fail (printf "Failed to evaluate %s on $s" $dep.var $dep.key) }}
-  {{- else }}
-    {{- $_ := set $resolvedVars $dep.var $dep.evalResult }}
+{{- range $dir := $directives }}
+  {{- if and (not $dir.evalFailed) (regexMatch "^(requires|uses)$" $dir.directive) }}
+    {{- $header := (printf "{{- $%s := index .__deps \"%s\" -}}" $dir.var $dir.var) }}
+    {{- if or (eq $dir.var nil) (eq $dir.var "null") }}
+      {{- fail "var is nil" }}
+    {{- end }}
+    {{- if not (empty $templateHeader) }}
+      {{- $templateHeader = printf "%s\n%s" $templateHeader $header}}
+    {{- else }}
+      {{- $templateHeader = $header }}
+    {{- end }}
+    {{ $_ := set $resolvedVars $dir.var $dir.evalResult }}
   {{- end }}
 {{- end }}
 
-{{/* Clean and combine template */}}
-{{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|needs)\(.*?\)[\s\n]*` $template "" }}
+{{- $cleanTemplate := regexReplaceAll `[\n\s]*@(type|requires|uses|if|ifnot)\(.*?\)[\s\n]*` $template "" }}
 {{- $finalTemplate := printf "%s\n%s" $templateHeader $cleanTemplate }}
 
 {{/* Set result */}}
 {{- $_ := set $result "template" $finalTemplate }}
 {{- $_ := set $result "depsContext" $resolvedVars }}
+
 {{- $_ := set $.__common "fcallResult" $result }}
 {{- end -}}
 
@@ -830,7 +912,7 @@ Example:
 {{- $type := "" }}
 
 {{/* Preprocess if directives present */}}
-{{- if (regexMatch `@(needs|type)\(.*?\)` $template )}}
+{{- if (regexMatch `@(requires|uses|type|if|ifnot)\(.*?\)` $template )}}
 {{- (list $ $template $templateCtx $componentName) | include "common.utils.preprocessTemplate" -}}
 {{- $template = $.__common.fcallResult.template }}
 {{- $templateCtx = mergeOverwrite $templateCtx (dict "__deps" $.__common.fcallResult.depsContext) }}
