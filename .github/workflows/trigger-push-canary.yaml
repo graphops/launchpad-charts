@@ -37,6 +37,7 @@ jobs:
         id: list-release-tags
         shell: bash
         run: |
+          set -xe
           tags=()
           declare -A release_streams=()
           for chart_dir in ${{ steps.list-changed-charts.outputs.all_modified_files }}; do
