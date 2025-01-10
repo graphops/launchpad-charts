@@ -659,6 +659,29 @@
             "match": "any",
             "type": "exclude"
           }
+        },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "blockNumber": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "deployment": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "senderRatio": {
+                "aggregations": ["last"],
+                "operation": "aggregate"
+              },
+              "stakeRatio": {
+                "aggregations": ["last"],
+                "operation": "aggregate"
+              }
+            }
+          }
         }
       ],
       "type": "table"
