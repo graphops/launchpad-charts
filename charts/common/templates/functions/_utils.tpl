@@ -269,9 +269,11 @@ Example:
     
     {{/* Add each layer's values */}}
     {{- range $key := index $.__common.config.componentLayering (printf "%v" $component) }}
-        {{- $_ := (list $ $.Values (list $key)) | include "common.utils.getNestedValue" }}
-        {{- if hasKey $.Values $key }}
-            {{- $mergeList = append $mergeList (index $.Values $key) }}
+        {{- $_ := (list $ $key) | include "common.utils.splitPath" }}
+        {{- $pathList := $.__common.fcallResult }}
+        {{- $_ := (list $ $.Values $pathList) | include "common.utils.getNestedValue" }}
+        {{- if not $.__common.fcallResult.error }}
+            {{- $mergeList = append $mergeList $.__common.fcallResult.value }}
         {{- end }}
     {{- end }}
     
@@ -839,6 +841,7 @@ Example:
 
 {{/* Set Self context and evaluate */}}
 {{- $_ := set $templateCtx "Self" (index $templateCtx.ComponentValues $componentName) }}
+{{- $_ := set $templateCtx "componentName" $componentName }}
 {{- $templatedVal := (tpl $template $templateCtx) }}
 
 {{/* Format result based on type */}}
