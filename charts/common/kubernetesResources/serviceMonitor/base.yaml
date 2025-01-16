@@ -1,0 +1,9 @@
+{{- $ := index . 0 }}
+{{- $ctx := index . 1 }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: my-service-monitor
+  namespace: {{ $ctx.Root.Release.Namespace }}
+spec:
+  endpoints: {}

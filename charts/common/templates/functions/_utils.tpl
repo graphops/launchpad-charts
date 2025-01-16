@@ -846,9 +846,15 @@ Example:
 
 {{/* Format result based on type */}}
 {{- if not (empty $type) }}
-  {{- $_ := set $.__common "fcallResult" (printf "result: !!%s %s" $type $templatedVal | fromYaml) }}
+  {{-  if eq $type "yaml" }}
+    {{- $_ := set $.__common "fcallResult" (dict "result" ($templatedVal | fromYaml)) }}
+  {{- else if eq $type "yamlArray" }}
+    {{- $_ := set $.__common "fcallResult" (dict "result" ($templatedVal | fromYamlArray)) }}
+  {{- else }}
+    {{- $_ := set $.__common "fcallResult" (printf "result: !!%s %s" $type $templatedVal | fromYaml) }}
+  {{- end }}
 {{- else if contains "\n" (trim $templatedVal) }}
-  {{- $_ := set $.__common "fcallResult" (dict "result" $templatedVal) }}
+  {{- $_ := set $.__common "fcallResult" (dict "result" (print $templatedVal)) }}
 {{- else }}
   {{- $_ := set $.__common "fcallResult" (printf "result: %s" $templatedVal | fromYaml) }}
 {{- end }}

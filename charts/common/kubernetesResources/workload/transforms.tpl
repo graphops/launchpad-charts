@@ -20,6 +20,22 @@
 {{- $paths = concat $paths $containerPaths }}
 {{- end }}
 
+{{- $initContainers := dig "spec" "template" "spec" "initContainers" dict $input }}
+{{- range $containerName, $container := $initContainers }}
+{{- $initContainerPaths := list
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "ports") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "volumeMounts") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "volumeDevices") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "env") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "lifecycle.postStart.httpGet.httpHeaders") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "lifecycle.preStop.httpGet.httpHeaders") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "livenessProbe.httpGet.httpHeaders") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "readinessProbe.httpGet.httpHeaders") "indexKey" "name")
+(dict "path" (printf "%s.%s.%s" "spec.template.spec.initContainers" $containerName "startupProbe.httpGet.httpHeaders") "indexKey" "name")
+}}
+{{- $paths = concat $paths $initContainerPaths }}
+{{- end }}
+
 {{- $paths = concat $paths (list
 (dict "path" "spec.volumeClaimTemplates" "indexKey" nil)
 (dict "path" "spec.template.spec.containers" "indexKey" "name")
