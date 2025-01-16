@@ -1,0 +1,5 @@
+resourceKeys:
+  single:
+    - serviceMonitor
+  multiple:
+    - serviceMonitors

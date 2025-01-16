@@ -1,7 +1,7 @@
 {{/* FIXME: find a solution for initContainers without requiring global context */}}
 {{- $ := index . 0 }}
 {{- $ctx := index . 1 }}
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test
