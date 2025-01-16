@@ -16,9 +16,9 @@ args:
       envsubst < $file > /config-output/$(basename $file)
     done
 volumeMounts:
-  - name: config
+  config:
     mountPath: /config-input
-  - name: config-processed
+  config-processed:
     mountPath: /config-output
-  - name: env-dir
+  env-dir:
     mountPath: /env

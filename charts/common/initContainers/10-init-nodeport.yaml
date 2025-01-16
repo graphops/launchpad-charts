@@ -1,18 +1,18 @@
 image: ghcr.io/graphops/docker-builds/init-toolbox:main
 env:
-  - name: POD_NAME
+  POD_NAME:
     valueFrom:
       fieldRef:
         fieldPath: metadata.name
-  - name: NODE_NAME
+  NODE_NAME:
     valueFrom:
       fieldRef:
         fieldPath: spec.nodeName
-  - name: SITES
+  SITES:
     value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
-  - name: FILTER_KEY
+  FILTER_KEY:
     value: type
-  - name: FILTER_VALUE
+  FILTER_VALUE:
     value: p2p
 command:
   - sh
@@ -69,5 +69,5 @@ command:
     # Display the results
     cat /env/init-nodeport
 volumeMounts:
-  - name: env-dir
+  env-dir:
     mountPath: /env

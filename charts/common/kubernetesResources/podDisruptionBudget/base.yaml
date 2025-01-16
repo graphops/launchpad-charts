@@ -1,7 +1,8 @@
 {{- $ := index . 0 }}
 {{- $ctx := index . 1 }}
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: my-pdb
+  namespace: {{ $ctx.Root.Release.Namespace }}
 spec: {}
