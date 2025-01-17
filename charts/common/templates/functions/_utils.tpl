@@ -503,7 +503,7 @@ Example:
                 {{- if or (kindIs "map" $v) (kindIs "slice" $v) -}}
                     {{- $_ := (list $ $v) | include "common.utils.pruneOutput" -}}
                     {{- $processed := $.__common.fcallResult -}}
-                    {{- if or (not (eq $processed nil)) (kindIs "map" $v) (kindIs "slice" $v) -}}
+                    {{- if not (eq $processed nil) -}}
                         {{- $_ := set $result $k $processed -}}
                     {{- end -}}
                 {{- else -}}
