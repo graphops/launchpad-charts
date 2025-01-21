@@ -28,7 +28,7 @@ firehoseComponentDefaults:
     pullPolicy: "IfNotPresent"
     # -- Overrides the image reference using a tag
     # digest takes precedence over tag if both are set
-    tag: "v2.6.7-geth-v1.13.15-fh2.4"
+    tag: "v2.9.3-geth-v1.13.15-fh2.4"
     # -- Overrides the image reference using a specific digest
     digest: ""
 
