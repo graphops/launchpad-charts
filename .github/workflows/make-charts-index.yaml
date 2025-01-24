@@ -39,9 +39,10 @@ jobs:
           repo: ${{ github.event.repository.name }}
           owner: ${{ github.event.repository.owner.login }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: releases
+          pattern: releases-*
+          merge-multiple: true
 
       - name: Set correct URLs and date
         run: |
@@ -70,7 +71,8 @@ jobs:
             .releases/index.yaml
           done
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: "chart-index.${{ inputs.repoName }}"
-          path: .releases/index.yaml
+          name: "chart-index-${{ inputs.repoName }}-${{ github.run_id }}"
+          path: "index.yaml"
+          retention-days: 1

@@ -41,10 +41,11 @@ jobs:
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor}}@users.noreply.github.com"
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: "chart-index.${{ inputs.repo }}"
+          pattern: "chart-index-${{ inputs.repo }}-*"
           path: ".nindex"
+          merge-multiple: true
 
       - name: Update index when there's changes
         shell: bash

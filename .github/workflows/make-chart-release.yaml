@@ -70,7 +70,7 @@ jobs:
 
           corepack yarn git-cliff -c ".cliff.toml" --include-path "charts/$CHART/**" --strip all -l -t "${{ needs.init.outputs.tag }}" -o "RELEASE-NOTES.md"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.init.outputs.tag }}.release-notes"
           path: RELEASE-NOTES.md
@@ -120,7 +120,7 @@ jobs:
           helm package "charts/${{ needs.init.outputs.name }}"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ needs.init.outputs.tag }}.helm-package"
           path: "${{ needs.init.outputs.tag }}.tgz"
@@ -144,10 +144,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
-          name: "${{ needs.init.outputs.tag }}.release-notes"
+          pattern: "${{ needs.init.outputs.tag }}.release-notes-*"
           path: "."
+          merge-multiple: true
 
       - name: Create release
         run: |
