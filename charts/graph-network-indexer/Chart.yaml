@@ -15,11 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-<<<<<<< HEAD
-version: 0.5.13
-=======
-version: 0.5.12
->>>>>>> 6a6d2f8 (chore(graph-network-indexer): new v)
+version: 0.5.14
 
 # The appVersion field is intentionally left empty. Component versions are managed separately
 # and can be found in the values.yaml file or individual component configurations.
