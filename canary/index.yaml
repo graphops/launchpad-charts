@@ -205,6 +205,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.4.0-d896e9c
+      created: "2025-01-24T02:57:56Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: cd42fb6582fd31973540fe95c9aa6047a34eca3bf8da4011dbb6c75eea75aee9
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.5.3-canary.3/arbitrum-nitro-0.5.3-canary.3.tgz
+      version: 0.5.3-canary.3
+    - apiVersion: v2
+      appVersion: v3.4.0-d896e9c
       created: "2025-01-24T00:50:19Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 2921391f32247c33c88fd4bef660da62c7d2bc2aea5d69bf9651e19ca8b3d81d
@@ -3230,6 +3240,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2025-01-24T02:31:12Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 7a253ebc347b45d91ea19deff3b110a08b7d6ebd79e34d43bb8bb6e0a591402d
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.14/graph-network-indexer-0.5.14.tgz
+      version: 0.5.14
     - apiVersion: v2
       created: "2025-01-24T02:29:08Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -8945,4 +8964,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2025-01-24T02:41:57.3002962Z"
+generated: "2025-01-24T03:01:51.184481045Z"
