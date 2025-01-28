@@ -146,9 +146,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: "${{ needs.init.outputs.tag }}.release-notes-*"
+          name: "${{ needs.init.outputs.tag }}.release-notes"
           path: "."
-          merge-multiple: true
 
       - name: Create release
         run: |

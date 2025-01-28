@@ -41,8 +41,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: releases-*
-          merge-multiple: true
+          name: releases
 
       - name: Set correct URLs and date
         run: |
@@ -73,6 +72,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: "chart-index-${{ inputs.repoName }}-${{ github.run_id }}"
+          name: "chart-index-${{ inputs.repoName }}"
           path: "index.yaml"
           retention-days: 1
