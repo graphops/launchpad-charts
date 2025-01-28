@@ -4116,6 +4116,16 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.36.1
+      created: "2025-01-28T18:39:32Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: c14fd21729b63c8d6abb3990b8772e6ab2baeca5547cf56216683a08873b4024
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.5.9-canary.1/graph-node-0.5.9-canary.1.tgz
+      version: 0.5.9-canary.1
+    - apiVersion: v2
       appVersion: v0.36.0
       created: "2024-12-02T01:48:41Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -8974,4 +8984,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.1.1-canary.1/subgraph-radio-0.1.1-canary.1.tgz
       version: 0.1.1-canary.1
-generated: "2025-01-24T03:11:26.908492274Z"
+generated: "2025-01-28T18:50:34.306474736Z"
