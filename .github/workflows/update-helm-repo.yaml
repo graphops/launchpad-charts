@@ -43,7 +43,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: "chart-index-${{ inputs.repo }}"
+          name: "chart-index.${{ inputs.repo }}"
           path: ".nindex"
 
       - name: Update index when there's changes
