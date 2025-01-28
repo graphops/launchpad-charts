@@ -86,12 +86,7 @@ jobs:
     uses: ./.github/workflows/update-helm-repo.yaml
     permissions:
       contents: write # for updating index.yaml
-    strategy:
-      matrix:
-        repo: ${{ fromJson(needs.find-tags-to-release.outputs.release-streams) }}
-    #if: ${{ needs.find-tags-to-release.outputs.release-streams != '[]' }}
-    #with:
-    #  repo: ${{ matrix.repo }}
+    if: ${{ contains(needs.find-tags-to-release.outputs.release-streams, 'canary') }}
     # update only canary repo, as stable releases are being set as draft
     with:
       repo: canary
