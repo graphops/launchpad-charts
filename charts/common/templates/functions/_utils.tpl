@@ -395,24 +395,24 @@ Example:
                     {{- $hasIndexKey := and (hasKey $pathObj "indexKey") (not (empty $pathObj.indexKey)) -}}
                     {{- $defaults := index $pathObj "defaultFor" | default list -}}
                     {{- range $key, $value := $current -}}
-                        {{/* We need deepCopy here to prevent reference sharing between list items */}}
-                        {{- $newObj := deepCopy $value -}}
-                        {{- if $hasIndexKey -}}
-                        {{/* Strip any suffix after @ from the key, the
-                             driver here is that often there is no single
-                             unique parameter to use as indexKey */}}
-                        {{- $baseKey := regexReplaceAll "@.*$" $key "" -}}
-                        {{- $_ := set $newObj $pathObj.indexKey $baseKey -}}
-                        {{/* Apply defaults if any exist */}}
-                        {{- if $hasDefaults -}}
-                            {{- range $defaultKey := $defaults -}}
-                                {{- if not (hasKey $newObj $defaultKey) -}}
-                                    {{- $_ := set $newObj $defaultKey $baseKey -}}
-                                {{- end -}}
-                            {{- end -}}
-                        {{- end -}}
-                        {{- end -}}
-                        {{- $resultList = append $resultList $newObj -}}
+                      {{/* We need deepCopy here to prevent reference sharing between list items */}}
+                      {{- $newObj := deepCopy $value -}}
+                      {{- if $hasIndexKey -}}
+                      {{/* Strip any suffix after @ from the key, the
+                          driver here is that often there is no single
+                          unique parameter to use as indexKey */}}
+                      {{- $baseKey := regexReplaceAll "@.*$" $key "" -}}
+                      {{- $_ := set $newObj $pathObj.indexKey $baseKey -}}
+                      {{/* Apply defaults if any exist */}}
+                      {{- if $hasDefaults -}}
+                          {{- range $defaultKey := $defaults -}}
+                              {{- if not (hasKey $newObj $defaultKey) -}}
+                                  {{- $_ := set $newObj $defaultKey $baseKey -}}
+                              {{- end -}}
+                          {{- end -}}
+                      {{- end -}}
+                      {{- end -}}
+                      {{- $resultList = append $resultList $newObj -}}
                     {{- end -}}
                     {{/* Direct mutation of parent */}}
                     {{- $_ := set $parent $lastKey $resultList -}}

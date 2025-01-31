@@ -36,14 +36,15 @@
 {{- $base := tpl (index $.__common.resources $resourceName "defaults") (list $ $templateCtx) | fromYaml }}
 {{- $_ := (list $ $base $resource) | include "common.utils.deepMerge" }}
 {{- $result := $.__common.fcallResult }}
-{{- if hasKey (index $.__common.resources $resourceName) "transforms" }}
-{{- $transformsTpl := index $.__common.resources $resourceName "transforms" }}
-{{- $_ := tpl $transformsTpl (list $ $result) }}
-{{- $result = $.__common.fcallResult }}
-{{- end }}
+{{/* We should prune before transforming */}}
 {{- $_ := (list $ $result) | include "common.utils.pruneOutput" }}
 {{- $prunedResult := $.__common.fcallResult }}
-{{ $prunedResult | toYaml }}
+{{- if hasKey (index $.__common.resources $resourceName) "transforms" }}
+{{- $transformsTpl := index $.__common.resources $resourceName "transforms" }}
+{{- $_ := tpl $transformsTpl (list $ $prunedResult) }}
+{{- $result = $.__common.fcallResult }}
+{{- end }}
+{{ $result | toYaml }}
 ---
 {{- end }}
 {{- end }}
