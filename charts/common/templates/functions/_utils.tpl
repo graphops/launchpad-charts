@@ -192,9 +192,6 @@ Example:
 
 {{- $ = index . 0 }}
 {{- $collection := index . 1 }}
-{{- if not (empty $collection) }}
-  {{- $collection = deepCopy $collection -}}
-{{- end }}
 {{- $templateCtx := index . 2 -}}
 {{- $componentName := index . 3 -}}
 
@@ -753,7 +750,7 @@ Cache:
     {{- if not $.__common.fcallResult.error }}
       {{- $value := $.__common.fcallResult.value }}
       {{/* Process nested templates */}}
-      {{- $evalTemplateCtx := deepCopy $templateCtx }}
+      {{- $evalTemplateCtx := $templateCtx }}
       {{- $_ := set $evalTemplateCtx "Self" (index $evalTemplateCtx.ComponentValues (printf "%s" $dep.componentName)) }}
       {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
       {{- $_ := set $dep "evalResult" $.__common.fcallResult.result }}
@@ -827,7 +824,7 @@ Example:
 */}}
 {{- $ = index . 0 }}
 {{- $template := index . 1 }}
-{{- $templateCtx := deepCopy (index . 2) -}}
+{{- $templateCtx := index . 2 -}}
 {{- $componentName := index . 3 -}}
 {{- $type := "" }}
 
@@ -843,6 +840,11 @@ Example:
 {{- $_ := set $templateCtx "Self" (index $templateCtx.ComponentValues $componentName) }}
 {{- $_ := set $templateCtx "componentName" $componentName }}
 {{- $templatedVal := (tpl $template $templateCtx) }}
+
+{{/* Unset __deps */}}
+{{- if hasKey $templateCtx "__deps" -}}
+  {{ $_ := unset $templateCtx "__deps" -}}
+{{- end -}}
 
 {{/* Format result based on type */}}
 {{- if not (empty $type) }}
