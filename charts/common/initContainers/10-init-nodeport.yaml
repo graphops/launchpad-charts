@@ -55,7 +55,7 @@ command:
     echo "EXTERNAL_IP=$EXTERNAL_IP" >> /env/init-nodeport
 
     # Process each port in the service
-    echo "$SERVICE_PORTS" | jq -c '.[]' | while read -r port; do
+    echo "$SERVICE_PORTS" | jq -c | while read -r port; do
         PORT_NAME=$(echo "$port" | jq -r '.name')
         NODE_PORT=$(echo "$port" | jq -r '.nodePort')
 
