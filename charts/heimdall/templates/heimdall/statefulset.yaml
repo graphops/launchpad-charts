@@ -103,7 +103,7 @@ spec:
               mountPath: /genesis-config
           env:
             - name: SEEDS
-              value: {{ include "heimdall.seeds" . | quote }}
+              value: {{ include "heimdall.seeds" $values | quote }}
             - name: CORS_ALLOWED_ORIGINS
               value: {{ $values.config.corsAllowedOrigins | quote }}
           {{- if $values.config.metrics.enabled }}
