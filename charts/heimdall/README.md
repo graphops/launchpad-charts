@@ -54,7 +54,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.config.ethRpcUrl | Ethereum RPC address | string | `""` |
  | heimdall.config.extraArgs | Additional CLI arguments to pass to Heimdall | list | `[]` |
  | heimdall.config.fromSnapshot.enabled | Enable initialising Heimdall from a remote Snapshot | bool | `false` |
- | heimdall.config.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://snapshots.matic.today) | string | `nil` |
+ | heimdall.config.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://docs.polygon.technology/pos/how-to/snapshots/) | string | `nil` |
  | heimdall.config.logLevel | Log level setup | string | `"main:info,state:info,*:error"` |
  | heimdall.config.logsType | Logs format | string | `"json"` |
  | heimdall.config.metrics.enabled | Enable metrics | bool | `true` |

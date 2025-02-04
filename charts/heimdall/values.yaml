@@ -72,7 +72,7 @@ heimdall:
     fromSnapshot:
       # -- Enable initialising Heimdall from a remote Snapshot
       enabled: false
-      # -- URL to snapshot to download and extract, see [here](https://snapshots.matic.today)
+      # -- URL to snapshot to download and extract, see [here](https://docs.polygon.technology/pos/how-to/snapshots/)
       snapshotUrl:
 
     # -- Options for Heimdall rest-server sidecar
