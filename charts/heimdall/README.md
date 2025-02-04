@@ -2,7 +2,7 @@
 
 Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.2.5](https://img.shields.io/badge/Version-1.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.10](https://img.shields.io/badge/AppVersion-1.0.10-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 1.2.4](https://img.shields.io/badge/Version-1.2.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.10](https://img.shields.io/badge/AppVersion-1.0.10-informational?style=flat-square)
 
 ## Features
 
@@ -54,7 +54,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.config.ethRpcUrl | Ethereum RPC address | string | `""` |
  | heimdall.config.extraArgs | Additional CLI arguments to pass to Heimdall | list | `[]` |
  | heimdall.config.fromSnapshot.enabled | Enable initialising Heimdall from a remote Snapshot | bool | `false` |
- | heimdall.config.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://publicnode.com/snapshots#polygon) | string | `nil` |
+ | heimdall.config.fromSnapshot.snapshotUrl | URL to snapshot to download and extract, see [here](https://docs.polygon.technology/pos/how-to/snapshots/) | string | `nil` |
  | heimdall.config.logLevel | Log level setup | string | `"main:info,state:info,*:error"` |
  | heimdall.config.logsType | Logs format | string | `"json"` |
  | heimdall.config.metrics.enabled | Enable metrics | bool | `true` |
