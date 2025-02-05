@@ -286,7 +286,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    tag: "v1.7.4"
+    tag: "v1.8.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
