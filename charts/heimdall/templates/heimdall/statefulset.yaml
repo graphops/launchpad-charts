@@ -98,7 +98,7 @@ spec:
         {{- if and $values.config.fromSnapshot.enabled $values.config.fromSnapshot.snapshotUrl }}
         - name: {{ $componentName }}-init-snapshot
           ## TODO: update tag
-          image: ghcr.io/graphops/docker-builds/init-stream-download@sha256:acbe5bff3b273b6e56b7aad20e8368ab9ddb091250b744e41ad66d6e7c2d0901
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
           command:
             - sh
             - -c
@@ -108,10 +108,12 @@ spec:
               # If enabled and snapshot URL has been provided, bootstrap snapshot
               if [ ! -f "$HEIMDALLD_HOME/from_snapshot" ] || [ "$(cat $HEIMDALLD_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                 mkdir -p ${HEIMDALLD_HOME}/data
+                cd ${HEIMDALLD_HOME}
                 wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
                 lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
                 tar -xvf snapshot.tar -C ${HEIMDALLD_HOME}/data || { echo "Extraction failed. Exiting."; exit 1; }
                 echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
+                rm snapshot.tar snapshot.tar.lz4
               fi
           volumeMounts:
             - name: storage
