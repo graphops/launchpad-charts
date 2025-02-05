@@ -546,7 +546,7 @@
     {
       "datasource": {
         "type": "yesoreyeram-infinity-datasource",
-        "uid": "${DS_SUBGRAPH_RADIO DATASOURCE}"
+        "uid": "ce0d87aedk5xce"
       },
       "fieldConfig": {
         "defaults": {
@@ -602,7 +602,7 @@
           "columns": [],
           "datasource": {
             "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_SUBGRAPH_RADIO DATASOURCE}"
+            "uid": "ce0d87aedk5xce"
           },
           "filters": [],
           "format": "table",
