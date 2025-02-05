@@ -1782,6 +1782,16 @@ entries:
       version: 0.1.0
   heimdall:
     - apiVersion: v2
+      appVersion: 1.2.0
+      created: "2025-02-05T15:55:15Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: d66b741ce1919e2289dca9b8afa72003891393fcd099ab49a1f6e9953ac742cb
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.2.5/heimdall-1.2.5.tgz
+      version: 1.2.5
+    - apiVersion: v2
       appVersion: 1.0.10
       created: "2024-10-17T19:47:39Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
@@ -3130,6 +3140,16 @@ entries:
   subgraph-radio:
     - apiVersion: v2
       appVersion: 1.0.7
+      created: "2025-02-05T15:56:49Z"
+      description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
+      digest: e402ab2f2a914e7639718b3b0312e2c4091b2e53915830e2f00e0b35cf5c47a2
+      name: subgraph-radio
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.18/subgraph-radio-0.2.18.tgz
+      version: 0.2.18
+    - apiVersion: v2
+      appVersion: 1.0.7
       created: "2025-01-10T18:57:00Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 4f745a5fc184aa1451d8aa5d53be9d38a4ccd00274af6d3790e7e104c1111e7e
@@ -3308,4 +3328,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-02-05T00:54:16.492014748Z"
+generated: "2025-02-05T16:07:31.989101372Z"
