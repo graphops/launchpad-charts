@@ -198,13 +198,18 @@ spec:
                 /home/user/nimbus-eth2/build/nimbus_beacon_node \
                   trustedNodeSync \
                   --data-dir=/storage \
-                  --history={{ $values.history }}
+                {{- if $values.trustedNodeSync.eraFiles }}
+                  --reindex=true \
+                {{- end }}
                 {{- range $arg := $values.trustedNodeSync.extraArgs }}
                   {{- $arg | nindent 18 }} \
                 {{- end }}
                   --trusted-node-url=$TRUSTED_NODE_URL
-                echo $?
-                echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
+                if [ $? -eq 0 ]; then
+                  echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
+                else
+                  exit 1
+                fi
               else
                 cat $TRUSTED_NODE_SYNC_STATE_FILE
                 echo "Trusted node sync already run. Skipping..."
