@@ -167,7 +167,7 @@ spec:
                 mkdir -p /storage/era
                 cd /storage/era
                 wget --no-parent  -A '*.era' -q --show-progress -nd -r -c "$ERA_FILES_URL"
-                echo $?
+                [ "$?" != "0" ] && echo "Download failed" && exit 1
                 echo $ERA_FILES_URL > $ERA_FILES_STATE_FILE
               else
                 cat $ERA_FILES_STATE_FILE
