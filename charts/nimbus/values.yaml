@@ -97,7 +97,7 @@ nimbus:
     resources:
       requests:
         # -- The amount of disk space to provision
-        storage: 750Gi
+        storage: 2Ti
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
