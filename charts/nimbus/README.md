@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.23](https://img.shields.io/badge/Version-0.5.23-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v25.1.0](https://img.shields.io/badge/AppVersion-multiarch--v25.1.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v25.1.0](https://img.shields.io/badge/AppVersion-multiarch--v25.1.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -112,6 +112,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | nimbus.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | nimbus.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
+ | nimbus.history | History preservation mode, archive or prune | string | `"archive"` |
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.initChownData.image.repository | Container repository | string | `"busybox"` |
@@ -143,11 +144,16 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | nimbus.tolerations |  | list | `[]` |
  | nimbus.trustedNodeSync.enabled | Enable init container to do a trusted checkpoint sync from another Consensus Client (be careful) | bool | `false` |
+ | nimbus.trustedNodeSync.eraFiles | Use era files for an archive node | bool | `true` |
+ | nimbus.trustedNodeSync.eraFilesUrl | URL for downloading era files | string | `"https://mainnet.era.nimbus.team/"` |
  | nimbus.trustedNodeSync.extraArgs | Additional CLI arguments | list | `[]` |
+ | nimbus.trustedNodeSync.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
+ | nimbus.trustedNodeSync.initContainer.image.repository | Container image to fetch era files | string | `"ghcr.io/graphops/docker-builds/init-stream-download"` |
+ | nimbus.trustedNodeSync.initContainer.image.tag | Container tag | string | `"latest"` |
  | nimbus.trustedNodeSync.trustedNodeUrl | URL to the Trusted Consensus Client Node URL. See https://eth-clients.github.io/checkpoint-sync-endpoints/ | string | `""` |
  | nimbus.updateStrategyType | Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate) | string | `"RollingUpdate"` |
- | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
- | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
+ | nimbus.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"2Ti"}},"storageClassName":null}` |
+ | nimbus.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"2Ti"` |
  | nimbus.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |
  | prometheus.serviceMonitors.interval |  | string | `nil` |
