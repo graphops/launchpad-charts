@@ -2,7 +2,7 @@
 
 Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.12](https://img.shields.io/badge/Version-0.5.12-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v6.0.1](https://img.shields.io/badge/AppVersion-v6.0.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v6.0.1](https://img.shields.io/badge/AppVersion-v6.0.1-informational?style=flat-square)
 
 ## Chart Features
 
@@ -104,6 +104,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.p2pHostPort.port | First port of the 2-port range to be used. The ports must be unique | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | lighthouse.pruneBlobs | Prune blobs? leave false for an archive node that retains hisotrical blobs | bool | `false` |
  | lighthouse.resources |  | object | `{}` |
  | lighthouse.service.ports.http-lighthouse | Service Port to expose REST http interface on | int | `5052` |
  | lighthouse.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `5054` |
@@ -114,8 +115,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.service.type |  | string | `"ClusterIP"` |
  | lighthouse.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | lighthouse.tolerations |  | list | `[]` |
- | lighthouse.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"300Gi"}},"storageClassName":null}` |
- | lighthouse.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"300Gi"` |
+ | lighthouse.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
+ | lighthouse.volumeClaimSpec.resources.requests.storage | The amount of disk space to provision | string | `"3Ti"` |
  | lighthouse.volumeClaimSpec.storageClassName | The storage class to use when provisioning a persistent volume | string | `nil` |
  | nameOverride |  | string | `""` |
  | prometheus.serviceMonitors.enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `false` |

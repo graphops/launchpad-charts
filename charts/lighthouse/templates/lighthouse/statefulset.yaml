@@ -149,6 +149,7 @@ spec:
               set -ex;
               exec lighthouse beacon_node \
                 --datadir=/storage \
+                --prune-blobs={{ $values.pruneBlobs }} \
               {{- if $values.executionClientUrl }}
                 --execution-endpoint={{ $values.executionClientUrl }} \
               {{- end }}
