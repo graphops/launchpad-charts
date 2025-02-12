@@ -70,6 +70,8 @@ grafana:
 lighthouse:
   # -- URL to the Execution Client Engine API. Will use configured JWT to authenticate.
   executionClientUrl: "" # e.g. http://erigon:8551
+  # -- Prune blobs? leave false for an archive node that retains hisotrical blobs
+  pruneBlobs: false
   # -- JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`.
   jwt:
     # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
@@ -95,7 +97,7 @@ lighthouse:
     resources:
       requests:
         # -- The amount of disk space to provision
-        storage: 300Gi
+        storage: 3Ti
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
