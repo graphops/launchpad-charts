@@ -198,14 +198,9 @@ apps:
       annotations:
         prometheus.io/scrape: "true"
       type: ClusterIP
-      # Service port configuration:
-      # - If no ports are specified and type is ClusterIP, a headless service will be created (clusterIP: None)
-      # - For other service types (LoadBalancer, NodePort), ports must be specified
-      # Example port configuration:
-      # ports:
-      #   http: 8080      # creates port named 'http' on 8080
-      #   metrics: 9090   # creates port named 'metrics' on 9090
-
+      ports:
+        http: 8080
+        metrics: 9090
     # -- Additional named services
     services:
       metrics:
