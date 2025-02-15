@@ -350,12 +350,10 @@ spec:
     matchLabels:
       {{- include "app.selectorLabels" $ | nindent 6 }}
       lname: {{ $lName }}
-  {{- if $appIsStatefulSet }}
   {{- with .service }}
   {{- if .enabled }}
   serviceName: {{ $fullComponentName }}
-  {{- end }}
-  {{- else }}
+  {{- else if $appIsStatefulSet }}
   {{- fail "StatefulSet requires a service to be configured." }}
   {{- end }}
   volumeClaimTemplates:
