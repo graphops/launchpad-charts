@@ -316,7 +316,7 @@ spec:
   {{- if or (eq $service.type "Headless") (eq $service.type "ClusterIP") }}
   clusterIP: None
   {{- end }}
-  {{- if and (hasKey $service "ports") (gt (len $service.ports) 0) }}
+  {{- if $service.ports }}
   ports:
   {{- range $portName, $port := $service.ports }}
     - name: {{ $portName }}
