@@ -313,7 +313,7 @@ metadata:
 spec:
   # Convert 'Headless' to a ClusterIP service with clusterIP: None.
   type: {{ if eq $service.type "Headless" }}ClusterIP{{ else }}{{ $service.type }}{{ end }}
-  {{- if or (eq $service.type "Headless") (eq $service.type "ClusterIP") }}
+  {{- if eq $service.type "Headless" }}
   clusterIP: None
   {{- end }}
   {{- if $service.ports }}
