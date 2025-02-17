@@ -369,9 +369,6 @@ spec:
   {{- fail "StatefulSet requires a headless service to be configured. Please set .service with type 'Headless' or define a headless service in .services." -}}
   {{- end }}
   {{- end }}
-  {{- if eq $headlessSvc "" }}
-  {{- fail "StatefulSet requires a headless service to be configured." -}}
-  {{- end }}
   serviceName: {{ $headlessSvc }}
   {{- end }}
   volumeClaimTemplates:
