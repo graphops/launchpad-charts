@@ -22,3 +22,8 @@ version: 0.1.0-canary.5
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "v2.6.7"
+
+dependencies:
+  - name: common
+    version: 0.1.0
+    repository: "file:///home/cjw.graphops/code/graphops/launchpad-charts/charts/common"  # Use the relative path to your local library chart

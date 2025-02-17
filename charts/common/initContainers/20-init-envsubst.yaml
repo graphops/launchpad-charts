@@ -2,6 +2,7 @@ image: blockstack/envsubst:latest
 command: ["/bin/sh", "-c"]
 args:
   - |
+    set -xe
     ENV_DIR="/env"
 
     if [ -d /env ]; then
