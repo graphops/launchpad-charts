@@ -98,6 +98,8 @@ firehoseComponentDefaults:
       common-forked-blocks-store-url: null
       common-merged-blocks-store-url: null
       common-live-blocks-addr: "relayer:10014"
+      common-auto-mem-limit-percent: 95
+      common-auto-max-procs: true
 
     # -- Command line arguments for fireeth
     # Generated from this map and format can be
@@ -271,7 +273,7 @@ firehoseComponentDefaults:
     spec:
       # Endpoint overrides, keyed by port name
       endpoints:
-        metrics-fh:
+        fh-metrics:
           # Override or add any endpoint-specific fields
           interval: "30s"
           scrapeTimeout: "10s"
@@ -280,9 +282,6 @@ firehoseComponentDefaults:
           # ... any other endpoint-specific fields
       # Any other top-level ServiceMonitor spec fields
       jobLabel: '{{- .Root.Release.Name }}'
-      namespaceSelector:
-        matchNames:
-          - '{{- .Root.Release.Namespace }}'
       selector:
         matchLabels:
           app.kubernetes.io/component: '{{ .componentName }}'
@@ -560,7 +559,7 @@ firehoseServiceDefaults:
           ports:
             fh-grpc:
               port: |
-                {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}
+                {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
                 @needs(.Self.fireeth.config as config)
               protocol: TCP
     workload:
@@ -572,7 +571,7 @@ firehoseServiceDefaults:
                 ports:
                   fh-grpc:
                     containerPort: |
-                      {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}
+                      {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
                       @needs(.Self.fireeth.config as config)
 
   # -- Defaults for the merger service
@@ -588,7 +587,7 @@ firehoseServiceDefaults:
           ports:
             merger-grpc:
               port: |
-                {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}
+                {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
                 @needs(.Self.fireeth.config as config)
               protocol: TCP
       headless:
@@ -603,7 +602,7 @@ firehoseServiceDefaults:
                 ports:
                   merger-grpc:
                     containerPort: |
-                      {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}
+                      {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
                       @needs(.Self.fireeth.config as config)
                     protocol: TCP
 
@@ -621,7 +620,7 @@ firehoseServiceDefaults:
         spec:
           ports:
             relayer-grpc:
-              port: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
         <<: *relayerSvc
@@ -634,7 +633,7 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   relayer-grpc:
-                    containerPort: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
 
   # -- Defaults for the index-builder service
@@ -650,7 +649,7 @@ firehoseServiceDefaults:
         spec:
           ports:
             index-grpc:
-              port: '{{ if (index $config "index-builder-grpc-listen-addr") }}{{ splitList ":" (index $config "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "index-builder-grpc-listen-addr") }}{{ splitList ":" (index $config "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
         <<: *indexSvc
@@ -663,7 +662,7 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   index-grpc:
-                    containerPort: '{{ with .Self.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+                    containerPort: '{{ with .Self.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
                     protocol: TCP
 
   # -- Defaults for the reader-node service
@@ -764,7 +763,7 @@ firehoseServiceDefaults:
         spec:
           ports:
             reader-grpc:
-              port: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
             node-metrics:
               port: '{{ $nodeMetrics.enabled | ternary ($nodeMetrics.port | int) nil }} @needs(.Self.fireeth.nodeMetrics as nodeMetrics)'
@@ -784,6 +783,7 @@ firehoseServiceDefaults:
     workload:
       kind: StatefulSet
       spec:
+        serviceName: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-headless'
         volumeClaimTemplates:
           data-dir:
             __enabled: true
@@ -840,13 +840,13 @@ firehoseServiceDefaults:
                 env:
                   MANAGER_API_PORT:
                     value: |
-                      {{ hasKey $config "reader-node-manager-api-addr" | ternary (splitList ":" (index $config "reader-node-manager-api-addr") | last | int) nil }}
+                      {{ hasKey $config "reader-node-manager-api-addr" | ternary (splitList ":" (index $config "reader-node-manager-api-addr") | last | trimSuffix "*" | int) nil }}
                       @type(string)
                       @needs(.Self.fireeth.config as config)
                 # -- Container ports
                 ports:
                   reader-grpc:
-                    containerPort: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                   node-metrics:
                     containerPort: '{{ if $nodeMetrics.port }}{{ $nodeMetrics.port | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.nodeMetrics as nodeMetrics)'
