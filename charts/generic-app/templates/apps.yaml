@@ -311,7 +311,12 @@ metadata:
   annotations: {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  type: {{ $service.type }}
+  # Convert 'Headless' to a ClusterIP service with clusterIP: None.
+  type: {{ if eq $service.type "Headless" }}ClusterIP{{ else }}{{ $service.type }}{{ end }}
+  {{- if eq $service.type "Headless" }}
+  clusterIP: None
+  {{- end }}
+  {{- if $service.ports }}
   ports:
   {{- range $portName, $port := $service.ports }}
     - name: {{ $portName }}
@@ -324,10 +329,14 @@ spec:
       {{- end }}
       {{- end }}
   {{- end }}
+  {{- else }}
+  ports: []
+  {{- end }}
   selector: {{- include "app.selectorLabels" $ | nindent 4 }}
     lname: {{ $lName }}
 {{- end }}
 {{- end }}
+
 ---
 ### StatefulSet/Deployment
 apiVersion: apps/v1
@@ -342,7 +351,26 @@ spec:
       {{- include "app.selectorLabels" $ | nindent 6 }}
       lname: {{ $lName }}
   {{- if $appIsStatefulSet }}
-  serviceName: {{ $fullComponentName }}
+  {{- $headlessSvc := "" -}}
+  {{- /* Check additional services for a headless one */ -}}
+  {{- with $lContext.services }}
+  {{- range $svcName, $svc := . }}
+  {{- if eq $svc.type "Headless" }}
+  {{- $headlessSvc = printf "%s-%s" $fullComponentName $svcName -}}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- /* If no additional headless service was found, check the default .service */ -}}
+  {{- if eq $headlessSvc "" }}
+  {{- with $lContext.service }}
+  {{- if and .enabled (eq .type "Headless") }}
+  {{- $headlessSvc = $fullComponentName -}}
+  {{- else }}
+  {{- fail "StatefulSet requires a headless service to be configured. Please set .service with type 'Headless' or define a headless service in .services." -}}
+  {{- end }}
+  {{- end }}
+  serviceName: {{ $headlessSvc }}
+  {{- end }}
   volumeClaimTemplates:
   {{- range $lname, $spec := .volumeClaims }}
     - metadata:

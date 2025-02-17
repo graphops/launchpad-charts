@@ -201,7 +201,6 @@ apps:
       ports:
         http: 8080
         metrics: 9090
-
     # -- Additional named services
     services:
       metrics:
