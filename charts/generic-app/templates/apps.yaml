@@ -350,11 +350,29 @@ spec:
     matchLabels:
       {{- include "app.selectorLabels" $ | nindent 6 }}
       lname: {{ $lName }}
-  {{- with .service }}
-  {{- if .enabled }}
-  serviceName: {{ $fullComponentName }}
-  {{- else if $appIsStatefulSet }}
-  {{- fail "StatefulSet requires a service to be configured." }}
+  {{- if $appIsStatefulSet }}
+  {{- $headlessSvc := "" -}}
+  {{- /* Check additional services for a headless one */ -}}
+  {{- with $lContext.services }}
+  {{- range $svcName, $svc := . }}
+  {{- if eq $svc.type "Headless" }}
+  {{- $headlessSvc = printf "%s-%s" $fullComponentName $svcName -}}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  {{- /* If no additional headless service was found, check the default .service */ -}}
+  {{- if eq $headlessSvc "" }}
+  {{- with $lContext.service }}
+  {{- if and .enabled (eq .type "Headless") }}
+  {{- $headlessSvc = $fullComponentName -}}
+  {{- else }}
+  {{- fail "StatefulSet requires a headless service to be configured. Please set .service with type 'Headless' or define a headless service in .services." -}}
+  {{- end }}
+  {{- end }}
+  {{- if eq $headlessSvc "" }}
+  {{- fail "StatefulSet requires a headless service to be configured." -}}
+  {{- end }}
+  serviceName: {{ $headlessSvc }}
   {{- end }}
   volumeClaimTemplates:
   {{- range $lname, $spec := .volumeClaims }}
