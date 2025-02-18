@@ -164,6 +164,8 @@ spec:
                 --quic-port={{ include "lighthouse.quicPort" $values }} \
                 --http \
                 --http-port={{ index $values.service.ports "http-lighthouse" }} \
+                --http-address=0.0.0.0 \
+                --http-allow-origin='*' \
                 --listen-address=0.0.0.0 \
               {{- if $jwtEnabled }}
                 --execution-jwt=/jwt/jwt.hex \
