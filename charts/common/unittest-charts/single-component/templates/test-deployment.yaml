@@ -1,0 +1,34 @@
+{{- /* Initialize common context */ -}}
+{{- include "common.init" . }}
+
+{{- /* Render deployment */ -}}
+{{- if .Values.myComponent.__enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mycomponent
+spec:
+  replicas: {{ .Values.myComponent.replicas }}
+  selector:
+    matchLabels:
+      app: mycomponent
+  template:
+    metadata:
+      labels:
+        app: mycomponent
+    spec:
+      containers:
+      - name: mycomponent
+        image: {{ .Values.myComponent.image.repository }}:{{ .Values.myComponent.image.tag }}
+        {{- with .Values.myComponent.ports }}
+        ports:
+        {{- range . }}
+        - containerPort: {{ .containerPort }}
+          name: {{ .name }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.myComponent.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+{{- end }}

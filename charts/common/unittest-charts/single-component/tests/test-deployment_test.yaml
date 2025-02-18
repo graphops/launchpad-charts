@@ -1,0 +1,37 @@
+suite: "Single Component Tests"
+templates:
+  - test-deployment.yaml
+tests:
+  - it: "Should render a deployment with correct basic configuration"
+    release:
+      name: test-release
+    values:
+      - ../values.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: test-release-mycomponent
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: alpine:3.17
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 100m
+
+  - it: "Should set correct resource limits"
+    release:
+      name: test-release
+    values:
+      - ../values.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 256Mi
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 128Mi
