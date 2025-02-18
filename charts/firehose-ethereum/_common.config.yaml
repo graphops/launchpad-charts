@@ -1,0 +1,16 @@
+dynamicComponents: true
+
+componentsKey: firehoseComponents
+
+componentLayering: |
+  {{- $componentLayering := dict }}
+  {{- range $component, $componentValues := .Values.firehoseComponents }}
+  {{- $layers := list "firehoseComponentDefaults" }}
+  {{- $componentServices := dig "fireeth" "services" list $componentValues }}
+  {{- range $service := $componentServices }}
+  {{- $layers = append $layers (printf "firehoseServiceDefaults[%s]" $service) }}
+  {{- end }}
+  {{- $layers = append $layers (printf "firehoseComponents[%s]" $component) }}
+  {{- $_ := set $componentLayering $component $layers }}
+  {{- end }}
+  {{ $componentLayering | toJson }}

@@ -20,3 +20,6 @@ yarn-error.log
 !.yarn/versions/**
 !.pnp.cjs
 !.pnp.loader.mjs
+
+# Exclude chart dependencies
+charts/*/charts
