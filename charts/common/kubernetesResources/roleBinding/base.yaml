@@ -1,0 +1,9 @@
+{{- $ := index . 0 }}
+{{- $ctx := index . 1 }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: my-rolebinding
+  namespace: {{ $ctx.Root.Release.Namespace }}
+roleRef: {}
+subjects: {}

@@ -1,0 +1,5 @@
+resourceKeys:
+  single:
+    - configMap
+  multiple:
+    - configMaps

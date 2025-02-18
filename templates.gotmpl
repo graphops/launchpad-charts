@@ -13,6 +13,10 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
 {{- end -}}
 
+{{- define "graphops.badges-noAppVersion" -}}
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) {{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}
+{{- end -}}
+
 {{- define "graphops.contributingSection" -}}
 ## Contributing
 

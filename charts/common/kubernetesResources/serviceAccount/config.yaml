@@ -1,0 +1,5 @@
+resourceKeys:
+  single:
+    - serviceAccount
+  multiple:
+    - serviceAccounts
