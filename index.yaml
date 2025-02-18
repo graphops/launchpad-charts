@@ -84,6 +84,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.5.2-33d30c0
+      created: "2025-02-18T10:38:35Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: f00bf50bbd39c955ca6246b733b13fd4a75646ff16b46333a605e882b5d48e25
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.0/arbitrum-nitro-0.6.0.tgz
+      version: 0.6.0
+    - apiVersion: v2
       appVersion: v3.4.0-d896e9c
       created: "2025-01-24T02:59:29Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -366,6 +376,16 @@ entries:
       version: 0.1.2
   celo:
     - apiVersion: v2
+      appVersion: 1.8.8
+      created: "2025-02-18T10:40:38Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: db0757a58f3f56974d0e7820320cdba159e712408e7e260e93904a81121d90e9
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.9/celo-0.1.9.tgz
+      version: 0.1.9
+    - apiVersion: v2
       appVersion: 1.8.7
       created: "2024-12-19T03:23:31Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
@@ -456,6 +476,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v2.61.1
+      created: "2025-02-18T10:34:35Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 264cac07bd268a398b6f2d4e32542de5852cf5f6119c6a01ae10dd83c4ab8c24
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.12/erigon-0.10.12.tgz
+      version: 0.10.12
     - apiVersion: v2
       appVersion: v2.61.0
       created: "2025-01-10T18:15:45Z"
@@ -1913,6 +1943,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v6.0.1
+      created: "2025-02-18T10:32:35Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 2080202959f2398356888966062ae2c5a8f9c3acbd0d37d70d115fca6eb41c14
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.6.1/lighthouse-0.6.1.tgz
+      version: 0.6.1
+    - apiVersion: v2
+      appVersion: v6.0.1
       created: "2025-02-12T19:04:01Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 0e238e2c69ea48241f4472f2660762d975c4ccc6660301efbe1560267f531ee5
@@ -3357,4 +3397,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-02-12T19:24:03.15730669Z"
+generated: "2025-02-18T10:49:03.418528159Z"
