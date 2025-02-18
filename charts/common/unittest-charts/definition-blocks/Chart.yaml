@@ -1,0 +1,8 @@
+apiVersion: v2
+name: definition-blocks-test
+version: 0.1.0
+type: application
+dependencies:
+  - name: common
+    repository: file://charts/common
+    version: 0.0.1-canary.1

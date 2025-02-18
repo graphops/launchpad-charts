@@ -1,0 +1,14 @@
+suite: "Deep Merge Function Tests"
+templates:
+  - test-deepmerge.yaml
+tests:
+  - it: "Should combine nested maps, removing nil fields"
+    asserts:
+      - equal:
+          path: data.mergedOutput
+          value: |
+            a: 1
+            b:
+              y: 2
+              z: 3
+            c: new

@@ -1,0 +1,26 @@
+__debug: false
+_common:
+  dynamicComponents: false
+  components:
+    - myComponent
+  componentLayering:
+    myComponent: []
+
+myComponent:
+  __enabled: true
+  workload:
+    type: Deployment
+  image:
+    repository: alpine
+    tag: "3.17"
+  replicas: 2
+  ports:
+    - name: http
+      containerPort: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi

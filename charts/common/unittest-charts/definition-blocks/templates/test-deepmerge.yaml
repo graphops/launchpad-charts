@@ -1,0 +1,22 @@
+{{- /* Test common.utils.deepMerge function */ -}}
+{{- $map1 := dict "a" 1 "b" (dict "y" 2) }}
+{{- $map2 := dict "b" (dict "z" 3) "c" "new" }}
+
+{{- /* Initialize common context */ -}}
+{{- $_ := set . "__common" (dict "cache" dict) }}
+
+{{- /* Then merge maps */ -}}
+{{- $_ := include "common.utils.deepMerge" (list . $map1 $map2) }}
+{{- $merged := .__common.fcallResult }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-deepmerge-config
+data:
+  mergedOutput: |
+    a: 1
+    b:
+      y: 2
+      z: 3
+    c: new
