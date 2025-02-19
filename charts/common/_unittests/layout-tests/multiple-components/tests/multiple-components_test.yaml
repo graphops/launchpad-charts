@@ -1,0 +1,26 @@
+suite: "Multiple Components Tests"
+
+templates:
+  - "templates/render.yaml"
+
+tests:
+  - it: "Should render both components as Deployments"
+    asserts:
+      - isKind:
+          of: Deployment
+      - hasDocuments:
+          count: 2
+
+  - it: "Should render component1 with correct replicas"
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: "Should render component2 with correct replicas"
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 2

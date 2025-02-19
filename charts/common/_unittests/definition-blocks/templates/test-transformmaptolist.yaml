@@ -1,0 +1,19 @@
+{{- $ := . -}}
+{{- $_ := set $ "__common" (dict "fcallResult" nil) -}}
+
+{{/* Test case: Map to list conversion with index key and defaults */}}
+{{- $base := dict "spec" (dict "containers" (dict "main" (dict "image" "nginx") "sidecar" (dict "image" "proxy"))) -}}
+{{- $paths := list (dict "path" "spec.containers" "indexKey" "name" "defaultFor" (list "id")) -}}
+
+{{- $_ := list $ $base $paths | include "common.utils.transformMapToList" -}}
+{{- $result := $base.spec.containers -}}
+{{- $expected := list 
+    (dict "name" "main" "id" "main" "image" "nginx")
+    (dict "name" "sidecar" "id" "sidecar" "image" "proxy") -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: transformmaptolist-test
+data:
+  result: {{ eq (toJson (sortAlpha $result)) (toJson (sortAlpha $expected)) | quote }}

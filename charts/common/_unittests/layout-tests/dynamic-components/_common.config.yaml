@@ -1,0 +1,9 @@
+dynamicComponents: true
+componentsKey: dynamicComponents
+
+componentLayering: |
+  {
+    "component-a": ["defaultLayer", "dynamicComponents[component-a]"],
+    "component-b": ["defaultLayer", "dynamicComponents[component-b]"],
+    "component-c": ["defaultLayer", "dynamicComponents[component-c]"]
+  }

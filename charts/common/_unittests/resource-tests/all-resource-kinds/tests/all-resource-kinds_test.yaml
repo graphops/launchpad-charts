@@ -1,0 +1,160 @@
+suite: "All Resource Kinds Tests"
+
+templates:
+  - "templates/render.yaml"
+
+tests:
+  - it: "Should generate all enabled resources"
+    asserts:
+      - hasDocuments:
+          count: 9  # All resources enabled
+
+  - it: "Should generate ConfigMap with correct data"
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: ConfigMap
+      - equal:
+          path: metadata.name
+          value: test-configmap
+      - equal:
+          path: data.key1
+          value: value1
+      - equal:
+          path: data.key2
+          value: value2
+
+  - it: "Should generate PodDisruptionBudget with correct spec"
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: PodDisruptionBudget
+      - equal:
+          path: metadata.name
+          value: test-pdb
+      - equal:
+          path: spec.minAvailable
+          value: 1
+
+  - it: "Should generate Role with correct rules"
+    documentIndex: 2
+    asserts:
+      - isKind:
+          of: Role
+      - equal:
+          path: metadata.name
+          value: test-role
+      - equal:
+          path: rules[0].apiGroups[0]
+          value: ""
+      - equal:
+          path: rules[0].resources[0]
+          value: pods
+      - equal:
+          path: rules[0].verbs[0]
+          value: get
+
+  - it: "Should generate RoleBinding with correct references"
+    documentIndex: 3
+    asserts:
+      - isKind:
+          of: RoleBinding
+      - equal:
+          path: metadata.name
+          value: test-rolebinding
+      - equal:
+          path: roleRef.kind
+          value: Role
+      - equal:
+          path: roleRef.name
+          value: test-role
+      - equal:
+          path: subjects[0].kind
+          value: ServiceAccount
+      - equal:
+          path: subjects[0].name
+          value: test-sa
+
+  - it: "Should generate Secret with correct data"
+    documentIndex: 4
+    asserts:
+      - isKind:
+          of: Secret
+      - equal:
+          path: metadata.name
+          value: test-secret
+      - equal:
+          path: stringData.username
+          value: test-user
+      - equal:
+          path: stringData.password
+          value: test-pass
+
+  - it: "Should generate Service with correct spec"
+    documentIndex: 5
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: metadata.name
+          value: test-service
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.ports[0].name
+          value: http
+      - equal:
+          path: spec.type
+          value: ClusterIP
+
+  - it: "Should generate ServiceAccount with correct configuration"
+    documentIndex: 6
+    asserts:
+      - isKind:
+          of: ServiceAccount
+      - equal:
+          path: metadata.name
+          value: test-sa
+      - equal:
+          path: automountServiceAccountToken
+          value: true
+
+  - it: "Should generate ServiceMonitor with correct endpoints"
+    documentIndex: 7
+    asserts:
+      - isKind:
+          of: ServiceMonitor
+      - equal:
+          path: metadata.name
+          value: test-servicemonitor
+      - equal:
+          path: spec.endpoints[0].port
+          value: metrics
+      - equal:
+          path: spec.endpoints[0].interval
+          value: 15s
+
+  - it: "Should generate Deployment workload with correct configuration"
+    documentIndex: 8
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: metadata.name
+          value: test-workload
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: nginx:latest
+
+  - it: "Should not generate disabled resources"
+    set:
+      testComponent:
+        configMap:
+          __enabled: false
+    asserts:
+      - hasDocuments:
+          count: 8  # One less than total due to disabled ConfigMap

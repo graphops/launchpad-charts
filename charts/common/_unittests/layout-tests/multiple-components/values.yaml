@@ -1,5 +1,4 @@
-myComponent:
-  __enabled: true
+defaultLayer:
   workload:
     __enabled: true
     kind: Deployment
@@ -15,7 +14,21 @@ myComponent:
           containers:
             main:
               name: main
-              image: "alpine:3.17"
+              image: nginx:latest
+
+component1:
+  __enabled: true
+  workload:
+    __enabled: true
+    spec:
+      replicas: 3
+
+component2:
+  __enabled: true
+  workload:
+    __enabled: true
+    spec:
       replicas: 2
 
-myComponentDefaults: {}
+component1Overrides: {}
+component2Overrides: {}

@@ -1,0 +1,9 @@
+dynamicComponents: false
+
+components:
+  - testComponent
+
+componentLayering:
+  testComponent:
+    - defaults
+    - testComponent

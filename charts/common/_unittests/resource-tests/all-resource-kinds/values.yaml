@@ -1,0 +1,99 @@
+defaults: {}
+
+testComponent:
+  __enabled: true
+  configMap:
+    __enabled: true
+    metadata:
+      name: test-configmap
+    data:
+      key1: "value1"
+      key2: "value2"
+
+  podDisruptionBudget:
+    __enabled: true
+    metadata:
+      name: test-pdb
+    spec:
+      minAvailable: 1
+
+  role:
+    __enabled: true
+    metadata:
+      name: test-role
+    rules:
+      - apiGroups: [""]
+        resources: ["pods"]
+        verbs: ["get", "list"]
+
+  roleBinding:
+    __enabled: true
+    metadata:
+      name: test-rolebinding
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: test-role
+    subjects:
+      - kind: ServiceAccount
+        name: test-sa
+
+  secret:
+    __enabled: true
+    metadata:
+      name: test-secret
+    stringData:
+      username: "test-user"
+      password: "test-pass"
+
+  services:
+    default:
+      __enabled: true
+      metadata:
+        name: test-service
+      spec:
+        type: ClusterIP
+        ports:
+          - port: 8080
+            targetPort: 8080
+            name: http
+            protocol: TCP
+
+  serviceAccount:
+    __enabled: true
+    metadata:
+      name: test-sa
+    automountServiceAccountToken: true
+
+  serviceMonitor:
+    __enabled: true
+    metadata:
+      name: test-servicemonitor
+    spec:
+      endpoints:
+        - port: metrics
+          interval: 15s
+
+  workload:
+    __enabled: true
+    metadata:
+      name: test-workload
+    kind: Deployment
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: test-workload
+      template:
+        metadata:
+          labels:
+            app: test-workload
+        spec:
+          containers:
+            main:
+              name: main
+              image: nginx:latest
+              ports:
+                http:
+                  containerPort: 8080
+                  protocol: TCP

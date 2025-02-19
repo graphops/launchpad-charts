@@ -1,0 +1,17 @@
+{{- $ := . -}}
+{{- $_ := set $ "__common" (dict "fcallResult" nil) -}}
+
+{{/* Test case: Deep merge with null handling */}}
+{{- $map1 := dict "a" 1 "b" (dict "x" 1 "y" 2) -}}
+{{- $map2 := dict "b" (dict "x" nil "z" 3) "c" "new" -}}
+
+{{- $_ := list $ $map1 $map2 | include "common.utils.deepMerge" -}}
+{{- $merged := $.__common.fcallResult -}}
+{{- $merged = set $merged "b" (omit $merged.b "x") -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deepmerge-test
+data:
+  result: "{{ eq (toJson $merged) (toJson (dict "a" 1 "b" (dict "y" 2 "z" 3) "c" "new")) }}"

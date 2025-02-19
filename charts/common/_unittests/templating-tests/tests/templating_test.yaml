@@ -1,0 +1,23 @@
+suite: "Templating Tests"
+
+templates:
+  - "templates/render.yaml"
+
+tests:
+  - it: "Should expand greeting with correct .Root and .componentName"
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: ConfigMap
+      - matchRegex:
+          path: data.greeting
+          pattern: "Hello from RELEASE-NAME for testComponent"
+
+  - it: "Should set workload replicas=3 based on @needs logic"
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.replicas
+          value: 3
