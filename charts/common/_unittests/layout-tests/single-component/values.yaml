@@ -1,0 +1,9 @@
+myComponent:
+  __enabled: true
+  workload:
+    __enabled: true
+    spec:
+      image: "alpine:3.17"
+      replicas: 2
+
+myComponentDefaults: {}

@@ -1,8 +1,8 @@
 {{/* Performs initialization, loading of resources and initial merges */}}
 {{- define "common.init._init" -}}
 {{/* Initialize state store */}}
-{{- $_ := set $ "__common" dict }}
-{{- $_ := set $.__common "cache" dict }}
+{{- $_ := set $ "__common" dict -}}
+{{- $_ := set $.__common "cache" dict -}}
 {{/* Define the ordered steps */}}
 {{- $initSteps := list
 "common.init._setTemplateCtx"
@@ -10,16 +10,16 @@
 "common.init._loadResources"
 "common.resources.mergeValues"
 "common.resources.templateValues"
-}}
+-}}
 {{/* execute them with conditional output omission */}}
-{{- range $step := $initSteps }}
-{{- if $.Values.__debug }}
+{{- range $step := $initSteps -}}
+{{- if $.Values.__debug -}}
 {{- include (printf "%s" $step) $ -}}
-{{- else }}
+{{- else -}}
 {{- $_ := include (printf "%s" $step) $ -}}
-{{- end }}
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Load and validate the library configuration.

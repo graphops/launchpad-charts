@@ -1,0 +1,11 @@
+suite: "Single Component Tests"
+
+templates:
+  - "templates/render.yaml"
+
+tests:
+  - it: "Should render a resource with correct replicas"
+    asserts:
+      - equal:
+          path: "spec.replicas"
+          value: 2

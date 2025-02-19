@@ -1,0 +1,10 @@
+apiVersion: v2
+name: single-component-test
+version: 0.1.0
+
+# Depend on the parent 'common' chart from local file
+# Omit 'version' to avoid confusion with library version
+dependencies:
+  - name: common
+    repository: "file://../../../"
+    version: ">=0.0.0-0"
