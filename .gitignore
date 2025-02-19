@@ -22,4 +22,10 @@ yarn-error.log
 !.pnp.loader.mjs
 
 # Exclude chart dependencies
-charts/*/charts
+charts/**/charts
+# Exclude helm-unittests stuff
+charts/**/__snapshot__
+charts/**/.debug
+
+# Exclude .prof files
+**/*.prof

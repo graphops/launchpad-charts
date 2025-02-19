@@ -1,0 +1,8 @@
+dynamicComponents: false
+
+components:
+  - myComponent
+
+componentLayering:
+  myComponent:
+    - myComponentDefaults
