@@ -1,0 +1,6 @@
+dependencies:
+- name: common
+  repository: file://../../..
+  version: 0.0.1-canary.1
+digest: sha256:7c13dc03b796f547ab8140426d7ac70d5735ad380e0faf0e4bd23d918caac00d
+generated: "2025-02-19T00:51:26.628880646Z"

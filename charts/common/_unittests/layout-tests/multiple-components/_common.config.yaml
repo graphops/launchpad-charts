@@ -1,0 +1,15 @@
+dynamicComponents: false
+
+components:
+  - component1
+  - component2
+
+componentLayering:
+  component1:
+    - defaultLayer
+    - component1Overrides
+  component2:
+    - defaultLayer
+    - component2Overrides
+
+nameOverride: ""

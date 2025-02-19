@@ -1,0 +1,4 @@
+defaults: {}
+
+testComponent:
+  __enabled: true

@@ -1,0 +1,11 @@
+suite: "Deep Merge Function Tests"
+
+templates:
+  - "templates/test-deepmerge.yaml"
+
+tests:
+  - it: "Should output 'true' if the result matches expected"
+    asserts:
+      - equal:
+          path: data.result
+          value: "true"

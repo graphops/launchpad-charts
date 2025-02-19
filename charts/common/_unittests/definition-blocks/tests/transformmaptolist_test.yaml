@@ -1,0 +1,11 @@
+suite: "Transform Map to List Function Tests"
+
+templates:
+  - "templates/test-transformmaptolist.yaml"
+
+tests:
+  - it: "Should output 'true' if the result matches expected"
+    asserts:
+      - equal:
+          path: data.result
+          value: "true"

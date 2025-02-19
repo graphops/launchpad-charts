@@ -1,0 +1,58 @@
+defaultLayer:
+  __enabled: true
+  workload:
+    __enabled: true
+    kind: Deployment
+    spec:
+      template:
+        spec:
+          containers:
+            main:
+              name: main
+              image: nginx:latest
+
+defaultLayer:
+  workload:
+    __enabled: true
+    kind: Deployment
+    spec:
+      selector:
+        matchLabels:
+          app: test-workload
+      template:
+        metadata:
+          labels:
+            app: test-workload
+        spec:
+          containers:
+            main:
+              name: main
+              image: nginx:latest
+
+dynamicComponents:
+  component-a:
+    __enabled: true
+    workload:
+      __enabled: true
+      metadata:
+        name: component-a
+      spec:
+        replicas: 4
+  
+  component-b:
+    __enabled: false
+    workload:
+      __enabled: true
+      metadata:
+        name: component-b
+      spec:
+        replicas: 2
+  
+  component-c:
+    __enabled: true
+    workload:
+      __enabled: true
+      metadata:
+        name: component-c
+      spec:
+        replicas: 3

@@ -1,0 +1,34 @@
+suite: "Dynamic Components Tests"
+
+templates:
+  - "templates/render.yaml"
+
+tests:
+  - it: "Should render only enabled components"
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: "Should render component-a with correct configuration"
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.replicas
+          value: 4
+      - matchRegex:
+          path: metadata.name
+          pattern: component-a
+
+  - it: "Should render component-c with correct configuration"
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Deployment
+      - equal:
+          path: spec.replicas
+          value: 3
+      - matchRegex:
+          path: metadata.name
+          pattern: component-c

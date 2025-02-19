@@ -1,0 +1,8 @@
+apiVersion: v2
+name: all-resource-kinds-test
+version: 0.1.0
+
+dependencies:
+  - name: common
+    repository: "file://../../.."
+    version: ">=0.0.0-0"

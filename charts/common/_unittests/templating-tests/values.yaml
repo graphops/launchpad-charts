@@ -1,0 +1,32 @@
+testComponent:
+  __enabled: true
+
+  configMap:
+    __enabled: true
+    data:
+      greeting: "Hello from {{ .Root.Release.Name }} for {{ .componentName }}"
+
+  workload:
+    __enabled: true
+    kind: Deployment
+    spec:
+      selector:
+        matchLabels:
+          app: test-workload
+      template:
+        metadata:
+          labels:
+            app: test-workload
+        spec:
+          containers:
+            main:
+              name: main
+              image: nginx:latest
+      replicas: |
+        @needs(.Self.configMap.data.greeting as myGreeting)
+        @type(int)
+        {{ if eq $myGreeting "Hello from release-name for testComponent" -}}
+        3
+        {{ else -}}
+        0
+        {{ end -}}
