@@ -75,13 +75,13 @@ spec:
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: busybox:stable
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
           imagePullPolicy: IfNotPresent
           command:
             - sh
             - -c
             - |
-              set -x
+              set -ex
               STORAGE_PATH="/storage"
               if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
                 SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
@@ -96,8 +96,20 @@ spec:
                   rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  
+                  # Check if the snapshot is lz4 compressed
+                  if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
+                    cd "$STORAGE_PATH"
+                    wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                    lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
+                    tar -xvf snapshot.tar -C "$SNAPSHOT_RESTORE_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
+                    rm snapshot.tar snapshot.tar.lz4
+                  else
+                    # Original tar extraction logic
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  fi
+                  
                   echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
                 else
                   echo "Snapshot configuration already restored, continuing..."
