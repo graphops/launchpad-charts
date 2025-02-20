@@ -111,25 +111,6 @@ spec:
             - name: env-external-endpoint
               mountPath: /env
       {{- end }}
-      {{- if $values.initChownData.enabled }}
-        - name: init-chown-data
-          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
-          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-          command:
-            - sh
-            - -ac
-            - |
-              set -ex;
-              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
-              chmod -R 700 /storage; # lighthouse expects 700 permissions
-              ls -lah /storage
-          volumeMounts:
-            - name: storage
-              mountPath: "/storage"
-      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

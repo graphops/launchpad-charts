@@ -2,7 +2,7 @@
 
 Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v6.0.1](https://img.shields.io/badge/AppVersion-v6.0.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v7.0.0-beta.0](https://img.shields.io/badge/AppVersion-v7.0.0--beta.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -87,10 +87,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.executionClientUrl | URL to the Execution Client Engine API. Will use configured JWT to authenticate. | string | `""` |
  | lighthouse.extraArgs | Additional CLI arguments | list | `[]` |
  | lighthouse.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
- | lighthouse.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
- | lighthouse.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
- | lighthouse.initChownData.image.repository | Container repository | string | `"busybox"` |
- | lighthouse.initChownData.image.tag | Container tag | string | `"1.37.0"` |
  | lighthouse.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | lighthouse.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | lighthouse.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
@@ -103,7 +99,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.p2pHostPort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | lighthouse.p2pHostPort.port | First port of the 2-port range to be used. The ports must be unique | int | `31000` |
  | lighthouse.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | lighthouse.podSecurityContext | Pod-wide security context | object | `{"fsGroup":0,"runAsGroup":0,"runAsUser":0}` |
  | lighthouse.pruneBlobs | Prune blobs? leave false for an archive node that retains hisotrical blobs | bool | `false` |
  | lighthouse.resources |  | object | `{}` |
  | lighthouse.service.ports.http-lighthouse | Service Port to expose REST http interface on | int | `5052` |
