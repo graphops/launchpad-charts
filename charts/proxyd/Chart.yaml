@@ -1,6 +1,6 @@
 apiVersion: v2
 name: proxyd
-description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/optimism/tree/develop/proxyd) inside Kubernetes with ease
+description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
 
 # A chart can be either an 'application' or a 'library' chart.
 #
