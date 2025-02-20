@@ -110,10 +110,9 @@ lighthouse:
 
   # -- Pod-wide security context
   podSecurityContext:
-    runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: 0
 
   service:
     topologyAwareRouting:
@@ -173,14 +172,3 @@ lighthouse:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
-
-  initChownData:
-    # -- Init container to set the correct permissions to access data directories
-    enabled: true
-    image:
-      # -- Container repository
-      repository: busybox
-      # -- Container tag
-      tag: "1.37.0"
-      # -- Container pull policy
-      pullPolicy: IfNotPresent
