@@ -111,10 +111,9 @@ spec:
             - name: env-external-endpoint
               mountPath: /env
       {{- end }}
-      {{- if $values.initChownData.enabled }}
-        - name: init-chown-data
-          image: "{{ $values.initChownData.image.repository }}:{{ $values.initChownData.image.tag }}"
-          imagePullPolicy: {{ $values.initChownData.image.pullPolicy }}
+        - name: set-permissions
+          image: docker.io/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
@@ -123,13 +122,16 @@ spec:
             - -ac
             - |
               set -ex;
-              chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
-              chmod -R 700 /storage; # lighthouse expects 700 permissions
-              ls -lah /storage
+              if [ ! -f /storage/permissions_set ]; then
+                chown -R root:root /storage;
+                chmod -R 700 /storage; # lighthouse expects 700 permissions
+                touch /storage/permissions_set
+              else
+                echo "Permissions already set, skipping"
+              fi
           volumeMounts:
             - name: storage
               mountPath: "/storage"
-      {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
