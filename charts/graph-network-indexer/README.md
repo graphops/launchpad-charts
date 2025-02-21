@@ -134,7 +134,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.config |  | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.4.2"}` |
+ | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.4.1"}` |
  | indexerService.nodeSelector |  | object | `{}` |
  | indexerService.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerService.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -151,7 +151,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.command | Entrypoint command to run | string | `"/usr/local/bin/indexer-tap-agent"` |
  | indexerTapAgent.config |  | object | `{}` |
  | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.9.1"}` |
+ | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.9.0"}` |
  | indexerTapAgent.nodeSelector |  | object | `{}` |
  | indexerTapAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
