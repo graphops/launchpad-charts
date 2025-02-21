@@ -1,0 +1,29 @@
+# multiple-components-test
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://../../.. | common | >=0.0.0-0 |
+
+## Values
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | component1.__enabled |  | bool | `true` |
+ | component1.workload.__enabled |  | bool | `true` |
+ | component1.workload.spec.replicas |  | int | `3` |
+ | component1Overrides |  | object | `{}` |
+ | component2.__enabled |  | bool | `true` |
+ | component2.workload.__enabled |  | bool | `true` |
+ | component2.workload.spec.replicas |  | int | `2` |
+ | component2Overrides |  | object | `{}` |
+ | defaultLayer.workload.__enabled |  | bool | `true` |
+ | defaultLayer.workload.kind |  | string | `"Deployment"` |
+ | defaultLayer.workload.spec.selector.matchLabels.app |  | string | `"test-workload"` |
+ | defaultLayer.workload.spec.template.metadata.labels.app |  | string | `"test-workload"` |
+ | defaultLayer.workload.spec.template.spec.containers.main.image |  | string | `"nginx:latest"` |
+ | defaultLayer.workload.spec.template.spec.containers.main.name |  | string | `"main"` |
+

@@ -1,0 +1,17 @@
+# definition-blocks-test
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square)
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| file://../../ | common | >=0.0.0-0 |
+
+## Values
+
+| Key | Description | Type | Default |
+|-----|-------------|------|---------|
+ | defaults |  | object | `{}` |
+ | testComponent.__enabled |  | bool | `true` |
+
