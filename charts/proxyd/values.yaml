@@ -123,7 +123,7 @@ backends:
 
   # -- Options for backend groups
 backendGroups:
-  # -- Set the routing strategy (consensus_aware | multicall | fallback)
+  # -- Set the routing strategy (consensus_aware \| multicall \| fallback)
   routing_strategy: consensus_aware
 
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
