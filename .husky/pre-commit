@@ -1,6 +1,6 @@
 helm-docs --template-files=./templates.gotmpl --template-files=README.md.gotmpl
 
-for FILE in charts/**/README.md; do
+for FILE in charts/*/README.md; do
    [ -f "$FILE" ] || continue
    git add $FILE
 done
