@@ -77,6 +77,9 @@ spec:
         - name: init-snapshot
           image: ghcr.io/graphops/docker-builds/init-stream-download:main
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
           command:
             - sh
             - -c
@@ -93,7 +96,7 @@ spec:
                 echo "Snapshot restoration enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"/*
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   
@@ -119,7 +122,7 @@ spec:
               fi
           volumeMounts:
             - name: storage
-              mountPath: /storage
+              mountPath: {{ $values.datadir }}
           env:
             - name: RESTORE_SNAPSHOT
               value: "true"
@@ -204,7 +207,7 @@ spec:
             {{- end }}
               set -ex;
               exec erigon \
-                --datadir=/storage \
+                --datadir={{ $values.datadir }} \
               {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:${EXTERNAL_IP} \
                 --port=${EXTERNAL_PORT} \
@@ -264,7 +267,7 @@ spec:
               mountPath: /jwt
             {{- end }}
             - name: storage
-              mountPath: /storage
+              mountPath: {{ $values.datadir }}
             - name: tmp
               mountPath: /tmp
           {{- if $values.readinessProbe }}

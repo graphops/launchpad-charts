@@ -160,6 +160,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | statefulNode.datadir | The path to the Erigon data directory | string | `"/storage"` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
  | statefulNode.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | statefulNode.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
