@@ -96,25 +96,19 @@ spec:
                 echo "Snapshot restoration enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   echo "Clearing existing chaindata..."
-                  # Clear contents of directory if it exists, preserving the directory itself
-                  if [ -d "$SNAPSHOT_RESTORE_PATH" ]; then
-                    find "$SNAPSHOT_RESTORE_PATH" -mindepth 1 -delete
-                  else
-                    mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  fi
+                  rm -rf "$SNAPSHOT_RESTORE_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   
                   # Check if the snapshot is lz4 compressed
                   if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
                     cd "$STORAGE_PATH"
-                    mkdir -p "$SNAPSHOT_RESTORE_PATH"
                     wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
                     lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
                     tar -xvf snapshot.tar -C "$SNAPSHOT_RESTORE_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
                     rm snapshot.tar snapshot.tar.lz4
                   else
                     # Original tar extraction logic
-                    mkdir -p "$SNAPSHOT_RESTORE_PATH"
                     wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
                     [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
                   fi
