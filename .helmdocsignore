@@ -1,4 +1,1 @@
-charts/**/tests/**
-charts/**/_unittests/**
-**/_unittests/**
 charts/common/_unittests/
