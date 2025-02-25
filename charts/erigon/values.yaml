@@ -89,7 +89,7 @@ statefulNode:
   datadir: /storage
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
-  volumeClaimSpecs:
+  volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
     # -- The storage class to use when provisioning a persistent volume for Erigon
     storageClassName: 
