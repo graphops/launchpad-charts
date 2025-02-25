@@ -1,4 +1,4 @@
 charts/**/tests/**
 charts/**/_unittests/**
 **/_unittests/**
-charts/erigon/
+charts/common/_unittests/
