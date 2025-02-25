@@ -1,1 +1,2 @@
-charts/*/_unittests/
+charts/*/tests/*
+charts/*/_unittests/*
