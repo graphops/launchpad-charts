@@ -96,7 +96,12 @@ spec:
                 echo "Snapshot restoration enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"/*
+                  # Clear contents of directory if it exists, preserving the directory itself
+                  if [ -d "$SNAPSHOT_RESTORE_PATH" ]; then
+                    find "$SNAPSHOT_RESTORE_PATH" -mindepth 1 -delete
+                  else
+                    mkdir -p "$SNAPSHOT_RESTORE_PATH"
+                  fi
                   echo "Downloading and extracting $SNAPSHOT_URL..."
                   mkdir -p "$SNAPSHOT_RESTORE_PATH"
                   
