@@ -86,34 +86,27 @@ spec:
             - |
               set -ex
               STORAGE_PATH="/storage"
-              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-              else
-                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
-              fi
+              CHAINDATA_PATH="$STORAGE_PATH/chaindata"
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   echo "Clearing existing chaindata..."
-                  # Clear contents of directory if it exists, preserving the directory itself
-                  if [ -d "$SNAPSHOT_RESTORE_PATH" ]; then
-                    find "$SNAPSHOT_RESTORE_PATH" -mindepth 1 -delete
-                  else
-                    mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  fi
+                  # Only remove chaindata directory, preserving from_snapshot file
+                  rm -rf "$CHAINDATA_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$CHAINDATA_PATH"
                   
                   # Check if the snapshot is lz4 compressed
                   if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
                     cd "$STORAGE_PATH"
                     wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
                     lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
-                    tar -xvf snapshot.tar -C "$SNAPSHOT_RESTORE_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
+                    tar -xvf snapshot.tar -C "$CHAINDATA_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
                     rm snapshot.tar snapshot.tar.lz4
                   else
                     # Original tar extraction logic
-                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$CHAINDATA_PATH"
                     [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
                   fi
                   
@@ -130,8 +123,7 @@ spec:
           env:
             - name: RESTORE_SNAPSHOT
               value: "true"
-            - name: SNAPSHOT_RESTORE_PATH
-              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
+
             - name: SNAPSHOT_URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
           {{- with $values.env }}
