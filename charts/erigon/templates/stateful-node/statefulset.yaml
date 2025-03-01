@@ -73,31 +73,64 @@ spec:
           emptyDir: {}
       {{- end }}
       initContainers:
+        - name: set-permissions
+          image: docker.io/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              if [ ! -f /storage/permissions_set ]; then
+                chown -R 1000:1000 /storage;
+                chmod -R 750 /storage;
+                touch /storage/permissions_set
+              else
+                echo "Permissions already set, skipping"
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
-          image: busybox:stable
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
           command:
             - sh
             - -c
             - |
-              set -x
+              set -ex
               STORAGE_PATH="/storage"
-              if [ "${SNAPSHOT_RESTORE_PATH}" == "" ]; then
-                SNAPSHOT_RESTORE_PATH="$STORAGE_PATH/chaindata"
-              else
-                SNAPSHOT_RESTORE_PATH="${SNAPSHOT_RESTORE_PATH}"
-              fi
+              CHAINDATA_PATH="$STORAGE_PATH/chaindata"
               # If enabled and snapshot URL has been provided, restore snapshot
               if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
                 echo "Snapshot restoration enabled"
                 if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                   echo "Clearing existing chaindata..."
-                  rm -rf "$SNAPSHOT_RESTORE_PATH"
+                  # Only remove chaindata directory, preserving from_snapshot file
+                  rm -rf "$CHAINDATA_PATH"
                   echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$SNAPSHOT_RESTORE_PATH"
-                  wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$SNAPSHOT_RESTORE_PATH"
-                  [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  mkdir -p "$CHAINDATA_PATH"
+                  
+                  # Check if the snapshot is lz4 compressed
+                  if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
+                    cd "$STORAGE_PATH"
+                    wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                    lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
+                    tar -xvf snapshot.tar -C "$CHAINDATA_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
+                    rm snapshot.tar snapshot.tar.lz4
+                  else
+                    # Original tar extraction logic
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$CHAINDATA_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  fi
+                  
                   echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
                 else
                   echo "Snapshot configuration already restored, continuing..."
@@ -105,14 +138,15 @@ spec:
               else
                 echo "Snapshot restoration not enabled, skipping..."
               fi
+              # Ensure directories are writable
+              chmod -R 777 "$STORAGE_PATH" "$CHAINDATA_PATH"
           volumeMounts:
             - name: storage
-              mountPath: /storage
+              mountPath: {{ $values.datadir }}
           env:
             - name: RESTORE_SNAPSHOT
               value: "true"
-            - name: SNAPSHOT_RESTORE_PATH
-              value: {{ $values.restoreSnapshot.snapshotRestorePath | default ""  }}
+
             - name: SNAPSHOT_URL
               value: {{ $values.restoreSnapshot.snapshotUrl }}
           {{- with $values.env }}
@@ -192,7 +226,7 @@ spec:
             {{- end }}
               set -ex;
               exec erigon \
-                --datadir=/storage \
+                --datadir={{ $values.datadir }} \
               {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:${EXTERNAL_IP} \
                 --port=${EXTERNAL_PORT} \
@@ -252,7 +286,7 @@ spec:
               mountPath: /jwt
             {{- end }}
             - name: storage
-              mountPath: /storage
+              mountPath: {{ $values.datadir }}
             - name: tmp
               mountPath: /tmp
           {{- if $values.readinessProbe }}

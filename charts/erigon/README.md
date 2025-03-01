@@ -147,7 +147,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | rpcdaemon.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | rpcdaemon.nodeSelector |  | object | `{}` |
  | rpcdaemon.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | rpcdaemon.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | rpcdaemon.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
  | rpcdaemon.replicaCount | Number of replicas to run | int | `2` |
  | rpcdaemon.resources.limits |  | object | `{}` |
  | rpcdaemon.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
@@ -160,6 +160,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | statefulNode.datadir | The path to the Erigon data directory | string | `"/storage"` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
  | statefulNode.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
  | statefulNode.extraInitContainers | Additional init containers to inject to this graph node group - an array of Container objects | list | `[]` |
@@ -177,7 +178,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
  | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |

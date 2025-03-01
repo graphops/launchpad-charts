@@ -85,6 +85,9 @@ statefulNode:
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
 
+  # -- The path to the Erigon data directory
+  datadir: /storage
+
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
@@ -132,9 +135,9 @@ statefulNode:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
   service:
     topologyAwareRouting:
@@ -220,9 +223,9 @@ rpcdaemon:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 101337
-    runAsGroup: 101337
-    fsGroup: 101337
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
   service:
     type: ClusterIP
