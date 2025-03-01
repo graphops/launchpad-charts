@@ -117,6 +117,8 @@ spec:
               else
                 echo "Snapshot restoration not enabled, skipping..."
               fi
+              # Ensure directories are writable
+              chmod -R 777 "$STORAGE_PATH" "$CHAINDATA_PATH"
           volumeMounts:
             - name: storage
               mountPath: {{ $values.datadir }}
