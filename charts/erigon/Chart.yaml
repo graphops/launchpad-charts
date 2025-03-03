@@ -22,4 +22,4 @@ version: 0.10.12
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=erigontech/erigon
-appVersion: "v2.61.1"
+appVersion: "v2.61.2"
