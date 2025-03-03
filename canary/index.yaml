@@ -1687,6 +1687,16 @@ entries:
       version: 0.0.1-canary.1
   erigon:
     - apiVersion: v2
+      appVersion: v2.61.2
+      created: "2025-03-03T20:44:11Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: f932fa15dffd87fe54d7c3dc08667d0ec1bd4b476ca38f3d3398247527802294
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.10.13-canary.1/erigon-0.10.13-canary.1.tgz
+      version: 0.10.13-canary.1
+    - apiVersion: v2
       appVersion: v2.61.1
       created: "2025-02-18T10:34:35Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -6437,6 +6447,16 @@ entries:
   nethermind:
     - apiVersion: v2
       appVersion: 1.31.3
+      created: "2025-03-03T20:44:35Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 9701763e849822ed2854e1d853602d484c43d5269ce53d9faa65621a27cf372c
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.22/nethermind-0.4.3-canary.22.tgz
+      version: 0.4.3-canary.22
+    - apiVersion: v2
+      appVersion: 1.31.3
       created: "2025-03-03T15:07:04Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
       digest: fa1ea6bbabc28898517de6fc5cf20384ddaf40e67746f0525219d20b88a3ebf3
@@ -8891,7 +8911,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-03T15:11:30.695610591Z"
+      created: "2025-03-03T20:55:47.181485881Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -8901,7 +8921,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-03T15:11:30.695033277Z"
+      created: "2025-03-03T20:55:47.180900502Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -9441,4 +9461,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-03-03T15:11:29.833258641Z"
+generated: "2025-03-03T20:55:46.298678619Z"
