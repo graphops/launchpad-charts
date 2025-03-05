@@ -92,8 +92,8 @@ spec:
             - |
               set -ex;
               if [ ! -f /storage/permissions_set ]; then
-                chown -R 1000:1000 /storage;
-                chmod -R 755 /storage;
+                chown -R {{ $values.podSecurityContext.runAsUser }}:{{ $values.podSecurityContext.runAsGroup }} /storage;
+                chmod -R 750 /storage;
                 touch /storage/permissions_set
               else
                 echo "Permissions already set, skipping"
