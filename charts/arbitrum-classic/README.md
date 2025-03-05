@@ -135,7 +135,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | arbitrum.extraLabels | Extra labels to attach to the Pod for matching against | object | `{}` |
  | arbitrum.nodeSelector |  | object | `{}` |
  | arbitrum.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | arbitrum.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | arbitrum.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
  | arbitrum.resources |  | object | `{}` |
  | arbitrum.restoreSnapshot.chunkSize | Size of chunks for chunked downloading. Too small hurts performance, too big leads to more waste when it needs to be retried | int | `1000000000` |
  | arbitrum.restoreSnapshot.cleanSubpath | Erase destination path before unpacking | bool | `true` |
