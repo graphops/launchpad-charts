@@ -2,7 +2,7 @@
 
 Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.6](https://img.shields.io/badge/Version-0.6.6-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.12.0](https://img.shields.io/badge/AppVersion-v4.12.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.5](https://img.shields.io/badge/Version-0.6.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.12.0](https://img.shields.io/badge/AppVersion-v4.12.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -159,7 +159,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.extraArgs | Additional CLI arguments to pass to `proxyd` | list | `[]` |
  | proxyd.nodeSelector |  | object | `{}` |
  | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101,"runAsGroup":101,"runAsNonRoot":true,"runAsUser":100}` |
+ | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | proxyd.replicaCount | Number of replicas | int | `1` |
  | proxyd.resources |  | object | `{}` |
  | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |

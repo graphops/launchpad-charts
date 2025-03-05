@@ -2,7 +2,7 @@
 
 Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.10](https://img.shields.io/badge/Version-0.1.10-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.8](https://img.shields.io/badge/AppVersion-1.8.8-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.1.9](https://img.shields.io/badge/Version-0.1.9-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.8.8](https://img.shields.io/badge/AppVersion-1.8.8-informational?style=flat-square)
 
 ## Features
 
@@ -73,7 +73,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | celo.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
  | celo.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | celo.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":65534,"runAsGroup":65534,"runAsNonRoot":true,"runAsUser":65534}` |
+ | celo.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
  | celo.resources |  | object | `{}` |
  | celo.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | celo.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |

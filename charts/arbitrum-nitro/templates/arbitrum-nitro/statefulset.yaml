@@ -80,6 +80,27 @@ spec:
           {{- end }}
           {{- end }}
       {{- end }}
+        - name: set-permissions
+          image: docker.io/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              if [ ! -f /storage/permissions_set ]; then
+                chown -R 1000:1000 /storage;
+                chmod -R 755 /storage;
+                touch /storage/permissions_set
+              else
+                echo "Permissions already set, skipping"
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

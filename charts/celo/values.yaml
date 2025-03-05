@@ -98,9 +98,9 @@ celo:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 65534
-    runAsGroup: 65534
-    fsGroup: 65534
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
 
   service:
     topologyAwareRouting:
