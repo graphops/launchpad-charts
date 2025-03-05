@@ -1327,6 +1327,16 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.9
+      created: "2025-03-05T23:09:08Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: d9044625785064c982ff2393aef1db98d277d151c30feb6e8142c634c4fef4b9
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.10/celo-0.1.10.tgz
+      version: 0.1.10
+    - apiVersion: v2
+      appVersion: 1.8.9
       created: "2025-03-05T23:08:43Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: 57ab99d21ab4a1abc73c752aef1994b6d799252a128d7744cb43876aaa84a164
@@ -9071,7 +9081,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-05T23:19:12.365661723Z"
+      created: "2025-03-05T23:31:42.732770476Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9081,7 +9091,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-05T23:19:12.365077291Z"
+      created: "2025-03-05T23:31:42.732175497Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -9621,4 +9631,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-03-05T23:19:11.495230926Z"
+generated: "2025-03-05T23:31:41.856575461Z"
