@@ -35,8 +35,8 @@ heimdall:
   # -- Enable creation of `StatefulSet` for Heimdall
   enabled: true
   image:
-    # -- Image for Heimdall
-    repository: 0xpolygon/heimdall
+    # -- Image for Heimdall with dumb-init to handle zombie processes
+    repository: ghcr.io/graphops/docker-builds/heimdall
     pullPolicy: IfNotPresent
     # -- Overrides the image tag
     # @default -- Chart.appVersion
