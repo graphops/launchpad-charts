@@ -26,5 +26,5 @@ appVersion: "scroll-v5.8.5"
 
 dependencies:
   - name: common
-    version: 0.1.0
-    repository: "file://../common"  # Use the relative path to your local library chart
+    version: 0.0.1-canary.1
+    repository: https://graphops.github.io/launchpad-charts/canary

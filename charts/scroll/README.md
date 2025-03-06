@@ -8,7 +8,7 @@ Deploy and scale [Scroll](https://github.com/scroll-tech/go-ethereum) inside Kub
 
 | Repository | Name | Version |
 |------------|------|---------|
-| file://../common | common | 0.1.0 |
+| https://graphops.github.io/launchpad-charts/canary | common | 0.0.1-canary.1 |
 
 ## Values
 
