@@ -5,7 +5,7 @@ global:
   nameOverride: ""
   fullnameOverride: ""
   # -- Global labels added to all resources
-  labels: &globalLabels
+  labels:
     helm.sh/chart: '{{ include "common.metadata.chart" . }}'
     app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
     app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
@@ -13,9 +13,9 @@ global:
     app.kubernetes.io/managed-by: '{{ .Root.Release.Service }}'
     app.kubernetes.io/component: '{{ .componentName }}'
     app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
-    version.firehose.graphops.xyz/fireeth: "2.9.3"
-    version.firehose.graphops.xyz/node: "1.13.15"
-    version.firehose.graphops.xyz/protocol: "2.4"
+    version.firehose.graphops.xyz/fireeth: "2.11.1"
+    version.firehose.graphops.xyz/node: "1.15.5"
+    version.firehose.graphops.xyz/protocol: "3.0"
   # -- Global annotations added to all resources
   annotations: {}
 
@@ -30,7 +30,7 @@ firehoseComponentDefaults:
     pullPolicy: "IfNotPresent"
     # -- Overrides the image reference using a tag
     # digest takes precedence over tag if both are set
-    tag: "v2.9.3-geth-v1.13.15-fh2.4"
+    tag: "v2.11.1-geth-v1.15.5-fh3.0 "
     # -- Overrides the image reference using a specific digest
     digest: ""
 
@@ -100,6 +100,13 @@ firehoseComponentDefaults:
       common-live-blocks-addr: "relayer:10014"
       common-auto-mem-limit-percent: 95
       common-auto-max-procs: true
+      common-auth-plugin: null://
+      substreams-block-execution-timeout: 3m0s
+      substreams-rpc-endpoints: null
+      substreams-rpc-gas-limit: "50000000"
+      substreams-state-bundle-size: 1000
+      substreams-state-store-default-tag: ""
+      substreams-state-store-url: null
 
     # -- Command line arguments for fireeth
     # Generated from this map and format can be
@@ -143,8 +150,10 @@ firehoseComponentDefaults:
     # -- Any remaiing key/values can be added and will be
     # merged with the templated ConfigMap resource
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ .Root.Release.Name }}-{{ .componentName }}-config'
     data:
@@ -199,8 +208,10 @@ firehoseComponentDefaults:
       metadata:
         name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}'
         # -- Additional service labels
-        labels:
-          <<: *globalLabels
+        labels: |-
+          {{ $globalLabels | toYaml }}
+          @needs(.Root.Values.global.labels as globalLabels)
+          @type(yaml)
         # -- Additional service annotations
         annotations: {}
     headless:
@@ -214,8 +225,10 @@ firehoseComponentDefaults:
       metadata:
         name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-headless'
         # -- Additional service labels
-        labels:
-          <<: *globalLabels
+        labels: |-
+          {{ $globalLabels | toYaml }}
+          @needs(.Root.Values.global.labels as globalLabels)
+          @type(yaml)
         # -- Additional service annotations
         annotations: {}
     # -- Creates a NodePort service (used in P2P support)
@@ -251,10 +264,12 @@ firehoseComponentDefaults:
       metadata:
         name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-p2p'
         # -- Additional service labels
-        labels:
-          <<: *globalLabels
+        labels: |-
           type: p2p
           pod: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-0'
+          {{ $globalLabels | toYaml }}
+          @needs(.Root.Values.global.labels as globalLabels)
+          @type(yaml)
         # -- Additional service annotations
         annotations: {}
 
@@ -266,8 +281,10 @@ firehoseComponentDefaults:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
     __enabled: true
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ printf "%s-%s" (include "common.metadata.fullname" $) .componentName }}'
     spec:
@@ -300,8 +317,10 @@ firehoseComponentDefaults:
       # -- Annotations to add to the service account
       annotations: {}
       # -- Labels to add to the service account
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
     # secrets: []
 
   # -- RBAC role and binding configuration
@@ -309,8 +328,10 @@ firehoseComponentDefaults:
     __enabled: '{{ $SAEnabled }} @needs(.Self.serviceAccount.__enabled as SAEnabled)'
     __name: "role"
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ printf "%s-%s-%s" .Root.Release.Name .componentName $roleName }} @needs(.Self.role.__name as roleName)'
     rules: []
@@ -318,8 +339,10 @@ firehoseComponentDefaults:
   roleBinding:
     __enabled: '{{ $roleEnabled }} @needs(.Self.role.__enabled as roleEnabled)'
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ printf "%s-%s-%s" .Root.Release.Name .componentName $roleName }} @needs(.Self.role.__name as roleName)'
     roleRef:
@@ -336,8 +359,10 @@ firehoseComponentDefaults:
   clusterRole:
     __enabled: false
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: my-cluster-role
     rules: []
@@ -345,8 +370,10 @@ firehoseComponentDefaults:
   clusterRoleBinding:
     __enabled: false
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ print "%s-binding" $roleName }} @needs(.Self.clusterRole.metadata.name as roleName)'
     roleRef:
@@ -372,8 +399,10 @@ firehoseComponentDefaults:
           app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
           app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
       name: '{{ .Root.Release.Name }}-{{ .componentName }}'
 
@@ -382,8 +411,10 @@ firehoseComponentDefaults:
     __enabled: false
     # -- Anything else will be marge on the final horizonta.Self.utoscaler resource template
     metadata:
-      labels:
-        <<: *globalLabels
+      labels: |-
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       annotations: {}
     spec: {}
       # example:
@@ -404,10 +435,12 @@ firehoseComponentDefaults:
       # -- Component level annotations (templated)
       annotations: {}
       # -- Component level labels (templated)
-      labels:
-        <<: *globalLabels
+      labels: |-
         app.kubernetes.io/component: '{{ .componentName }}'
         app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
+        {{ $globalLabels | toYaml }}
+        @needs(.Root.Values.global.labels as globalLabels)
+        @type(yaml)
       name: '{{ printf "%s-%s" (include "common.metadata.fullname" $) .componentName }}'
     spec:
       selector:
@@ -423,8 +456,10 @@ firehoseComponentDefaults:
         type: RollingUpdate
       template:
         metadata:
-          labels:
-            <<: *globalLabels
+          labels: |-
+            {{ $globalLabels | toYaml }}
+            @needs(.Root.Values.global.labels as globalLabels)
+            @type(yaml)
         spec:
           serviceAccountName: '{{ $sa.__enabled | ternary $sa.metadata.name nil }} @needs(.Self.serviceAccount as sa)'
           # Increasing the grace termination period prevents Kubernetes
@@ -699,7 +734,7 @@ firehoseServiceDefaults:
         __prefix: "--"
         __separator: "="
         datadir: "{node-data-dir}"
-        firehose-enabled: "__none"
+        vmtrace: firehose
         syncmode: "full"
         snapshot: "true"
         http: "__none"
@@ -788,8 +823,10 @@ firehoseServiceDefaults:
           data-dir:
             __enabled: true
             metadata:
-              labels:
-                <<: *globalLabels
+              labels: |-
+                {{ $globalLabels | toYaml }}
+                @needs(.Root.Values.global.labels as globalLabels)
+                @type(yaml)
               name: data-dir
             spec:
               accessModes: [ "ReadWriteOnce" ]
@@ -800,8 +837,10 @@ firehoseServiceDefaults:
           node-data-dir:
             __enabled: true
             metadata:
-              labels:
-                <<: *globalLabels
+              labels: |-
+                {{ $globalLabels | toYaml }}
+                @needs(.Root.Values.global.labels as globalLabels)
+                @type(yaml)
               name: node-data-dir
             spec:
               accessModes: [ "ReadWriteOnce" ]
@@ -886,6 +925,78 @@ firehoseServiceDefaults:
                     exec:
                       command: ["/usr/local/bin/eth-maintenance"]
 
+  substreams-tier1:
+    fireeth:
+      config:
+        substreams-tier1-active-requests-hard-limit: 0
+        substreams-tier1-active-requests-soft-limit: 4
+        substreams-tier1-enforce-compression: true
+        substreams-tier1-grpc-listen-addr: :10016*
+        substreams-tier1-max-subrequests: 4
+        substreams-tier1-subrequests-endpoint: :10017
+        substreams-tier1-subrequests-insecure: true
+        substreams-tier1-subrequests-plaintext: true
+        substreams-tier2-grpc-listen-addr: :10018
+        substreams-tier2-max-concurrent-requests: 4
+    services:
+      default: &tier1Svc
+        __enabled: true
+        spec:
+          ports:
+            tier1-grpc:
+              port: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              protocol: TCP
+            tier1-subreq:
+              port: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              protocol: TCP
+            tier2-grpc:
+              port: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              protocol: TCP
+      headless:
+        <<: *tier1Svc
+
+    workload:
+      spec:
+        template:
+          spec:
+            containers:
+              fireeth:
+                ports:
+                  tier1-grpc:
+                    containerPort: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    protocol: TCP
+                  tier1-subreq:
+                    containerPort: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    protocol: TCP
+                resources:
+                  requests:
+                    cpu: 8
+                    memory: 32Gi
+                  limits:
+                    cpu: 8
+                    memory: 32Gi
+  substreams-tier2:
+    fireeth:
+      config:
+        substreams-tier2-grpc-listen-addr: :10018
+        substreams-tier2-max-concurrent-requests: 4
+      spec:
+        template:
+          spec:
+            containers:
+              fireeth:
+                ports:
+                  tier2-grpc:
+                    containerPort: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    protocol: TCP
+                resources:
+                  requests:
+                    cpu: 8
+                    memory: 32Gi
+                  limits:
+                    cpu: 8
+                    memory: 32Gi
+
 # -- Definition and architecture of components to provision.
 # A component is a kubernetes workload (Deployment or StatefulSet).
 # The components will be named by the key name, and inherit the
@@ -922,3 +1033,15 @@ firehoseComponents:
     fireeth:
       services:
         - reader-node
+
+  substreams-tier1:
+    __enabled: false
+    fireeth:
+      services:
+        - substreams-tier1
+
+  substreams-tier2:
+    __enabled: false
+    fireeth:
+      services:
+        - substreams-tier2
