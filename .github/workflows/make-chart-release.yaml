@@ -117,6 +117,7 @@ jobs:
             echo "Chart version doesn't match release tag, please update"
           fi
 
+          helm dep build "charts/${{ needs.init.outputs.name }}"
           helm package "charts/${{ needs.init.outputs.name }}"
 
       - name: Upload artifact
