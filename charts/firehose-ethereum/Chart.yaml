@@ -21,9 +21,9 @@ version: 0.1.0-canary.6
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v2.9.3"
+appVersion: "v2.11.1"
 
 dependencies:
   - name: common
-    version: 0.1.0-canary.7
+    version: 0.0.1-canary.2
     repository: https://graphops.github.io/launchpad-charts/canary
