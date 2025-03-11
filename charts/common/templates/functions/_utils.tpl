@@ -733,18 +733,29 @@ Cache:
   {{/* Split path and normalize for caching */}}
   {{- $_ := (list $ $dep.key) | include "common.utils.splitPath" }}
   {{- $listPath := $.__common.fcallResult }}
-  {{/* Replace Self with a normalized path, to use the listPath as a cache key */}}
-  {{- $cacheKeyList := $listPath }}
-  {{- if eq (index $listPath 0) "Self" }}
-    {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $listPath 1) }}
-  {{- end }}
-  {{- $cacheKey := join "@" $cacheKeyList }}
+  {{/* Only cache .Self and .ComponentValues paths */}}
+  {{- $_useCache := false -}}
+  {{- $_cacheHit := false -}}
+  {{- $cacheKey := "" }}
+  {{- if regexMatch `(Self|ComponentValues)` (index $listPath 0) -}}
+    {{- $_useCache = true }}
+  {{- end -}}
+  {{- if $_useCache }}
+    {{/* Replace Self with a normalized path, to use the listPath as a cache key */}}
+    {{- $cacheKeyList := $listPath }}
+    {{- if eq (index $listPath 0) "Self" }}
+      {{- $cacheKeyList = concat (list "ComponentValues" $componentName) (slice $listPath 1) }}
+    {{- end }}
+    {{- $cacheKey = join "@" $cacheKeyList }}
 
-  {{/* Use cached value or resolve */}}
-  {{- if hasKey $.__common.cache $cacheKey }}
-    {{- $_ := set $dep "evalResult" (index $.__common.cache $cacheKey) }}
-    {{- $_ := set $dep "evalFailed" false }}
-  {{- else }}
+    {{/* Use cached value */}}
+    {{- if hasKey $.__common.cache $cacheKey }}
+      {{- $_ := set $dep "evalResult" (index $.__common.cache $cacheKey) }}
+      {{- $_ := set $dep "evalFailed" false }}
+      {{- $_cacheHit = true }}
+    {{- end }}
+  {{- end }}
+  {{- if or (not $_useCache) (and $_useCache (not $_cacheHit)) }}
     {{/* Resolve and cache new value */}}
     {{- (list $ $templateCtx $listPath) | include "common.utils.getNestedValue" }}
     {{- if not $.__common.fcallResult.error }}
@@ -755,8 +766,10 @@ Cache:
       {{- (list $ $value $evalTemplateCtx $componentName) | include "common.utils.templateCollection" }}
       {{- $_ := set $dep "evalResult" $.__common.fcallResult.result }}
       {{- $_ := set $dep "evalFailed" false }}
-      {{/* Save resolved value in cache */}}
-      {{- $_ := set $.__common.cache $cacheKey $dep.evalResult }}
+      {{/* Save resolved value in cache if appropriate */}}
+      {{- if $_useCache }}
+        {{- $_ := set $.__common.cache $cacheKey $dep.evalResult }}
+      {{- end }}
     {{- else }}
       {{- fail (printf "Failed to evaluate %s on %s, getting paths %v" $dep.var $dep.key $listPath) }}
       {{- $_ := set $dep "evalFailed" true }}
