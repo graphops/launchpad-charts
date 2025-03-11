@@ -3377,6 +3377,20 @@ entries:
       version: 0.1.0
   firehose-ethereum:
     - apiVersion: v2
+      appVersion: v2.11.1
+      created: "2025-03-11T22:27:12Z"
+      dependencies:
+        - name: common
+          repository: https://graphops.github.io/launchpad-charts/canary
+          version: 0.0.1-canary.2
+      description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
+      digest: 01526a0ac69fe889fa3685adab05a802b706a44d3cccd7bedb8b35dd37f32f94
+      name: firehose-ethereum
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/firehose-ethereum-0.1.0-canary.11/firehose-ethereum-0.1.0-canary.11.tgz
+      version: 0.1.0-canary.11
+    - apiVersion: v2
       appVersion: v2.6.7
       created: "2024-10-08T17:24:39Z"
       description: Deploy and scale all components of [Firehose EVM](https://github.com/streamingfast/firehose-ethereum) inside Kubernetes with ease
@@ -9110,7 +9124,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-11T19:16:51.467595997Z"
+      created: "2025-03-11T22:32:31.125862651Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9120,7 +9134,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-11T19:16:51.467006898Z"
+      created: "2025-03-11T22:32:31.125258548Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -9660,4 +9674,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-03-11T19:16:50.591878593Z"
+generated: "2025-03-11T22:32:30.225064585Z"
