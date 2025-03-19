@@ -84,6 +84,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.5.3-0a9c975
+      created: "2025-03-18T23:56:48Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: f795c272b03ad238f5628e40087ed65f20bbaf0ef8acecc958fc3edeac2a292c
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.1/arbitrum-nitro-0.6.1.tgz
+      version: 0.6.1
+    - apiVersion: v2
       appVersion: v3.5.2-33d30c0
       created: "2025-02-18T10:38:35Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -2847,6 +2857,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.14.3
+      created: "2025-03-18T23:57:40Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: f9bc522d4f70a378edf2ca46225f78fdbc7a6b3eb820673ec9a0cbaf4b90758c
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.7/proxyd-0.6.7.tgz
+      version: 0.6.7
+    - apiVersion: v2
       appVersion: v4.14.1
       created: "2025-03-05T23:06:19Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -3477,4 +3497,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-03-05T23:18:00.496091763Z"
+generated: "2025-03-19T00:01:57.255485384Z"
