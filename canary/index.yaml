@@ -205,6 +205,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.5.3-0a9c975
+      created: "2025-03-18T23:56:48Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: f795c272b03ad238f5628e40087ed65f20bbaf0ef8acecc958fc3edeac2a292c
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.1/arbitrum-nitro-0.6.1.tgz
+      version: 0.6.1
+    - apiVersion: v2
+      appVersion: v3.5.3-0a9c975
       created: "2025-03-18T23:56:27Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: bdb697cb98787627d292c30f2a2b94d3896519415ad62a51eb6d210c89c78540
@@ -8133,6 +8143,26 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.14.3
+      created: "2025-03-18T23:57:40Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: f9bc522d4f70a378edf2ca46225f78fdbc7a6b3eb820673ec9a0cbaf4b90758c
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.7/proxyd-0.6.7.tgz
+      version: 0.6.7
+    - apiVersion: v2
+      appVersion: v4.14.3
+      created: "2025-03-18T23:57:21Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: f8b8bb3796568c375fdc59cd8d6f292b9078f4a8cb1eafa642b578abac004112
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.7-canary.4/proxyd-0.6.7-canary.4.tgz
+      version: 0.6.7-canary.4
+    - apiVersion: v2
+      appVersion: v4.14.3
       created: "2025-03-13T18:42:24Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 5b858db0084e55127b36c9020783b2082e2857a49486f58e7b6a4683e1cd4ae5
@@ -9164,7 +9194,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-19T00:00:14.684022913Z"
+      created: "2025-03-19T00:03:19.558824779Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9174,7 +9204,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-03-19T00:00:14.683435836Z"
+      created: "2025-03-19T00:03:19.55820133Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -9714,4 +9744,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-03-19T00:00:13.794567487Z"
+generated: "2025-03-19T00:03:18.671857015Z"
