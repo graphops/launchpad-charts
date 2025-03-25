@@ -88,10 +88,8 @@ statefulNode:
   # -- The path to the Erigon data directory
   datadir: /storage
   
-  # -- Controls the pruning mode for erigon3
-  prune:
-    # -- Sets the pruning mode to use (archive, validator, full)
-    mode: "archive"
+  # -- Sets the pruning mode to use (archive, validator, full)
+  pruneMode: "archive"
     
   # -- Beacon API configuration for erigon3
   beaconApi:
@@ -104,18 +102,15 @@ statefulNode:
     # -- Comma-separated list of API namespaces to enable
     api: "beacon,builder,config,debug,events,node,lighthouse"
     # -- CORS allow methods
-    cors:
-      allowMethods: "*"
-      # -- CORS allow origins
-      allowOrigins: "*"
-    blocks:
-      # -- Enable blocks archive
-      archive: true
-    blobs:
-      # -- Enable blobs archive
-      archive: true
-      # -- Disable blobs pruning
-      noPruning: true
+    corsAllowMethods: "*"
+    # -- CORS allow origins
+    corsAllowOrigins: "*"
+    # -- Enable blocks archive
+    blocksArchive: true
+    # -- Enable blobs archive
+    blobsArchive: true
+    # -- Disable blobs pruning
+    blobsNoPruning: true
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
@@ -127,11 +122,7 @@ statefulNode:
         # -- The amount of disk space to provision for Erigon
         storage: 3Ti
 
-  restoreSnapshot:
-    # -- Enable initialising Erigon state from a remote snapshot
-    enabled: false
-    # -- URL for snapshot to download and extract to restore state
-    snapshotUrl: ""
+
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown

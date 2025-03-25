@@ -94,66 +94,7 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: "/storage"
-      {{- if $values.restoreSnapshot.enabled }}
-        - name: init-snapshot
-          image: ghcr.io/graphops/docker-builds/init-stream-download:main
-          imagePullPolicy: IfNotPresent
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-          command:
-            - sh
-            - -c
-            - |
-              set -ex
-              STORAGE_PATH="/storage"
-              CHAINDATA_PATH="$STORAGE_PATH/chaindata"
-              # If enabled and snapshot URL has been provided, restore snapshot
-              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
-                echo "Snapshot restoration enabled"
-                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
-                  echo "Clearing existing chaindata..."
-                  # Only remove chaindata directory, preserving from_snapshot file
-                  rm -rf "$CHAINDATA_PATH"
-                  echo "Downloading and extracting $SNAPSHOT_URL..."
-                  mkdir -p "$CHAINDATA_PATH"
-                  
-                  # Check if the snapshot is lz4 compressed
-                  if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
-                    cd "$STORAGE_PATH"
-                    wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
-                    lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
-                    tar -xvf snapshot.tar -C "$CHAINDATA_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
-                    rm snapshot.tar snapshot.tar.lz4
-                  else
-                    # Original tar extraction logic
-                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$CHAINDATA_PATH"
-                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
-                  fi
-                  
-                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
-                else
-                  echo "Snapshot configuration already restored, continuing..."
-                fi
-              else
-                echo "Snapshot restoration not enabled, skipping..."
-              fi
-          volumeMounts:
-            - name: storage
-              mountPath: {{ $values.datadir }}
-          env:
-            - name: RESTORE_SNAPSHOT
-              value: "true"
 
-            - name: SNAPSHOT_URL
-              value: {{ $values.restoreSnapshot.snapshotUrl }}
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
-            - name: {{ $key }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
-      {{- end }}
       {{- if $values.p2pNodePort.enabled }}
         - name: init-nodeport
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
@@ -242,17 +183,17 @@ spec:
               {{- end }}
                 --metrics \
                 --metrics.addr=0.0.0.0 \
-              {{- if $values.prune }}
-                --prune.mode={{ $values.prune.mode }} \
+              {{- if $values.pruneMode }}
+                --prune.mode={{ $values.pruneMode }} \
               {{- end }}
               {{- if $values.beaconApi.enabled }}
-                --caplin.blocks-archive={{ $values.beaconApi.blocks.archive }} \
-                --caplin.blobs-archive={{ $values.beaconApi.blobs.archive }} \
-                --caplin.blobs-no-pruning={{ $values.beaconApi.blobs.noPruning }} \
+                --caplin.blocks-archive={{ $values.beaconApi.blocksArchive }} \
+                --caplin.blobs-archive={{ $values.beaconApi.blobsArchive }} \
+                --caplin.blobs-no-pruning={{ $values.beaconApi.blobsNoPruning }} \
                 --beacon.api="{{ $values.beaconApi.api }}" \
                 --beacon.api.addr="{{ $values.beaconApi.addr }}" \
-                --beacon.api.cors.allow-methods="{{ $values.beaconApi.cors.allowMethods }}" \
-                --beacon.api.cors.allow-origins="{{ $values.beaconApi.cors.allowOrigins }}" \
+                --beacon.api.cors.allow-methods="{{ $values.beaconApi.corsAllowMethods }}" \
+                --beacon.api.cors.allow-origins="{{ $values.beaconApi.corsAllowOrigins }}" \
                 --beacon.api.port="{{ $values.beaconApi.port }}" \
               {{- end }}
               {{- range $arg := $values.extraArgs }}

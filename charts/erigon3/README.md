@@ -1,8 +1,8 @@
-# Erigon33 Helm Chart
+# Erigon3 Helm Chart
 
 Deploy and scale [Erigon3](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.10.14](https://img.shields.io/badge/Version-0.10.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v2.61.3](https://img.shields.io/badge/AppVersion-v2.61.3-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.1-canary.1](https://img.shields.io/badge/Version-0.0.1--canary.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.0.0](https://img.shields.io/badge/AppVersion-v3.0.0-informational?style=flat-square)
 
 ## Features
 
@@ -21,7 +21,7 @@ To install the chart with the release name `my-release`:
 
 ```console
 $ helm repo add graphops http://graphops.github.io/launchpad-charts
-$ helm install my-release graphops/erigon33
+$ helm install my-release graphops/erigon3
 ```
 
 Once the release is installed, Erigon will begin syncing. You can use `kubectl logs` to monitor the sync status. See the Values section to install Prometheus `ServiceMonitor`s and a Grafana dashboard.
@@ -89,24 +89,6 @@ statefulNode:
     port: 31000 # Must be globally unique and available on the host
 ```
 
-## Restoring chaindata from a snapshot
-
-You can specify a snapshot URL that will be used to restore Erigon's `chaindata` state. When enabled, an init container will perform a streaming extraction of the snapshot into storage. The snapshot should be a gzipped tarball of `chaindata`.
-
-Example:
-```yaml
-# values.yaml
-
-statefulNode:
-  restoreSnapshot:
-    enable: true
-    snapshotUrl: https://matic-blockchain-snapshots.s3-accelerate.amazonaws.com/matic-mainnet/erigon-archive-snapshot-2022-07-15.tar.gz
-```
-
-Once Erigon's state has been restored, the snapshot URL will be saved to storage at `/from_snapshot`. Any time the Erigon Pod starts, as long as the snapshot configuration has not changed, Erigon will boot with the existing state. If you modify the snapshot configuration, the init container will remove existing chaindata and restore state again.
-
-You can monitor progress by following the logs of the `stateful-node-init` container: `kubectl logs --since 1m -f release-name-stateful-node-0 -c stateful-node-init`
-
 ## Upgrading
 
 We recommend that you pin the version of the Chart that you deploy. You can use the `--version` flag with `helm install` and `helm upgrade` to specify a chart version constraint.
@@ -161,14 +143,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | statefulNode.beaconApi | Beacon API configuration for erigon3 | object | `{"addr":"0.0.0.0","api":"beacon,builder,config,debug,events,node,lighthouse","blobs":{"archive":true,"noPruning":true},"blocks":{"archive":true},"cors":{"allowMethods":"*","allowOrigins":"*"},"enabled":false,"port":5555}` |
+ | statefulNode.beaconApi | Beacon API configuration for erigon3 | object | `{"addr":"0.0.0.0","api":"beacon,builder,config,debug,events,node,lighthouse","blobsArchive":true,"blobsNoPruning":true,"blocksArchive":true,"corsAllowMethods":"*","corsAllowOrigins":"*","enabled":false,"port":5555}` |
  | statefulNode.beaconApi.addr | Beacon API address to bind to | string | `"0.0.0.0"` |
  | statefulNode.beaconApi.api | Comma-separated list of API namespaces to enable | string | `"beacon,builder,config,debug,events,node,lighthouse"` |
- | statefulNode.beaconApi.blobs.archive | Enable blobs archive | bool | `true` |
- | statefulNode.beaconApi.blobs.noPruning | Disable blobs pruning | bool | `true` |
- | statefulNode.beaconApi.blocks.archive | Enable blocks archive | bool | `true` |
- | statefulNode.beaconApi.cors | CORS allow methods | object | `{"allowMethods":"*","allowOrigins":"*"}` |
- | statefulNode.beaconApi.cors.allowOrigins | CORS allow origins | string | `"*"` |
+ | statefulNode.beaconApi.blobsArchive | Enable blobs archive | bool | `true` |
+ | statefulNode.beaconApi.blobsNoPruning | Disable blobs pruning | bool | `true` |
+ | statefulNode.beaconApi.blocksArchive | Enable blocks archive | bool | `true` |
+ | statefulNode.beaconApi.corsAllowMethods | CORS allow methods | string | `"*"` |
+ | statefulNode.beaconApi.corsAllowOrigins | CORS allow origins | string | `"*"` |
  | statefulNode.beaconApi.enabled | Enable Beacon API | bool | `false` |
  | statefulNode.beaconApi.port | Beacon API port to expose | int | `5555` |
  | statefulNode.datadir | The path to the Erigon data directory | string | `"/storage"` |
@@ -190,12 +172,9 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
- | statefulNode.prune | Controls the pruning mode for erigon3 | object | `{"mode":"archive"}` |
- | statefulNode.prune.mode | Sets the pruning mode to use (archive, validator, full) | string | `"archive"` |
+ | statefulNode.pruneMode | Sets the pruning mode to use (archive, validator, full) | string | `"archive"` |
  | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
- | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
- | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
  | statefulNode.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | statefulNode.service.ports.http-beaconapi | Service Port to expose Beacon API interface on | int | `5555` |
