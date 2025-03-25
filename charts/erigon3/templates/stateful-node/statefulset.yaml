@@ -1,0 +1,362 @@
+{{- $values := $.Values.statefulNode }}
+{{- $componentName := "stateful-node" }}
+{{- $componentLabel := include "erigon3.componentLabelFor" $componentName }}
+
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "erigon3.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "erigon3.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "erigon3.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "erigon3.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "erigon3.replicas" $values }}
+  selector:
+    matchLabels:
+      {{- include "erigon3.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  {{- if eq $values.updateStrategyType "OnDelete" }}
+  updateStrategy:
+    type: OnDelete
+  {{- else if eq $values.updateStrategyType "RollingUpdate" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: {{ default 0 ($values.rollingUpdatePartition | quote | atoi) }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "erigon3.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+        {{- with $values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "erigon3.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: env-nodeport
+          emptyDir: {}
+      {{- end }}
+      initContainers:
+        - name: set-permissions
+          image: docker.io/busybox:1.37.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              if [ ! -f /storage/permissions_set ]; then
+                chown -R 1000:1000 /storage;
+                chmod -R 750 /storage;
+                touch /storage/permissions_set
+              else
+                echo "Permissions already set, skipping"
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      {{- if $values.restoreSnapshot.enabled }}
+        - name: init-snapshot
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              STORAGE_PATH="/storage"
+              CHAINDATA_PATH="$STORAGE_PATH/chaindata"
+              # If enabled and snapshot URL has been provided, restore snapshot
+              if [ "${RESTORE_SNAPSHOT}" = "true" ] && [ "${SNAPSHOT_URL}" != "" ]; then
+                echo "Snapshot restoration enabled"
+                if [ ! -f "$STORAGE_PATH/from_snapshot" ] || [ "$(cat $STORAGE_PATH/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                  echo "Clearing existing chaindata..."
+                  # Only remove chaindata directory, preserving from_snapshot file
+                  rm -rf "$CHAINDATA_PATH"
+                  echo "Downloading and extracting $SNAPSHOT_URL..."
+                  mkdir -p "$CHAINDATA_PATH"
+                  
+                  # Check if the snapshot is lz4 compressed
+                  if [[ "${SNAPSHOT_URL}" == *.tar.lz4 ]]; then
+                    cd "$STORAGE_PATH"
+                    wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                    lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
+                    tar -xvf snapshot.tar -C "$CHAINDATA_PATH" || { echo "Extraction failed. Exiting."; exit 1; }
+                    rm snapshot.tar snapshot.tar.lz4
+                  else
+                    # Original tar extraction logic
+                    wget -c "${SNAPSHOT_URL}" -O - | tar -xz -C "$CHAINDATA_PATH"
+                    [ "$?" != "0" ] && echo "Streaming download failed" && exit 1
+                  fi
+                  
+                  echo "${SNAPSHOT_URL}" > ${STORAGE_PATH}/from_snapshot
+                else
+                  echo "Snapshot configuration already restored, continuing..."
+                fi
+              else
+                echo "Snapshot restoration not enabled, skipping..."
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: {{ $values.datadir }}
+          env:
+            - name: RESTORE_SNAPSHOT
+              value: "true"
+
+            - name: SNAPSHOT_URL
+              value: {{ $values.restoreSnapshot.snapshotUrl }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+      {{- end }}
+      {{- if $values.p2pNodePort.enabled }}
+        - name: init-nodeport
+          image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
+          command:
+            - sh
+            - -c
+            - |
+              set -ex;
+              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
+              until [ -n "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    # Attempt to retrieve the external IP using the current site
+                    EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+                    # If a valid IP is retrieved, exit the loop
+                    if [ -n "$EXTERNAL_IP" ]; then
+                      break
+                    fi
+                  fi
+                done
+                # Sleep for a second before retrying if EXTERNAL_IP is still not set
+                if [ -z "$EXTERNAL_IP" ]; then
+                  sleep 1
+                fi
+              done
+              export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
+              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
+              cat /env/init-nodeport;
+          volumeMounts:
+            - name: env-nodeport
+              mountPath: /env
+      {{- end }}
+      {{- with $values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+            {{- if $values.p2pNodePort.enabled }}
+              . /env/init-nodeport;
+            {{- end }}
+              set -ex;
+              exec erigon \
+                --datadir={{ $values.datadir }} \
+              {{- if $values.p2pNodePort.enabled }}
+                --nat=extip:${EXTERNAL_IP} \
+                --port=${EXTERNAL_PORT} \
+              {{- else }}
+                --port={{ include "erigon3.p2pPort" $values }} \
+              {{- end }}
+                --private.api.addr=0.0.0.0:9090 \
+                --http \
+                --http.addr=0.0.0.0 \
+                --http.vhosts=* \
+                --authrpc.addr=0.0.0.0 \
+                --authrpc.vhosts=* \
+              {{- if $jwtEnabled }}
+                --authrpc.jwtsecret=/jwt/jwt.hex \
+              {{- end }}
+                --metrics \
+                --metrics.addr=0.0.0.0 \
+              {{- if $values.prune }}
+                --prune.mode={{ $values.prune.mode }} \
+              {{- end }}
+              {{- if $values.beaconApi.enabled }}
+                --caplin.blocks-archive={{ $values.beaconApi.blocks.archive }} \
+                --caplin.blobs-archive={{ $values.beaconApi.blobs.archive }} \
+                --caplin.blobs-no-pruning={{ $values.beaconApi.blobs.noPruning }} \
+                --beacon.api="{{ $values.beaconApi.api }}" \
+                --beacon.api.addr="{{ $values.beaconApi.addr }}" \
+                --beacon.api.cors.allow-methods="{{ $values.beaconApi.cors.allowMethods }}" \
+                --beacon.api.cors.allow-origins="{{ $values.beaconApi.cors.allowOrigins }}" \
+                --beacon.api.port="{{ $values.beaconApi.port }}" \
+              {{- end }}
+              {{- range $arg := $values.extraArgs }}
+                {{- $arg | nindent 16 }} \
+              {{- end }}
+                --healthcheck
+          ports:
+            - name: grpc-erigon
+              containerPort: 9090
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 6060
+              protocol: TCP
+            - name: http-jsonrpc
+              containerPort: 8545
+              protocol: TCP
+            - name: ws-rpc
+              containerPort: 8546
+              protocol: TCP
+            - name: http-engineapi
+              containerPort: 8551
+              protocol: TCP
+            {{- if $values.beaconApi.enabled }}
+            - name: http-beaconapi
+              containerPort: {{ $values.beaconApi.port }}
+              protocol: TCP
+            {{- end }}
+            - name: udp-p2p
+              containerPort: {{ include "erigon3.p2pPort" $values }}
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: {{ include "erigon3.p2pPort" $values }}
+              protocol: TCP
+            - name: udp-torrent
+              containerPort: 42069
+              protocol: UDP
+            - name: tcp-torrent
+              containerPort: 42069
+              protocol: TCP
+          volumeMounts:
+            {{- if $values.p2pNodePort.enabled }}
+            - name: env-nodeport
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: {{ $values.datadir }}
+            - name: tmp
+              mountPath: /tmp
+          {{- if $values.readinessProbe }}
+          readinessProbe:
+            {{ toYaml $values.readinessProbe | nindent 12 }}
+          {{- else }}
+          readinessProbe:
+            # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+            # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+            # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+            grpc:
+              port: 9090 # named ports not supported yet by grpc probes
+          {{- end }}
+          {{- if $values.livenessProbe }}
+          livenessProbe:
+            {{ toYaml $values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if $values.startupProbe }}
+          startupProbe:
+            {{ toYaml $values.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

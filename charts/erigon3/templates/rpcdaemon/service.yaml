@@ -1,0 +1,24 @@
+{{- $values := $.Values.rpcdaemon }}
+{{- $componentName := "rpcdaemon" }}
+{{- $componentLabel := include "erigon3.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "erigon3.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "erigon3.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "erigon3.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
