@@ -951,9 +951,6 @@ firehoseServiceDefaults:
             tier1-grpc:
               port: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
-            tier1-subreq:
-              port: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
-              protocol: TCP
       headless:
         <<: *tier1Svc
 
@@ -966,9 +963,6 @@ firehoseServiceDefaults:
                 ports:
                   tier1-grpc:
                     containerPort: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
-                    protocol: TCP
-                  tier1-subreq:
-                    containerPort: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                 resources:
                   requests:
@@ -992,7 +986,7 @@ firehoseServiceDefaults:
               port: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
-        <<: *tier1Svc
+        <<: *tier2Svc
     workload:
       spec:
         template:
