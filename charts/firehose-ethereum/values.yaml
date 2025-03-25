@@ -594,7 +594,7 @@ firehoseServiceDefaults:
           ports:
             fh-grpc:
               port: |
-                {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
+                {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }}
                 @needs(.Self.fireeth.config as config)
               protocol: TCP
     workload:
@@ -606,7 +606,7 @@ firehoseServiceDefaults:
                 ports:
                   fh-grpc:
                     containerPort: |
-                      {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
+                      {{ if (index $config "firehose-grpc-listen-addr") }}{{ splitList ":" (index $config "firehose-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }}
                       @needs(.Self.fireeth.config as config)
 
   # -- Defaults for the merger service
@@ -622,7 +622,7 @@ firehoseServiceDefaults:
           ports:
             merger-grpc:
               port: |
-                {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
+                {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }}
                 @needs(.Self.fireeth.config as config)
               protocol: TCP
       headless:
@@ -637,7 +637,7 @@ firehoseServiceDefaults:
                 ports:
                   merger-grpc:
                     containerPort: |
-                      {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}
+                      {{ if (index $config "merger-grpc-listen-addr") }}{{ splitList ":" (index $config "merger-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }}
                       @needs(.Self.fireeth.config as config)
                     protocol: TCP
 
@@ -655,7 +655,7 @@ firehoseServiceDefaults:
         spec:
           ports:
             relayer-grpc:
-              port: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
         <<: *relayerSvc
@@ -668,7 +668,7 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   relayer-grpc:
-                    containerPort: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "relayer-grpc-listen-addr") }}{{ splitList ":" (index $config "relayer-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
 
   # -- Defaults for the index-builder service
@@ -684,7 +684,7 @@ firehoseServiceDefaults:
         spec:
           ports:
             index-grpc:
-              port: '{{ if (index $config "index-builder-grpc-listen-addr") }}{{ splitList ":" (index $config "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "index-builder-grpc-listen-addr") }}{{ splitList ":" (index $config "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
         <<: *indexSvc
@@ -697,7 +697,7 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   index-grpc:
-                    containerPort: '{{ with .Self.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }}{{ end }}'
+                    containerPort: '{{ with .Self.fireeth.config }}{{ if (index . "index-builder-grpc-listen-addr") }}{{ splitList ":" (index . "index-builder-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }}{{ end }}'
                     protocol: TCP
 
   # -- Defaults for the reader-node service
@@ -885,7 +885,7 @@ firehoseServiceDefaults:
                 # -- Container ports
                 ports:
                   reader-grpc:
-                    containerPort: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "reader-node-grpc-listen-addr") }}{{ splitList ":" (index $config "reader-node-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                   node-metrics:
                     containerPort: '{{ if $nodeMetrics.port }}{{ $nodeMetrics.port | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.nodeMetrics as nodeMetrics)'
@@ -931,26 +931,28 @@ firehoseServiceDefaults:
         substreams-tier1-active-requests-hard-limit: 0
         substreams-tier1-active-requests-soft-limit: 4
         substreams-tier1-enforce-compression: true
-        substreams-tier1-grpc-listen-addr: :10016*
+        substreams-tier1-grpc-listen-addr: :10016
         substreams-tier1-max-subrequests: 4
-        substreams-tier1-subrequests-endpoint: :10017
-        substreams-tier1-subrequests-insecure: true
+        substreams-tier1-subrequests-endpoint: |
+          {{- $port := "" }}
+          {{- if (index $tier2Config "substreams-tier2-grpc-listen-addr") }}
+            {{- $port = splitList ":" (index $tier2Config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}
+          {{- else }}
+            {{- $port = "" }}
+          {{- end }}
+          {{- if not (empty $port) }}{{ printf "%s-%s:%d" .Root.Release.Name "substreams-tier2" $port }}{{ else }}null{{ end }}
+          @needs(.ComponentValues.substreams-tier2.fireeth.config as tier2Config)
         substreams-tier1-subrequests-plaintext: true
-        substreams-tier2-grpc-listen-addr: :10018
-        substreams-tier2-max-concurrent-requests: 4
     services:
       default: &tier1Svc
         __enabled: true
         spec:
           ports:
             tier1-grpc:
-              port: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
             tier1-subreq:
-              port: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
-              protocol: TCP
-            tier2-grpc:
-              port: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+              port: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
               protocol: TCP
       headless:
         <<: *tier1Svc
@@ -963,23 +965,35 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   tier1-grpc:
-                    containerPort: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "substreams-tier1-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier1-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                   tier1-subreq:
-                    containerPort: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "substreams-tier1-subrequests-endpoint") }}{{ splitList ":" (index $config "substreams-tier1-subrequests-endpoint") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                 resources:
                   requests:
-                    cpu: 8
-                    memory: 32Gi
+                    cpu: 4
+                    memory: 18Gi
                   limits:
-                    cpu: 8
-                    memory: 32Gi
+                    cpu: 4
+                    memory: 18Gi
   substreams-tier2:
     fireeth:
       config:
         substreams-tier2-grpc-listen-addr: :10018
         substreams-tier2-max-concurrent-requests: 4
+
+    services:
+      default: &tier2Svc
+        __enabled: true
+        spec:
+          ports:
+            tier2-grpc:
+              port: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
+              protocol: TCP
+      headless:
+        <<: *tier1Svc
+    workload:
       spec:
         template:
           spec:
@@ -987,15 +1001,15 @@ firehoseServiceDefaults:
               fireeth:
                 ports:
                   tier2-grpc:
-                    containerPort: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}{{ nil }}{{ end }} @needs(.Self.fireeth.config as config)'
+                    containerPort: '{{ if (index $config "substreams-tier2-grpc-listen-addr") }}{{ splitList ":" (index $config "substreams-tier2-grpc-listen-addr") | last | trimSuffix "*" | int }}{{ else }}null{{ end }} @needs(.Self.fireeth.config as config)'
                     protocol: TCP
                 resources:
                   requests:
-                    cpu: 8
-                    memory: 32Gi
+                    cpu: 4
+                    memory: 18Gi
                   limits:
-                    cpu: 8
-                    memory: 32Gi
+                    cpu: 4
+                    memory: 18Gi
 
 # -- Definition and architecture of components to provision.
 # A component is a kubernetes workload (Deployment or StatefulSet).
@@ -1035,13 +1049,13 @@ firehoseComponents:
         - reader-node
 
   substreams-tier1:
-    __enabled: false
+    __enabled: true
     fireeth:
       services:
         - substreams-tier1
 
   substreams-tier2:
-    __enabled: false
+    __enabled: true
     fireeth:
       services:
         - substreams-tier2
