@@ -29,6 +29,12 @@
   packageRules: [
     {
       matchPackageNames: [
+        'grafana/loki',
+      ],
+      versioning: 'regex:^operator\\/v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$',
+    },
+    {
+      matchPackageNames: [
         'erigontech/erigon',
       ],
       versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(-(?<prerelease>\\w+\\d+))?$',
@@ -219,6 +225,16 @@
       ],
       groupName: 'Subgraph-availability-oracle dependencies',
       groupSlug: 'subgraphAvailabilityOracle',
+      commitMessageTopic: '{{groupSlug}} dependencies',
+      commitMessageExtra: '',
+    },
+    {
+      description: 'Group dependencies',
+      matchFileNames: [
+        'charts/loki-operator/**',
+      ],
+      groupName: 'Loki Operator dependencies',
+      groupSlug: 'lokiOperator',
       commitMessageTopic: '{{groupSlug}} dependencies',
       commitMessageExtra: '',
     },
