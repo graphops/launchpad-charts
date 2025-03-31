@@ -1,0 +1,22 @@
+apiVersion: v2
+name: loki-operator
+description: A Helm chart for the Loki Operator
+type: application
+version: 0.1.0
+appVersion: "0.8.0"
+home: https://github.com/graphops/launchpad-charts/tree/main/charts/loki-operator
+icon: https://raw.githubusercontent.com/grafana/loki/main/docs/sources/logo.png
+keywords:
+  - loki
+  - operator
+  - logging
+  - monitoring
+  - grafana
+sources:
+  - https://github.com/grafana/loki/tree/main/operator
+  - https://github.com/k8s-operatorhub/community-operators/tree/main/operators/loki-operator
+maintainers:
+  - name: GraphOps
+    url: https://github.com/graphops
+annotations:
+  artifacthub.io/license: Apache-2.0

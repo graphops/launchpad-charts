@@ -1,0 +1,22 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "loki-operator.fullname" . }}-metrics-service
+  labels:
+    {{- include "loki-operator.labels" . | nindent 4 }}
+    app.kubernetes.io/component: metrics
+  {{- with .Values.metrics.serviceAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.metrics.serviceType }}
+  ports:
+    - name: https
+      port: {{ .Values.metrics.port }}
+      targetPort: https
+      protocol: TCP
+  selector:
+    {{- include "loki-operator.selectorLabels" . | nindent 4 }}
+{{- end }}

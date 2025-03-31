@@ -1,0 +1,73 @@
+
+replicaCount: 1
+
+image:
+  repository: docker.io/grafana/loki-operator
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+rbac:
+  create: true
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+metrics:
+  enabled: true
+  port: 8443
+  serviceType: ClusterIP
+  serviceAnnotations: {}
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    interval: 15s
+    scrapeTimeout: 10s
+
+webhook:
+  enabled: true
+  port: 9443
+  serviceType: ClusterIP
+  serviceAnnotations: {}
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8081
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8081
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+env: []
+
+extraArgs: []
+
+crds:
+  create: true
+  keep: true
