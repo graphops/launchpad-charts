@@ -1,0 +1,11 @@
+{{- if $.Values.nitro.config.chainInfo }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "arbitrum-nitro.fullname" . }}-config
+  labels:
+    {{- include "arbitrum-nitro.labels" . | nindent 4 }}
+data:
+  chain-info.json: |
+    {{ $.Values.nitro.config.chainInfoJson }}
+{{- end }}

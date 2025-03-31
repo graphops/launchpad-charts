@@ -79,8 +79,12 @@ Generate the array of options for nitro
 "--validation.wasm.allowed-wasm-module-roots=/home/user/nitro-legacy/machines,/home/user/target/machines"
 }}
 {{- with .config }}
+{{- if not (empty .parentChainUrl) -}}
 {{- $args = concat $args (list (print "--parent-chain.connection.url=" .parentChainUrl)) }}
+{{- end }}
+{{- if not (empty .parentChainBeaconUrl) -}}
 {{- $args = concat $args (list (print "--parent-chain.blob-client.beacon-url=" .parentChainBeaconUrl)) }}
+{{- end }}
 {{- $args = concat $args (list (print "--chain.id=" .chain)) }}
 {{- $args = concat $args (list (print "--http.api=" .httpRpc.api)) }}
 {{- $args = concat $args (list (print "--http.addr=" .httpRpc.addr)) }}
