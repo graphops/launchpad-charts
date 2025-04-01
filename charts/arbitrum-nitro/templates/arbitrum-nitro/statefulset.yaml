@@ -48,6 +48,14 @@ spec:
       volumes:
         - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
           emptyDir: {}
+        {{- if $values.config.chainInfo }}
+        - name: chain-info
+          configMap:
+            name: {{ include "arbitrum-nitro.fullname" . }}-config
+            items:
+            - key: chain-info.json      # Key from the ConfigMap
+              path: chain-info.json
+        {{- end }}
       initContainers:
       {{- if $values.restoreSnapshot.enabled }}
         - name: init-snapshot
@@ -116,6 +124,9 @@ spec:
             - |
               set -ex;
               exec nitro \
+                {{- if $values.config.chainInfo }}
+                --chain.info-files /storage/chain-info.json \
+                {{- end }}
                 {{- range $val := initial $nitroArgs }}
                 {{ $val }} \
                 {{- end }}
@@ -135,6 +146,12 @@ spec:
               mountPath: /storage
             - name: tmp
               mountPath: /tmp
+          {{- if $values.config.chainInfo }}
+            - name: chain-info
+              mountPath: "/storage/chain-info.json"
+              subPath: "chain-info.json"
+              readOnly: true
+          {{- end }}
           readinessProbe:
             httpGet:
               port: {{ index $values.service.ports "http-rpc" }}

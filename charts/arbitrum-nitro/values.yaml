@@ -73,10 +73,13 @@ nitro:
   config:
     # -- Chain ID, 42161 for Arbitrum One
     chain: 42161
+    # -- enable a configmap mount for a chain-info.json file, useful for L3 Orbit chains
+    chainInfo: false
+    chainInfoJson: ""
     # -- RPC URL to L1 chain (ethereum)
-    parentChainUrl: "CHANGE_ME_RPC_URL"
+    parentChainUrl: null
     # -- Beacon URL to L1 chain (ethereum)
-    parentChainBeaconUrl: "CHANGE_ME_BEACON_URL"
+    parentChainBeaconUrl: null
     # -- RPC Url to Arbitrum Classic Archive node if serving classic blocks
     classicUrl: null
     # -- RPC config parameters
