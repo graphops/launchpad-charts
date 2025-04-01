@@ -87,6 +87,30 @@ statefulNode:
 
   # -- The path to the Erigon data directory
   datadir: /storage
+  
+  # -- Sets the pruning mode to use (archive, validator, full)
+  pruneMode: "archive"
+    
+  # -- Beacon API configuration for erigon3
+  beaconApi:
+    # -- Enable Beacon API
+    enabled: false
+    # -- Beacon API port to expose
+    port: 5555
+    # -- Beacon API address to bind to
+    addr: "0.0.0.0"
+    # -- Comma-separated list of API namespaces to enable
+    api: "beacon,builder,config,debug,events,node,lighthouse"
+    # -- CORS allow methods
+    corsAllowMethods: "*"
+    # -- CORS allow origins
+    corsAllowOrigins: "*"
+    # -- Enable blocks archive
+    blocksArchive: true
+    # -- Enable blobs archive
+    blobsArchive: true
+    # -- Disable blobs pruning
+    blobsNoPruning: true
 
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
@@ -97,12 +121,6 @@ statefulNode:
       requests:
         # -- The amount of disk space to provision for Erigon
         storage: 3Ti
-
-  restoreSnapshot:
-    # -- Enable initialising Erigon state from a remote snapshot
-    enabled: false
-    # -- URL for snapshot to download and extract to restore state
-    snapshotUrl: ""
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -159,6 +177,8 @@ statefulNode:
       ws-rpc: 8546
       # -- Service Port to expose engineAPI interface on
       http-engineapi: 8551
+      # -- Service Port to expose Beacon API interface on
+      http-beaconapi: 5555
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6060
 

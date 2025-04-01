@@ -160,6 +160,16 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
+ | statefulNode.beaconApi | Beacon API configuration for erigon3 | object | `{"addr":"0.0.0.0","api":"beacon,builder,config,debug,events,node,lighthouse","blobsArchive":true,"blobsNoPruning":true,"blocksArchive":true,"corsAllowMethods":"*","corsAllowOrigins":"*","enabled":false,"port":5555}` |
+ | statefulNode.beaconApi.addr | Beacon API address to bind to | string | `"0.0.0.0"` |
+ | statefulNode.beaconApi.api | Comma-separated list of API namespaces to enable | string | `"beacon,builder,config,debug,events,node,lighthouse"` |
+ | statefulNode.beaconApi.blobsArchive | Enable blobs archive | bool | `true` |
+ | statefulNode.beaconApi.blobsNoPruning | Disable blobs pruning | bool | `true` |
+ | statefulNode.beaconApi.blocksArchive | Enable blocks archive | bool | `true` |
+ | statefulNode.beaconApi.corsAllowMethods | CORS allow methods | string | `"*"` |
+ | statefulNode.beaconApi.corsAllowOrigins | CORS allow origins | string | `"*"` |
+ | statefulNode.beaconApi.enabled | Enable Beacon API | bool | `false` |
+ | statefulNode.beaconApi.port | Beacon API port to expose | int | `5555` |
  | statefulNode.datadir | The path to the Erigon data directory | string | `"/storage"` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |
  | statefulNode.extraContainers | Additional containers to inject to this graph node group - an array of Container objects | list | `[]` |
@@ -179,12 +189,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
+ | statefulNode.pruneMode | Sets the pruning mode to use (archive, validator, full) | string | `"archive"` |
  | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
- | statefulNode.restoreSnapshot.enabled | Enable initialising Erigon state from a remote snapshot | bool | `false` |
- | statefulNode.restoreSnapshot.snapshotUrl | URL for snapshot to download and extract to restore state | string | `""` |
  | statefulNode.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
+ | statefulNode.service.ports.http-beaconapi | Service Port to expose Beacon API interface on | int | `5555` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
  | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
