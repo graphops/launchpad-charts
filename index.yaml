@@ -84,6 +84,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.5.4-217e414
+      created: "2025-04-01T08:53:24Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 0b2d04a1fa3eed64aa1e70c8a81b056d05a07b3a89572efc7e95e4f95eff4539
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.2/arbitrum-nitro-0.6.2.tgz
+      version: 0.6.2
+    - apiVersion: v2
       appVersion: v3.5.3-0a9c975
       created: "2025-03-18T23:56:48Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -1871,6 +1881,16 @@ entries:
       version: 0.1.0
   heimdall:
     - apiVersion: v2
+      appVersion: 1.2.2
+      created: "2025-04-01T09:16:06Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 89e87630f610c9aa684c38d7bcec4ec0cc20668c0173295d71180ff79cfeb048
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.2.6/heimdall-1.2.6.tgz
+      version: 1.2.6
+    - apiVersion: v2
       appVersion: 1.2.0
       created: "2025-02-05T15:55:15Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
@@ -3517,4 +3537,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-04-01T09:17:28.275531407Z"
+generated: "2025-04-01T09:22:11.515744707Z"
