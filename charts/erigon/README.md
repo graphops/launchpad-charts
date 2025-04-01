@@ -160,7 +160,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | statefulNode.affinity |  | object | `{}` |
  | statefulNode.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Erigon instances on the same host | bool | `true` |
- | statefulNode.beaconApi | Beacon API configuration for erigon3 | object | `{"addr":"0.0.0.0","api":"beacon,builder,config,debug,events,node,lighthouse","blobsArchive":true,"blobsNoPruning":true,"blocksArchive":true,"corsAllowMethods":"*","corsAllowOrigins":"*","enabled":false,"port":5555}` |
+ | statefulNode.beaconApi | Beacon API configuration for erigon3 | object | `{"addr":"0.0.0.0","api":"beacon,builder,config,debug,events,node,lighthouse","blobsArchive":true,"blobsNoPruning":true,"blocksArchive":true,"corsAllowMethods":"*","corsAllowOrigins":"*","enabled":true,"port":5555}` |
  | statefulNode.beaconApi.addr | Beacon API address to bind to | string | `"0.0.0.0"` |
  | statefulNode.beaconApi.api | Comma-separated list of API namespaces to enable | string | `"beacon,builder,config,debug,events,node,lighthouse"` |
  | statefulNode.beaconApi.blobsArchive | Enable blobs archive | bool | `true` |
@@ -168,7 +168,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.beaconApi.blocksArchive | Enable blocks archive | bool | `true` |
  | statefulNode.beaconApi.corsAllowMethods | CORS allow methods | string | `"*"` |
  | statefulNode.beaconApi.corsAllowOrigins | CORS allow origins | string | `"*"` |
- | statefulNode.beaconApi.enabled | Enable Beacon API | bool | `false` |
+ | statefulNode.beaconApi.enabled | Enable Beacon API | bool | `true` |
  | statefulNode.beaconApi.port | Beacon API port to expose | int | `5555` |
  | statefulNode.datadir | The path to the Erigon data directory | string | `"/storage"` |
  | statefulNode.extraArgs | Additional CLI arguments to pass to `erigon` | list | `[]` |

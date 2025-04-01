@@ -94,7 +94,7 @@ statefulNode:
   # -- Beacon API configuration for erigon3
   beaconApi:
     # -- Enable Beacon API
-    enabled: false
+    enabled: true
     # -- Beacon API port to expose
     port: 5555
     # -- Beacon API address to bind to
