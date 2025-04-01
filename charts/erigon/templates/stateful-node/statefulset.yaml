@@ -136,7 +136,8 @@ spec:
                 fi
               done
               export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
-              echo "EXTERNAL_PORT=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_PORT_68=$EXTERNAL_PORT" >  /env/init-nodeport;
+              echo "EXTERNAL_PORT_67=$((EXTERNAL_PORT + 1))" >>  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;
           volumeMounts:
@@ -167,7 +168,8 @@ spec:
                 --datadir={{ $values.datadir }} \
               {{- if $values.p2pNodePort.enabled }}
                 --nat=extip:${EXTERNAL_IP} \
-                --port=${EXTERNAL_PORT} \
+                --port=${EXTERNAL_PORT_68} \
+                --p2p.allowed-ports="${EXTERNAL_PORT_68},${EXTERNAL_PORT_67}" \
               {{- else }}
                 --port={{ include "erigon.p2pPort" $values }} \
               {{- end }}

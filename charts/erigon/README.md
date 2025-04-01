@@ -186,7 +186,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | statefulNode.p2pNodePort.port | NodePort to be used. Must be unique. | int | `31000` |
+ | statefulNode.p2pNodePort.port | Start NodePort to be used in a range (2 ports for protocol versions 68 and 67). Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
  | statefulNode.pruneMode | Sets the pruning mode to use (archive, validator, full) | string | `"archive"` |

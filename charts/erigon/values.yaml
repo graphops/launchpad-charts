@@ -209,7 +209,7 @@ statefulNode:
   p2pNodePort:
     # -- Expose P2P port via NodePort
     enabled: false
-    # -- NodePort to be used. Must be unique.
+    # -- Start NodePort to be used in a range (2 ports for protocol versions 68 and 67). Must be unique.
     port: 31000
     initContainer:
       image:
