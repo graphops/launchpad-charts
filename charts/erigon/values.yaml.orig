@@ -1,4 +1,4 @@
-# Default values for erigon3.
+# Default values for erigon.
 # This is a YAML-formatted file.
 
 nameOverride: ""
@@ -85,33 +85,6 @@ statefulNode:
   # -- Extra labels to attach to the Pod for matching against
   extraLabels: {}
 
-  # -- The path to the Erigon data directory
-  datadir: /storage
-  
-  # -- Sets the pruning mode to use (archive, validator, full)
-  pruneMode: "archive"
-    
-  # -- Beacon API configuration for erigon3
-  beaconApi:
-    # -- Enable Beacon API
-    enabled: false
-    # -- Beacon API port to expose
-    port: 5555
-    # -- Beacon API address to bind to
-    addr: "0.0.0.0"
-    # -- Comma-separated list of API namespaces to enable
-    api: "beacon,builder,config,debug,events,node,lighthouse"
-    # -- CORS allow methods
-    corsAllowMethods: "*"
-    # -- CORS allow origins
-    corsAllowOrigins: "*"
-    # -- Enable blocks archive
-    blocksArchive: true
-    # -- Enable blobs archive
-    blobsArchive: true
-    # -- Disable blobs pruning
-    blobsNoPruning: true
-
   # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Erigon storage
   volumeClaimSpec:
     accessModes: ["ReadWriteOnce"]
@@ -122,7 +95,11 @@ statefulNode:
         # -- The amount of disk space to provision for Erigon
         storage: 3Ti
 
-
+  restoreSnapshot:
+    # -- Enable initialising Erigon state from a remote snapshot
+    enabled: false
+    # -- URL for snapshot to download and extract to restore state
+    snapshotUrl: ""
 
   # Increasing the grace termination period prevents Kubernetes
   # from killing the node process prematurely. Premature shutdown
@@ -155,18 +132,25 @@ statefulNode:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
 
   service:
+    # -- Toggle for topology aware routing
     topologyAwareRouting:
       # -- Toggle for topology aware routing
       enabled: false
+<<<<<<< HEAD
     publishNotReadyAddresses:
       # -- Toggle publishing not ready addresses for headless service
       headless: false
       # -- Toggle publishing not ready addresses for p2p service
+=======
+    # -- Toggle publishing not ready addresses for headless and p2p services
+    publishNotReadyAddresses:
+      headless: false
+>>>>>>> b9a8fe9 (feat: add publishNotReadyAddresses toggle)
       p2p: false
     type: ClusterIP
     ports:
@@ -179,8 +163,6 @@ statefulNode:
       ws-rpc: 8546
       # -- Service Port to expose engineAPI interface on
       http-engineapi: 8551
-      # -- Service Port to expose Beacon API interface on
-      http-beaconapi: 5555
       # -- Service Port to expose Prometheus metrics on
       http-metrics: 6060
 
@@ -245,9 +227,9 @@ rpcdaemon:
   # -- Pod-wide security context
   podSecurityContext:
     runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+    runAsUser: 101337
+    runAsGroup: 101337
+    fsGroup: 101337
 
   service:
     type: ClusterIP
