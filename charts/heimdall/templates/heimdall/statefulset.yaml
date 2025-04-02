@@ -103,17 +103,16 @@ spec:
             - sh
             - -c
             - |
-              set -ex
+              set -ex -o pipefail
               HEIMDALLD_HOME="/storage"
               # If enabled and snapshot URL has been provided, bootstrap snapshot
               if [ ! -f "$HEIMDALLD_HOME/from_snapshot" ] || [ "$(cat $HEIMDALLD_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
                 mkdir -p ${HEIMDALLD_HOME}/data
                 cd ${HEIMDALLD_HOME}
                 wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
-                lz4 -d snapshot.tar.lz4 snapshot.tar || { echo "Decompression failed. Exiting."; exit 1; }
-                tar -xvf snapshot.tar -C ${HEIMDALLD_HOME}/data || { echo "Extraction failed. Exiting."; exit 1; }
+                lz4 -dc snapshot.tar.lz4 | tar -C ${HEIMDALLD_HOME}/data -xvf - || { echo "Decompression failed. Exiting."; exit 1; }
                 echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
-                rm snapshot.tar snapshot.tar.lz4
+                rm snapshot.tar.lz4
               fi
           volumeMounts:
             - name: storage
