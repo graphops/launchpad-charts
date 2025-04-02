@@ -68,6 +68,10 @@ env: []
 
 extraArgs: []
 
+config:
+  enabled: false
+  content: {}
+
 crds:
   create: true
   keep: true

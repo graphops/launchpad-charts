@@ -68,6 +68,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
+ | config.content |  | object | `{}` |
+ | config.enabled |  | bool | `false` |
  | crds.create |  | bool | `true` |
  | crds.keep |  | bool | `true` |
  | env |  | list | `[]` |

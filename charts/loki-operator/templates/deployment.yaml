@@ -35,6 +35,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args:
+            {{- if .Values.config.enabled }}
+            - --config=/etc/loki-operator/config.yaml
+            {{- else }}
             - --leader-elect
             {{- if .Values.metrics.enabled }}
             - --metrics-bind-address=:{{ .Values.metrics.port }}
@@ -45,6 +48,7 @@ spec:
             - --webhook-bind-address=:{{ .Values.webhook.port }}
             {{- else }}
             - --webhook-bind-address=0
+            {{- end }}
             {{- end }}
             {{- with .Values.extraArgs }}
             {{- toYaml . | nindent 12 }}
@@ -66,10 +70,22 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          {{- if .Values.config.enabled }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki-operator
+              readOnly: true
+          {{- end }}
           env:
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+      {{- if .Values.config.enabled }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "loki-operator.fullname" . }}-config
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
