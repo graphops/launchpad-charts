@@ -1,0 +1,100 @@
+{{- if .Values.crds.create -}}
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.17.2
+  name: rulerconfigs.loki.grafana.com
+  labels:
+    {{- include "loki-operator.labels" . | nindent 4 }}
+spec:
+  group: loki.grafana.com
+  names:
+    categories:
+    - logging
+    kind: RulerConfig
+    listKind: RulerConfigList
+    plural: rulerconfigs
+    singular: rulerconfig
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: RulerConfig is the Schema for the rulerconfigs API
+        properties:
+          apiVersion:
+            type: string
+          kind:
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: RulerConfigSpec defines the desired state of RulerConfig
+            properties:
+              evaluation_interval:
+                description: EvaluationInterval defines the default evaluation interval for rules.
+                type: string
+              tenants:
+                description: Tenants defines the tenants to apply the ruler config to.
+                items:
+                  description: RulerConfigTenantSpec defines a tenant spec.
+                  properties:
+                    name:
+                      description: Name defines the name of the tenant.
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+            required:
+            - tenants
+            type: object
+          status:
+            description: RulerConfigStatus defines the observed state of RulerConfig
+            properties:
+              conditions:
+                description: Conditions defines the current conditions of the RulerConfig.
+                items:
+                  description: "Condition contains details for one aspect of the current state of this API Resource."
+                  properties:
+                    lastTransitionTime:
+                      format: date-time
+                      type: string
+                    message:
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+{{- end }}
