@@ -1806,6 +1806,16 @@ entries:
       version: 0.0.1-canary.1
   erigon:
     - apiVersion: v2
+      appVersion: v3.0.1
+      created: "2025-04-09T20:38:52Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 2f6bba885aee42ded409af22b5ea791969f30773bb5a3c90cd9c923b5095ed62
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.1-canary.1/erigon-0.11.1-canary.1.tgz
+      version: 0.11.1-canary.1
+    - apiVersion: v2
       appVersion: v3.0.0
       created: "2025-04-02T12:52:10Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -9483,7 +9493,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-09T00:55:01.994488799Z"
+      created: "2025-04-09T20:43:02.743211677Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9493,7 +9503,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-09T00:55:01.99384989Z"
+      created: "2025-04-09T20:43:02.742626276Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -10033,4 +10043,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-04-09T00:55:01.071090472Z"
+generated: "2025-04-09T20:43:01.825187347Z"
