@@ -68,11 +68,22 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 | Key | Description | Type | Default |
 |-----|-------------|------|---------|
  | affinity |  | object | `{}` |
- | config.content |  | object | `{}` |
- | config.enabled |  | bool | `false` |
+ | config.content.apiVersion |  | string | `"config.loki.grafana.com/v1"` |
+ | config.content.featureGates.alertingRuleWebhook |  | bool | `false` |
+ | config.content.featureGates.lokiStackGateway |  | bool | `true` |
+ | config.content.featureGates.lokiStackWebhook |  | bool | `false` |
+ | config.content.featureGates.recordingRuleWebhook |  | bool | `false` |
+ | config.content.featureGates.restrictedPodSecurityStandard |  | bool | `false` |
+ | config.content.health.healthProbeBindAddress |  | string | `":8081"` |
+ | config.content.kind |  | string | `"ProjectConfig"` |
+ | config.content.leaderElection.leaderElect |  | bool | `true` |
+ | config.content.leaderElection.resourceName |  | string | `"loki-operator.grafana.com"` |
+ | config.content.metrics.bindAddress |  | string | `"127.0.0.1:8080"` |
+ | config.enabled |  | bool | `true` |
  | crds.create |  | bool | `true` |
  | crds.keep |  | bool | `true` |
- | env |  | list | `[]` |
+ | env[0].name |  | string | `"WATCH_NAMESPACE"` |
+ | env[0].value |  | string | `"monitoring"` |
  | extraArgs |  | list | `[]` |
  | fullnameOverride |  | string | `""` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |

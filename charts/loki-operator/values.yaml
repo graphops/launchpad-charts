@@ -64,13 +64,35 @@ tolerations: []
 
 affinity: {}
 
-env: []
+env: 
+  - name: WATCH_NAMESPACE
+    value: "monitoring"
 
 extraArgs: []
 
 config:
-  enabled: false
-  content: {}
+  enabled: true
+  content:
+    apiVersion: config.loki.grafana.com/v1
+    kind: ProjectConfig
+    health:
+      healthProbeBindAddress: :8081
+    metrics:
+      bindAddress: 127.0.0.1:8080
+    # webhook:
+    #   port: 9443
+    leaderElection:
+      leaderElect: true
+      resourceName: loki-operator.grafana.com
+    featureGates:
+      lokiStackGateway: true
+      restrictedPodSecurityStandard: false
+      #
+      # Webhook feature gates
+      #
+      lokiStackWebhook: false
+      alertingRuleWebhook: false
+      recordingRuleWebhook: false
 
 crds:
   create: true

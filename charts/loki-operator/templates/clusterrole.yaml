@@ -195,4 +195,12 @@ rules:
       - subjectaccessreviews
     verbs:
       - create
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+      - update
 {{- end }}

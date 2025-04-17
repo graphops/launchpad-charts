@@ -37,18 +37,6 @@ spec:
           args:
             {{- if .Values.config.enabled }}
             - --config=/etc/loki-operator/config.yaml
-            {{- else }}
-            - --leader-elect
-            {{- if .Values.metrics.enabled }}
-            - --metrics-bind-address=:{{ .Values.metrics.port }}
-            {{- else }}
-            - --metrics-bind-address=0
-            {{- end }}
-            {{- if .Values.webhook.enabled }}
-            - --webhook-bind-address=:{{ .Values.webhook.port }}
-            {{- else }}
-            - --webhook-bind-address=0
-            {{- end }}
             {{- end }}
             {{- with .Values.extraArgs }}
             {{- toYaml . | nindent 12 }}
