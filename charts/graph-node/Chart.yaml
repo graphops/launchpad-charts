@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.5.9
+version: 0.5.10
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -23,3 +23,15 @@ version: 0.5.9
 # It is recommended to use it with quotes.
 # renovate: image=graphprotocol/graph-node
 appVersion: "v0.36.1"
+
+dependencies:
+  - name: postgresql
+    alias: postgresql
+    version: "16.6.3"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: ipfs-cluster
+    alias: ipfs-cluster
+    version: "0.1.14"
+    repository: https://ethpandaops.github.io/ethereum-helm-charts
+    condition: ipfs-cluster.enabled

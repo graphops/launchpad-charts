@@ -6,6 +6,18 @@ Expand the name of the chart.
 {{- end }}
 
 {{/*
+Get PostgreSQL secret name
+*/}}
+{{- define "graph-node.postgresql.secretName" -}}
+{{- $secretName := .Values.postgresql.auth.existingSecret -}}
+{{- if not $secretName -}}
+    {{- printf "%s-postgresql" .Release.Name -}}
+{{- else -}}
+    {{- $secretName -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.

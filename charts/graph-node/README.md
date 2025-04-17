@@ -322,3 +322,57 @@ We welcome and appreciate your contributions! Please see the [Contributor Guide]
 
 - [Erigon](../erigon)
 - [Proxyd](../proxyd)
+
+### Dependencies
+
+The chart includes optional dependencies for PostgreSQL and IPFS cluster. These dependencies are enabled by default and will automatically configure Graph Node to use them.
+
+#### PostgreSQL Dependency
+
+The chart includes a PostgreSQL dependency that can be used as the primary database for Graph Node. When enabled, it will automatically configure the following environment variables:
+
+- `PRIMARY_SUBGRAPH_DATA_PGHOST`: Defaults to `<release-name>-postgresql`
+- `PRIMARY_SUBGRAPH_DATA_PGDATABASE`: Defaults to `graph-node`
+- `PRIMARY_SUBGRAPH_DATA_PGUSER`: Defaults to `postgres`
+- `PRIMARY_SUBGRAPH_DATA_PGPASSWORD`: Automatically retrieved from the PostgreSQL secret
+
+You can override any of these values by providing your own configuration in the `env` and `secretEnv` sections.
+
+Example configuration:
+```yaml
+postgresql:
+  enabled: true
+  secretName: postgresql
+  global:
+    postgresql:
+      auth:
+        database: graph-node
+  primary:
+    extendedConfiguration: |
+      max_connections = 10000
+    resources:
+      limits:
+        cpu: 2000m
+        ephemeral-storage: 2Gi
+        memory: 4000Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 50Mi
+        memory: 128Mi
+```
+
+#### IPFS Cluster Dependency
+
+The chart includes an IPFS cluster dependency that can be used for IPFS operations. When enabled, it will automatically configure the following environment variable:
+
+- `IPFS`: Defaults to `http://ipfs-<release-name>-ipfs-cluster:5001`
+
+You can override this value by providing your own configuration in the `env` section.
+
+Example configuration:
+```yaml
+ipfs-cluster:
+  enabled: true
+  p2pNodePort:
+    enabled: false
+```

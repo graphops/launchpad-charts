@@ -1,0 +1,9 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 16.6.3
+- name: ipfs-cluster
+  repository: https://ethpandaops.github.io/ethereum-helm-charts
+  version: 0.1.14
+digest: sha256:1547f7cc44c8512eafcf92aa9cb7476c77f977dc646bb8661c9bd2bbc50aaedf
+generated: "2025-04-17T12:36:59.465701+02:00"
