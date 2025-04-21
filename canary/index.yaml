@@ -7329,6 +7329,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v25.4.0
+      created: "2025-04-21T21:07:41Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 6c558ab77aaed06f919e4177a0c3d569debc221bc31c115afd16d82d7ca56be1
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.4-canary.1/nimbus-0.6.4-canary.1.tgz
+      version: 0.6.4-canary.1
+    - apiVersion: v2
       appVersion: multiarch-v25.3.1
       created: "2025-04-01T08:55:56Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -9573,7 +9583,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-21T12:21:40.886277798Z"
+      created: "2025-04-21T21:20:44.592836372Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9583,7 +9593,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-21T12:21:40.88570008Z"
+      created: "2025-04-21T21:20:44.592243642Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -10123,4 +10133,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-04-21T12:21:39.951156647Z"
+generated: "2025-04-21T21:20:43.655818172Z"
