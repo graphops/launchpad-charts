@@ -205,6 +205,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.5.6-9a29a1e
+      created: "2025-04-22T10:12:32Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 85854549332ba0142129c58ca1c6af378ab8679e3510283e932790cfea26dcb8
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.3/arbitrum-nitro-0.6.3.tgz
+      version: 0.6.3
+    - apiVersion: v2
+      appVersion: v3.5.6-9a29a1e
       created: "2025-04-22T10:12:03Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: d8d891b581649da1c108cb2789d596ffda7d8c782dae8c3b99a44df883919e99
@@ -5416,6 +5426,16 @@ entries:
   heimdall:
     - apiVersion: v2
       appVersion: 1.2.3
+      created: "2025-04-22T16:33:27Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: 50d9a042458c0ac1e6e2c66667dfa767f1a55f06c1ad04b2ce9558676f8bd379
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.2.8-canary.2/heimdall-1.2.8-canary.2.tgz
+      version: 1.2.8-canary.2
+    - apiVersion: v2
+      appVersion: 1.2.3
       created: "2025-04-16T12:09:04Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
       digest: 1ede594b5f3d683de7742bdf85dd349e8e3de2f849902b15a93ccc3b755dd225
@@ -8502,6 +8522,26 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.14.5
+      created: "2025-04-22T10:13:31Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 249192dd56e4a6a8e4a3e0d4a13ed600bcc35c508c3a668f2d5cc643d85e38e1
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.9/proxyd-0.6.9.tgz
+      version: 0.6.9
+    - apiVersion: v2
+      appVersion: v4.14.5
+      created: "2025-04-22T10:13:20Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 6725967417e759499e4b78fa312701acee170c8512b2837d52158657f6738e82
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.9-canary.2/proxyd-0.6.9-canary.2.tgz
+      version: 0.6.9-canary.2
+    - apiVersion: v2
+      appVersion: v4.14.5
       created: "2025-04-18T20:38:17Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 5134785458cda69b78f1c43be817373607b519e0c03bc69ea1eba1cf0e23c24e
@@ -9593,7 +9633,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-22T10:18:25.233114035Z"
+      created: "2025-04-22T16:39:50.197321228Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9603,7 +9643,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-04-22T10:18:25.232530743Z"
+      created: "2025-04-22T16:39:50.19672272Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -10143,4 +10183,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-04-22T10:18:24.296046776Z"
+generated: "2025-04-22T16:39:49.257888225Z"
