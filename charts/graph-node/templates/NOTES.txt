@@ -1,0 +1,27 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+{{ if .Values.postgresql.enabled }}
+PostgreSQL has been deployed as a dependency:
+  - Host: {{ .Release.Name }}-postgresql
+  - Port: 5432
+  - Database: graph-node
+  - Username: postgres
+  - Password: Retrieved from the {{ .Release.Name }}-postgresql secret
+{{ end }}
+
+{{ if index .Values "ipfs-cluster" "enabled" }}
+IPFS Cluster has been deployed as a dependency:
+  - Service: ipfs-{{ .Release.Name }}-ipfs-cluster
+  - Port: 5001
+  - IPFS API: http://ipfs-{{ .Release.Name }}-ipfs-cluster:5001
+{{ end }}
+
+To verify the deployment:
+  $ kubectl get pods -l "app.kubernetes.io/instance={{ .Release.Name }}" -n {{ .Release.Namespace }}

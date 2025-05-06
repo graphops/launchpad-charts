@@ -159,12 +159,14 @@ graphNodeDefaults:
   # -- Environment variable defaults that come from `Secret`s for all Graph Node groups
   secretEnv:
     PRIMARY_SUBGRAPH_DATA_PGUSER:
-      # -- Name of the secret that contains your PG username
+      # -- Name of the secret that contains your PG username.
+      # If not specified, will use the dependency PostgreSQL user
       secretName:
       # -- Name of the data key in the secret that contains your PG username
       key:
     PRIMARY_SUBGRAPH_DATA_PGPASSWORD:
-      # -- Name of the secret that contains your PG password
+      # -- Name of the secret that contains your PG password.
+      # If not specified, will use the dependency PostgreSQL credentials
       secretName:
       # -- Name of the data key in the secret that contains your PG password
       key:
@@ -278,3 +280,30 @@ configTemplate: |
     # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
     shards = ["primary"]
     indexers = {{ toJson .computed.indexPools.default }}
+
+ipfs-cluster:
+  enabled: false
+  p2pNodePort:
+    enabled: false
+
+postgresql:
+  enabled: false
+  secretName: postgresql
+  global:
+    postgresql:
+      auth:
+        database: graph-node
+  primary:
+    initdb:
+      args: "--lc-collate=C --lc-ctype=C --encoding=UTF8"
+    extendedConfiguration: |
+      max_connections = 10000
+    resources:
+      limits:
+        cpu: 2000m
+        ephemeral-storage: 2Gi
+        memory: 4000Mi
+      requests:
+        cpu: 100m
+        ephemeral-storage: 50Mi
+        memory: 128Mi

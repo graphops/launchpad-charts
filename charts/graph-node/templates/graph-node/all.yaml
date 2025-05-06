@@ -121,15 +121,32 @@ spec:
           {{- end }}
           {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
+              {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGHOST") (empty $val) }}
+              value: {{ printf "%s-postgresql" $.Release.Name | quote }}
+              {{- else if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGDATABASE") (empty $val) }}
+              value: "graph-node"
+              {{- else if and (eq $key "IPFS") (empty $val) }}
+              value: {{ printf "http://ipfs-%s-ipfs-cluster:5001" $.Release.Name | quote }}
+              {{- else }}
               value: {{ $val | quote }}
+              {{- end }}
           {{- end }}
           {{- range $key, $val := $values.secretEnv }}
             - name: {{ $key | quote }}
+              {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGUSER") (empty $val.secretName) }}
+              value: "postgres"
+              {{- else }}
               valueFrom:
                 secretKeyRef:
+                  {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGPASSWORD") (empty $val.secretName) }}
+                  name: {{ printf "%s-postgresql" $.Release.Name | quote }}
+                  key: "postgres-password"
+                  {{- else }}
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
+                  {{- end }}
                   optional: false
+              {{- end }}
           {{- end }}
           command:
             - sh
@@ -230,15 +247,32 @@ spec:
           {{- end }}
           {{- range $key, $val := $values.env }}
             - name: {{ $key | quote }}
+              {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGHOST") (empty $val) }}
+              value: {{ printf "%s-postgresql" $.Release.Name | quote }}
+              {{- else if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGDATABASE") (empty $val) }}
+              value: "graph-node"
+              {{- else if and (eq $key "IPFS") (empty $val) }}
+              value: {{ printf "http://ipfs-%s-ipfs-cluster:5001" $.Release.Name | quote }}
+              {{- else }}
               value: {{ $val | quote }}
+              {{- end }}
           {{- end }}
-          {{- range $key, $val :=  $values.secretEnv }}
+          {{- range $key, $val := $values.secretEnv }}
             - name: {{ $key | quote }}
+              {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGUSER") (empty $val.secretName) }}
+              value: "postgres"
+              {{- else }}
               valueFrom:
                 secretKeyRef:
+                  {{- if and (eq $key "PRIMARY_SUBGRAPH_DATA_PGPASSWORD") (empty $val.secretName) }}
+                  name: {{ printf "%s-postgresql" $.Release.Name | quote }}
+                  key: "postgres-password"
+                  {{- else }}
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
+                  {{- end }}
                   optional: false
+              {{- end }}
           {{- end }}
           ports:
             - name: http-query
