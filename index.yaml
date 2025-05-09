@@ -84,6 +84,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.6.2-5b41a2d
+      created: "2025-05-09T01:08:40Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 8c27d88e3b0df67d78707931def56eaa42b693a20d9b033d452ed46ffd0cd4b6
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.4/arbitrum-nitro-0.6.4.tgz
+      version: 0.6.4
+    - apiVersion: v2
       appVersion: v3.5.6-9a29a1e
       created: "2025-04-22T10:12:32Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -516,6 +526,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v3.0.3
+      created: "2025-05-09T01:00:42Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: aca1702c71042b4bd5d0353aa033b3eb1cffe5c670e8a0f328ccd443ce180f61
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.2/erigon-0.11.2.tgz
+      version: 0.11.2
     - apiVersion: v2
       appVersion: v3.0.2
       created: "2025-04-21T11:53:11Z"
@@ -2062,6 +2082,16 @@ entries:
       version: 1.0.0
   lighthouse:
     - apiVersion: v2
+      appVersion: v7.0.1
+      created: "2025-05-01T15:13:49Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: af3ca97facda71ce4e36a7ab0a3bfa4e906295286af7595b38d5208d02821105
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.7.1/lighthouse-0.7.1.tgz
+      version: 0.7.1
+    - apiVersion: v2
       appVersion: v7.0.0-beta.0
       created: "2025-02-21T12:11:25Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -2505,6 +2535,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v25.5.0
+      created: "2025-05-09T01:10:32Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9ebfb6dcd5f89318af085057fd30327d5f13f489c02a2ddf6f94c1606f2ceb9b
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.4/nimbus-0.6.4.tgz
+      version: 0.6.4
+    - apiVersion: v2
       appVersion: multiarch-v25.3.1
       created: "2025-04-01T08:55:56Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -2936,6 +2976,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.15.1
+      created: "2025-05-09T01:06:49Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 584274df58af06f426b53ecc839e8f3aeb005458f2020398bb89c52c76b87264
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.10/proxyd-0.6.10.tgz
+      version: 0.6.10
     - apiVersion: v2
       appVersion: v4.14.5
       created: "2025-04-22T10:13:31Z"
@@ -3597,4 +3647,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-04-22T17:20:49.373819029Z"
+generated: "2025-05-09T01:13:16.89261211Z"
