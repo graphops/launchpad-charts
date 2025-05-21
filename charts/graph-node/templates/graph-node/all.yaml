@@ -61,17 +61,17 @@ metadata:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 spec:
-  serviceName: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
   replicas: {{ $values.replicaCount | default 1 }}
   {{- if (eq $values.kind "StatefulSet") }}
+  serviceName: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
   podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
-  {{- end }}
   updateStrategy:
     type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
     # Requires k8s 1.24+
     # rollingUpdate:
     #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
     #   partition: 0
+  {{- end }}
   selector:
     matchLabels:
       {{- include "graph-node.selectorLabels" . | nindent 6 }}
