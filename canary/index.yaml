@@ -204,6 +204,26 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.6.4-28199cd
+      created: "2025-05-22T00:16:29Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: bdec1ddb70802cef0346c357ba5319969b118eea806b5a0acc708bea5695789e
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.5-canary.2/arbitrum-nitro-0.6.5-canary.2.tgz
+      version: 0.6.5-canary.2
+    - apiVersion: v2
+      appVersion: v3.6.3-1d5699d
+      created: "2025-05-19T22:07:40Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 8c8a0958806b7bef7075825cb0cd6e17a090d6e5a54772ae406a5f9dbb0b93a1
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.5-canary.1/arbitrum-nitro-0.6.5-canary.1.tgz
+      version: 0.6.5-canary.1
+    - apiVersion: v2
       appVersion: v3.6.2-5b41a2d
       created: "2025-05-09T01:08:40Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -9924,7 +9944,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-05-15T12:17:02.163740129Z"
+      created: "2025-05-22T00:20:47.653355951Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9934,7 +9954,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-05-15T12:17:02.163149476Z"
+      created: "2025-05-22T00:20:47.652775415Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -10474,4 +10494,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-05-15T12:17:01.202208302Z"
+generated: "2025-05-22T00:20:46.660597767Z"
