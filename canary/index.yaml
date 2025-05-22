@@ -7119,6 +7119,16 @@ entries:
       version: 0.1.0
   nethermind:
     - apiVersion: v2
+      appVersion: 1.31.11
+      created: "2025-05-22T11:37:04Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: b958e6c2789e58d9cf0835c2c8cf916c4f9dd148309a611e0f80aab500bdf492
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.30/nethermind-0.4.3-canary.30.tgz
+      version: 0.4.3-canary.30
+    - apiVersion: v2
       appVersion: 1.31.10
       created: "2025-05-08T00:16:36Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
@@ -9954,7 +9964,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-05-22T02:45:58.070782373Z"
+      created: "2025-05-22T11:50:33.357344943Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -9964,7 +9974,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-05-22T02:45:58.069443858Z"
+      created: "2025-05-22T11:50:33.356343031Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -10504,4 +10514,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-05-22T02:45:57.102729271Z"
+generated: "2025-05-22T11:50:32.337759839Z"
