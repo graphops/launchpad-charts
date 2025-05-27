@@ -527,6 +527,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.0.4
+      created: "2025-05-27T16:10:35Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 90b93f71ae1061787f6c6a8aaf74d5172816e0d21c7e4226199d8d9b1ca8dc07
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.3/erigon-0.11.3.tgz
+      version: 0.11.3
+    - apiVersion: v2
       appVersion: v3.0.3
       created: "2025-05-09T01:00:42Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -3004,6 +3014,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.16.0
+      created: "2025-05-27T16:11:04Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 63d60081de9f49d7996e72bd333f76d285d81d3d5d8f681f876fbd0ec26caff8
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.11/proxyd-0.6.11.tgz
+      version: 0.6.11
+    - apiVersion: v2
       appVersion: v4.15.1
       created: "2025-05-09T01:06:49Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -3674,4 +3694,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-05-15T12:04:25.187634495Z"
+generated: "2025-05-27T16:14:44.654853521Z"
