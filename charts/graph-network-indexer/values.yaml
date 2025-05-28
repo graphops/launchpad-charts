@@ -204,7 +204,7 @@ indexerService:
   image:
     repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
-    tag: "v1.5.5"
+    tag: "v1.5.6"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-service-rs
@@ -286,7 +286,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    tag: "v1.9.5"
+    tag: "v1.9.6"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
