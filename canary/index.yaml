@@ -205,6 +205,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.6.8-d6c96a5
+      created: "2025-07-08T15:51:41Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 5d99cd967cb0c29469382e6d67e17f5017522627cf2f94db7ab3218d68613d78
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.6.7/arbitrum-nitro-0.6.7.tgz
+      version: 0.6.7
+    - apiVersion: v2
+      appVersion: v3.6.8-d6c96a5
       created: "2025-07-08T15:46:10Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 2f55936d9d16fc8a97127a9600494d1b017abce2160ba8a6054525e31b8a8bc6
@@ -1985,6 +1995,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
+    - apiVersion: v2
+      appVersion: v3.0.12
+      created: "2025-07-08T15:39:31Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: c5931746f7d0deb3439a901da41e6d2d05cfa0d314f83feca4ce3eb658ca9e88
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.6/erigon-0.11.6.tgz
+      version: 0.11.6
     - apiVersion: v2
       appVersion: v3.0.12
       created: "2025-07-08T14:46:32Z"
@@ -5970,6 +5990,16 @@ entries:
   heimdall:
     - apiVersion: v2
       appVersion: 1.6.0
+      created: "2025-07-08T15:39:03Z"
+      description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
+      digest: df9dd0fd07ac8ea2be4ab54425fe51dcd922103398db76d3ff4d53585097209f
+      name: heimdall
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.3.0/heimdall-1.3.0.tgz
+      version: 1.3.0
+    - apiVersion: v2
+      appVersion: 1.6.0
       created: "2025-07-08T15:27:55Z"
       description: Deploy and scale [Heimdall](https://github.com/maticnetwork/heimdall) inside Kubernetes with ease
       digest: da727404acf1573c9df4723ca657a144f341f116148a48cea13ca4fa067564f7
@@ -9275,6 +9305,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.17.0
+      created: "2025-07-08T17:40:38Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 78d165f2bc898e4bdea774e6d66b2c39ded44eb5abceb85424f71d212cbd37da
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.13-canary.1/proxyd-0.6.13-canary.1.tgz
+      version: 0.6.13-canary.1
+    - apiVersion: v2
       appVersion: v4.16.2
       created: "2025-06-24T14:48:05Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -10497,7 +10537,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-08T15:51:21.878746376Z"
+      created: "2025-07-08T17:50:14.964614385Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -10507,7 +10547,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-08T15:51:21.87817772Z"
+      created: "2025-07-08T17:50:14.964029691Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11047,4 +11087,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-07-08T15:51:20.86277428Z"
+generated: "2025-07-08T17:50:13.946967318Z"
