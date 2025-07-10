@@ -3523,6 +3523,16 @@ entries:
       version: 0.1.0
   subgraph-availability-oracle:
     - apiVersion: v2
+      appVersion: v1.2.0
+      created: "2025-07-10T22:10:46Z"
+      description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
+      digest: bdb6c190d8157590dd8c9d2994005a3897292013671fd3e39a5c81dd50ac2049
+      name: subgraph-availability-oracle
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-availability-oracle-0.7.2/subgraph-availability-oracle-0.7.2.tgz
+      version: 0.7.2
+    - apiVersion: v2
       appVersion: v1.0.0
       created: "2024-10-17T19:47:39Z"
       description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
@@ -3793,4 +3803,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-07-08T16:10:08.93265009Z"
+generated: "2025-07-10T22:18:08.343038052Z"
