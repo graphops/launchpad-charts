@@ -77,7 +77,7 @@ aliases: {}
 # -- Image for subgraph-radio
 image:
   repository: ghcr.io/graphprotocol/availability-oracle
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # -- Overrides the image tag
   # @default -- Chart.appVersion
   tag: "latest"
