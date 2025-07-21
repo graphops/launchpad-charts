@@ -2,7 +2,6 @@
 {{- $componentName := "heimdall" }}
 {{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
 {{- $heimdallArgs := get (fromJson (include "heimdall.computedArgs" $values)) "computedArgs" }}
-{{- $heimdallRestArgs := get (fromJson (include "heimdall.computedRestArgs" $values)) "computedRestArgs" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -55,8 +54,6 @@ spec:
               set -ex
               HEIMDALLD_HOME="/storage"
 
-              if
-
               # If config hasn't been bootstrapped already, do it
               if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
                 heimdalld --home $HEIMDALLD_HOME init --chain-id $CHAIN_ID
@@ -96,7 +93,7 @@ spec:
               value: "true"
             - name: GENESIS_URL
               value: {{ include "heimdall.genesisUrl" $values | quote }}
-          {{- if $values.config.metrics.enabled }}
+          {{- else if $values.config.metrics.enabled }}
             - name: METRICS
               value: "true"
             - name: METRICS_PORT

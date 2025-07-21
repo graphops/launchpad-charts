@@ -168,15 +168,3 @@ Generate the array of options for heimdall
 {{- end }}
 {{ dict "computedArgs" $args | toJson }}
 {{- end }}
-
-{{/*
-Generate the array of options for heimdall rest server
- */}}
-{{- define "heimdall.computedRestArgs" -}}
-{{- $args := list
-"--home=\"/storage\""
-}}
-{{- $args = concat $args (list (print "--rpc.laddr=" ( print "tcp://0.0.0.0:" ( index .service.ports "http-rest" ) | quote ))) }}
-{{- end }}
-{{ dict "computedRestArgs" $args | toJson }}
-{{- end }}
