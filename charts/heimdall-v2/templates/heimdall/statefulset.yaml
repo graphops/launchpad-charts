@@ -1,0 +1,231 @@
+{{- $values := $.Values.heimdall }}
+{{- $componentName := "heimdall" }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
+{{- $heimdallArgs := get (fromJson (include "heimdall.computedArgs" $values)) "computedArgs" }}
+{{- $heimdallRestArgs := get (fromJson (include "heimdall.computedRestArgs" $values)) "computedRestArgs" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "heimdall.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "heimdall.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates: # TODO support using an existing PV/PVC?
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "heimdall.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "heimdall.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      initContainers:
+        - name: {{ $componentName }}-init-config
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              HEIMDALLD_HOME="/storage"
+
+              if
+
+              # If config hasn't been bootstrapped already, do it
+              if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
+                heimdalld --home $HEIMDALLD_HOME init --chain-id $CHAIN_ID
+              fi
+
+              if [ "${GENESIS:-false}" = "true" ]; then
+                wget -c -O $HEIMDALLD_HOME/config/genesis.json ${GENESIS_URL}
+              fi
+
+              cd $HEIMDALLD_HOME/config
+
+              # Patch config.toml
+              sed -iE "s#^cors_allowed_origins.*#cors_allowed_origins = ${CORS_ALLOWED_ORIGINS}#" config.toml
+              sed -iE "s#^seeds.*#seeds = \"${SEEDS}\"#" config.toml
+              sed -iE "s#^peers.*#seeds = \"${PEERS}\"#" config.toml
+
+              if [ "${METRICS:-false}" = "true" ]; then
+                sed -iE "s#^prometheus \?=.*#prometheus = true#" config.toml
+                sed -iE "s#^prometheus_listen_addr \?=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
+              else
+                sed -iE "s#^prometheus \?=.*#prometheus = false#" config.toml
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: SEEDS
+              value: {{ include "heimdall.seeds" $values | quote }}
+            - name: PEERS
+              value: {{ include "heimdall.peers" $values | quote }}
+            - name: CHAIN_ID
+              value: {{ include "heimdall.chainId" $values | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ $values.config.corsAllowedOrigins | quote }}
+          {{- if $values.config.downloadGenesis.enabled }}
+            - name: GENESIS
+              value: "true"
+            - name: GENESIS_URL
+              value: {{ include "heimdall.genesisUrl" $values | quote }}
+          {{- if $values.config.metrics.enabled }}
+            - name: METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: {{ index $values.service.ports "http-metrics" | quote }}
+          {{- end }}
+
+        {{- if and $values.config.fromSnapshot.enabled $values.config.fromSnapshot.snapshotUrl }}
+        - name: {{ $componentName }}-init-snapshot
+          ## TODO: update tag
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
+          command:
+            - sh
+            - -c
+            - |
+              set -ex -o pipefail
+              HEIMDALLD_HOME="/storage"
+              # If enabled and snapshot URL has been provided, bootstrap snapshot
+              if [ ! -f "$HEIMDALLD_HOME/from_snapshot" ] || [ "$(cat $HEIMDALLD_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                mkdir -p ${HEIMDALLD_HOME}/data
+                cd ${HEIMDALLD_HOME}
+                wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                lz4 -dc snapshot.tar.lz4 | tar -C ${HEIMDALLD_HOME}/data -xvf - || { echo "Decompression failed. Exiting."; exit 1; }
+                echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
+                rm snapshot.tar.lz4
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: SNAPSHOT_URL
+              value: {{ $values.config.fromSnapshot.snapshotUrl }}
+        {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              exec heimdalld start \
+                {{- range $val := initial $heimdallArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $heimdallArgs }}
+
+          ports:
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
+              protocol: TCP
+            - name: http-api
+              containerPort: {{ index $values.service.ports "http-api" }}
+              protocol: TCP
+            - name: http-metrics
+              containerPort: {{ index $values.service.ports "http-metrics" }}
+              protocol: TCP
+          {{- if $values.p2pNodePort.enabled }}
+            - name: tcp-p2p
+              containerPort: {{ $values.p2pNodePort.port }}
+              protocol: TCP
+          {{- end }}
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $values.readyAfterSync }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - if [ "$(wget http://127.0.0.1:26657/status -O -  | grep "catching_up"
+                | awk "{print \$2}")" = "false" ]; then return 0; else return 1; fi
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

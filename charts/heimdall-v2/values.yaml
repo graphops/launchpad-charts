@@ -1,0 +1,156 @@
+# Default values for heimdall.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `PodMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+
+grafana:
+  # -- Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: ""
+
+
+heimdall:
+  # -- Enable creation of `StatefulSet` for Heimdall
+  enabled: true
+  image:
+    # -- Image for Heimdall
+    repository: 0xpolygon/heimdall-v2
+    pullPolicy: IfNotPresent
+    # -- Overrides the image tag
+    # @default -- Chart.appVersion
+    tag: ""
+
+  # -- Environment variables to set in key/value format
+  env: {}
+
+  config:
+    # -- Specifies the heimdall network instance, one of: `mainnet`, `amoy`
+    network: mainnet
+    # -- Override chain_id - Optional, defaults are provided for each network (heimdallv2-137, heimdallv2-80002)
+    chainId: ""
+    # -- Additional CLI arguments to pass to Heimdall
+    extraArgs: []
+    # -- Override seed nodes - Optional, defaults are provided for each network
+    seeds: ""
+    # -- Override persistent peers - Optional, defaults are provided for each network
+    peers: ""
+    # -- Override moniker - Optional, default {{ .Release.Name }}
+    name: ""
+    # -- CORS Allowed Origins
+    corsAllowedOrigins: '["*"]'
+    # -- Bor RPC address
+    borRpcUrl: ""
+    # -- Ethereum RPC address
+    ethRpcUrl: ""
+    # -- Log level setup
+    logLevel: "info"
+    # -- Logs format
+    logFormat: "json"
+
+    metrics:
+      # -- Enable metrics
+      enabled: true
+
+    downloadGenesis:
+      # -- Enable downloading the gensis file at init
+      enabled: true
+      # -- Override URL for the Genesis file - Optional, defaults are provided for mainnet and amoy
+      genesisUrl: ""
+
+    fromSnapshot:
+      # -- Enable initialising Heimdall from a remote Snapshot
+      enabled: false
+      # -- URL to snapshot to download and extract, see [here](https://docs.polygon.technology/pos/how-to/snapshots/)
+      snapshotUrl: ""
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for heimdall storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume for heimdall
+    storageClassName: 
+    resources:
+      requests:
+        # -- The amount of disk space to provision for Heimdall
+        storage: 300Gi
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: false
+    # runAsUser: 101337
+    # runAsGroup: 101337
+    # fsGroup: 101337
+
+  service:
+    topologyAwareRouting:
+      enabled: false
+    type: ClusterIP
+    ports:
+      http-rpc: 26657
+      http-api: 1317
+      http-metrics: 26660
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    #   ephemeral-storage: 100Mi
+    # requests:
+    #   cpu: 500m
+    #   memory: 4Gi
+    #   ephemeral-storage: 100Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple Heimdall instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  p2pNodePort:
+    # -- Expose P2P port via NodePort
+    enabled: false
+    # -- NodePort to be used. Must be unique.
+    port: 31000
+    initContainer:
+      image:
+        # -- Container image to fetch nodeport information
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag
+        tag: v1.25.4
+        # -- Container pull policy
+        pullPolicy: IfNotPresent
+
+  # -- Enable a readiness probe that checks if heimdall is synced
+  readyAfterSync: false
