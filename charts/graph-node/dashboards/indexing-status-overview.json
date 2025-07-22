@@ -24,46 +24,10 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
+  "id": 500731,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                0.001
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "message": "Critical warning - Graph Ethereum archive nodes have fallen off the chainhead - check health of nodes immediately",
-        "name": "Ethereum Chain head (rate of block number change) alert",
-        "noDataState": "alerting",
-        "notifications": []
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -81,6 +45,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -111,8 +76,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -142,11 +106,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "8.0.0",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -163,53 +128,10 @@
           "refId": "A"
         }
       ],
-      "thresholds": [
-        {
-          "colorMode": "critical",
-          "op": "lt",
-          "value": 0.001,
-          "visible": true
-        }
-      ],
       "title": "Block Ingestor Chain Head for ${namespace} (blocks/minute)",
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                5
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Eth RPC Errors per minute All Subgraphs alert",
-        "noDataState": "ok",
-        "notifications": []
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -226,6 +148,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -256,8 +179,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "transparent",
-                "value": null
+                "color": "transparent"
               },
               {
                 "color": "red",
@@ -291,6 +213,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
@@ -332,6 +255,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -363,8 +287,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -398,11 +321,12 @@
           "sortDesc": false
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "8.0.0",
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -424,41 +348,6 @@
       "type": "timeseries"
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                500
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "5m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "5m",
-        "frequency": "1m",
-        "handler": 1,
-        "name": "Eth RPC Request Duration per Subgraph alert",
-        "noDataState": "no_data",
-        "notifications": []
-      },
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -475,6 +364,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -505,8 +395,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "transparent",
-                "value": null
+                "color": "transparent"
               },
               {
                 "color": "red",
@@ -540,6 +429,7 @@
           "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
@@ -586,8 +476,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -620,8 +509,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "rgba(50, 172, 45, 0.97)",
-                      "value": null
+                      "color": "rgba(50, 172, 45, 0.97)"
                     },
                     {
                       "color": "rgba(237, 129, 40, 0.89)"
@@ -712,7 +600,7 @@
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "-- grafana ignore\r\nselect\r\n  m.repository as repo,\r\n  g.name || (case\r\n        when g.pending_version = v.id then ' (P)'\r\n        when g.current_version = v.id then ' (C)'\r\n        else ' (U)' end) as subgraph_name,\r\n  d.deployment,\r\n  s.id as schema,\r\n  a.node_id,\r\n d.synced_at::text,\r\n  n.name as network,\r\n  (n.head_block_number - d.latest_ethereum_block_number) as blocks_behind_network,\r\n  (case when n.name = 'mainnet' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'rinkeby' then ((n.head_block_number - d.latest_ethereum_block_number)/4)::text\r\n        when n.name = 'kovan' then ((n.head_block_number - d.latest_ethereum_block_number)/15)::text\r\n        when n.name = 'poa-core' then ((n.head_block_number - d.latest_ethereum_block_number)/12)::text\r\n        when n.name = 'ropsten' then ((n.head_block_number - d.latest_ethereum_block_number)/2)::text\r\n        else 'ø' end) as lag,\r\n        d.failed,\r\n        d.latest_ethereum_block_number,\r\n        a.paused_at\r\nfrom subgraphs.subgraph_deployment as d,\r\n     subgraphs.subgraph_deployment_assignment as a,\r\n     subgraphs.subgraph_version as v,\r\n     subgraphs.subgraph as g,\r\n     subgraphs.subgraph_manifest as m,\r\n     ethereum_networks  as n,\r\n     deployment_schemas as s\r\nwhere g.id = v.subgraph\r\n  and v.id in (g.pending_version, g.current_version)\r\n  and a.id = s.id\r\n  and s.id = d.id\r\n  and m.id = d.id\r\n  and v.deployment = d.deployment\r\n  /*and not d.failed*/\r\n  and n.name = s.network\r\n  and not a.node_id = 'removed'\r\norder by blocks_behind_network desc, subgraph_name;",
+          "rawSql": "-- grafana ignore\r\nSELECT\r\n  m.repository                                                  AS repo,\r\n  g.name ||\r\n  (CASE\r\n      WHEN g.pending_version = v.id THEN ' (P)'\r\n      WHEN g.current_version = v.id THEN ' (C)'\r\n      ELSE                       ' (U)'\r\n  END)                                                          AS subgraph_name,\r\n\r\n  /* the IPFS hash that used to be “deployment” */\r\n  d.subgraph                                                    AS deployment,\r\n\r\n  s.id                                                          AS schema,\r\n  a.node_id,\r\n  d.synced_at::TEXT,\r\n  n.name                                                        AS network,\r\n\r\n  /* compare chain head vs. subgraph head */\r\n  (n.head_block_number - h.block_number)                        AS blocks_behind_network,\r\n\r\n  CASE n.name\r\n      WHEN 'mainnet'  THEN ((n.head_block_number - h.block_number)/4 )::TEXT\r\n      WHEN 'rinkeby'  THEN ((n.head_block_number - h.block_number)/4 )::TEXT\r\n      WHEN 'kovan'    THEN ((n.head_block_number - h.block_number)/15)::TEXT\r\n      WHEN 'poa-core' THEN ((n.head_block_number - h.block_number)/12)::TEXT\r\n      WHEN 'ropsten'  THEN ((n.head_block_number - h.block_number)/2 )::TEXT\r\n      ELSE 'ø'\r\n  END                                                          AS lag,\r\n\r\n  d.failed,\r\n  h.block_number                                                AS latest_ethereum_block_number,\r\n  a.paused_at\r\nFROM subgraphs.deployment                        AS d\r\nJOIN subgraphs.head            h  ON h.id = d.id\r\nJOIN subgraphs.subgraph_deployment_assignment a  ON a.id = d.id\r\nJOIN deployment_schemas         s  ON s.id = d.id\r\nJOIN subgraphs.subgraph_manifest m  ON m.id = d.id\r\nJOIN subgraphs.subgraph_version  v  ON v.deployment = d.subgraph   -- ⬅ renamed column\r\nJOIN subgraphs.subgraph          g  ON g.id = v.subgraph\r\nJOIN ethereum_networks           n  ON n.name = s.network\r\nWHERE v.id IN (g.pending_version, g.current_version)\r\n  AND a.node_id <> 'removed'\r\nORDER BY blocks_behind_network DESC, subgraph_name;\r\n",
           "refId": "A",
           "select": [
             [
@@ -787,8 +675,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -896,11 +783,12 @@
             "type": "postgres",
             "uid": "${pg_datasource}"
           },
+          "editorMode": "code",
           "format": "table",
           "group": [],
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "SELECT\n  vid, cast(d.latest_ethereum_block_number as varchar) as block_num, encode(e.block_hash, 'hex') as block_hash, e.subgraph_id, e.message, a.node_id, e.deterministic, e.handler, e.created_at\nFROM subgraphs.subgraph_error as e,\n     subgraphs.subgraph_deployment as d,\n     subgraphs.subgraph_deployment_assignment as a\nWHERE\n    d.deployment = e.subgraph_id AND\n    a.id = d.id\nORDER BY vid DESC",
+          "rawSql": "SELECT\n  e.vid,\n  CAST(h.block_number AS VARCHAR)                       AS block_num,\n  ENCODE(e.block_hash, 'hex')                           AS block_hash,\n  e.subgraph_id,\n  e.message,\n  a.node_id,\n  e.deterministic,\n  e.handler,\n  e.created_at\nFROM subgraphs.subgraph_error                AS e\nJOIN subgraphs.deployment        d ON d.subgraph = e.subgraph_id      -- ⬅ renamed column\nJOIN subgraphs.head             h ON h.id        = d.id\nJOIN subgraphs.subgraph_deployment_assignment a ON a.id = d.id\nORDER BY e.vid DESC;\n",
           "refId": "A",
           "select": [
             [
@@ -912,6 +800,23 @@
               }
             ]
           ],
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
           "table": "subgraphs.subgraph_error",
           "timeColumn": "time",
           "where": []
@@ -942,8 +847,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -976,8 +880,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "rgba(50, 172, 45, 0.97)",
-                      "value": null
+                      "color": "rgba(50, 172, 45, 0.97)"
                     },
                     {
                       "color": "rgba(237, 129, 40, 0.89)"
@@ -1162,8 +1065,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1323,8 +1225,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1452,6 +1353,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1482,8 +1384,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1516,10 +1417,12 @@
           "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -1554,6 +1457,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -1584,8 +1488,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1617,10 +1520,12 @@
           "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
+      "pluginVersion": "",
       "targets": [
         {
           "datasource": {
@@ -1639,45 +1544,38 @@
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "30s",
-  "schemaVersion": 39,
+  "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "graph-arbitrum-one-graph-node-store-primary",
-          "value": "graph-arbitrum-one-graph-node-store-primary"
+          "text": "graph-arbitrum-sepolia-graph-node-store-primary",
+          "value": "2923f7dc927f2ea6bb0f0740c836dd0dacff09f2"
         },
-        "hide": 0,
         "includeAll": false,
         "label": "Store Data Source",
-        "multi": false,
         "name": "pg_datasource",
         "options": [],
         "query": "postgres",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
         "current": {
-          "selected": false,
-          "text": "graph-arbitrum-one",
-          "value": "graph-arbitrum-one"
+          "text": "graph-arbitrum-sepolia",
+          "value": "graph-arbitrum-sepolia"
         },
         "datasource": {
           "type": "prometheus",
           "uid": "prometheus"
         },
         "definition": "label_values(ethereum_chain_head_number,namespace)",
-        "hide": 0,
         "includeAll": false,
         "label": "Namespace",
-        "multi": false,
         "name": "namespace",
         "options": [],
         "query": {
@@ -1686,8 +1584,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
@@ -1707,22 +1603,10 @@
       "1h",
       "2h",
       "1d"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
     ]
   },
   "timezone": "",
-  "title": "Graph Indexing Status Overview",
-  "uid": "graph-indexing-status-overview",
-  "version": 2,
-  "weekStart": ""
+  "title": "Graph Indexing Status Overview Copy",
+  "uid": "4b9dee12-8c7f-4a8d-a847-d80a6b51e038",
+  "version": 3
 }
