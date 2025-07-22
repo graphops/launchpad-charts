@@ -5236,6 +5236,16 @@ entries:
   graph-node:
     - apiVersion: v2
       appVersion: v0.39.1
+      created: "2025-07-22T13:09:28Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: f9ae33a86f548709535da281f36fa3a721d140c00f20f39b0e281ee69f28edd6
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.5.10-canary.9/graph-node-0.5.10-canary.9.tgz
+      version: 0.5.10-canary.9
+    - apiVersion: v2
+      appVersion: v0.39.1
       created: "2025-07-22T13:08:27Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
       digest: fe361d27f624c16b9855884e2e00a4c4f893f3451cfe8847628b134933d312f6
@@ -9435,6 +9445,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.17.1
+      created: "2025-07-22T13:11:45Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 45971d9c9d62b33a516266f112215816c1440042282aeab10fe4efb61cdfd41f
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.13-canary.3/proxyd-0.6.13-canary.3.tgz
+      version: 0.6.13-canary.3
+    - apiVersion: v2
+      appVersion: v4.17.1
       created: "2025-07-08T19:36:29Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 99007bf48578eb0cdbd4416d7984276c6b536a57523533fbe26bfa95759e2134
@@ -10686,7 +10706,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-22T13:13:52.989560161Z"
+      created: "2025-07-22T13:16:30.954273133Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -10696,7 +10716,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-22T13:13:52.988801513Z"
+      created: "2025-07-22T13:16:30.953701895Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11236,4 +11256,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-07-22T13:13:51.954161993Z"
+generated: "2025-07-22T13:16:29.909342913Z"
