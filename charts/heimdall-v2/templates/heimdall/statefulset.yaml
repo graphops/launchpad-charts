@@ -1,0 +1,289 @@
+{{- $values := $.Values.heimdall }}
+{{- $componentName := "heimdall" }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
+{{- $heimdallArgs := get (fromJson (include "heimdall.computedArgs" $values)) "computedArgs" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "heimdall.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ $values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      {{- include "heimdall.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates: # TODO support using an existing PV/PVC?
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "heimdall.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "heimdall.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+      initContainers:
+        - name: {{ $componentName }}-init-config
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - sh
+            - -c
+            - |
+              #!/usr/bin/env sh
+              set -euo pipefail
+
+              HEIMDALLD_HOME="/storage"
+              GENESIS_MARKER="${HEIMDALLD_HOME}/config/.genesis-download"
+              GENESIS_FILE="${HEIMDALLD_HOME}/config/genesis.json"
+
+              #-------------------------------------------------------------------------------
+              # 1. Initialise config if it does not exist
+              #-------------------------------------------------------------------------------
+              if [ ! -f "${HEIMDALLD_HOME}/config/config.toml" ]; then
+                heimdalld init --home "${HEIMDALLD_HOME}" init --chain-id "${CHAIN_ID}"
+              fi
+
+              #-------------------------------------------------------------------------------
+              # 2. (Re‑)download genesis if requested and if checksum/URL changed
+              #-------------------------------------------------------------------------------
+              download_genesis() {
+                local tmp="${GENESIS_FILE}.tmp"
+                rm -f "${tmp}"
+
+                echo "Downloading genesis from ${GENESIS_URL} ..."
+                if ! wget -q -O "${tmp}" "${GENESIS_URL}"; then
+                  echo "wget failed – retrying"
+                  return 1
+                fi
+
+                local actual_sha
+                actual_sha="$(sha512sum "${tmp}" | awk '{print $1}')"
+
+                if [ "${actual_sha}" != "${GENESIS_SHA512}" ]; then
+                  echo "Checksum mismatch (expected ${GENESIS_SHA512}, got ${actual_sha}) – retrying"
+                  rm -f "${tmp}"
+                  return 1
+                fi
+
+                mv "${tmp}" "${GENESIS_FILE}"
+                printf '%s\n%s\n' "${GENESIS_URL}" "${actual_sha}" > "${GENESIS_MARKER}"
+                echo "Genesis downloaded & verified OK"
+              }
+
+              if [ "${GENESIS:-false}" = "true" ]; then
+                need_download=true
+
+                if [ -f "${GENESIS_MARKER}" ]; then
+                  stored_url="$(head -n1 "${GENESIS_MARKER}")"
+                  stored_sha="$(tail -n1 "${GENESIS_MARKER}")"
+
+                  if [ "${stored_sha}" = "${GENESIS_SHA512}" ] && \
+                    [ -f "${GENESIS_FILE}" ]; then
+                    echo "Genesis already present and checksum matches – skipping download"
+                    need_download=false
+                  fi
+                fi
+
+                if [ "${need_download}" = true ]; then
+                  until download_genesis; do
+                    echo "Retrying in 5 seconds…"
+                    sleep 5
+                  done
+                fi
+              fi
+
+              #-------------------------------------------------------------------------------
+              # 3. Patch config.toml
+              #-------------------------------------------------------------------------------
+              cd "${HEIMDALLD_HOME}/config"
+
+              sed -iE "s#^cors_allowed_origins[[:space:]]*=.*#cors_allowed_origins = ${CORS_ALLOWED_ORIGINS}#" config.toml
+              sed -iE "s#^seeds[[:space:]]*=.*#seeds = \"${SEEDS}\"#"                              config.toml
+              sed -iE "s#^persistent_peers[[:space:]]*=.*#persistent_peers = \"${PEERS}\"#"        config.toml
+
+              if [ "${METRICS:-false}" = "true" ]; then
+                sed -iE "s#^prometheus[[:space:]]*=.*#prometheus = true#"             config.toml
+                sed -iE "s#^prometheus_listen_addr[[:space:]]*=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
+              else
+                sed -iE "s#^prometheus[[:space:]]*=.*#prometheus = false#"            config.toml
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: SEEDS
+              value: {{ include "heimdall.seeds" $values | quote }}
+            - name: PEERS
+              value: {{ include "heimdall.peers" $values | quote }}
+            - name: CHAIN_ID
+              value: {{ include "heimdall.chainId" $values | quote }}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ $values.config.corsAllowedOrigins | quote }}
+            - name: MONIKER
+              {{- if not (empty $values.config.name) }}
+              value: {{ $values.config.name }}
+              {{- else }}
+              value: {{ .Release.Name }}
+              {{- end }}
+          {{- if $values.config.downloadGenesis.enabled }}
+            - name: GENESIS
+              value: "true"
+            - name: GENESIS_URL
+              value: {{ include "heimdall.genesisUrl" $values | quote }}
+            - name: GENESIS_SHA512
+              value: {{ include "heimdall.genesisSha512" $values | quote }}
+          {{- else if $values.config.metrics.enabled }}
+            - name: METRICS
+              value: "true"
+            - name: METRICS_PORT
+              value: {{ index $values.service.ports "http-metrics" | quote }}
+          {{- end }}
+
+        {{- if and $values.config.fromSnapshot.enabled $values.config.fromSnapshot.snapshotUrl }}
+        - name: {{ $componentName }}-init-snapshot
+          ## TODO: update tag
+          image: ghcr.io/graphops/docker-builds/init-stream-download:main
+          command:
+            - sh
+            - -c
+            - |
+              set -ex -o pipefail
+              HEIMDALLD_HOME="/storage"
+              # If enabled and snapshot URL has been provided, bootstrap snapshot
+              if [ ! -f "$HEIMDALLD_HOME/from_snapshot" ] || [ "$(cat $HEIMDALLD_HOME/from_snapshot)" != "${SNAPSHOT_URL}" ]; then
+                mkdir -p ${HEIMDALLD_HOME}/data
+                cd ${HEIMDALLD_HOME}
+                wget -c "${SNAPSHOT_URL}" -O snapshot.tar.lz4 || { echo "Download failed. Exiting."; exit 1; }
+                lz4 -dc snapshot.tar.lz4 | tar -C ${HEIMDALLD_HOME}/data -xvf - || { echo "Decompression failed. Exiting."; exit 1; }
+                echo "${SNAPSHOT_URL}" > ${HEIMDALLD_HOME}/from_snapshot
+                rm snapshot.tar.lz4
+              fi
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+          env:
+            - name: SNAPSHOT_URL
+              value: {{ $values.config.fromSnapshot.snapshotUrl }}
+        {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          # securityContext:
+          #   readOnlyRootFilesystem: true
+          #   capabilities:
+          #     drop:
+          #       - ALL
+          command:
+            - sh
+            - -c
+            - |
+              set -x
+              exec heimdalld start \
+                {{- range $val := initial $heimdallArgs }}
+                {{ $val }} \
+                {{- end }}
+                {{ last $heimdallArgs }}
+
+          ports:
+            - name: http-rpc
+              containerPort: {{ index $values.service.ports "http-rpc" }}
+              protocol: TCP
+            - name: http-api
+              containerPort: {{ index $values.service.ports "http-api" }}
+              protocol: TCP
+            - name: http-metrics
+              containerPort: {{ index $values.service.ports "http-metrics" }}
+              protocol: TCP
+          {{- if $values.p2pNodePort.enabled }}
+            - name: tcp-p2p
+              containerPort: {{ $values.p2pNodePort.port }}
+              protocol: TCP
+          {{- end }}
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          {{- with $values.env }}
+          env:
+          {{- range $key, $val := .}}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          # readinessProbe:
+          #   # This currently requires GRPCContainerProbe feature gate to be enabled on the kubelet
+          #   # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
+          #   # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
+          #   grpc:
+          #     port: 9090 # named ports not supported yet by grpc probes
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $values.readyAfterSync }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - |
+                [ "$(wget -qO- http://127.0.0.1:26657/status | grep -o '"catching_up":[^,}]*' | awk -F: '{gsub(/[[:space:]"}]/,"",$2); print $2}')" = "false" ]
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - {{ $.Release.Name }}
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

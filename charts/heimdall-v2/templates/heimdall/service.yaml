@@ -1,0 +1,78 @@
+{{- $values := $.Values.heimdall }}
+{{- $componentName := "heimdall" }}
+{{- $componentLabel := include "heimdall.componentLabelFor" $componentName }}
+{{- if $values.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}-headless
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  clusterIP: None # Headless service
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if $values.service.topologyAwareRouting.enabled }}
+  annotations:
+    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
+    service.kubernetes.io/topology-mode: "auto"
+    {{- else }}
+    service.kubernetes.io/topology-aware-hints: "auto"
+    {{- end }}
+  {{- end }}
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+spec:
+  type: {{ $values.service.type }}
+  ports:
+  {{- range $portName, $portNumber := $values.service.ports }}
+    - port: {{ $portNumber }} # the port we expose on the Service, user configurable
+      targetPort: {{ $portName }} # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: {{ $portName }}
+  {{- end }}
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
+{{- if $values.p2pNodePort.enabled }}
+{{- $port := $values.p2pNodePort.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}-p2p-0
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    pod: {{ include "heimdall.fullname" . }}-{{ $componentName }}-0
+    type: p2p # this label is used by the initContainer to select this service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: tcp-p2p
+      port: {{ $port }}
+      protocol: TCP
+      targetPort: tcp-p2p
+      nodePort: {{ $port }}
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "heimdall.fullname" $ }}-{{ $componentName }}-0"
+{{- end }}
