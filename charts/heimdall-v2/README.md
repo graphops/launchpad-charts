@@ -53,6 +53,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.config.chainId | Override chain_id - Optional, defaults are provided for each network (heimdallv2-137, heimdallv2-80002) | string | `""` |
  | heimdall.config.corsAllowedOrigins | CORS Allowed Origins | string | `"[\"*\"]"` |
  | heimdall.config.downloadGenesis.enabled | Enable downloading the gensis file at init | bool | `true` |
+ | heimdall.config.downloadGenesis.genesisSha512 | SHA512 for the Genesis URL file - Specify this if you set a genesisUrl above | string | `""` |
  | heimdall.config.downloadGenesis.genesisUrl | Override URL for the Genesis file - Optional, defaults are provided for mainnet and amoy | string | `""` |
  | heimdall.config.ethRpcUrl | Ethereum RPC address | string | `""` |
  | heimdall.config.extraArgs | Additional CLI arguments to pass to Heimdall | list | `[]` |

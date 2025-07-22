@@ -78,6 +78,8 @@ heimdall:
       enabled: true
       # -- Override URL for the Genesis file - Optional, defaults are provided for mainnet and amoy
       genesisUrl: ""
+      # -- SHA512 for the Genesis URL file - Specify this if you set a genesisUrl above
+      genesisSha512: ""
 
     fromSnapshot:
       # -- Enable initialising Heimdall from a remote Snapshot

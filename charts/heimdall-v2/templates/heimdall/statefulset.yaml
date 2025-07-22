@@ -51,30 +51,83 @@ spec:
             - sh
             - -c
             - |
-              set -ex
-              HEIMDALLD_HOME="/storage"
+              #!/usr/bin/env sh
+              set -eEuo pipefail
 
-              # If config hasn't been bootstrapped already, do it
-              if [ ! -f "$HEIMDALLD_HOME/config/config.toml" ]; then
-                heimdalld --home $HEIMDALLD_HOME init --chain-id $CHAIN_ID
+              HEIMDALLD_HOME="/storage"
+              GENESIS_MARKER="${HEIMDALLD_HOME}/config/.genesis-download"
+              GENESIS_FILE="${HEIMDALLD_HOME}/config/genesis.json"
+
+              #-------------------------------------------------------------------------------
+              # 1. Initialise config if it does not exist
+              #-------------------------------------------------------------------------------
+              if [ ! -f "${HEIMDALLD_HOME}/config/config.toml" ]; then
+                heimdalld init --home "${HEIMDALLD_HOME}" init --chain-id "${CHAIN_ID}"
               fi
+
+              #-------------------------------------------------------------------------------
+              # 2. (Re‑)download genesis if requested and if checksum/URL changed
+              #-------------------------------------------------------------------------------
+              download_genesis() {
+                local tmp="${GENESIS_FILE}.tmp"
+                rm -f "${tmp}"
+
+                echo "Downloading genesis from ${GENESIS_URL} ..."
+                if ! wget -q -O "${tmp}" "${GENESIS_URL}"; then
+                  echo "wget failed – retrying"
+                  return 1
+                fi
+
+                local actual_sha
+                actual_sha="$(sha512sum "${tmp}" | awk '{print $1}')"
+
+                if [ "${actual_sha}" != "${GENESIS_SHA512}" ]; then
+                  echo "Checksum mismatch (expected ${GENESIS_SHA512}, got ${actual_sha}) – retrying"
+                  rm -f "${tmp}"
+                  return 1
+                fi
+
+                mv "${tmp}" "${GENESIS_FILE}"
+                printf '%s\n%s\n' "${GENESIS_URL}" "${actual_sha}" > "${GENESIS_MARKER}"
+                echo "Genesis downloaded & verified OK"
+              }
 
               if [ "${GENESIS:-false}" = "true" ]; then
-                wget -c -O $HEIMDALLD_HOME/config/genesis.json ${GENESIS_URL}
+                need_download=true
+
+                if [ -f "${GENESIS_MARKER}" ]; then
+                  stored_url="$(head -n1 "${GENESIS_MARKER}")"
+                  stored_sha="$(tail -n1 "${GENESIS_MARKER}")"
+
+                  if [ "${stored_sha}" = "${GENESIS_SHA512}" ] && \
+                    [ -f "${GENESIS_FILE}" ]; then
+                    echo "Genesis already present and checksum matches – skipping download"
+                    need_download=false
+                  fi
+                fi
+
+                if [ "${need_download}" = true ]; then
+                  until download_genesis; do
+                    echo "Retrying in 5 seconds…"
+                    sleep 5
+                  done
+                fi
               fi
 
-              cd $HEIMDALLD_HOME/config
+              #-------------------------------------------------------------------------------
+              # 3. Patch config.toml
+              #-------------------------------------------------------------------------------
+              cd "${HEIMDALLD_HOME}/config"
 
-              # Patch config.toml
               sed -iE "s#^cors_allowed_origins.*#cors_allowed_origins = ${CORS_ALLOWED_ORIGINS}#" config.toml
-              sed -iE "s#^seeds.*#seeds = \"${SEEDS}\"#" config.toml
-              sed -iE "s#^peers.*#seeds = \"${PEERS}\"#" config.toml
+              sed -iE "s#^seeds.*#seeds = \"${SEEDS}\"#"                              config.toml
+              sed -iE "s#^persistent_peers.*#persistent_peers = \"${PEERS}\"#"        config.toml
 
               if [ "${METRICS:-false}" = "true" ]; then
-                sed -iE "s#^prometheus \?=.*#prometheus = true#" config.toml
-                sed -iE "s#^prometheus_listen_addr \?=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
+                sed -iE "s#^prometheus[[:space:]]*=.*#prometheus = true#"             config.toml
+                sed -iE "s#^prometheus_listen_addr[[:space:]]*=.*#prometheus_listen_addr = \":${METRICS_PORT}\"#" config.toml
               else
-                sed -iE "s#^prometheus \?=.*#prometheus = false#" config.toml
+                sed -iE "s#^prometheus[[:space:]]*=.*#prometheus = false#"            config.toml
               fi
           volumeMounts:
             - name: storage
@@ -88,11 +141,19 @@ spec:
               value: {{ include "heimdall.chainId" $values | quote }}
             - name: CORS_ALLOWED_ORIGINS
               value: {{ $values.config.corsAllowedOrigins | quote }}
+            - name: MONIKER
+              {{- if not (empty $values.config.name) }}
+              value: {{ $values.config.name }}
+              {{- else }}
+              value: {{ .Release.Name }}
+              {{- end }}
           {{- if $values.config.downloadGenesis.enabled }}
             - name: GENESIS
               value: "true"
             - name: GENESIS_URL
               value: {{ include "heimdall.genesisUrl" $values | quote }}
+            - name: GENESIS_SHA512
+              value: {{ include "heimdall.genesisSha512" $values | quote }}
           {{- else if $values.config.metrics.enabled }}
             - name: METRICS
               value: "true"
@@ -189,8 +250,8 @@ spec:
               command:
               - /bin/sh
               - -c
-              - if [ "$(wget http://127.0.0.1:26657/status -O -  | grep "catching_up"
-                | awk "{print \$2}")" = "false" ]; then return 0; else return 1; fi
+              - |
+                [ "$(wget -qO- http://127.0.0.1:26657/status | grep -o '"catching_up":[^,}]*' | awk -F: '{gsub(/[[:space:]"}]/,"",$2); print $2}')" = "false" ]
             failureThreshold: 3
             initialDelaySeconds: 5
             periodSeconds: 10

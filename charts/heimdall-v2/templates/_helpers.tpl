@@ -142,6 +142,25 @@ invalid network
 {{- end }}
 
 {{/*
+Set the default genesis URL, when unspecified
+*/}}
+{{- define "heimdall.genesisSha512" -}}
+{{- with .config }}
+{{- if empty .downloadGenesis.genesisUrl }}
+{{- if eq .network "mainnet" -}}
+38003386814a1cf6194f7e29e9b27d6e8711760cef357c500b94dda3e366899b6577a912e97a0527c96bc17174b186d269697cae3e8525022074bc83e36b4ed3
+{{- else if eq .network "amoy" -}}
+70bb9b754781f0ec77ace3132079420b26da602b606e514b71c969d29ab9a0c4ec757d44b5597d2889342708fdbfb48d9029caddd48ef1584d484977a17bd24d
+{{- else }}
+invalid network
+{{- end }}
+{{- else }}
+{{- printf "%s" .downloadGenesis.genesisSha512 -}}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
 Generate the array of options for heimdall
  */}}
 {{- define "heimdall.computedArgs" -}}
