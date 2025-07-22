@@ -52,7 +52,7 @@ spec:
             - -c
             - |
               #!/usr/bin/env sh
-              set -eEuo pipefail
+              set -euo pipefail
 
               HEIMDALLD_HOME="/storage"
               GENESIS_MARKER="${HEIMDALLD_HOME}/config/.genesis-download"
