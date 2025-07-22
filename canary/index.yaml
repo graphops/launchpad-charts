@@ -6580,6 +6580,16 @@ entries:
   heimdall-v2:
     - apiVersion: v2
       appVersion: 0.2.12
+      created: "2025-07-22T11:53:20Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 2cc154caade00ac9699dee77ee63abbe159a9fc0ffb6d27eb1e5bf8ae374813a
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.1-canary.3/heimdall-v2-0.0.1-canary.3.tgz
+      version: 0.0.1-canary.3
+    - apiVersion: v2
+      appVersion: 0.2.12
       created: "2025-07-21T13:11:03Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
       digest: 41c319da84ced78531e94739fbae776b7e3ab0d6213c113cfd16bfc1aee8aeda
@@ -10657,7 +10667,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-21T15:23:43.871130358Z"
+      created: "2025-07-22T12:06:48.97602069Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -10667,7 +10677,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-21T15:23:43.870541674Z"
+      created: "2025-07-22T12:06:48.97545093Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11207,4 +11217,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-07-21T15:23:42.808497809Z"
+generated: "2025-07-22T12:06:47.940824138Z"
