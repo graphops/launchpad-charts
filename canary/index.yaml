@@ -1997,6 +1997,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v3.0.14
+      created: "2025-07-22T13:14:31Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 460726b4f38c780cee4acfc4362f1a8d2cbc3d6929b604bffc8f3ef1c6495370
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.7/erigon-0.11.7.tgz
+      version: 0.11.7
+    - apiVersion: v2
+      appVersion: v3.0.14
       created: "2025-07-22T13:14:12Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: c512de08844770f372397e2986c00966c96adbf9771d8151e3a0d4e630a4f1e0
@@ -5253,6 +5263,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.39.1
+      created: "2025-07-22T13:10:06Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 3cddbdb3409f55e63adfaa9a0a07cd57a4bfab11f380b755a6ddad5946cb1784
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.0/graph-node-0.6.0.tgz
+      version: 0.6.0
     - apiVersion: v2
       appVersion: v0.39.1
       created: "2025-07-22T13:09:28Z"
@@ -10785,7 +10805,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-22T14:57:03.133163697Z"
+      created: "2025-07-22T14:57:10.214635263Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -10795,7 +10815,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-22T14:57:03.132560027Z"
+      created: "2025-07-22T14:57:10.214050495Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11335,4 +11355,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-07-22T14:57:02.010784553Z"
+generated: "2025-07-22T14:57:09.161974815Z"
