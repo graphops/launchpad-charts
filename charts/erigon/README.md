@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.11.7](https://img.shields.io/badge/Version-0.11.7-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.0.14](https://img.shields.io/badge/AppVersion-v3.0.14-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.11.8](https://img.shields.io/badge/Version-0.11.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.0.15](https://img.shields.io/badge/AppVersion-v3.0.15-informational?style=flat-square)
 
 ## Features
 
@@ -152,7 +152,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | rpcdaemon.resources.limits |  | object | `{}` |
  | rpcdaemon.resources.requests | Requests must be specified if you are using autoscaling | object | `{"cpu":"500m","memory":"4Gi"}` |
  | rpcdaemon.service.ports.http-jsonrpc | Service Port to expose rpcdaemon JSON-RPC interface on | int | `8545` |
- | rpcdaemon.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | rpcdaemon.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6061` |
  | rpcdaemon.service.type |  | string | `"ClusterIP"` |
  | rpcdaemon.tolerations |  | list | `[]` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
@@ -197,7 +197,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.service.ports.http-beaconapi | Service Port to expose Beacon API interface on | int | `5555` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
  | statefulNode.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
- | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6060` |
+ | statefulNode.service.ports.http-metrics | Service Port to expose Prometheus metrics on | int | `6061` |
  | statefulNode.service.ports.ws-rpc | Service Port to expose WS-RPC interface on | int | `8546` |
  | statefulNode.service.publishNotReadyAddresses.headless | Toggle publishing not ready addresses for headless service | bool | `false` |
  | statefulNode.service.publishNotReadyAddresses.p2p | Toggle publishing not ready addresses for p2p service | bool | `false` |
