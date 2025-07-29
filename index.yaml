@@ -557,6 +557,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.0.15
+      created: "2025-07-29T15:30:52Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 4e730bde4a106088a7ece83b5f8cd96d394cf4b9a07dc523fc31982350b09215
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.11.8/erigon-0.11.8.tgz
+      version: 0.11.8
+    - apiVersion: v2
       appVersion: v3.0.14
       created: "2025-07-22T13:14:31Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -2238,6 +2248,16 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.2.15
+      created: "2025-07-29T15:30:23Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 91c9b7de1a8be207e0a32d3301e52ff884833ceb1479df664caaef44fb35993d
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.2/heimdall-v2-0.0.2.tgz
+      version: 0.0.2
+    - apiVersion: v2
       appVersion: 0.2.12
       created: "2025-07-22T15:06:36Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -3884,4 +3904,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-07-24T15:23:59.000960642Z"
+generated: "2025-07-29T15:44:47.396559489Z"
