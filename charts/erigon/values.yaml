@@ -180,7 +180,7 @@ statefulNode:
       # -- Service Port to expose Beacon API interface on
       http-beaconapi: 5555
       # -- Service Port to expose Prometheus metrics on
-      http-metrics: 6060
+      http-metrics: 6061
 
   resources: {}
     # We usually recommend not to specify default resources and to leave this as a conscious
@@ -254,7 +254,7 @@ rpcdaemon:
       # -- Service Port to expose rpcdaemon JSON-RPC interface on
       http-jsonrpc: 8545
       # -- Service Port to expose Prometheus metrics on
-      http-metrics: 6060
+      http-metrics: 6061
 
   resources:
     # We usually recommend not to specify default resources and to leave this as a conscious
