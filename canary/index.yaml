@@ -4213,6 +4213,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2025-07-29T16:44:34Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: c8b30eb5945e144d85c63dfd30786aca640c1a0d547ad7f98d542f059f4ef625
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.21-canary.1/graph-network-indexer-0.5.21-canary.1.tgz
+      version: 0.5.21-canary.1
+    - apiVersion: v2
       created: "2025-07-29T16:33:18Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 652b35f6392c43c99fe337ec51eacc4bac0b9cb3255f374df43ea3df83fb7f78
@@ -10960,7 +10969,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-29T16:40:03.425976422Z"
+      created: "2025-07-29T16:52:28.181755439Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -10970,7 +10979,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-07-29T16:40:03.425132961Z"
+      created: "2025-07-29T16:52:28.180905305Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11510,4 +11519,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-07-29T16:40:02.352688286Z"
+generated: "2025-07-29T16:52:27.094176172Z"
