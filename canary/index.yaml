@@ -6761,6 +6761,16 @@ entries:
   heimdall-v2:
     - apiVersion: v2
       appVersion: 0.2.16
+      created: "2025-08-05T16:05:54Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: afddaffe6f2731fb34ae11bcaf5ad0cf6c64cd806bba363d2b41c92e25b1e82a
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.3/heimdall-v2-0.0.3.tgz
+      version: 0.0.3
+    - apiVersion: v2
+      appVersion: 0.2.16
       created: "2025-08-05T15:44:30Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
       digest: 4a6fb311499ee2f2d82c35d586c63cb01f81142e499c86607cc201e5efd356d0
@@ -8455,6 +8465,26 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v25.7.1
+      created: "2025-08-05T16:06:13Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 764476f361827b02ee9219ab891cdc1c10c4ebd73ea2f790a2d8b4ac3f3170ff
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.7/nimbus-0.6.7.tgz
+      version: 0.6.7
+    - apiVersion: v2
+      appVersion: multiarch-v25.7.1
+      created: "2025-08-05T15:48:03Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: b8833508b9a146767300176e5b99e8542663fe5c2fe770ab1423a3bdac5d7495
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.7-canary.2/nimbus-0.6.7-canary.2.tgz
+      version: 0.6.7-canary.2
+    - apiVersion: v2
+      appVersion: multiarch-v25.7.1
       created: "2025-07-31T09:43:13Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: c7a4d1f5f574c1311131a987a66a11ffc4734d56b1986915e85e37616c39d0bd
@@ -9745,6 +9775,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.18.0
+      created: "2025-08-05T16:06:44Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: fe24209e8a662dd1d9e84909851b404e01a6f961f3a8f7718b52d612108ac7c0
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.14/proxyd-0.6.14.tgz
+      version: 0.6.14
     - apiVersion: v2
       appVersion: v4.18.0
       created: "2025-08-05T15:47:25Z"
@@ -11038,7 +11078,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-08-05T15:54:40.23433443Z"
+      created: "2025-08-05T16:14:30.97396396Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -11048,7 +11088,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-08-05T15:54:40.233756881Z"
+      created: "2025-08-05T16:14:30.973233263Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11588,4 +11628,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-08-05T15:54:39.135179319Z"
+generated: "2025-08-05T16:14:29.84651199Z"
