@@ -115,6 +115,8 @@ backends:
     rpcUrl: http://your-node:8545
     # -- Define the JSON-RPC Websocket URL for the backend
     wsUrl: ws://your-node:8545
+    # -- Define an weight for weighted routing
+    weight: 1
     # -- Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47))
     extraConfig: {}
     # -- Define which backend groups the backend is part of
@@ -125,6 +127,8 @@ backends:
 backendGroups:
   # -- Set the routing strategy (consensus_aware \| multicall \| fallback)
   routing_strategy: consensus_aware
+  # -- Enable weighted routing
+  weighted_routing: true
 
 # -- Mapping JSON-RPC method name to a particular group of backends (method_name -> group_name)
 rpcMethodMappings:
@@ -139,6 +143,7 @@ rpcMethodMappings:
   eth_feeHistory: main
   eth_gasPrice: main
   eth_blockNumber: main
+  eth_blobBaseFee: main
   eth_getBalance: main
   eth_getStorageAt: main
   eth_getTransactionCount: main
@@ -189,6 +194,9 @@ redisNamespace: ""
 
 # -- Enable caching
 cacheEnabled: false
+
+# -- Max batch size (hard limit is 1000)
+batchMaxSize: 250
 
 # -- TOML configuration for server
 serverConfigTemplate: |
@@ -245,7 +253,12 @@ redisConfigTemplate: |
   url = {{ .Values.redisUrl | quote }}
   # Redis namespace to use for keys.
   namespace = {{ .Values.redisNamespace | quote }}
-  
+
+# -- TOML configuration for batch
+batchConfigTemplate: |
+  # Set maximum batch size (hard limit of 1000)
+  max_size = {{ .Values.batchMaxSize }}
+
 # -- The configuration template that is rendered by Helm
 # @default -- See default template in [values.yaml](values.yaml)
 configTemplate: |
@@ -269,6 +282,7 @@ configTemplate: |
   rpc_url = {{ default "" $backendValues.rpcUrl | quote }}
   ws_url = {{ default "ws://dummy-host-ws-disabled" $backendValues.wsUrl | quote }}
   max_rps = {{ default 0 $backendValues.maxRps }}
+  weight = {{ default 1 $backendValues.weight }}
   {{- with $backendValues.extraConfig }}
   {{ toToml . }}
   {{- end }}
@@ -292,3 +306,6 @@ configTemplate: |
   [redis]
   {{ tpl .Values.redisConfigTemplate $ }}
   {{- end }}
+
+  [batch]
+  {{ tpl .Values.batchConfigTemplate $ }}
