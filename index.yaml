@@ -2257,6 +2257,16 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.2.17
+      created: "2025-08-17T03:57:39Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: cc985d14e70c4f7c8d891407fd39b9af7d53e24867b43a88b48d40a1361390e9
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.4/heimdall-v2-0.0.4.tgz
+      version: 0.0.4
+    - apiVersion: v2
       appVersion: 0.2.16
       created: "2025-08-05T16:05:54Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -3224,6 +3234,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.18.0
+      created: "2025-08-17T03:55:30Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: f84e45694ebbf5ed2871abdf403f9afa03340bedbfbe895e2e796350d13e03da
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.6.15/proxyd-0.6.15.tgz
+      version: 0.6.15
+    - apiVersion: v2
+      appVersion: v4.18.0
       created: "2025-08-05T16:06:44Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: fe24209e8a662dd1d9e84909851b404e01a6f961f3a8f7718b52d612108ac7c0
@@ -3943,4 +3963,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-08-05T17:04:35.692149492Z"
+generated: "2025-08-17T04:20:02.743608555Z"
