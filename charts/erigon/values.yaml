@@ -229,6 +229,8 @@ statefulNode:
       loadBalancerIP: ""
       # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
       loadBalancerSourceRanges: []
+      # -- IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP)
+      advertiseIP: ""
       # -- When type is NodePort, base nodePort to use (port and port+1 are used)
       nodePort:
         base: 31000
