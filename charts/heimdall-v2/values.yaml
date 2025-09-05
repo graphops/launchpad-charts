@@ -154,5 +154,24 @@ heimdall:
         # -- Container pull policy
         pullPolicy: IfNotPresent
 
+  # P2P configuration (supersedes p2pNodePort)
+  p2p:
+    # -- P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).
+    #    Notes:
+    #      - LoadBalancer: the Service exposes this port and targets the container on the same port
+    #      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available
+    #      - Choose a value in your cluster’s NodePort range (typically 30000–32767)
+    port: 31000
+    service:
+      # -- Enable creation of a P2P Service
+      enabled: false
+      # -- Service type for P2P exposure (NodePort or LoadBalancer)
+      type: NodePort
+      # -- Annotations to add to the P2P Service (useful for cloud LBs)
+      annotations: {}
+      # -- External traffic policy for NodePort/LoadBalancer
+      externalTrafficPolicy: Local
+      # (No separate nodePort field; `p2p.port` is used for both Service and container.)
+
   # -- Enable a readiness probe that checks if heimdall is synced
   readyAfterSync: false

@@ -217,9 +217,9 @@ spec:
             - name: http-metrics
               containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
-          {{- if $values.p2pNodePort.enabled }}
+          {{- if or (include "heimdall.p2p.isNodePort" $values | trim | eq "true") (include "heimdall.p2p.isLoadBalancer" $values | trim | eq "true") }}
             - name: tcp-p2p
-              containerPort: {{ $values.p2pNodePort.port }}
+              containerPort: {{ include "heimdall.p2p.containerPort" $values }}
               protocol: TCP
           {{- end }}
           volumeMounts:

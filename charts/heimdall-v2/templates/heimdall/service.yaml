@@ -51,8 +51,9 @@ spec:
     {{- include "heimdall.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
 {{- end }}
-{{- if $values.p2pNodePort.enabled }}
-{{- $port := $values.p2pNodePort.port }}
+{{/* P2P Service: NodePort (legacy or new style) */}}
+{{- if (include "heimdall.p2p.isNodePort" $values | trim | eq "true") }}
+{{- $port := (include "heimdall.p2p.nodePortBase" $values) | int }}
 ---
 apiVersion: v1
 kind: Service
@@ -75,4 +76,33 @@ spec:
   selector:
     {{- include "heimdall.selectorLabels" . | nindent 4 }}
     statefulset.kubernetes.io/pod-name: "{{ include "heimdall.fullname" $ }}-{{ $componentName }}-0"
+{{- end }}
+
+{{/* P2P Service: LoadBalancer */}}
+{{- if (include "heimdall.p2p.isLoadBalancer" $values | trim | eq "true") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "heimdall.fullname" . }}-{{ $componentName }}-p2p
+  labels:
+    {{- include "heimdall.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+  {{- with $values.p2p.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  {{- if $values.p2p.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ $values.p2p.service.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - name: tcp-p2p
+      port: {{ include "heimdall.p2p.containerPort" $values }}
+      protocol: TCP
+      targetPort: tcp-p2p
+  selector:
+    {{- include "heimdall.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
 {{- end }}

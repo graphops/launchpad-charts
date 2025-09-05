@@ -161,16 +161,64 @@ invalid network
 {{- end }}
 
 {{/*
+P2P helpers
+*/}}
+{{- define "heimdall.p2p.nodePortBase" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.port -}}
+  {{- $v.p2p.port -}}
+{{- else if and $v.p2pNodePort $v.p2pNodePort.port -}}
+  {{- $v.p2pNodePort.port -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "heimdall.p2p.containerPort" -}}
+{{- $v := . -}}
+{{- if (include "heimdall.p2p.isNodePort" $v | trim | eq "true") -}}
+{{- include "heimdall.p2p.nodePortBase" $v -}}
+{{- else if and $v.p2p $v.p2p.port -}}
+{{- $v.p2p.port -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "heimdall.p2p.isNodePort" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.service $v.p2p.service.enabled -}}
+  {{- if eq (default "NodePort" $v.p2p.service.type) "NodePort" -}}
+true
+  {{- else -}}
+false
+  {{- end -}}
+{{- else if and $v.p2pNodePort $v.p2pNodePort.enabled -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end -}}
+
+{{- define "heimdall.p2p.isLoadBalancer" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.service $v.p2p.service.enabled (eq (default "" $v.p2p.service.type) "LoadBalancer") -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end -}}
+
+{{/*
 Generate the array of options for heimdall
  */}}
 {{- define "heimdall.computedArgs" -}}
 {{- $args := list
 "--home=\"/storage\""
 }}
-{{- $args = concat $args (list (print "--rpc.laddr=" ( print "tcp://127.0.0.1:" ( index .service.ports "http-rpc" ) | quote ))) }}
-{{- $args = concat $args (list (print "--api.address=" ( print "tcp://127.0.0.1:" ( index .service.ports "http-api" ) | quote ))) }}
-{{- if .p2pNodePort.enabled }}
-{{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" .p2pNodePort.port | quote ))) }}
+{{- $args = concat $args (list (print "--rpc.laddr=" ( print "tcp://0.0.0.0:" ( index .service.ports "http-rpc" ) | quote ))) }}
+{{- $args = concat $args (list (print "--api.address=" ( print "tcp://0.0.0.0:" ( index .service.ports "http-api" ) | quote ))) }}
+{{- if (include "heimdall.p2p.isNodePort" . | trim | eq "true") }}
+{{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" ( include "heimdall.p2p.nodePortBase" . ) | quote ))) }}
+{{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
+{{- else if (include "heimdall.p2p.isLoadBalancer" . | trim | eq "true") }}
+{{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" ( include "heimdall.p2p.containerPort" . ) | quote ))) }}
 {{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
 {{- end }}
 {{- with .config }}

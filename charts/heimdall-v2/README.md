@@ -12,6 +12,7 @@ Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside 
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for polygon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+ - P2P exposure via NodePort or LoadBalancer with matching container ports
 
 ## Quickstart
 
@@ -72,6 +73,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.image.repository | Image for Heimdall | string | `"0xpolygon/heimdall-v2"` |
  | heimdall.image.tag | Overrides the image tag | string | Chart.appVersion |
  | heimdall.nodeSelector |  | object | `{}` |
+ | heimdall.p2p.port | P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).    Notes:      - LoadBalancer: the Service exposes this port and targets the container on the same port      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available      - Choose a value in your cluster’s NodePort range (typically 30000–32767) | int | `31000` |
+ | heimdall.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
+ | heimdall.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
+ | heimdall.p2p.service.externalTrafficPolicy | External traffic policy for NodePort/LoadBalancer | string | `"Local"` |
+ | heimdall.p2p.service.type | Service type for P2P exposure (NodePort or LoadBalancer) | string | `"NodePort"` |
  | heimdall.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | heimdall.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | heimdall.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
