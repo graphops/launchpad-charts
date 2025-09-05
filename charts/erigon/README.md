@@ -90,10 +90,6 @@ Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility
 # values.yaml
 
 statefulNode:
-  # Option A: NodePort (backwards compatible)
-  p2pNodePort:
-    enabled: true
-    port: 31000 # Must be globally unique and available on the host
 ```
 
 ## Restoring chaindata from a snapshot
@@ -235,12 +231,3 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 ## Contributing
 
 We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
-  # Option B: LoadBalancer
-  p2p:
-    port: 30303
-    service:
-      enabled: true
-      type: LoadBalancer
-      annotations: {}
-      externalTrafficPolicy: Local
-      publishNotReadyAddresses: false

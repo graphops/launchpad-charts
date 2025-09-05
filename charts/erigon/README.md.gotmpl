@@ -90,10 +90,6 @@ Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility
 # values.yaml
 
 statefulNode:
-  # Option A: NodePort (backwards compatible)
-  p2pNodePort:
-    enabled: true
-    port: 31000 # Must be globally unique and available on the host
 ```
 
 ## Restoring chaindata from a snapshot
@@ -121,12 +117,3 @@ You can monitor progress by following the logs of the `stateful-node-init` conta
 {{ template "chart.valuesSection" . }}
 
 {{ template "graphops.contributingSection" . }}
-  # Option B: LoadBalancer
-  p2p:
-    port: 30303
-    service:
-      enabled: true
-      type: LoadBalancer
-      annotations: {}
-      externalTrafficPolicy: Local
-      publishNotReadyAddresses: false
