@@ -129,6 +129,15 @@ spec:
               else
                 sed -iE "s#^prometheus[[:space:]]*=.*#prometheus = false#"            config.toml
               fi
+
+              # Set external_address to advertise if provided
+              if [ -n "${EXTERNAL_P2P_ADDRESS:-}" ]; then
+                if grep -q "^external_address" config.toml; then
+                  sed -iE "s#^external_address[[:space:]]*=.*#external_address = \"${EXTERNAL_P2P_ADDRESS}\"#" config.toml
+                else
+                  printf '\nexternal_address = "%s"\n' "${EXTERNAL_P2P_ADDRESS}" >> config.toml
+                fi
+              fi
           volumeMounts:
             - name: storage
               mountPath: /storage
@@ -147,6 +156,10 @@ spec:
               {{- else }}
               value: {{ .Release.Name }}
               {{- end }}
+          {{- if and $values.p2p $values.p2p.service (eq $values.p2p.service.type "LoadBalancer") $values.p2p.service.loadBalancerIP }}
+            - name: EXTERNAL_P2P_ADDRESS
+              value: {{ printf "tcp://%s:%v" $values.p2p.service.loadBalancerIP (include "heimdall.p2p.containerPort" $values) | quote }}
+          {{- end }}
           {{- if $values.config.downloadGenesis.enabled }}
             - name: GENESIS
               value: "true"

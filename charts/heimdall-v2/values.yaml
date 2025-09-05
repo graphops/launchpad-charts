@@ -171,7 +171,12 @@ heimdall:
       annotations: {}
       # -- External traffic policy for NodePort/LoadBalancer
       externalTrafficPolicy: Local
-      # (No separate nodePort field; `p2p.port` is used for both Service and container.)
+      # -- Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing)
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, set a specific LB IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
 
   # -- Enable a readiness probe that checks if heimdall is synced
   readyAfterSync: false

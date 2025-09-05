@@ -67,6 +67,10 @@ metadata:
 spec:
   type: NodePort
   externalTrafficPolicy: Local
+  {{- with $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
   ports:
     - name: tcp-p2p
       port: {{ $port }}
@@ -96,6 +100,17 @@ spec:
   type: LoadBalancer
   {{- if $values.p2p.service.externalTrafficPolicy }}
   externalTrafficPolicy: {{ $values.p2p.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- with $values.p2p.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with $values.p2p.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- with $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml . | nindent 2 }}
   {{- end }}
   ports:
     - name: tcp-p2p

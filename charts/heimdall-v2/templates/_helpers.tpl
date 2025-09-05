@@ -220,6 +220,9 @@ Generate the array of options for heimdall
 {{- else if (include "heimdall.p2p.isLoadBalancer" . | trim | eq "true") }}
 {{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" ( include "heimdall.p2p.containerPort" . ) | quote ))) }}
 {{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
+  {{- if and .p2p .p2p.service .p2p.service.loadBalancerIP }}
+  {{- $args = concat $args (list (print "--p2p.external_address=" ( print (printf "tcp://%s:%v" .p2p.service.loadBalancerIP (include "heimdall.p2p.containerPort" .)) | quote ))) }}
+  {{- end }}
 {{- end }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}

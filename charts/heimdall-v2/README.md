@@ -76,7 +76,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.p2p.port | P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).    Notes:      - LoadBalancer: the Service exposes this port and targets the container on the same port      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available      - Choose a value in your cluster’s NodePort range (typically 30000–32767) | int | `31000` |
  | heimdall.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
  | heimdall.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
+ | heimdall.p2p.service.externalIPs | Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing) | list | `[]` |
  | heimdall.p2p.service.externalTrafficPolicy | External traffic policy for NodePort/LoadBalancer | string | `"Local"` |
+ | heimdall.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, set a specific LB IP | string | `""` |
+ | heimdall.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
  | heimdall.p2p.service.type | Service type for P2P exposure (NodePort or LoadBalancer) | string | `"NodePort"` |
  | heimdall.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | heimdall.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
