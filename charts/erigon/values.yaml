@@ -206,6 +206,31 @@ statefulNode:
 
   affinity: {}
 
+  # P2P configuration (supersedes p2pNodePort)
+  p2p:
+    # -- Base port Erigon listens on for P2P (container)
+    port: 30303
+    service:
+      # -- Enable creation of a P2P Service
+      enabled: false
+      # -- Service type for P2P exposure (NodePort or LoadBalancer)
+      type: NodePort
+      # -- Annotations to add to the P2P Service (useful for cloud LBs)
+      annotations: {}
+      # -- External traffic policy for NodePort/LoadBalancer
+      externalTrafficPolicy: Local
+      # -- Toggle publishing not ready addresses for p2p service
+      publishNotReadyAddresses: false
+      # -- When type is NodePort, base nodePort to use (port and port+1 are used)
+      nodePort:
+        base: 31000
+      # -- (Advanced) override initContainer image used in NodePort mode
+      initContainer:
+        image:
+          repository: lachlanevenson/k8s-kubectl
+          tag: v1.25.4
+          pullPolicy: IfNotPresent
+
   p2pNodePort:
     # -- Expose P2P port via NodePort
     enabled: false

@@ -2,7 +2,7 @@
 
 Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.11.8](https://img.shields.io/badge/Version-0.11.8-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.0.15](https://img.shields.io/badge/AppVersion-v3.0.15-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.12.0-canary.1](https://img.shields.io/badge/Version-0.12.0--canary.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.0.15](https://img.shields.io/badge/AppVersion-v3.0.15-informational?style=flat-square)
 
 ## Features
 
@@ -12,7 +12,7 @@ Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernet
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
-- Support for exposing a NodePort to enable inbound P2P dials for better peering
+- Support for exposing P2P via NodePort or LoadBalancer for inbound dials
 
 ## Quickstart
 
@@ -77,12 +77,20 @@ If doing this, be sure to configure `rpcdaemon.resources.requests` with appropri
 
 ## Enabling inbound P2P dials
 
-By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder to establish a strong set of peers because you cannot accept inbound P2P dials.
+
+To expose P2P you can now use either NodePort or LoadBalancer:
+
+- NodePort (legacy and default behavior when enabled): set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=NodePort` (or `statefulNode.p2pNodePort.enabled=true` for backwards compatibility). This mode locks `statefulNode.replicaCount` to `1` and uses an initContainer to discover the Node's external IP for correct ENR advertisement.
+- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service ports will match the container P2P flags.
+
+Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward.
 
 ```yaml
 # values.yaml
 
 statefulNode:
+  # Option A: NodePort (backwards compatible)
   p2pNodePort:
     enabled: true
     port: 31000 # Must be globally unique and available on the host
@@ -182,6 +190,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | statefulNode.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | statefulNode.nodeSelector |  | object | `{}` |
+ | statefulNode.p2p.port | Base port Erigon listens on for P2P (container) | int | `30303` |
+ | statefulNode.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
+ | statefulNode.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
+ | statefulNode.p2p.service.externalTrafficPolicy | External traffic policy for NodePort/LoadBalancer | string | `"Local"` |
+ | statefulNode.p2p.service.initContainer | override initContainer image used in NodePort mode | Advanced | `{"image":{"pullPolicy":"IfNotPresent","repository":"lachlanevenson/k8s-kubectl","tag":"v1.25.4"}}` |
+ | statefulNode.p2p.service.nodePort | When type is NodePort, base nodePort to use (port and port+1 are used) | object | `{"base":31000}` |
+ | statefulNode.p2p.service.publishNotReadyAddresses | Toggle publishing not ready addresses for p2p service | bool | `false` |
+ | statefulNode.p2p.service.type | Service type for P2P exposure (NodePort or LoadBalancer) | string | `"NodePort"` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
@@ -214,3 +230,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 ## Contributing
 
 We welcome and appreciate your contributions! Please see the [Contributor Guide](/CONTRIBUTING.md), [Code Of Conduct](/CODE_OF_CONDUCT.md) and [Security Notes](/SECURITY.md) for this repository.
+  # Option B: LoadBalancer
+  p2p:
+    port: 30303
+    service:
+      enabled: true
+      type: LoadBalancer
+      annotations: {}
+      externalTrafficPolicy: Local
+      publishNotReadyAddresses: false

@@ -12,7 +12,7 @@
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for Erigon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
-- Support for exposing a NodePort to enable inbound P2P dials for better peering
+- Support for exposing P2P via NodePort or LoadBalancer for inbound dials
 
 ## Quickstart
 
@@ -77,12 +77,20 @@ If doing this, be sure to configure `rpcdaemon.resources.requests` with appropri
 
 ## Enabling inbound P2P dials
 
-By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder for your node to establish a strong set of peers because you cannot accept inbound P2P dials. To change this behaviour, you can set `statefulNode.p2pNodePort.enabled` to `true`. This will make your node accessible via the Internet using a `Service` of type `NodePort`. When using `statefulNode.p2pNodePort.enabled`, the exposed IP address on your Erigon ENR record will be the "External IP" of the Node where the Pod is running. When using this mode, `statefulNode.replicaCount` will be locked to `1`.
+By default, your Erigon node will not have an internet-accessible port for P2P traffic. This makes it harder to establish a strong set of peers because you cannot accept inbound P2P dials.
+
+To expose P2P you can now use either NodePort or LoadBalancer:
+
+- NodePort (legacy and default behavior when enabled): set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=NodePort` (or `statefulNode.p2pNodePort.enabled=true` for backwards compatibility). This mode locks `statefulNode.replicaCount` to `1` and uses an initContainer to discover the Node's external IP for correct ENR advertisement.
+- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service ports will match the container P2P flags.
+
+Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward.
 
 ```yaml
 # values.yaml
 
 statefulNode:
+  # Option A: NodePort (backwards compatible)
   p2pNodePort:
     enabled: true
     port: 31000 # Must be globally unique and available on the host
@@ -113,3 +121,12 @@ You can monitor progress by following the logs of the `stateful-node-init` conta
 {{ template "chart.valuesSection" . }}
 
 {{ template "graphops.contributingSection" . }}
+  # Option B: LoadBalancer
+  p2p:
+    port: 30303
+    service:
+      enabled: true
+      type: LoadBalancer
+      annotations: {}
+      externalTrafficPolicy: Local
+      publishNotReadyAddresses: false

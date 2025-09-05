@@ -68,7 +68,7 @@ spec:
               - key: {{ $jwtSecretKey }}
                 path: jwt.hex
       {{- end }}
-      {{- if $values.p2pNodePort.enabled }}
+      {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
         - name: env-nodeport
           emptyDir: {}
       {{- end }}
@@ -94,10 +94,16 @@ spec:
           volumeMounts:
             - name: storage
               mountPath: "/storage"
-      {{- if $values.p2pNodePort.enabled }}
+      {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
         - name: init-nodeport
+          {{- $hasNewImg := and $values.p2p $values.p2p.service $values.p2p.service.initContainer $values.p2p.service.initContainer.image -}}
+          {{- if $hasNewImg }}
+          image: "{{ $values.p2p.service.initContainer.image.repository }}:{{ $values.p2p.service.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2p.service.initContainer.image.pullPolicy }}
+          {{- else }}
           image: "{{ $values.p2pNodePort.initContainer.image.repository }}:{{ $values.p2pNodePort.initContainer.image.tag }}"
           imagePullPolicy: {{ $values.p2pNodePort.initContainer.image.pullPolicy }}
+          {{- end }}
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
@@ -160,13 +166,13 @@ spec:
             - sh
             - -ac
             - |
-            {{- if $values.p2pNodePort.enabled }}
+            {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
               . /env/init-nodeport;
             {{- end }}
               set -ex;
               exec erigon \
                 --datadir={{ $values.datadir }} \
-              {{- if $values.p2pNodePort.enabled }}
+              {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
                 --nat=extip:${EXTERNAL_IP} \
                 --port=${EXTERNAL_PORT_68} \
                 --p2p.allowed-ports="${EXTERNAL_PORT_68},${EXTERNAL_PORT_67}" \
@@ -241,7 +247,7 @@ spec:
               containerPort: 42069
               protocol: TCP
           volumeMounts:
-            {{- if $values.p2pNodePort.enabled }}
+            {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
             - name: env-nodeport
               mountPath: /env
             {{- end }}
