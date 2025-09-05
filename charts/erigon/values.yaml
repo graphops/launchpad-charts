@@ -221,6 +221,12 @@ statefulNode:
       externalTrafficPolicy: Local
       # -- Toggle publishing not ready addresses for p2p service
       publishNotReadyAddresses: false
+      # -- Fixed external IPs to bind the P2P Service to (NodePort or LoadBalancer); requires upstream routing
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, reserve a specific IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
       # -- When type is NodePort, base nodePort to use (port and port+1 are used)
       nodePort:
         base: 31000

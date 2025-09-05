@@ -67,6 +67,10 @@ spec:
   type: NodePort
   externalTrafficPolicy: Local
   publishNotReadyAddresses: {{ if (and $values.p2p $values.p2p.service) }}{{ default false $values.p2p.service.publishNotReadyAddresses }}{{ else }}{{ default false $values.service.publishNotReadyAddresses.p2p }}{{ end }}
+  {{- if and $values.p2p $values.p2p.service $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml $values.p2p.service.externalIPs | nindent 2 }}
+  {{- end }}
   ports:
     - name: tcp-p2p-68
       port: {{ include "erigon.p2pPort" $values }}
@@ -111,6 +115,17 @@ spec:
   type: LoadBalancer
   {{- if (and $values.p2p $values.p2p.service $values.p2p.service.externalTrafficPolicy) }}
   externalTrafficPolicy: {{ $values.p2p.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if and $values.p2p $values.p2p.service $values.p2p.service.loadBalancerIP }}
+  loadBalancerIP: {{ $values.p2p.service.loadBalancerIP }}
+  {{- end }}
+  {{- if and $values.p2p $values.p2p.service $values.p2p.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml $values.p2p.service.loadBalancerSourceRanges | nindent 2 }}
+  {{- end }}
+  {{- if and $values.p2p $values.p2p.service $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml $values.p2p.service.externalIPs | nindent 2 }}
   {{- end }}
   publishNotReadyAddresses: {{ if (and $values.p2p $values.p2p.service) }}{{ default false $values.p2p.service.publishNotReadyAddresses }}{{ else }}{{ default false $values.service.publishNotReadyAddresses.p2p }}{{ end }}
   ports:

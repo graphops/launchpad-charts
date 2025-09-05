@@ -177,6 +177,11 @@ spec:
                 --port=${EXTERNAL_PORT_68} \
                 --p2p.allowed-ports="${EXTERNAL_PORT_68},${EXTERNAL_PORT_67}" \
               {{- else }}
+              {{- if (include "erigon.p2p.isLoadBalancer" $values | trim | eq "true") }}
+              {{- if and $values.p2p $values.p2p.service $values.p2p.service.loadBalancerIP }}
+                --nat=extip:{{ $values.p2p.service.loadBalancerIP }} \
+              {{- end }}
+              {{- end }}
                 --port={{ include "erigon.p2pPort" $values }} \
               {{- end }}
                 --private.api.addr=0.0.0.0:9090 \
