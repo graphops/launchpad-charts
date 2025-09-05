@@ -220,9 +220,13 @@ Generate the array of options for heimdall
 {{- else if (include "heimdall.p2p.isLoadBalancer" . | trim | eq "true") }}
 {{- $args = concat $args (list (print "--p2p.laddr=" ( print "tcp://0.0.0.0:" ( include "heimdall.p2p.containerPort" . ) | quote ))) }}
 {{- $args = concat $args (list (print "--seeds=" ( include "heimdall.seeds" . | quote ) )) }}
-  {{- if and .p2p .p2p.service .p2p.service.loadBalancerIP }}
-  {{- $args = concat $args (list (print "--p2p.external-address=" ( print (printf "tcp://%s:%v" .p2p.service.loadBalancerIP (include "heimdall.p2p.containerPort" .)) | quote ))) }}
-  {{- end }}
+{{- end }}
+
+{{- /* Prefer an explicit advertiseIP over LB IP for external-address */ -}}
+{{- if and .p2p .p2p.service .p2p.service.advertiseIP }}
+{{- $args = concat $args (list (print "--p2p.external-address=" ( print (printf "tcp://%s:%v" .p2p.service.advertiseIP (include "heimdall.p2p.containerPort" .)) | quote ))) }}
+{{- else if and .p2p .p2p.service (eq .p2p.service.type "LoadBalancer") .p2p.service.loadBalancerIP }}
+{{- $args = concat $args (list (print "--p2p.external-address=" ( print (printf "tcp://%s:%v" .p2p.service.loadBalancerIP (include "heimdall.p2p.containerPort" .)) | quote ))) }}
 {{- end }}
 {{- with .config }}
 {{- $args = concat $args (list (print "--chain=" ( print .network | quote ) )) }}

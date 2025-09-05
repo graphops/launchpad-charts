@@ -74,6 +74,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.image.tag | Overrides the image tag | string | Chart.appVersion |
  | heimdall.nodeSelector |  | object | `{}` |
  | heimdall.p2p.port | P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).    Notes:      - LoadBalancer: the Service exposes this port and targets the container on the same port      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available      - Choose a value in your cluster’s NodePort range (typically 30000–32767) | int | `31000` |
+ | heimdall.p2p.service.advertiseIP | IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP) | string | `""` |
  | heimdall.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
  | heimdall.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
  | heimdall.p2p.service.externalIPs | Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing) | list | `[]` |

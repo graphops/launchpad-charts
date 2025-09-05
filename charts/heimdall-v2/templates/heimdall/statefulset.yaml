@@ -156,9 +156,14 @@ spec:
               {{- else }}
               value: {{ .Release.Name }}
               {{- end }}
-          {{- if and $values.p2p $values.p2p.service (eq $values.p2p.service.type "LoadBalancer") $values.p2p.service.loadBalancerIP }}
+          {{- if and $values.p2p $values.p2p.service }}
+            {{- if $values.p2p.service.advertiseIP }}
+            - name: EXTERNAL_P2P_ADDRESS
+              value: {{ printf "tcp://%s:%v" $values.p2p.service.advertiseIP (include "heimdall.p2p.containerPort" $values) | quote }}
+            {{- else if and (eq $values.p2p.service.type "LoadBalancer") $values.p2p.service.loadBalancerIP }}
             - name: EXTERNAL_P2P_ADDRESS
               value: {{ printf "tcp://%s:%v" $values.p2p.service.loadBalancerIP (include "heimdall.p2p.containerPort" $values) | quote }}
+            {{- end }}
           {{- end }}
           {{- if $values.config.downloadGenesis.enabled }}
             - name: GENESIS

@@ -173,6 +173,8 @@ heimdall:
       labels: {}
       # -- External traffic policy for NodePort/LoadBalancer
       externalTrafficPolicy: Local
+      # -- IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP)
+      advertiseIP: ""
       # -- Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing)
       externalIPs: []
       # -- When using a LoadBalancer and your cloud supports it, set a specific LB IP
