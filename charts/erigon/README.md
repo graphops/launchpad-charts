@@ -196,6 +196,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2p.service.externalIPs | Fixed external IPs to bind the P2P Service to (NodePort or LoadBalancer); requires upstream routing | list | `[]` |
  | statefulNode.p2p.service.externalTrafficPolicy | External traffic policy for NodePort/LoadBalancer | string | `"Local"` |
  | statefulNode.p2p.service.initContainer | override initContainer image used in NodePort mode | Advanced | `{"image":{"pullPolicy":"IfNotPresent","repository":"lachlanevenson/k8s-kubectl","tag":"v1.25.4"}}` |
+ | statefulNode.p2p.service.labels | Additional labels to add to the P2P Service | object | `{}` |
  | statefulNode.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, reserve a specific IP | string | `""` |
  | statefulNode.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
  | statefulNode.p2p.service.nodePort | When type is NodePort, base nodePort to use (port and port+1 are used) | object | `{"base":31000}` |

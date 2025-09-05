@@ -217,6 +217,8 @@ statefulNode:
       type: NodePort
       # -- Annotations to add to the P2P Service (useful for cloud LBs)
       annotations: {}
+      # -- Additional labels to add to the P2P Service
+      labels: {}
       # -- External traffic policy for NodePort/LoadBalancer
       externalTrafficPolicy: Local
       # -- Toggle publishing not ready addresses for p2p service

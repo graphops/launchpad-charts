@@ -63,6 +63,9 @@ metadata:
     {{- $componentLabel | nindent 4 }}
     pod: {{ include "erigon.fullname" . }}-{{ $componentName }}-0
     type: p2p # this label is used by the initContainer to select this service
+    {{- with $values.p2p.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   type: NodePort
   externalTrafficPolicy: Local
@@ -107,6 +110,9 @@ metadata:
   labels:
     {{- include "erigon.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
+    {{- with $values.p2p.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- with $values.p2p.service.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
