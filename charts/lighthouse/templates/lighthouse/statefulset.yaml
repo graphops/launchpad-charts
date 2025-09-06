@@ -160,6 +160,14 @@ spec:
                 --enr-address=$EXTERNAL_IP \
                 --enr-udp-port={{ $values.p2pHostPort.port }} \
                 --enr-tcp-port={{ $values.p2pHostPort.port }} \
+              {{- else if and $values.p2p $values.p2p.service $values.p2p.service.enabled (eq $values.p2p.service.type "LoadBalancer") }}
+                {{- if $values.p2p.service.advertiseIP }}
+                --enr-address={{ $values.p2p.service.advertiseIP }} \
+                {{- else if $values.p2p.service.loadBalancerIP }}
+                --enr-address={{ $values.p2p.service.loadBalancerIP }} \
+                {{- end }}
+                --enr-udp-port={{ include "lighthouse.discoveryPort" $values }} \
+                --enr-tcp-port={{ include "lighthouse.port" $values }} \
               {{- end }}
                 --port={{ include "lighthouse.port" $values }} \
                 --discovery-port={{ include "lighthouse.discoveryPort" $values }} \
