@@ -79,6 +79,31 @@ P2P helpers
 {{- end -}}
 {{- end -}}
 
+{{/*
+Erigon P2P ports: two explicit ports (protocol 68 and 67)
+*/}}
+{{- define "erigon.p2p.port1" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.allowedPorts -}}
+  {{- index $v.p2p.allowedPorts 0 -}}
+{{- else -}}
+  {{- include "erigon.p2p.containerPortBase" $v -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "erigon.p2p.port2" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.allowedPorts -}}
+  {{- if ge (len $v.p2p.allowedPorts) 2 -}}
+    {{- index $v.p2p.allowedPorts 1 -}}
+  {{- else -}}
+    {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
+  {{- end -}}
+{{- else -}}
+  {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "erigon.p2p.containerPortBase" -}}
 {{- $values := . -}}
 {{- if and $values.p2p $values.p2p.port -}}

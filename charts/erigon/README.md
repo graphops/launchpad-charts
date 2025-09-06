@@ -186,7 +186,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | statefulNode.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | statefulNode.nodeSelector |  | object | `{}` |
- | statefulNode.p2p.port | Base port Erigon listens on for P2P (container) | int | `30303` |
+ | statefulNode.p2p.allowedPorts | Two explicit P2P ports to allow (protocol 68,67). Services and container ports will match these.    If not set, defaults to [30303, 30304]. | list | `[30303,30304]` |
  | statefulNode.p2p.service.advertiseIP | IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP) | string | `""` |
  | statefulNode.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
  | statefulNode.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |

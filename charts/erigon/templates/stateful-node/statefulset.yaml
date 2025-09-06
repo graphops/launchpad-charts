@@ -117,7 +117,8 @@ spec:
             - -c
             - |
               set -ex;
-              export EXTERNAL_PORT=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[0].nodePort}');
+              export EXTERNAL_PORT_68=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[?(@.name=="tcp-p2p-68")].nodePort}');
+              export EXTERNAL_PORT_67=$(kubectl get services -l "pod in (${POD_NAME}), type in (p2p)" -o jsonpath='{.items[0].spec.ports[?(@.name=="tcp-p2p-67")].nodePort}');
               export EXTERNAL_IP=$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}');
               until [ -n "$EXTERNAL_IP" ]; do
                 for SITE in $SITES; do
@@ -136,8 +137,8 @@ spec:
                 fi
               done
               export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"};
-              echo "EXTERNAL_PORT_68=$EXTERNAL_PORT" >  /env/init-nodeport;
-              echo "EXTERNAL_PORT_67=$((EXTERNAL_PORT + 1))" >>  /env/init-nodeport;
+              echo "EXTERNAL_PORT_68=$EXTERNAL_PORT_68" >  /env/init-nodeport;
+              echo "EXTERNAL_PORT_67=$EXTERNAL_PORT_67" >>  /env/init-nodeport;
               echo "EXTERNAL_IP=$EXTERNAL_IP"     >> /env/init-nodeport;
               cat /env/init-nodeport;
           volumeMounts:
@@ -179,7 +180,7 @@ spec:
               {{- else if (and $values.p2p $values.p2p.service (eq $values.p2p.service.type "LoadBalancer") $values.p2p.service.loadBalancerIP) }}
                 --nat=extip:{{ $values.p2p.service.loadBalancerIP }} \
               {{- end }}
-                --port={{ include "erigon.p2pPort" $values }} \
+                --p2p.allowed-ports="{{ include "erigon.p2p.port1" $values }},{{ include "erigon.p2p.port2" $values }}" \
               {{- end }}
                 --private.api.addr=0.0.0.0:9090 \
                 --http \
@@ -231,16 +232,16 @@ spec:
               protocol: TCP
             {{- end }}
             - name: udp-p2p-68
-              containerPort: {{ include "erigon.p2pPort" $values }}
+              containerPort: {{ include "erigon.p2p.port1" $values }}
               protocol: UDP
             - name: tcp-p2p-68
-              containerPort: {{ include "erigon.p2pPort" $values }}
+              containerPort: {{ include "erigon.p2p.port1" $values }}
               protocol: TCP
             - name: udp-p2p-67
-              containerPort: {{ add (include "erigon.p2pPort" $values) 1 }}
+              containerPort: {{ include "erigon.p2p.port2" $values }}
               protocol: UDP
             - name: tcp-p2p-67
-              containerPort: {{ add (include "erigon.p2pPort" $values) 1 }}
+              containerPort: {{ include "erigon.p2p.port2" $values }}
               protocol: TCP
             - name: udp-torrent
               containerPort: 42069

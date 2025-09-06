@@ -208,8 +208,9 @@ statefulNode:
 
   # P2P configuration (supersedes p2pNodePort)
   p2p:
-    # -- Base port Erigon listens on for P2P (container)
-    port: 30303
+    # -- Two explicit P2P ports to allow (protocol 68,67). Services and container ports will match these.
+    #    If not set, defaults to [30303, 30304].
+    allowedPorts: [30303, 30304]
     service:
       # -- Enable creation of a P2P Service
       enabled: false

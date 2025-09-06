@@ -52,7 +52,8 @@ spec:
     {{- $componentLabel | nindent 4 }}
 {{/* P2P Service when NodePort is enabled (legacy or new config) */}}
 {{- if (include "erigon.p2p.isNodePort" $values | trim | eq "true") }}
-{{- $port := (include "erigon.p2p.nodePortBase" $values) | int }}
+{{- $p1 := (include "erigon.p2p.port1" $values) | int }}
+{{- $p2 := (include "erigon.p2p.port2" $values) | int }}
 ---
 apiVersion: v1
 kind: Service
@@ -76,25 +77,25 @@ spec:
   {{- end }}
   ports:
     - name: tcp-p2p-68
-      port: {{ include "erigon.p2pPort" $values }}
+      port: {{ $p1 }}
       protocol: TCP
       targetPort: tcp-p2p-68
-      nodePort: {{ $port }}
+      nodePort: {{ $p1 }}
     - name: udp-p2p-68
-      port: {{ include "erigon.p2pPort" $values }}
+      port: {{ $p1 }}
       protocol: UDP
       targetPort: udp-p2p-68
-      nodePort: {{ $port }}
+      nodePort: {{ $p1 }}
     - name: tcp-p2p-67
-      port: {{ add (include "erigon.p2pPort" $values) 1 }}
+      port: {{ $p2 }}
       protocol: TCP
       targetPort: tcp-p2p-67
-      nodePort: {{ add $port 1 }}
+      nodePort: {{ $p2 }}
     - name: udp-p2p-67
-      port: {{ add (include "erigon.p2pPort" $values) 1 }}
+      port: {{ $p2 }}
       protocol: UDP
       targetPort: udp-p2p-67
-      nodePort: {{ add $port 1 }}
+      nodePort: {{ $p2 }}
   selector:
     {{- include "erigon.selectorLabels" . | nindent 4 }}
     statefulset.kubernetes.io/pod-name: "{{ include "erigon.fullname" $ }}-{{ $componentName }}-0"
@@ -136,19 +137,19 @@ spec:
   publishNotReadyAddresses: {{ if (and $values.p2p $values.p2p.service) }}{{ default false $values.p2p.service.publishNotReadyAddresses }}{{ else }}{{ default false $values.service.publishNotReadyAddresses.p2p }}{{ end }}
   ports:
     - name: tcp-p2p-68
-      port: {{ include "erigon.p2pPort" $values }}
+      port: {{ include "erigon.p2p.port1" $values }}
       protocol: TCP
       targetPort: tcp-p2p-68
     - name: udp-p2p-68
-      port: {{ include "erigon.p2pPort" $values }}
+      port: {{ include "erigon.p2p.port1" $values }}
       protocol: UDP
       targetPort: udp-p2p-68
     - name: tcp-p2p-67
-      port: {{ add (include "erigon.p2pPort" $values) 1 }}
+      port: {{ include "erigon.p2p.port2" $values }}
       protocol: TCP
       targetPort: tcp-p2p-67
     - name: udp-p2p-67
-      port: {{ add (include "erigon.p2pPort" $values) 1 }}
+      port: {{ include "erigon.p2p.port2" $values }}
       protocol: UDP
       targetPort: udp-p2p-67
   selector:
