@@ -172,3 +172,25 @@ lighthouse:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
+
+  # P2P Service exposure (alternative to hostPort)
+  p2p:
+    service:
+      # -- Enable a dedicated P2P Service
+      enabled: false
+      # -- Service type for P2P exposure
+      type: LoadBalancer
+      # -- Additional labels to add to the P2P Service
+      labels: {}
+      # -- Annotations to add to the P2P Service (e.g., Cilium sharing keys)
+      annotations: {}
+      # -- External traffic policy
+      externalTrafficPolicy: Local
+      # -- Fixed external IPs to bind the Service to (requires upstream routing)
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, set a specific LB IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
+      # -- IP address to explicitly advertise in ENR (overrides autodetection and LB IP)
+      advertiseIP: ""
