@@ -53,6 +53,8 @@ proxyd:
   # can lead to data integrity issues
   # -- Amount of time to wait before force-killing the proxyd process
   terminationGracePeriodSeconds: 60
+  # -- Soft nofile limit to set before starting proxyd (0 or empty to skip)
+  ulimitNoFile: 65536
 
   # -- Annotations for the `Pod`
   podAnnotations: {}
@@ -63,6 +65,8 @@ proxyd:
     runAsUser: 101337
     runAsGroup: 101337
     fsGroup: 101337
+    seccompProfile:
+      type: RuntimeDefault
 
   service:
     type: ClusterIP

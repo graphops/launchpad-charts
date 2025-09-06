@@ -86,13 +86,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
-      initContainers:
-        - name: {{ $componentName }}-init # TODO remove when replaced with DaemonSet
-          image: busybox:stable
-          imagePullPolicy: IfNotPresent
-          command: ["sh", "-c", "set -ex; ulimit -n 65536; ulimit -a"]
-          securityContext:
-            privileged: true # required for ulimit change
+      initContainers: []
       volumes:
         - name: config
           configMap:
@@ -107,15 +101,24 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
           command:
-            - proxyd
-            - /config/config.toml
-            {{- with $values.extraArgs }}
-              {{- toYaml (. | default list) | nindent 12 }}
-            {{- end }}
+            - sh
+            - -c
+            - |
+              set -e
+              {{- if $values.ulimitNoFile }}
+              ulimit -n {{ $values.ulimitNoFile }} || true
+              {{- end }}
+              exec proxyd /config/config.toml "$@"
+            - --
+          args:
+          {{- range $arg := ($values.extraArgs | default list) }}
+            - {{ $arg | quote }}
+          {{- end }}
           volumeMounts:
             - name: config
               mountPath: "/config"

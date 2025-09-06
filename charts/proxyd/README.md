@@ -163,7 +163,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.extraArgs | Additional CLI arguments to pass to `proxyd` | list | `[]` |
  | proxyd.nodeSelector |  | object | `{}` |
  | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
- | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
+ | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}}` |
  | proxyd.replicaCount | Number of replicas | int | `1` |
  | proxyd.resources |  | object | `{}` |
  | proxyd.service.ports.http-jsonrpc | Service Port to expose JSON-RPC interface on | int | `8545` |
@@ -172,6 +172,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.service.type |  | string | `"ClusterIP"` |
  | proxyd.terminationGracePeriodSeconds | Amount of time to wait before force-killing the proxyd process | int | `60` |
  | proxyd.tolerations |  | list | `[]` |
+ | proxyd.ulimitNoFile | Soft nofile limit to set before starting proxyd (0 or empty to skip) | int | `65536` |
  | redisConfigTemplate | TOML configuration for redis | string | `"# URL to a Redis instance.\nurl = {{ .Values.redisUrl \| quote }}\n# Redis namespace to use for keys.\nnamespace = {{ .Values.redisNamespace \| quote }}\n"` |
  | redisEnabled | Enable configuring Redis | bool | `false` |
  | redisNamespace | Redis namespace to use for keys | string | `""` |
