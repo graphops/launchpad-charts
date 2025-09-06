@@ -2017,6 +2017,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v3.0.15
+      created: "2025-09-06T22:42:52Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: f017a4555737e8d903d078f479c7e4ef335960d02218d35e8d5932ebcde0037d
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.0-canary.7/erigon-0.12.0-canary.7.tgz
+      version: 0.12.0-canary.7
+    - apiVersion: v2
+      appVersion: v3.0.15
       created: "2025-09-06T20:16:26Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 9d5d89d380ddd57f4c8f00a422937c7f7c0a70c3973e681f6fe1165bf5821c0b
@@ -7119,6 +7129,16 @@ entries:
   lighthouse:
     - apiVersion: v2
       appVersion: v7.1.0
+      created: "2025-09-06T22:42:13Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 85440bff23b2452a9ce987e7c4426cca10c13491a8cdd82e93bd37116b26aca4
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.0-canary.3/lighthouse-0.8.0-canary.3.tgz
+      version: 0.8.0-canary.3
+    - apiVersion: v2
+      appVersion: v7.1.0
       created: "2025-09-06T20:17:01Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
       digest: 4cc53050c3e080b75371b24d722803afce6bcca271d91078b9fa7c92892ecd64
@@ -10064,6 +10084,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.18.0
+      created: "2025-09-06T22:44:25Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: d21414ccebe9564dbdcbbd0611349f02d644dfe95368c9948ea94b64621fe0a1
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.0-canary.3/proxyd-0.7.0-canary.3.tgz
+      version: 0.7.0-canary.3
+    - apiVersion: v2
+      appVersion: v4.18.0
       created: "2025-09-06T20:15:54Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 989b770aac83dcac8aab9b795b23d0492917d510bf5ea28c8670768833d36d77
@@ -11395,7 +11425,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-09-06T22:49:43.992172771Z"
+      created: "2025-09-06T22:52:50.444556368Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -11405,7 +11435,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-09-06T22:49:43.991603514Z"
+      created: "2025-09-06T22:52:50.443960085Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -11945,4 +11975,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-09-06T22:49:42.863757893Z"
+generated: "2025-09-06T22:52:49.317661199Z"
