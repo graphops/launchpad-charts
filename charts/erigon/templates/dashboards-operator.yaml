@@ -1,0 +1,52 @@
+{{- $g := $.Values.grafana -}}
+{{- if and $g.operatorDashboards $g.operatorDashboards.enabled -}}
+{{- $op := $g.operatorDashboards -}}
+{{- $files := .Files.Glob "dashboards/*" -}}
+{{- range $path, $_ := $files }}
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: {{ include "erigon.fullname" $ }}-{{ base $path | replace "." "-" | trunc 63 | trimSuffix "-" }}
+  {{- with $op.namespace }}
+  {{- if . }}
+  namespace: {{ . }}
+  {{- end }}
+  {{- end }}
+  labels:
+    {{- include "erigon.labels" $ | nindent 4 }}
+    {{- with $op.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $op.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  allowCrossNamespaceImport: {{ default false $op.allowCrossNamespaceImport }}
+  {{- with $op.instanceSelector }}
+  instanceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $op.folder }}
+  folder: {{ . }}
+  {{- end }}
+  {{- with $op.folderUID }}
+  folderUID: {{ . }}
+  {{- end }}
+  {{- with $op.uid }}
+  uid: {{ . }}
+  {{- end }}
+  {{- with $op.resyncPeriod }}
+  resyncPeriod: {{ . }}
+  {{- end }}
+  {{- if hasKey $op "suspend" }}
+  suspend: {{ $op.suspend }}
+  {{- end }}
+  {{- with $op.extraSpec }}
+  {{- toYaml . | nindent 2 }}
+  {{- end }}
+  json: |
+    {{- $.Files.Get $path | nindent 4 }}
+{{- end }}
+{{- end }}
