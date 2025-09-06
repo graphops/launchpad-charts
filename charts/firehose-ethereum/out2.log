@@ -1,0 +1,1936 @@
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-grpc
+  namespace: my-namespace
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: grpc
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-index-builder
+  namespace: my-namespace
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: index-builder
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-merger
+  namespace: my-namespace
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: merger
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-reader-node
+  namespace: my-namespace
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: reader-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-relayer
+  namespace: my-namespace
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: relayer
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-grpc
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-index-builder
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-merger
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-relayer
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+data:
+  config.yaml: |2-
+
+    start:
+      args:
+        - firehose
+      flags:
+        common-live-blocks-addr: "relayer:10014"
+        data-dir: "/var/lib/fireeth"
+        firehose-grpc-listen-addr: "0.0.0.0:10015"
+        firehose-rate-limit-bucket-fill-rate: "1s"
+        firehose-rate-limit-bucket-size: "20"
+        log-to-file: "false"
+        metrics-listen-addr: "0.0.0.0:9102"
+        pprof-listen-addr: "127.0.0.1:6060"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-grpc-config
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+data:
+  config.yaml: |2-
+
+    start:
+      args:
+        - index-builder
+      flags:
+        common-live-blocks-addr: "relayer:10014"
+        data-dir: "/var/lib/fireeth"
+        firehose-rate-limit-bucket-fill-rate: "1s"
+        firehose-rate-limit-bucket-size: "20"
+        index-builder-grpc-listen-addr: "0.0.0.0:10009"
+        index-builder-index-size: "1000"
+        log-to-file: "false"
+        metrics-listen-addr: "0.0.0.0:9102"
+        pprof-listen-addr: "127.0.0.1:6060"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-index-builder-config
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+data:
+  config.yaml: |2-
+
+    start:
+      args:
+        - merger
+      flags:
+        common-live-blocks-addr: "relayer:10014"
+        data-dir: "/var/lib/fireeth"
+        firehose-rate-limit-bucket-fill-rate: "1s"
+        firehose-rate-limit-bucket-size: "20"
+        log-to-file: "false"
+        merger-grpc-listen-addr: ":10012"
+        metrics-listen-addr: "0.0.0.0:9102"
+        pprof-listen-addr: "127.0.0.1:6060"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-merger-config
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+data:
+  config.yaml: |2-
+
+    start:
+      args:
+        - reader-node
+      flags:
+        common-live-blocks-addr: "relayer:10014"
+        data-dir: "/var/lib/fireeth"
+        firehose-rate-limit-bucket-fill-rate: "1s"
+        firehose-rate-limit-bucket-size: "20"
+        log-to-file: "false"
+        metrics-listen-addr: "0.0.0.0:9102"
+        pprof-listen-addr: "127.0.0.1:6060"
+        reader-node-bootstrap-data-url: ""
+        reader-node-data-dir: "/var/lib/geth"
+        reader-node-grpc-listen-addr: "0.0.0.0:10010"
+        reader-node-manager-api-addr: "127.0.0.1:10011"
+        reader-node-path: "/app/geth"
+        reader-node-arguments: |
+          --authrpc.addr=0.0.0.0
+          --authrpc.jwtsecret=/secrets/jwt/jwt.hex
+          --authrpc.port=8551
+          --authrpc.vhosts='*'
+          --cache=8192
+          --datadir='{node-data-dir}'
+          --discovery.port=${EXTERNAL_PORT_P2P_TCP}
+          --firehose-enabled
+          --history.transactions=1000
+          --http
+          --http.addr=0.0.0.0
+          --http.api=net,web3,eth,debug
+          --http.port=8545
+          --http.vhosts='*'
+          --maxpeers=100
+          --metrics.addr=0.0.0.0
+          --metrics.port=6061
+          --nat=extip:${EXTERNAL_IP}
+          --port=${EXTERNAL_PORT_P2P_TCP}
+          --snapshot="true"
+          --syncmode=full
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-reader-node-config
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+data:
+  config.yaml: |2-
+
+    start:
+      args:
+        - relayer
+      flags:
+        common-live-blocks-addr: "relayer:10014"
+        data-dir: "/var/lib/fireeth"
+        firehose-rate-limit-bucket-fill-rate: "1s"
+        firehose-rate-limit-bucket-size: "20"
+        log-to-file: "false"
+        metrics-listen-addr: "0.0.0.0:9102"
+        pprof-listen-addr: "127.0.0.1:6060"
+        relayer-grpc-listen-addr: "0.0.0.0:10014"
+        relayer-max-source-latency: "1h"
+        relayer-source: "firehose-ethereum-1-reader:10010"
+kind: ConfigMap
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-relayer-config
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-grpc-role
+  namespace: my-namespace
+rules: []
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-index-builder-role
+  namespace: my-namespace
+rules: []
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-merger-role
+  namespace: my-namespace
+rules: []
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-reader-node-role
+  namespace: my-namespace
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - create
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-relayer-role
+  namespace: my-namespace
+rules: []
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-grpc-role
+  namespace: my-namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-grpc-role
+subjects:
+- kind: ServiceAccount
+  name: release-name-firehose-ethereum-grpc
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-index-builder-role
+  namespace: my-namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-index-builder-role
+subjects:
+- kind: ServiceAccount
+  name: release-name-firehose-ethereum-index-builder
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-merger-role
+  namespace: my-namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-merger-role
+subjects:
+- kind: ServiceAccount
+  name: release-name-firehose-ethereum-merger
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-reader-node-role
+  namespace: my-namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-reader-node-role
+subjects:
+- kind: ServiceAccount
+  name: release-name-firehose-ethereum-reader-node
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-relayer-role
+  namespace: my-namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-relayer-role
+subjects:
+- kind: ServiceAccount
+  name: release-name-firehose-ethereum-relayer
+  namespace: my-namespace
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-grpc
+  namespace: my-namespace
+spec:
+  ports:
+  - name: fh-grpc
+    port: 10015
+    protocol: TCP
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-grpc-headless
+  namespace: my-namespace
+spec:
+  clusterIP: None
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-index-builder
+  namespace: my-namespace
+spec:
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: index-grpc
+    port: 10009
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-index-builder-headless
+  namespace: my-namespace
+spec:
+  clusterIP: None
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: index-grpc
+    port: 10009
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-merger
+  namespace: my-namespace
+spec:
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: merger-grpc
+    port: 10012
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-merger-headless
+  namespace: my-namespace
+spec:
+  clusterIP: None
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: merger-grpc
+    port: 10012
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node
+  namespace: my-namespace
+spec:
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: node-authrpc
+    port: 8551
+    protocol: TCP
+  - name: node-metrics
+    port: 6061
+    protocol: TCP
+  - name: node-mgr
+    port: 10011
+    protocol: TCP
+  - name: node-rpc
+    port: 8545
+    protocol: TCP
+  - name: reader-grpc
+    port: 10010
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node-headless
+  namespace: my-namespace
+spec:
+  clusterIP: None
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: node-authrpc
+    port: 8551
+    protocol: TCP
+  - name: node-metrics
+    port: 6061
+    protocol: TCP
+  - name: node-mgr
+    port: 10011
+    protocol: TCP
+  - name: node-rpc
+    port: 8545
+    protocol: TCP
+  - name: reader-grpc
+    port: 10010
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    pod: release-name-firehose-ethereum-reader-node-0
+    type: p2p
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node-p2p
+  namespace: my-namespace
+spec:
+  ports:
+  - name: p2p-tcp
+    port: 30303
+    protocol: TCP
+  - name: p2p-udp
+    port: 30303
+    protocol: UDP
+  selector:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: NodePort
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-relayer
+  namespace: my-namespace
+spec:
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: relayer-grpc
+    port: 10014
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-relayer-headless
+  namespace: my-namespace
+spec:
+  clusterIP: None
+  ports:
+  - name: fh-metrics
+    port: 9102
+    protocol: TCP
+  - name: fh-pprof
+    port: 6060
+    protocol: TCP
+  - name: relayer-grpc
+    port: 10014
+    protocol: TCP
+  selector:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/name: firehose-ethereum
+  type: ClusterIP
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-grpc
+  namespace: my-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: grpc
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: grpc
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - start
+        - --config-file=/config/config.yaml
+        command:
+        - /app/fireeth
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: ghcr.io/streamingfast/firehose-ethereum:v2.8.4-nitro-nitro-v3.2.0-fh
+        imagePullPolicy: IfNotPresent
+        lifecycle: {}
+        name: fireeth
+        ports:
+        - containerPort: 10015
+          name: fh-grpc
+        - containerPort: 9102
+          name: fh-metrics
+          protocol: TCP
+        - containerPort: 6060
+          name: fh-pprof
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /var/lib/fireeth
+          name: data-dir
+          readOnly: false
+      initContainers: []
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: release-name-firehose-ethereum-grpc
+      terminationGracePeriodSeconds: 10
+      tolerations: []
+      topologySpreadConstraints: []
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: release-name-grpc-config
+        name: config
+      - emptyDir: {}
+        name: data-dir
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-index-builder
+  namespace: my-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: index-builder
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: index-builder
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - start
+        - --config-file=/config/config.yaml
+        command:
+        - /app/fireeth
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: ghcr.io/streamingfast/firehose-ethereum:v2.8.4-nitro-nitro-v3.2.0-fh
+        imagePullPolicy: IfNotPresent
+        lifecycle: {}
+        name: fireeth
+        ports:
+        - containerPort: 9102
+          name: fh-metrics
+          protocol: TCP
+        - containerPort: 6060
+          name: fh-pprof
+          protocol: TCP
+        - containerPort: 10009
+          name: index-grpc
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /var/lib/fireeth
+          name: data-dir
+          readOnly: false
+      initContainers: []
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: release-name-firehose-ethereum-index-builder
+      terminationGracePeriodSeconds: 10
+      tolerations: []
+      topologySpreadConstraints: []
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: release-name-index-builder-config
+        name: config
+      - emptyDir: {}
+        name: data-dir
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-merger
+  namespace: my-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: merger
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: merger
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - start
+        - --config-file=/config/config.yaml
+        command:
+        - /app/fireeth
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: ghcr.io/streamingfast/firehose-ethereum:v2.8.4-nitro-nitro-v3.2.0-fh
+        imagePullPolicy: IfNotPresent
+        lifecycle: {}
+        name: fireeth
+        ports:
+        - containerPort: 9102
+          name: fh-metrics
+          protocol: TCP
+        - containerPort: 6060
+          name: fh-pprof
+          protocol: TCP
+        - containerPort: 10012
+          name: merger-grpc
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /var/lib/fireeth
+          name: data-dir
+          readOnly: false
+      initContainers: []
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: release-name-firehose-ethereum-merger
+      terminationGracePeriodSeconds: 10
+      tolerations: []
+      topologySpreadConstraints: []
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: release-name-merger-config
+        name: config
+      - emptyDir: {}
+        name: data-dir
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-relayer
+  namespace: my-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: relayer
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: relayer
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - start
+        - --config-file=/config/config.yaml
+        command:
+        - /app/fireeth
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: ghcr.io/streamingfast/firehose-ethereum:v2.8.4-nitro-nitro-v3.2.0-fh
+        imagePullPolicy: IfNotPresent
+        lifecycle: {}
+        name: fireeth
+        ports:
+        - containerPort: 9102
+          name: fh-metrics
+          protocol: TCP
+        - containerPort: 6060
+          name: fh-pprof
+          protocol: TCP
+        - containerPort: 10014
+          name: relayer-grpc
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+          readOnly: true
+        - mountPath: /var/lib/fireeth
+          name: data-dir
+          readOnly: false
+      initContainers: []
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: release-name-firehose-ethereum-relayer
+      terminationGracePeriodSeconds: 10
+      tolerations: []
+      topologySpreadConstraints: []
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: release-name-relayer-config
+        name: config
+      - emptyDir: {}
+        name: data-dir
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node
+  namespace: my-namespace
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: reader-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: reader-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - start
+        - --config-file=/config/config.yaml
+        command:
+        - /app/fireeth
+        env:
+        - name: MANAGER_API_PORT
+          value: "10011"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        image: ghcr.io/streamingfast/firehose-ethereum:v2.8.4-nitro-nitro-v3.2.0-fh
+        imagePullPolicy: IfNotPresent
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /usr/local/bin/eth-maintenance
+        name: fireeth
+        ports:
+        - containerPort: 9102
+          name: fh-metrics
+          protocol: TCP
+        - containerPort: 6060
+          name: fh-pprof
+          protocol: TCP
+        - containerPort: 8551
+          name: node-authrpc
+          protocol: TCP
+        - containerPort: 6061
+          name: node-metrics
+          protocol: TCP
+        - containerPort: 10011
+          name: node-mgr
+          protocol: TCP
+        - containerPort: 8545
+          name: node-rpc
+          protocol: TCP
+        - containerPort: 10010
+          name: reader-grpc
+          protocol: TCP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config-input
+          name: config
+          readOnly: true
+        - mountPath: /config
+          name: config-processed
+          readOnly: false
+        - mountPath: /var/lib/fireeth
+          name: data-dir
+          readOnly: false
+        - mountPath: /secrets/jwt
+          name: jwt-secret
+          readOnly: true
+        - mountPath: /var/lib/geth
+          name: node-data-dir
+          readOnly: false
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - |
+          set -ex
+
+          # Build the label selector string
+          LABEL_SELECTOR="pod in (${POD_NAME})"
+
+          # Add optional filter if both key and value are provided
+          if [ -n "${FILTER_KEY}" ] && [ -n "${FILTER_VALUE}" ]; then
+              LABEL_SELECTOR="${LABEL_SELECTOR}, ${FILTER_KEY} in (${FILTER_VALUE})"
+          fi
+
+          # Get the service that matches our filters
+          SERVICE_PORTS=$(kubectl get services -l "${LABEL_SELECTOR}" -o jsonpath='{.items[0].spec.ports[*]}')
+
+          # Get external IP using the same logic as before
+          export EXTERNAL_IP=""
+          until [ -n "$EXTERNAL_IP" ]; do
+              for SITE in $SITES; do
+                  if [ -z "$EXTERNAL_IP" ]; then
+                      EXTERNAL_IP=$(curl --silent --max-time 5 "$SITE")
+                      if [ -n "$EXTERNAL_IP" ]; then
+                          break
+                      fi
+                  fi
+              done
+              if [ -z "$EXTERNAL_IP" ]; then
+                  sleep 1
+              fi
+          done
+          export EXTERNAL_IP=${EXTERNAL_IP:-"UNAVAILABLE"}
+
+          # Initialize the output file
+          > /env/init-nodeport
+
+          # Write the external IP first
+          echo "EXTERNAL_IP=$EXTERNAL_IP" >> /env/init-nodeport
+
+          # Process each port in the service
+          echo "$SERVICE_PORTS" | jq -c | while read -r port; do
+              PORT_NAME=$(echo "$port" | jq -r '.name')
+              NODE_PORT=$(echo "$port" | jq -r '.nodePort')
+
+              # Convert port name to uppercase and replace hyphens with underscores for environment variable
+              ENV_PORT_NAME=$(echo "$PORT_NAME" | tr '[:lower:]-' '[:upper:]_')
+
+              # Write each port to the file
+              echo "EXTERNAL_PORT_${ENV_PORT_NAME}=$NODE_PORT" >> /env/init-nodeport
+          done
+
+          # Display the results
+          cat /env/init-nodeport
+        env:
+        - name: FILTER_KEY
+          value: type
+        - name: FILTER_VALUE
+          value: p2p
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SITES
+          value: https://v4.ident.me https://api.ipify.org https://ifconfig.me
+        image: ghcr.io/graphops/docker-builds/init-toolbox:main
+        imagePullPolicy: IfNotPresent
+        name: 10-init-nodeport
+        resources: {}
+        volumeMounts:
+        - mountPath: /env
+          name: env-dir
+      - args:
+        - |
+          set -xe
+          ENV_DIR="/env"
+
+          if [ -d /env ]; then
+            set -o allexport
+            for env_file in "$ENV_DIR"/*; do
+              [ -f "$env_file" ] && source "$env_file"
+            done
+            set +o allexport
+          fi
+
+          for file in /config-input/*.yaml; do
+            envsubst < $file > /config-output/$(basename $file)
+          done
+        command:
+        - /bin/sh
+        - -c
+        image: blockstack/envsubst:latest
+        imagePullPolicy: IfNotPresent
+        name: 20-init-envsubst
+        resources: {}
+        volumeMounts:
+        - mountPath: /config-input
+          name: config
+        - mountPath: /config-output
+          name: config-processed
+        - mountPath: /env
+          name: env-dir
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: release-name-firehose-ethereum-reader-node
+      terminationGracePeriodSeconds: 10
+      tolerations: []
+      topologySpreadConstraints: []
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: release-name-reader-node-config
+        name: config
+      - emptyDir:
+          medium: Memory
+        name: config-processed
+      - name: data-dir
+        persistentVolumeClaim:
+          claimName: data-dir
+      - emptyDir:
+          medium: Memory
+        name: env-dir
+      - name: jwt-secret
+        secret:
+          items:
+          - key: jwt.hex
+            path: jwt.hex
+          secretName: release-name-firehose-ethereum-reader-node-jwt
+      - name: node-data-dir
+        persistentVolumeClaim:
+          claimName: node-data-dir
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app.kubernetes.io/component: reader-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+      name: data-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+      storageClassName: openebs-zfs-localpv-compressed-8k
+  - metadata:
+      labels:
+        app.kubernetes.io/component: reader-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: firehose-ethereum
+        app.kubernetes.io/part-of: release-name
+        app.kubernetes.io/version: v2.6.7
+        helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+        version.firehose.graphops.xyz/fireeth: 2.8.4
+        version.firehose.graphops.xyz/node: 1.13.15
+        version.firehose.graphops.xyz/protocol: 3.2.0
+      name: node-data-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Ti
+      storageClassName: openebs-zfs-localpv-compressed-8k
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: grpc
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-grpc
+  namespace: my-namespace
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: metrics-fh
+    scrapeTimeout: 10s
+  jobLabel: release-name
+  namespaceSelector:
+    matchNames:
+    - my-namespace
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: grpc
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: index-builder
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-index-builder
+  namespace: my-namespace
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: metrics-fh
+    scrapeTimeout: 10s
+  jobLabel: release-name
+  namespaceSelector:
+    matchNames:
+    - my-namespace
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: index-builder
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: merger
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-merger
+  namespace: my-namespace
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: metrics-fh
+    scrapeTimeout: 10s
+  jobLabel: release-name
+  namespaceSelector:
+    matchNames:
+    - my-namespace
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: merger
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: reader-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-reader-node
+  namespace: my-namespace
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: metrics-fh
+    scrapeTimeout: 10s
+  jobLabel: release-name
+  namespaceSelector:
+    matchNames:
+    - my-namespace
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: reader-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum
+---
+# Source: firehose-ethereum/templates/render.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations: {}
+  labels:
+    app.kubernetes.io/component: relayer
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: firehose-ethereum
+    app.kubernetes.io/part-of: release-name
+    app.kubernetes.io/version: v2.6.7
+    helm.sh/chart: firehose-ethereum-0.1.0-canary.5
+    version.firehose.graphops.xyz/fireeth: 2.8.4
+    version.firehose.graphops.xyz/node: 1.13.15
+    version.firehose.graphops.xyz/protocol: 3.2.0
+  name: release-name-firehose-ethereum-relayer
+  namespace: my-namespace
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    path: /metrics
+    port: metrics-fh
+    scrapeTimeout: 10s
+  jobLabel: release-name
+  namespaceSelector:
+    matchNames:
+    - my-namespace
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: relayer
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/name: firehose-ethereum

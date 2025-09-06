@@ -1,0 +1,47 @@
+name: Update Page
+
+on:
+  workflow_call:
+    inputs:
+      repoName:
+        type: string
+        required: true
+        description: "Repository name?"
+
+jobs:
+  update-page:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for updating index.yaml
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "gh-pages"
+
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: "chart-index.${{ inputs.repoName }}"
+          path: ".nindex"
+
+      - name: Update index when there's changes
+        shell: bash
+        run: |
+          if [[ "${{ inputs.repoName }}" == "stable" ]]; then
+            path="."
+          else
+            path="${{ inputs.repoName }}"
+            # create dir if it doesn't exist yet
+            [ ! -d "$path" ] && mkdir "$path"
+          fi
+
+          if ! diff -q .nindex/index.yaml "$path/index.yaml"; then
+            cp .nindex/index.yaml "$path/index.yaml"
+            git add "$path/index.yaml"
+            git commit -m "chore(helm-repo): update index.yaml"
+            git push
+          fi 

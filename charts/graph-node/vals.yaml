@@ -1,0 +1,117 @@
+graphNodeDefaults:
+  env:
+    GRAPH_LOG: INFO
+    RUST_LOG: INFO
+    RUST_BACKTRACE: "1" # show long error traces
+    STORE_CONNECTION_POOL_SIZE: 10 # default 10
+    GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH: "true"
+    GRAPH_GRAPHQL_WARN_RESULT_SIZE: "536900000" # 512MB
+    GRAPH_GRAPHQL_ERROR_RESULT_SIZE: "1074000000" # 1GB, in bytes
+    GRAPH_MAX_GAS_PER_HANDLER: "1000000000000000"
+    GRAPH_ENTITY_CACHE_SIZE: "500000" # default 10_000 which is 10MB
+    GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE: 5000 # default 1000
+    GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE: 1000 # default 100
+    ETHEREUM_POLLING_INTERVAL: 500 # in ms, default 500
+    ETHEREUM_BLOCK_BATCH_SIZE: 500 # default 10
+    ETHEREUM_TRACE_STREAM_STEP_SIZE: 100 # graph-node queries traces for a given block range when a subgraph defines call handlers or block handlers with a call filter. The value of this variable controls the number of blocks to scan in a single RPC request for traces from the Ethereum node. Defaults to 50.
+    # https://github.com/graphprotocol/graph-node/issues/4608
+    # https://discord.com/channels/438038660412342282/791422773348007936/1185311159855886387
+    GRAPH_ETH_CALL_NO_GAS: "421614,421613,42161" # chain IDs: arbitrum sepolia, arbitrum goerli, arbitrum one
+    # Database configuration
+    PRIMARY_SUBGRAPH_DATA_PGHOST: pg-primary-subgraph-data
+  secretEnv:
+    PINAX_JWT:
+      # -- Name of the secret that contains your PG username
+      secretName: pinax-jwt-secret
+      # -- Name of the data key in the secret that contains your PG username
+      key: jwt
+# NB: Ensure graphNodeGroups configuration is matched in autopilot configuration
+# as well as index-node-ids passed to indexer agent
+graphNodeGroups:
+  query:
+    replicaCount: 3
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 4Gi
+      limits:
+        cpu: 4000m
+        memory: 12Gi
+    env:
+      GRAPH_QUERY_CACHE_MAX_MEM: 4096 # in mb, default 1000
+      GRAPH_QUERY_CACHE_BLOCKS: 5 # default 1
+      PRIMARY_SUBGRAPH_DATA_PGHOST: pg-primary-subgraph-data-repl
+  index: # disable the default index group since we split things into two groups below (head and backfill)
+    enabled: false
+    replicaCount: 0
+  index-head:
+    enabled: true
+    replicaCount: 5
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+      limits:
+        cpu: 4000m
+        memory: 6Gi
+    includeInIndexPools: []
+    env:
+      NODE_ROLE: index-node
+      GRAPH_STORE_WRITE_BATCH_DURATION: "0" # disable write batching on head nodes
+      GRAPH_STORE_WRITE_BATCH_SIZE: "0" # disable write batching on head nodes
+  index-backfill:
+    enabled: true
+    replicaCount: 5
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 16Gi
+      limits:
+        cpu: 16000m
+        memory: 24Gi
+    includeInIndexPools:
+      - default
+    env:
+      NODE_ROLE: index-node
+chains:
+  # -- Ethereum Mainnet
+  mainnet:
+    enabled: true
+    shard: primary
+    provider:
+      - label: eth-mainnet
+        details:
+          type: web3
+          url: "http://proxyd-proxyd.eth-mainnet:8545"
+          features: [archive, traces]
+      - label: eth-mainnet-firehose
+        details:
+          type: firehose
+          url: "https://eth.firehose.pinax.network"
+          token: "$PINAX_JWT"
+      - label: eth-mainnet-substreams
+        details:
+          type: substreams
+          url: "https://eth.substreams.pinax.network"
+          token: "$PINAX_JWT"
+  # -- Arbitrum One
+  arbitrum-one:
+    enabled: true
+    shard: primary
+    provider:
+      - label: arbitrum-one
+        details:
+          type: web3
+          url: http://proxyd-nitro-proxyd.arbitrum-one-mainnet:8545
+          features: [archive, traces]
+  # -- Gnosis Mainnet
+  gnosis:
+    enabled: true
+    shard: primary
+    provider:
+      - label: gnosis-mainnet
+        details:
+          type: web3
+          url: http://proxyd-proxyd.gnosis-mainnet:8545
+          features: [archive, traces]
+

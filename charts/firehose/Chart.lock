@@ -1,0 +1,9 @@
+dependencies:
+- name: helpers
+  repository: ""
+  version: '>= 0'
+- name: nimbus
+  repository: https://graphops.github.io/launchpad-charts
+  version: 0.5.11
+digest: sha256:e31df2f791e7977f8ea516db893fce2258cb3b9b21b78bcbd19c614074597705
+generated: "2024-04-24T02:16:22.130707746+01:00"

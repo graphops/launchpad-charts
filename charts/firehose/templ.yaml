@@ -1,0 +1,1125 @@
+---
+# Source: firehose/charts/nimbus/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-name-nimbus-default
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: firehose/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-name-firehose-default
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: firehose/templates/reader/jwt-secret.yaml
+apiVersion: v1
+type: Opaque
+kind: Secret
+metadata:
+  name: release-name-firehose-reader-jwt
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: reader
+data:
+  jwt.hex: MWNlNWM4N2U4MTU3MzY2N2U2ODVlYWU5MzVkOTg4YTkyNzQyZDVmNDY2ZDY5NjYwNWNjMjA3YTM2Mzg5YzQ4MA==
+---
+# Source: firehose/charts/nimbus/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: release-name-nimbus-default
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: firehose/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: release-name-firehose-default
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: firehose/charts/nimbus/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: release-name-nimbus-default
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: release-name-nimbus-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-nimbus-default
+    namespace: default
+---
+# Source: firehose/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: release-name-firehose-default
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: release-name-firehose-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-firehose-default
+    namespace: default
+---
+# Source: firehose/charts/nimbus/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: release-name-nimbus-default
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: firehose/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: release-name-firehose-default
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: firehose/charts/nimbus/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: release-name-nimbus-default
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-nimbus-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-nimbus-default
+---
+# Source: firehose/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: release-name-firehose-default
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-firehose-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-firehose-default
+---
+# Source: firehose/charts/nimbus/templates/nimbus/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-nimbus-nimbus-headless
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nimbus
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8008 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 5052 # the port we expose on the Service, user configurable
+      targetPort: http-nimbus # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-nimbus
+  selector:
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: nimbus
+---
+# Source: firehose/charts/nimbus/templates/nimbus/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-nimbus-nimbus
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nimbus
+    serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8008 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 5052 # the port we expose on the Service, user configurable
+      targetPort: http-nimbus # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-nimbus
+  selector:
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: nimbus
+---
+# Source: firehose/templates/grpc/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-grpc
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: grpc
+spec:
+  type: ClusterIP
+  ports:
+    - port: 13042 # the port we expose on the Service, user configurable
+      targetPort: grpc # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: grpc
+---
+# Source: firehose/templates/merger/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-merger
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: merger
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9102 # the port we expose on the Service, user configurable
+      targetPort: metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: metrics
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: merger
+---
+# Source: firehose/templates/reader/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-reader-headless
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: reader
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8547 # the port we expose on the Service, user configurable
+      targetPort: eth-consensus # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: eth-consensus
+    - port: 13010 # the port we expose on the Service, user configurable
+      targetPort: grpc # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: grpc
+    - port: 9102 # the port we expose on the Service, user configurable
+      targetPort: metrics-fh # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: metrics-fh
+    - port: 6061 # the port we expose on the Service, user configurable
+      targetPort: metrics-geth # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: metrics-geth
+    - port: 13009 # the port we expose on the Service, user configurable
+      targetPort: node-mgr # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: node-mgr
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: reader
+---
+# Source: firehose/templates/reader/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-reader
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: reader
+    serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8547 # the port we expose on the Service, user configurable
+      targetPort: eth-consensus # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: eth-consensus
+    - port: 13010 # the port we expose on the Service, user configurable
+      targetPort: grpc # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: grpc
+    - port: 9102 # the port we expose on the Service, user configurable
+      targetPort: metrics-fh # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: metrics-fh
+    - port: 6061 # the port we expose on the Service, user configurable
+      targetPort: metrics-geth # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: metrics-geth
+    - port: 13009 # the port we expose on the Service, user configurable
+      targetPort: node-mgr # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: node-mgr
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: reader
+---
+# Source: firehose/templates/reader/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-reader-p2p-0
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: reader
+    pod: release-name-firehose-reader-0
+    type: p2p # this label is used by the initContainer to select this service
+spec:
+  type: NodePort
+  externalTrafficPolicy: Local
+  ports:
+    - name: tcp-p2p
+      port: 32310
+      protocol: TCP
+      targetPort: eth66-udp-p2p
+      nodePort: 32310
+    - name: udp-p2p
+      port: 32310
+      protocol: UDP
+      targetPort: eth66-tcp-p2p
+      nodePort: 32310
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    statefulset.kubernetes.io/pod-name: "release-name-firehose-reader-0"
+---
+# Source: firehose/templates/relayer/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-firehose-relayer
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: relayer
+spec:
+  type: ClusterIP
+  ports:
+    - port: 13011 # the port we expose on the Service, user configurable
+      targetPort: grpc # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: grpc
+  selector:
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: relayer
+---
+# Source: firehose/templates/grpc/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-firehose-grpc
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: grpc
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: firehose
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: grpc
+  serviceName: release-name-firehose-grpc-headless
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: firehose
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: grpc
+    spec:
+      serviceAccountName: release-name-firehose-default
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: grpc
+          image: "ghcr.io/streamingfast/firehose-ethereum:v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "firehose"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          ports:
+            - name: grpc
+              containerPort: 13042
+              protocol: TCP
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: FIREETH_COMMON_CHAIN_ID
+              value: "1"
+            - name: FIREETH_COMMON_LIVE_BLOCKS_ADDR
+              value: "relayer:13011"
+            - name: FIREETH_COMMON_NETWORK_ID
+              value: "1"
+            - name: FIREETH_GLOBAL_DATA_DIR
+              value: "/var/lib/fireeth"
+            - name: FIREETH_GLOBAL_LOG_TO_FILE
+              value: "false"
+            - name: FIREETH_READER_NODE_ARGUMENTS
+              value: "--networkid=1 --datadir={node-data-dir} --port=30310 --http --http.api=eth,net,web3 --http.port=8545 --http.addr=0.0.0.0 --http.vhosts=* --firehose-enabled --cache=8192 --maxpeers=100 --mainnet --syncmode full --metrics --metrics.addr=0.0.0.0 --metrics.port=6061 --discovery.port=30310 --authrpc.port=8547 --authrpc.addr=0.0.0.0 --authrpc.vhosts=* --authrpc.jwtsecret=/jwt/jwt.hex --snapshot=true --txlookuplimit=1000"
+            - name: FIREETH_READER_NODE_DATA_DIR
+              value: "/var/lib/geth"
+            - name: FIREETH_READER_NODE_LOG_TO_ZAP
+              value: "false"
+            - name: FIREETH_RELAYER_SOURCE
+              value: "reader-node:13010"
+            - name: "FIREETH_COMMON_FORKED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "forked-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_INDEX_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "index-store"
+                  optional: false
+            - name: "FIREETH_COMMON_MERGED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "merged-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_ONE_BLOCK_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "one-blocks"
+                  optional: false
+          volumeMounts:
+            - name: grpc
+              mountPath: "/var/lib/fireeth"
+      volumes:
+        - name: grpc
+          emptyDir: {}
+---
+# Source: firehose/templates/relayer/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: release-name-firehose-relayer
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: relayer
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: firehose
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: relayer
+  serviceName: release-name-firehose-relayer-headless
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: firehose
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: relayer
+    spec:
+      serviceAccountName: release-name-firehose-default
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: relayer
+          image: "ghcr.io/streamingfast/firehose-ethereum:v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "relayer"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          ports:
+            - name: grpc
+              containerPort: 13011
+              protocol: TCP
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: FIREETH_COMMON_CHAIN_ID
+              value: "1"
+            - name: FIREETH_COMMON_LIVE_BLOCKS_ADDR
+              value: "relayer:13011"
+            - name: FIREETH_COMMON_NETWORK_ID
+              value: "1"
+            - name: FIREETH_GLOBAL_DATA_DIR
+              value: "/var/lib/fireeth"
+            - name: FIREETH_GLOBAL_LOG_TO_FILE
+              value: "false"
+            - name: FIREETH_RELAYER_SOURCE
+              value: "reader-node:13010"
+            - name: "FIREETH_COMMON_FORKED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "forked-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_INDEX_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "index-store"
+                  optional: false
+            - name: "FIREETH_COMMON_MERGED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "merged-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_ONE_BLOCK_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "one-blocks"
+                  optional: false
+          volumeMounts:
+            - name: relayer
+              mountPath: "/var/lib/fireeth"
+      volumes:
+        - name: relayer
+          emptyDir: {}
+---
+# Source: firehose/charts/nimbus/templates/nimbus/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-nimbus-nimbus
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nimbus
+spec:
+  serviceName: release-name-nimbus-nimbus-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nimbus
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: nimbus
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 300Gi
+        storageClassName: openebs-zfs-localpv-compressed-8k
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nimbus
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: nimbus
+    spec:
+      serviceAccountName: release-name-nimbus-default
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+        - name: jwt
+          secret:
+            secretName: firehose-reader-jwt
+            items:
+              - key: jwt.hex
+                path: jwt.hex
+      initContainers:
+        - name: init-chown-data
+          image: "busybox:1.36.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R 101337:101337 /storage;
+              chmod -R 700 /storage; # Nimbus expects 700 permissions
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+        - name: init-trusted-node-sync
+          image: "statusim/nimbus-eth2:multiarch-v24.3.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -x;
+              TRUSTED_NODE_SYNC_STATE_FILE=/storage/.init-trusted-node-sync
+              TRUSTED_NODE_URL="https://beaconstate.ethstaker.cc"
+              if [ ! -f "$TRUSTED_NODE_SYNC_STATE_FILE" ]; then
+                /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                  trustedNodeSync \
+                  --data-dir=/storage \
+                  --trusted-node-url=$TRUSTED_NODE_URL
+                echo $?
+                echo $TRUSTED_NODE_URL > $TRUSTED_NODE_SYNC_STATE_FILE
+              else
+                cat $TRUSTED_NODE_SYNC_STATE_FILE
+                echo "Trusted node sync already run. Skipping..."
+              fi
+          volumeMounts:
+            - name: jwt
+              mountPath: /jwt
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: nimbus
+          image: "statusim/nimbus-eth2:multiarch-v24.3.0"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              exec /home/user/nimbus-eth2/build/nimbus_beacon_node \
+                --data-dir=/storage \
+                --web3-url=http://firehose-reader:8547 \
+                --enr-auto-update=false \
+                --udp-port=30303 \
+                --tcp-port=30303 \
+                --rest=true \
+                --rest-address=0.0.0.0 \
+                --jwt-secret=/jwt/jwt.hex \
+                --metrics=true \
+                --metrics-address=0.0.0.0 \
+                --non-interactive
+          ports:
+            - name: http-nimbus
+              containerPort: 5052
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8008
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: 30303
+              protocol: UDP
+            - name: tcp-p2p
+              containerPort: 30303
+              protocol: TCP
+          volumeMounts:
+            - name: jwt
+              mountPath: /jwt
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            tcpSocket:
+              port: http-nimbus
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - nimbus
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: firehose/templates/merger/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-firehose-merger
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: merger
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: firehose
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: merger
+  serviceName: release-name-firehose-merger-headless
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: merger
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: openebs-zfs-localpv-compressed-128k
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: firehose
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: merger
+    spec:
+      serviceAccountName: release-name-firehose-default
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: merger
+          image: "ghcr.io/streamingfast/firehose-ethereum:v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "merger"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          ports:
+            - containerPort: 9102
+              protocol: TCP
+              name: metrics
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: FIREETH_COMMON_CHAIN_ID
+              value: "1"
+            - name: FIREETH_COMMON_LIVE_BLOCKS_ADDR
+              value: "relayer:13011"
+            - name: FIREETH_COMMON_NETWORK_ID
+              value: "1"
+            - name: FIREETH_GLOBAL_DATA_DIR
+              value: "/var/lib/fireeth"
+            - name: FIREETH_GLOBAL_LOG_TO_FILE
+              value: "false"
+            - name: FIREETH_READER_NODE_ARGUMENTS
+              value: "--networkid=1 --datadir={node-data-dir} --port=30310 --http --http.api=eth,net,web3 --http.port=8545 --http.addr=0.0.0.0 --http.vhosts=* --firehose-enabled --cache=8192 --maxpeers=100 --mainnet --syncmode full --metrics --metrics.addr=0.0.0.0 --metrics.port=6061 --discovery.port=30310 --authrpc.port=8547 --authrpc.addr=0.0.0.0 --authrpc.vhosts=* --authrpc.jwtsecret=/jwt/jwt.hex --snapshot=true --txlookuplimit=1000"
+            - name: FIREETH_READER_NODE_DATA_DIR
+              value: "/var/lib/geth"
+            - name: FIREETH_READER_NODE_LOG_TO_ZAP
+              value: "false"
+            - name: FIREETH_RELAYER_SOURCE
+              value: "reader-node:13010"
+            - name: "FIREETH_COMMON_FORKED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "forked-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_INDEX_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "index-store"
+                  optional: false
+            - name: "FIREETH_COMMON_MERGED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "merged-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_ONE_BLOCK_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "one-blocks"
+                  optional: false
+          volumeMounts:
+            - name: merger
+              mountPath: "/var/lib/fireeth"
+      volumes:
+        - name: merger
+          persistentVolumeClaim:
+            claimName: merger
+---
+# Source: firehose/templates/reader/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-firehose-reader
+  labels:
+    helm.sh/chart: firehose-0.0.0
+    app.kubernetes.io/name: firehose
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: reader
+  namespace: firehose-sandbox
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: firehose
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: reader
+  serviceName: release-name-firehose-reader-headless
+  replicas: 1
+  volumeClaimTemplates:
+    - metadata:
+        name: reader
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: openebs-zfs-localpv-compressed-128k
+    - metadata:
+        name: reader-node
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Ti
+        storageClassName: openebs-zfs-localpv-compressed-8k
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: firehose
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: reader
+    spec:
+      serviceAccountName: release-name-firehose-default
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: reader
+          image: "ghcr.io/streamingfast/firehose-ethereum:v2.0.0-rc.1-geth-v1.13.4-fh2.3-1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          args:
+            - "--config-file="
+            - "start"
+            - "reader-node"
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/usr/local/bin/eth-maintenance"]
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          # command:
+          #   - "bash"
+          #   - "-c"
+          #   - "geth --datadir $FIREETH_READER_NODE_DATA_DIR snapshot prune-state && echo DONE && tail -f /dev/null"
+          ports:
+            - name: eth66-udp-p2p
+              containerPort: 
+              protocol: UDP
+            - name: eth66-tcp-p2p
+              containerPort: 
+              protocol: TCP
+            - name: eth-consensus
+              containerPort: 8547
+              protocol: TCP
+            - name: metrics-fh
+              containerPort: 9102
+              protocol: TCP
+            - name: metrics-geth
+              containerPort: 6061
+              protocol: TCP
+            - name: grpc
+              containerPort: 13010
+              protocol: TCP
+            - name: node-mgr
+              containerPort: 13009
+
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: FIREETH_COMMON_CHAIN_ID
+              value: "1"
+            - name: FIREETH_COMMON_LIVE_BLOCKS_ADDR
+              value: "relayer:13011"
+            - name: FIREETH_COMMON_NETWORK_ID
+              value: "1"
+            - name: FIREETH_GLOBAL_DATA_DIR
+              value: "/var/lib/fireeth"
+            - name: FIREETH_GLOBAL_LOG_TO_FILE
+              value: "false"
+            - name: FIREETH_READER_NODE_ARGUMENTS
+              value: "--networkid=1 --datadir={node-data-dir} --port=30310 --http --http.api=eth,net,web3 --http.port=8545 --http.addr=0.0.0.0 --http.vhosts=* --firehose-enabled --cache=8192 --maxpeers=100 --mainnet --syncmode full --metrics --metrics.addr=0.0.0.0 --metrics.port=6061 --discovery.port=30310 --authrpc.port=8547 --authrpc.addr=0.0.0.0 --authrpc.vhosts=* --authrpc.jwtsecret=/jwt/jwt.hex --snapshot=true --txlookuplimit=1000"
+            - name: FIREETH_READER_NODE_DATA_DIR
+              value: "/var/lib/geth"
+            - name: FIREETH_READER_NODE_LOG_TO_ZAP
+              value: "false"
+            - name: FIREETH_RELAYER_SOURCE
+              value: "reader-node:13010"
+            - name: "FIREETH_COMMON_FORKED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "forked-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_INDEX_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "index-store"
+                  optional: false
+            - name: "FIREETH_COMMON_MERGED_BLOCKS_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "merged-blocks"
+                  optional: false
+            - name: "FIREETH_COMMON_ONE_BLOCK_STORE_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: "firehose-seaweedfs-urls"
+                  key: "one-blocks"
+                  optional: false
+
+          volumeMounts:
+            - name: reader
+              mountPath: "/var/lib/fireeth"
+            - name: reader-node
+              mountPath: "/var/lib/geth"
+            - name: jwt
+              mountPath: /jwt
+      volumes:
+        - name: reader
+          persistentVolumeClaim:
+            claimName: reader
+        - name: reader-node
+          persistentVolumeClaim:
+            claimName: reader-node
+        - name: jwt
+          secret:
+            secretName: release-name-firehose-reader-jwt
+            items:
+              - key: jwt.hex
+                path: jwt.hex
+---
+# Source: firehose/charts/nimbus/templates/nimbus/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: release-name-nimbus-nimbus
+  labels:
+    helm.sh/chart: nimbus-0.5.11
+    app.kubernetes.io/name: nimbus
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "multiarch-v24.3.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: nimbus
+spec:
+  jobLabel: "release-name"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nimbus
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: nimbus
+      serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+  endpoints:
+    - port: http-metrics
+      path: /metrics
+      honorLabels: true

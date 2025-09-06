@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sao-subgraph-availability-oracle
+  labels:
+    helm.sh/chart: subgraph-availability-oracle-0.1.0
+    app.kubernetes.io/name: subgraph-availability-oracle
+    app.kubernetes.io/instance: sao
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service above
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8090 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+  selector:
+    app.kubernetes.io/name: subgraph-availability-oracle
+    app.kubernetes.io/instance: sao

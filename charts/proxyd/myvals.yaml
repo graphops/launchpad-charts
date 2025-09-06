@@ -1,0 +1,39 @@
+backendGroups:
+  consensus_aware: false
+
+backends:
+  arbitrum-nitro:
+    enabled: true
+    # -- Define the RPC URL for the backend
+    rpcUrl: http://arbitrum-nitro:8547
+    # -- Define the WS URL for the backend
+    wsUrl: ws://arbitrum-nitro:8548
+    # -- Define additional configuration keys for the backend (see [proxyd config](https://github.com/ethereum-optimism/optimism/blob/5d309e6a6d5e1ef6a88c1ce827b7e6d47f033bbb/proxyd/example.config.toml#L47))
+    extraConfig:
+      consensus_skip_peer_count: true
+    # -- Define which backend groups the backend is part of
+    groups:
+      - main
+
+proxyd:
+  affinityPresets:
+    antiAffinityByHostname: false
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 90 # try to schedule replicas on different hosts if possible
+        podAffinityTerm:
+          topologyKey: "kubernetes.io/hostname"
+          labelSelector:
+            matchExpressions:
+            - key: app.launchpad.graphops.xyz/release # release name
+              operator: In
+              values:
+              - "{{ .Release.Name }}"
+
+prometheus:
+  serviceMonitors:
+    enabled: true
+
+grafana:
+  dashboards: true
