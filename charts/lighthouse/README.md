@@ -93,6 +93,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | lighthouse.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | lighthouse.nodeSelector |  | object | `{}` |
+ | lighthouse.p2p.service.advertiseIP | IP address to explicitly advertise in ENR (overrides autodetection and LB IP) | string | `""` |
+ | lighthouse.p2p.service.annotations | Annotations to add to the P2P Service (e.g., Cilium sharing keys) | object | `{}` |
+ | lighthouse.p2p.service.enabled | Enable a dedicated P2P Service | bool | `false` |
+ | lighthouse.p2p.service.externalIPs | Fixed external IPs to bind the Service to (requires upstream routing) | list | `[]` |
+ | lighthouse.p2p.service.externalTrafficPolicy | External traffic policy | string | `"Local"` |
+ | lighthouse.p2p.service.labels | Additional labels to add to the P2P Service | object | `{}` |
+ | lighthouse.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, set a specific LB IP | string | `""` |
+ | lighthouse.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
+ | lighthouse.p2p.service.type | Service type for P2P exposure | string | `"LoadBalancer"` |
  | lighthouse.p2pHostPort.enabled | Expose P2P ports via hostPort | bool | `false` |
  | lighthouse.p2pHostPort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pHostPort.initContainer.image.repository | Container image to fetch IP/port information | string | `"lachlanevenson/k8s-kubectl"` |
