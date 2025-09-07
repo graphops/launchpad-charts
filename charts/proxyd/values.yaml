@@ -54,14 +54,19 @@ grafana:
     # -- Allow matching Grafana instances outside current namespace
     allowCrossNamespaceImport: false
     # -- Optional folder metadata
-    folder: ""
+    folder: "blockchain"
     folderUID: ""
-    uid: ""
+    uid: "proxyd-overview-v90"
     # -- Operator sync behavior
     resyncPeriod: ""
     suspend: false
     # -- Additional spec fields to merge into GrafanaDashboard.spec
-    extraSpec: {}
+    extraSpec:
+      datasources:
+        - datasourceName: "datasource"
+          inputName: "prometheus"
+        - datasourceName: "loki_datasource"
+          inputName: "loki"
 
 proxyd:
   # -- Additional CLI arguments to pass to `proxyd`
