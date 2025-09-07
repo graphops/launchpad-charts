@@ -215,7 +215,7 @@ spec:
               containerPort: 9090
               protocol: TCP
             - name: http-metrics
-              containerPort: 6060
+              containerPort: 6061
               protocol: TCP
             - name: http-jsonrpc
               containerPort: 8545
