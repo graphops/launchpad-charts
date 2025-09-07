@@ -1,0 +1,3 @@
+graphNodeDefaults:
+  terminationGracePeriodSeconds: "3"
+  terminationGracePeriodSecondsQueryNode: "6"

@@ -1,0 +1,315 @@
+---
+# Source: lighthouse/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-name-lighthouse-default
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: lighthouse/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: release-name-lighthouse-default
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: lighthouse/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: release-name-lighthouse-default
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: release-name-lighthouse-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-lighthouse-default
+    namespace: default
+---
+# Source: lighthouse/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: release-name-lighthouse-default
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+---
+# Source: lighthouse/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: release-name-lighthouse-default
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-lighthouse-default
+subjects:
+  - kind: ServiceAccount
+    name: release-name-lighthouse-default
+---
+# Source: lighthouse/templates/lighthouse/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-lighthouse-lighthouse-headless
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lighthouse
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - name: http-lighthouse
+      port: 5052
+      targetPort: http-lighthouse
+      protocol: TCP
+    - name: http-metrics
+      port: 5054
+      targetPort: http-metrics
+      protocol: TCP
+    - name: tcp-transport
+      port: 9000
+      targetPort: tcp-transport
+      protocol: TCP
+    - name: udp-discovery
+      port: 9000
+      targetPort: udp-discovery
+      protocol: UDP
+    - name: udp-transport
+      port: 9001
+      targetPort: udp-transport
+      protocol: UDP
+  selector:
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: lighthouse
+---
+# Source: lighthouse/templates/lighthouse/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-lighthouse-lighthouse
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lighthouse
+    serviceMonitorTarget: "true"  # Additional label to prevent matching the headless service above
+spec:
+  type: ClusterIP
+  ports:
+    - name: http-lighthouse
+      port: 5052
+      targetPort: http-lighthouse
+      protocol: TCP
+    - name: http-metrics
+      port: 5054
+      targetPort: http-metrics
+      protocol: TCP
+    - name: tcp-transport
+      port: 9000
+      targetPort: tcp-transport
+      protocol: TCP
+    - name: udp-discovery
+      port: 9000
+      targetPort: udp-discovery
+      protocol: UDP
+    - name: udp-transport
+      port: 9001
+      targetPort: udp-transport
+      protocol: UDP
+  selector:
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: lighthouse
+---
+# Source: lighthouse/templates/lighthouse/statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-lighthouse-lighthouse
+  labels:
+    helm.sh/chart: lighthouse-0.5.6
+    app.kubernetes.io/name: lighthouse
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v5.1.3"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: lighthouse
+spec:
+  serviceName: release-name-lighthouse-lighthouse-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lighthouse
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: lighthouse
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 300Gi
+        storageClassName: null
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lighthouse
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: lighthouse
+    spec:
+      serviceAccountName: release-name-lighthouse-default
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+        - name: jwt
+          secret:
+            secretName: release-name-lighthouse-lighthouse-jwt
+            items:
+              - key: jwt.hex
+                path: jwt.hex
+      initContainers:
+        - name: init-chown-data
+          image: "busybox:1.36.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              chown -R 101337:101337 /storage;
+              chmod -R 700 /storage; # lighthouse expects 700 permissions
+              ls -lah /storage
+          volumeMounts:
+            - name: storage
+              mountPath: "/storage"
+      containers:
+        - name: lighthouse
+          image: "sigp/lighthouse:v5.1.3"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -ac
+            - |
+              set -ex;
+              exec lighthouse beacon_node \
+                --datadir=/storage \
+                --disable-enr-auto-update \
+                --port=9000 \
+                --discovery-port=9000 \
+                --quic-port=9001 \
+                --http \
+                --http-port=5052 \
+                --listen-address=0.0.0.0 \
+                --execution-jwt=/jwt/jwt.hex \
+                --metrics=true \
+                --metrics-address=0.0.0.0 \
+                --metrics-port=5054 \
+          ports:
+            - name: http-lighthouse
+              containerPort: 5052
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 5054
+              protocol: TCP
+            - name: tcp-transport
+              containerPort: 9000
+              protocol: TCP
+            - name: udp-discovery
+              containerPort: 9000
+              protocol: UDP
+            - name: udp-transport
+              containerPort: 9001
+              protocol: UDP
+          volumeMounts:
+            - name: jwt
+              mountPath: /jwt
+            - name: storage
+              mountPath: /storage
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            tcpSocket:
+              port: tcp-transport
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - lighthouse
+              topologyKey: "kubernetes.io/hostname"

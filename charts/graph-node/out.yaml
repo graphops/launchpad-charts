@@ -1,0 +1,1473 @@
+---
+# Source: graph-node/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: release-name-graph-node
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: release-name-graph-node-config
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+data:
+  config.toml: |
+    
+    # Store configuration
+    [store]
+      [store.primary]
+      connection = "postgresql://${PRIMARY_SUBGRAPH_DATA_PGUSER}:${PRIMARY_SUBGRAPH_DATA_PGPASSWORD}@${PRIMARY_SUBGRAPH_DATA_PGHOST}:${PRIMARY_SUBGRAPH_DATA_PGPORT}/${PRIMARY_SUBGRAPH_DATA_PGDATABASE}"
+      pool_size = 10
+      weight = 1
+    
+    # Chain configuration
+    [chains]
+      ingestor = "release-name-graph-node-block-ingestor-0"
+      [chains.arbitrum-one]
+        shard = "primary"
+    
+        [[chains.arbitrum-one.provider]]
+          label = "arbitrum-one"
+          [chains.arbitrum-one.provider.details]
+            features = ["archive", "traces"]
+            type = "web3"
+            url = "http://proxyd-nitro-proxyd.arbitrum-one-mainnet:8545"
+      [chains.gnosis]
+        shard = "primary"
+    
+        [[chains.gnosis.provider]]
+          label = "gnosis-mainnet"
+          [chains.gnosis.provider.details]
+            features = ["archive", "traces"]
+            type = "web3"
+            url = "http://proxyd-proxyd.gnosis-mainnet:8545"
+      [chains.mainnet]
+        shard = "primary"
+    
+        [[chains.mainnet.provider]]
+          label = "eth-mainnet"
+          [chains.mainnet.provider.details]
+            features = ["archive", "traces"]
+            type = "web3"
+            url = "http://proxyd-proxyd.eth-mainnet:8545"
+    
+        [[chains.mainnet.provider]]
+          label = "eth-mainnet-firehose"
+          [chains.mainnet.provider.details]
+            token = "$PINAX_JWT"
+            type = "firehose"
+            url = "https://eth.firehose.pinax.network"
+    
+        [[chains.mainnet.provider]]
+          label = "eth-mainnet-substreams"
+          [chains.mainnet.provider.details]
+            token = "$PINAX_JWT"
+            type = "substreams"
+            url = "https://eth.substreams.pinax.network"
+    
+    
+    # Deployment rule configuration
+    [deployment]
+    # Deployment rules match top to bottom
+    [[deployment.rule]]
+    # DEFAULT RULE
+    # There's no 'match' field, so any subgraph that hasn't matched above, matches this rule
+    shards = ["primary"]
+    indexers = ["release-name-graph-node-index-backfill-0","release-name-graph-node-index-backfill-1","release-name-graph-node-index-backfill-2","release-name-graph-node-index-backfill-3","release-name-graph-node-index-backfill-4"]
+---
+# Source: graph-node/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: release-name-graph-node
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - create
+  - patch
+---
+# Source: graph-node/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: release-name-graph-node
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: release-name-graph-node
+subjects:
+  - kind: ServiceAccount
+    name: release-name-graph-node
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-block-ingestor-headless
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: block-ingestor
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: block-ingestor
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-block-ingestor
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: block-ingestor
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: block-ingestor
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-index-backfill-headless
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-backfill
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: index-backfill
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-index-backfill
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-backfill
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: index-backfill
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-index-head-headless
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-head
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: index-head
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-index-head
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-head
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: index-head
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-query-headless
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: query
+spec:
+  clusterIP: None # Headless service
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: query
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: release-name-graph-node-query
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: query
+    serviceMonitorTarget: "true" # Additional label to prevent matching the headless service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8020 # the port we expose on the Service, user configurable
+      targetPort: http-admin # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-admin
+    - port: 8040 # the port we expose on the Service, user configurable
+      targetPort: http-metrics # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-metrics
+    - port: 8000 # the port we expose on the Service, user configurable
+      targetPort: http-query # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-query
+    - port: 8001 # the port we expose on the Service, user configurable
+      targetPort: http-queryws # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-queryws
+    - port: 8030 # the port we expose on the Service, user configurable
+      targetPort: http-status # the name of the port on the container that we are routing to
+      protocol: TCP
+      name: http-status
+  selector:
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/component: query
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-graph-node-block-ingestor
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: block-ingestor
+spec:
+  serviceName: release-name-graph-node-block-ingestor-headless
+  replicas: 1
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  updateStrategy:
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    # Requires k8s 1.24+
+    # rollingUpdate:
+    #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+    #   partition: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: graph-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: block-ingestor
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: eeecd4c20b4f1c766667d91b86142f9aaff650c12416ca31f500d8ab8a6415c0
+      labels:
+        app.kubernetes.io/name: graph-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: block-ingestor
+    spec:
+      serviceAccountName: release-name-graph-node
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: release-name-graph-node-config
+      initContainers:
+        - name: block-ingestor-init
+          image: lachlanevenson/k8s-kubectl:v1.25.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "IPFS"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "node_role"
+              value: "index-node"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: block-ingestor
+          image: "graphprotocol/graph-node:v0.34.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - graph-node
+            - --node-id=$(NODE_ID)
+            - --config=/config/config.toml
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "IPFS"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "node_role"
+              value: "index-node"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          ports:
+            - name: http-query
+              containerPort: 8000
+              protocol: TCP
+            - name: http-queryws
+              containerPort: 8001
+              protocol: TCP
+            - name: http-admin
+              containerPort: 8020
+              protocol: TCP
+            - name: http-status
+              containerPort: 8030
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8040
+              protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+          readinessProbe:
+            httpGet:
+              port: http-query
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - block-ingestor
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-graph-node-index-backfill
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-backfill
+spec:
+  serviceName: release-name-graph-node-index-backfill-headless
+  replicas: 5
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  updateStrategy:
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    # Requires k8s 1.24+
+    # rollingUpdate:
+    #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+    #   partition: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: graph-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: index-backfill
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: eeecd4c20b4f1c766667d91b86142f9aaff650c12416ca31f500d8ab8a6415c0
+      labels:
+        app.kubernetes.io/name: graph-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: index-backfill
+    spec:
+      serviceAccountName: release-name-graph-node
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: release-name-graph-node-config
+      initContainers:
+        - name: index-backfill-init
+          image: lachlanevenson/k8s-kubectl:v1.25.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "IPFS"
+              value: ""
+            - name: "NODE_ROLE"
+              value: "index-node"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: index-backfill
+          image: "graphprotocol/graph-node:v0.34.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - graph-node
+            - --node-id=$(NODE_ID)
+            - --config=/config/config.toml
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "IPFS"
+              value: ""
+            - name: "NODE_ROLE"
+              value: "index-node"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          ports:
+            - name: http-query
+              containerPort: 8000
+              protocol: TCP
+            - name: http-queryws
+              containerPort: 8001
+              protocol: TCP
+            - name: http-admin
+              containerPort: 8020
+              protocol: TCP
+            - name: http-status
+              containerPort: 8030
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8040
+              protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+          readinessProbe:
+            httpGet:
+              port: http-query
+          resources:
+            limits:
+              cpu: 16000m
+              memory: 24Gi
+            requests:
+              cpu: 2000m
+              memory: 16Gi
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - index-backfill
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-graph-node-index-head
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: index-head
+spec:
+  serviceName: release-name-graph-node-index-head-headless
+  replicas: 5
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  updateStrategy:
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    # Requires k8s 1.24+
+    # rollingUpdate:
+    #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+    #   partition: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: graph-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: index-head
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: eeecd4c20b4f1c766667d91b86142f9aaff650c12416ca31f500d8ab8a6415c0
+      labels:
+        app.kubernetes.io/name: graph-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: index-head
+    spec:
+      serviceAccountName: release-name-graph-node
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: release-name-graph-node-config
+      initContainers:
+        - name: index-head-init
+          image: lachlanevenson/k8s-kubectl:v1.25.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "GRAPH_STORE_WRITE_BATCH_DURATION"
+              value: "0"
+            - name: "GRAPH_STORE_WRITE_BATCH_SIZE"
+              value: "0"
+            - name: "IPFS"
+              value: ""
+            - name: "NODE_ROLE"
+              value: "index-node"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: index-head
+          image: "graphprotocol/graph-node:v0.34.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - graph-node
+            - --node-id=$(NODE_ID)
+            - --config=/config/config.toml
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "GRAPH_STORE_WRITE_BATCH_DURATION"
+              value: "0"
+            - name: "GRAPH_STORE_WRITE_BATCH_SIZE"
+              value: "0"
+            - name: "IPFS"
+              value: ""
+            - name: "NODE_ROLE"
+              value: "index-node"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          ports:
+            - name: http-query
+              containerPort: 8000
+              protocol: TCP
+            - name: http-queryws
+              containerPort: 8001
+              protocol: TCP
+            - name: http-admin
+              containerPort: 8020
+              protocol: TCP
+            - name: http-status
+              containerPort: 8030
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8040
+              protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+          readinessProbe:
+            httpGet:
+              port: http-query
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 6Gi
+            requests:
+              cpu: 1000m
+              memory: 2Gi
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - index-head
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: graph-node/templates/graph-node/all.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: release-name-graph-node-query
+  labels:
+    helm.sh/chart: graph-node-0.4.0
+    app.kubernetes.io/name: graph-node
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "v0.34.1"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: query
+spec:
+  serviceName: release-name-graph-node-query-headless
+  replicas: 3
+  podManagementPolicy: Parallel # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#parallel-pod-management
+  updateStrategy:
+    type: RollingUpdate # https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+    # Requires k8s 1.24+
+    # rollingUpdate:
+    #   maxUnavailable: 25% # This ensures that despite the Parallel podManagementStrategy, updates don't cause service downtime
+    #   partition: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: graph-node
+      app.kubernetes.io/instance: release-name
+      app.kubernetes.io/component: query
+  template:
+    metadata:
+      annotations:
+        checksum/config.toml: eeecd4c20b4f1c766667d91b86142f9aaff650c12416ca31f500d8ab8a6415c0
+      labels:
+        app.kubernetes.io/name: graph-node
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/component: query
+    spec:
+      serviceAccountName: release-name-graph-node
+      securityContext:
+        fsGroup: 101337
+        runAsGroup: 101337
+        runAsNonRoot: true
+        runAsUser: 101337
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: release-name-graph-node-config
+      initContainers:
+        - name: query-init
+          image: lachlanevenson/k8s-kubectl:v1.25.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "GRAPH_QUERY_CACHE_BLOCKS"
+              value: "5"
+            - name: "GRAPH_QUERY_CACHE_MAX_MEM"
+              value: "4096"
+            - name: "IPFS"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data-repl"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "node_role"
+              value: "query-node"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              ulimit -n 65536
+              ulimit -a
+
+          securityContext:
+            privileged: true # required for ulimit change
+      containers:
+        - name: query
+          image: "graphprotocol/graph-node:v0.34.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - graph-node
+            - --node-id=$(NODE_ID)
+            - --config=/config/config.toml
+          env:
+            - name: NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: DISABLE_BLOCK_INGESTOR
+              value: "true"
+            - name: "ETHEREUM_BLOCK_BATCH_SIZE"
+              value: "500"
+            - name: "ETHEREUM_POLLING_INTERVAL"
+              value: "500"
+            - name: "ETHEREUM_TRACE_STREAM_STEP_SIZE"
+              value: "100"
+            - name: "GRAPH_ALLOW_NON_DETERMINISTIC_FULLTEXT_SEARCH"
+              value: "true"
+            - name: "GRAPH_ENTITY_CACHE_SIZE"
+              value: "500000"
+            - name: "GRAPH_ETHEREUM_MAX_BLOCK_RANGE_SIZE"
+              value: "5000"
+            - name: "GRAPH_ETHEREUM_TARGET_TRIGGERS_PER_BLOCK_RANGE"
+              value: "1000"
+            - name: "GRAPH_ETH_CALL_NO_GAS"
+              value: "421614,421613,42161"
+            - name: "GRAPH_GRAPHQL_ERROR_RESULT_SIZE"
+              value: "1074000000"
+            - name: "GRAPH_GRAPHQL_WARN_RESULT_SIZE"
+              value: "536900000"
+            - name: "GRAPH_LOG"
+              value: "INFO"
+            - name: "GRAPH_MAX_GAS_PER_HANDLER"
+              value: "1000000000000000"
+            - name: "GRAPH_QUERY_CACHE_BLOCKS"
+              value: "5"
+            - name: "GRAPH_QUERY_CACHE_MAX_MEM"
+              value: "4096"
+            - name: "IPFS"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGDATABASE"
+              value: ""
+            - name: "PRIMARY_SUBGRAPH_DATA_PGHOST"
+              value: "pg-primary-subgraph-data-repl"
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPORT"
+              value: "5432"
+            - name: "RUST_BACKTRACE"
+              value: "1"
+            - name: "RUST_LOG"
+              value: "INFO"
+            - name: "STORE_CONNECTION_POOL_SIZE"
+              value: "10"
+            - name: "node_role"
+              value: "query-node"
+            - name: "PINAX_JWT"
+              valueFrom:
+                secretKeyRef:
+                  name: "pinax-jwt-secret"
+                  key: "jwt"
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGPASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+            - name: "PRIMARY_SUBGRAPH_DATA_PGUSER"
+              valueFrom:
+                secretKeyRef:
+                  name: 
+                  key: 
+                  optional: false
+          ports:
+            - name: http-query
+              containerPort: 8000
+              protocol: TCP
+            - name: http-queryws
+              containerPort: 8001
+              protocol: TCP
+            - name: http-admin
+              containerPort: 8020
+              protocol: TCP
+            - name: http-status
+              containerPort: 8030
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 8040
+              protocol: TCP
+          volumeMounts:
+          - name: config
+            mountPath: "/config"
+            readOnly: true
+          readinessProbe:
+            httpGet:
+              port: http-query
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 12Gi
+            requests:
+              cpu: 1000m
+              memory: 4Gi
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - query
+              topologyKey: "kubernetes.io/hostname"
+---
+# Source: graph-node/templates/graph-node/all.yaml
+# This replacement also happens in the default configTemplate in values.yaml # This replacement also happens in the default configTemplate in values.yaml # This replacement also happens in the default configTemplate in values.yaml # This replacement also happens in the default configTemplate in values.yaml # This replacement also happens in the default configTemplate in values.yaml
+
+
+### Computed Template Variables:
+# indexPools:
+#   default:
+#   - release-name-graph-node-index-backfill-0
+#   - release-name-graph-node-index-backfill-1
+#   - release-name-graph-node-index-backfill-2
+#   - release-name-graph-node-index-backfill-3
+#   - release-name-graph-node-index-backfill-4
+---
+# Source: graph-node/templates/graph-node/all.yaml
+# index group is not enabled

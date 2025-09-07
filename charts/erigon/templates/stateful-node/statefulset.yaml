@@ -168,6 +168,11 @@ spec:
             {{- end }}
             {{- end }}
               set -ex;
+              GRPC_PORT={{ index $values.service.ports "grpc-erigon" }};
+              HTTP_PORT={{ index $values.service.ports "http-jsonrpc" }};
+              WS_PORT={{ index $values.service.ports "ws-rpc" }};
+              AUTHRPC_PORT={{ index $values.service.ports "http-engineapi" }};
+              METRICS_PORT={{ index $values.service.ports "http-metrics" }};
               exec erigon \
                 --datadir={{ $values.datadir }} \
               {{- if $values.p2pNodePort.enabled }}
@@ -182,17 +187,23 @@ spec:
               {{- end }}
                 --p2p.allowed-ports="{{ include "erigon.p2p.port1" $values }},{{ include "erigon.p2p.port2" $values }}" \
               {{- end }}
-                --private.api.addr=0.0.0.0:9090 \
+                --private.api.addr=0.0.0.0:${GRPC_PORT} \
                 --http \
                 --http.addr=0.0.0.0 \
+                --http.port=${HTTP_PORT} \
                 --http.vhosts=* \
+                --ws \
+                --ws.addr=0.0.0.0 \
+                --ws.port=${WS_PORT} \
                 --authrpc.addr=0.0.0.0 \
+                --authrpc.port=${AUTHRPC_PORT} \
                 --authrpc.vhosts=* \
               {{- if $jwtEnabled }}
                 --authrpc.jwtsecret=/jwt/jwt.hex \
               {{- end }}
                 --metrics \
                 --metrics.addr=0.0.0.0 \
+                --metrics.port=${METRICS_PORT} \
               {{- if $values.pruneMode }}
                 --prune.mode={{ $values.pruneMode }} \
               {{- end }}
@@ -212,19 +223,19 @@ spec:
                 --healthcheck
           ports:
             - name: grpc-erigon
-              containerPort: 9090
+              containerPort: {{ index $values.service.ports "grpc-erigon" }}
               protocol: TCP
             - name: http-metrics
-              containerPort: 6061
+              containerPort: {{ index $values.service.ports "http-metrics" }}
               protocol: TCP
             - name: http-jsonrpc
-              containerPort: 8545
+              containerPort: {{ index $values.service.ports "http-jsonrpc" }}
               protocol: TCP
             - name: ws-rpc
-              containerPort: 8546
+              containerPort: {{ index $values.service.ports "ws-rpc" }}
               protocol: TCP
             - name: http-engineapi
-              containerPort: 8551
+              containerPort: {{ index $values.service.ports "http-engineapi" }}
               protocol: TCP
             {{- if $values.beaconApi.enabled }}
             - name: http-beaconapi
@@ -271,7 +282,7 @@ spec:
             # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-a-grpc-liveness-probe
             # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/
             grpc:
-              port: 9090 # named ports not supported yet by grpc probes
+              port: {{ index $values.service.ports "grpc-erigon" }} # named ports not supported yet by grpc probes
           {{- end }}
           {{- if $values.livenessProbe }}
           livenessProbe:

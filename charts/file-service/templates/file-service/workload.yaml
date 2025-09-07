@@ -1,0 +1,108 @@
+{{- $values := index $.Values "file-server" }}
+{{- $usesPvc := eq (include "file-service.usesPvc" .) "true" }}
+{{/* START Deployment */}}
+---
+apiVersion: apps/v1
+kind: {{ include "file-service.kind" . }}
+metadata:
+  name: {{ include "file-service.fullname" . }}
+  labels:
+    {{- include "file-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ $values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "file-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "file-service.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with $values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "file-service.serviceAccountName" . }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp # this is to provide a writable /tmp even with securityContext.readOnlyRootFilesystem=true
+          emptyDir: {}
+        - name: config
+          configMap:
+            # Provide the name of the ConfigMap you want to mount.
+            name: {{ include "file-service.fullname" . }}-config
+        {{- if $usesPvc }}
+        - name: file-service-data
+          persistentVolumeClaim:
+            claimName: {{ $values.pvc.existingVolumeClaim }}
+        {{- end }}
+      containers:
+        - name: file-service
+          image: "{{ $values.image.repository }}:{{ $values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ $values.image.pullPolicy }}
+          securityContext: {}
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+              readOnly: true
+            {{- if $usesPvc }}
+            - name: file-service-data
+              mountPath: "/data"
+            {{- end }}
+            - name: tmp
+              mountPath: /tmp
+          env:
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- with $values.secretEnv }}
+          {{- range $key, $val := .}}
+            - name: {{ $key | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.secretName | quote }}
+                  key: {{ $val.key | quote }}
+                  optional: false
+          {{- end }}
+          {{- end }}
+          args:
+            - --config=/config/config.toml
+          {{- with $values.extraArgs }}
+            {{- toYaml (. | default list) | nindent 12 }}
+          {{- end }}
+          ports:
+          {{- range $key, $val := $values.service.ports }}
+            - name: {{ $key }}
+              containerPort: {{ $val }}
+              protocol: TCP
+          {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{/* END Deployment/StatefulSet */}}

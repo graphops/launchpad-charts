@@ -1,0 +1,2 @@
+secretEnv:
+  ORACLE_SIGNING_KEY: null
