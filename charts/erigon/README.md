@@ -214,10 +214,13 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2pNodePort.port | Start NodePort to be used in a range (2 ports for protocol versions 68 and 67). Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
+ | statefulNode.privateApi.ratelimit |  | int | `31872` |
  | statefulNode.pruneMode | Sets the pruning mode to use (archive, validator, full) | string | `"archive"` |
  | statefulNode.readinessProbe | Sets a readinessProbe configuration for the container | object | `{}` |
  | statefulNode.resources |  | object | `{}` |
  | statefulNode.rollingUpdatePartition | When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher | int | `0` |
+ | statefulNode.rpc.batch.concurrency |  | int | `2` |
+ | statefulNode.rpc.batch.limit |  | int | `100` |
  | statefulNode.service.ports.grpc-erigon | Service Port to expose Erigon GRPC interface on | int | `9090` |
  | statefulNode.service.ports.http-beaconapi | Service Port to expose Beacon API interface on | int | `5555` |
  | statefulNode.service.ports.http-engineapi | Service Port to expose engineAPI interface on | int | `8551` |
