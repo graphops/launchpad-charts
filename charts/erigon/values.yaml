@@ -228,6 +228,18 @@ statefulNode:
 
   affinity: {}
 
+  # RPC configuration
+  rpc:
+    batch:
+      # -- Maximum number of requests in a batch (erigon: --rpc.batch.limit)
+      limit: 100
+      # -- Goroutines to process a single batch request (erigon: --rpc.batch.concurrency)
+      concurrency: 2
+
+  # Private API (gRPC) configuration
+  privateApi:
+    # -- Max simultaneous private API requests (erigon: --private.api.ratelimit)
+    ratelimit: 31872
   # P2P configuration (supersedes p2pNodePort)
   p2p:
     # -- Two explicit P2P ports to allow (protocol 68,67). Services and container ports will match these.

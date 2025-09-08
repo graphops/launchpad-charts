@@ -192,6 +192,8 @@ spec:
                 --http.addr=0.0.0.0 \
                 --http.port=${HTTP_PORT} \
                 --http.vhosts=* \
+                --rpc.batch.limit={{ $values.rpc.batch.limit }} \
+                --rpc.batch.concurrency={{ $values.rpc.batch.concurrency }} \
                 --ws \
                 --ws.addr=0.0.0.0 \
                 --ws.port=${WS_PORT} \
@@ -204,6 +206,7 @@ spec:
                 --metrics \
                 --metrics.addr=0.0.0.0 \
                 --metrics.port=${METRICS_PORT} \
+                --private.api.ratelimit={{ $values.privateApi.ratelimit }} \
               {{- if $values.pruneMode }}
                 --prune.mode={{ $values.pruneMode }} \
               {{- end }}
