@@ -168,11 +168,6 @@ spec:
             {{- end }}
             {{- end }}
               set -ex;
-              GRPC_PORT={{ index $values.service.ports "grpc-erigon" }};
-              HTTP_PORT={{ index $values.service.ports "http-jsonrpc" }};
-              WS_PORT={{ index $values.service.ports "ws-rpc" }};
-              AUTHRPC_PORT={{ index $values.service.ports "http-engineapi" }};
-              METRICS_PORT={{ index $values.service.ports "http-metrics" }};
               exec erigon \
                 --datadir={{ $values.datadir }} \
               {{- if $values.p2pNodePort.enabled }}
@@ -187,25 +182,24 @@ spec:
               {{- end }}
                 --p2p.allowed-ports="{{ include "erigon.p2p.port1" $values }},{{ include "erigon.p2p.port2" $values }}" \
               {{- end }}
-                --private.api.addr=0.0.0.0:${GRPC_PORT} \
+                --private.api.addr=0.0.0.0:{{ index $values.service.ports "grpc-erigon" }} \
                 --http \
                 --http.addr=0.0.0.0 \
-                --http.port=${HTTP_PORT} \
+                --http.port={{ index $values.service.ports "http-jsonrpc" }} \
                 --http.vhosts=* \
                 --rpc.batch.limit={{ $values.rpc.batch.limit }} \
                 --rpc.batch.concurrency={{ $values.rpc.batch.concurrency }} \
                 --ws \
-                --ws.addr=0.0.0.0 \
-                --ws.port=${WS_PORT} \
+                --ws.port={{ index $values.service.ports "ws-rpc" }} \
                 --authrpc.addr=0.0.0.0 \
-                --authrpc.port=${AUTHRPC_PORT} \
+                --authrpc.port={{ index $values.service.ports "http-engineapi" }} \
                 --authrpc.vhosts=* \
               {{- if $jwtEnabled }}
                 --authrpc.jwtsecret=/jwt/jwt.hex \
               {{- end }}
                 --metrics \
                 --metrics.addr=0.0.0.0 \
-                --metrics.port=${METRICS_PORT} \
+                --metrics.port={{ index $values.service.ports "http-metrics" }} \
                 --private.api.ratelimit={{ $values.privateApi.ratelimit }} \
               {{- if $values.pruneMode }}
                 --prune.mode={{ $values.pruneMode }} \
