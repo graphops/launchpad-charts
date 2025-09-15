@@ -112,7 +112,7 @@ When your backend URLs or other config values contain secrets, you can keep them
 
 - Enable rendering: set `proxyd.configTemplating.envsubst.enabled: true` (default).
 - The chart mounts the rendered config at `/config/config.toml` and proxyd reads from there.
-- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bitnami/envsubst`, which includes the `envsubst` binary.
+- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bytesco/envsubst:latest`, which includes the `envsubst` binary.
 - Optionally enforce presence of variables via `proxyd.configTemplating.envsubst.requiredVars`.
 
 Example:
@@ -209,11 +209,11 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.envRaw | Raw env entries for the main container (use when you need valueFrom, secretKeyRef, etc.) | list | `[]` |
  | proxyd.existingConfigMap | Name of an existing ConfigMap with proxyd configuration. proxyd.configTemplating.enable must be set to false | string | `""` |
  | proxyd.extraArgs | Additional CLI arguments to pass to `proxyd` | list | `[]` |
- | proxyd.initContainer | Init container configuration used for config rendering | object | `{"env":{},"envFrom":[],"envRaw":[],"image":{"pullPolicy":"IfNotPresent","repository":"bitnami/envsubst","tag":"latest"}}` |
+ | proxyd.initContainer | Init container configuration used for config rendering | object | `{"env":{},"envFrom":[],"envRaw":[],"image":{"pullPolicy":"IfNotPresent","repository":"bytesco/envsubst","tag":"latest"}}` |
  | proxyd.initContainer.env | Environment variables for the init container (simple key-value) | object | `{}` |
  | proxyd.initContainer.envFrom | envFrom entries for the init container (array of objects, e.g. secretRef/configMapRef) | list | `[]` |
  | proxyd.initContainer.envRaw | Raw env entries for the init container (when you need valueFrom, secretKeyRef, etc.) | list | `[]` |
- | proxyd.initContainer.image | Container image for envsubst rendering (dedicated envsubst image) | object | `{"pullPolicy":"IfNotPresent","repository":"bitnami/envsubst","tag":"latest"}` |
+ | proxyd.initContainer.image | Container image for envsubst rendering (dedicated envsubst image) | object | `{"pullPolicy":"IfNotPresent","repository":"bytesco/envsubst","tag":"latest"}` |
  | proxyd.nodeSelector |  | object | `{}` |
  | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}}` |

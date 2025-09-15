@@ -150,7 +150,7 @@ proxyd:
   initContainer:
     # -- Container image for envsubst rendering (dedicated envsubst image)
     image:
-      repository: bitnami/envsubst
+      repository: bytesco/envsubst
       tag: "latest"
       pullPolicy: IfNotPresent
     # -- Environment variables for the init container (simple key-value)

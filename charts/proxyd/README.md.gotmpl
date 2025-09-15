@@ -94,7 +94,7 @@ When your backend URLs or other config values contain secrets, you can keep them
 
 - Enable rendering: set `proxyd.configTemplating.envsubst.enabled: true` (default).
 - The chart mounts the rendered config at `/config/config.toml` and proxyd reads from there.
-- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bitnami/envsubst`, which includes the `envsubst` binary.
+- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bytesco/envsubst:latest`, which includes the `envsubst` binary.
 - Optionally enforce presence of variables via `proxyd.configTemplating.envsubst.requiredVars`.
 
 Example:
