@@ -86,8 +86,85 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      {{- /* Init container to render config via envsubst */}}
+      {{- if .Values.proxyd.configTemplating.envsubst.enabled }}
+      initContainers:
+        - name: render-config
+          image: "{{ .Values.proxyd.initContainer.image.repository }}:{{ .Values.proxyd.initContainer.image.tag }}"
+          imagePullPolicy: {{ .Values.proxyd.initContainer.image.pullPolicy | default "IfNotPresent" }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          command:
+            - sh
+            - -c
+            - |
+              set -Eeuo pipefail
+              TEMPLATE_PATH="/config-template/config.toml"
+              OUTPUT_PATH="/config/config.toml"
+              umask 077
+              if [ ! -f "$TEMPLATE_PATH" ]; then
+                echo "Template not found: $TEMPLATE_PATH" >&2
+                exit 1
+              fi
+              mkdir -p "$(dirname "$OUTPUT_PATH")"
+              if [ -n "${REQUIRED_VARS:-}" ]; then
+                for var in $REQUIRED_VARS; do
+                  eval "val=\${$var-}"
+                  if [ -z "${val:-}" ]; then
+                    echo "Missing required env var: $var" >&2
+                    exit 1
+                  fi
+                done
+              fi
+              # Render using envsubst (provided by busybox)
+              envsubst < "$TEMPLATE_PATH" > "$OUTPUT_PATH.tmp"
+              if [ ! -s "$OUTPUT_PATH.tmp" ]; then
+                echo "Rendered config is empty; aborting" >&2
+                exit 1
+              fi
+              mv -f "$OUTPUT_PATH.tmp" "$OUTPUT_PATH"
+              chmod 0640 "$OUTPUT_PATH" || true
+          env:
+            - name: REQUIRED_VARS
+              value: {{ join " " (.Values.proxyd.configTemplating.envsubst.requiredVars | default (list)) | quote }}
+            {{- with .Values.proxyd.initContainer.env }}
+            {{- range $k, $v := . }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.proxyd.initContainer.envRaw }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.proxyd.initContainer.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config-template
+              mountPath: "/config-template"
+              readOnly: true
+            - name: config
+              mountPath: "/config"
+      {{- else }}
       initContainers: []
+      {{- end }}
       volumes:
+        {{- if .Values.proxyd.configTemplating.envsubst.enabled }}
+        - name: config-template
+          configMap:
+            {{- if .Values.proxyd.configTemplating.enabled }}
+            name: {{ include "proxyd.fullname" . }}-config
+            {{- else }}
+            name: {{ .Values.proxyd.existingConfigMap }}
+            {{- end }}
+        - name: config
+          emptyDir: {}
+        {{- else }}
         - name: config
           configMap:
             {{- if .Values.proxyd.configTemplating.enabled }}
@@ -95,6 +172,7 @@ spec:
             {{- else }}
             name: {{ .Values.proxyd.existingConfigMap }}
             {{- end }}
+        {{- end }}
       containers:
         - name: {{ $componentName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -123,6 +201,23 @@ spec:
             - name: config
               mountPath: "/config"
               readOnly: true
+          {{- with $values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- /* Build env from simple map and raw entries */}}
+          {{- $hasEnv := gt (len ($values.env | default dict)) 0 -}}
+          {{- $hasEnvRaw := gt (len ($values.envRaw | default list)) 0 -}}
+          {{- if or $hasEnv $hasEnvRaw }}
+          env:
+            {{- range $k, $v := ($values.env | default dict) }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+            {{- with ($values.envRaw | default list) }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
           ports:
             - name: http-jsonrpc
               containerPort: 8545

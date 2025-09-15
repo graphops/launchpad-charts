@@ -2,7 +2,7 @@
 
 Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.15](https://img.shields.io/badge/Version-0.6.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.18.0](https://img.shields.io/badge/AppVersion-v4.18.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v4.18.0](https://img.shields.io/badge/AppVersion-v4.18.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -106,6 +106,40 @@ graph LR
     d -->|Render Template| e[Output Config]
 ```
 
+### Secret-Driven Config Rendering (envsubst)
+
+When your backend URLs or other config values contain secrets, you can keep them out of Helm values and inject them at runtime using environment variables and an initContainer that renders the final config with `envsubst`.
+
+- Enable rendering: set `proxyd.configTemplating.envsubst.enabled: true` (default).
+- The chart mounts the rendered config at `/config/config.toml` and proxyd reads from there.
+- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bitnami/envsubst`, which includes the `envsubst` binary.
+- Optionally enforce presence of variables via `proxyd.configTemplating.envsubst.requiredVars`.
+
+Example:
+
+```yaml
+proxyd:
+  # Template may include placeholders like ${RPC_USER}:${RPC_PASS}
+  configTemplating:
+    envsubst:
+      enabled: true
+      requiredVars: ["RPC_USER", "RPC_PASS"]
+
+  initContainer:
+    envFrom:
+      - secretRef:
+          name: my-rpc-credentials
+
+  # Optional: also expose env to main container if needed
+  envRaw:
+    - name: SOME_FLAG
+      value: "1"
+```
+
+Notes:
+- When `envsubst` is enabled (default), the config `ConfigMap` is mounted as a read-only template and an `emptyDir` is used for the rendered config. Disabling `envsubst` falls back to mounting the `ConfigMap` directly at `/config`.
+- For strict security, inject secrets only into the init container via `envFrom` or `envRaw` and avoid exposing them to the main container unless required.
+
 ### Computed Template Variables
 
 The following additional template variables are computed and injected into the template context under the `computed` key:
@@ -167,8 +201,19 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | proxyd.affinity |  | object | `{}` |
  | proxyd.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
  | proxyd.configTemplating.enabled | Enables config templating from the values. If set to false, must provide an existing ConfigMap | bool | `true` |
+ | proxyd.configTemplating.envsubst | Runtime envsubst rendering of the generated config (initContainer) | object | `{"enabled":true,"requiredVars":[]}` |
+ | proxyd.configTemplating.envsubst.enabled | Enable initContainer-based envsubst of the config | bool | `true` |
+ | proxyd.configTemplating.envsubst.requiredVars | Optional list of required env var names; init will fail if any are unset/empty | list | `[]` |
+ | proxyd.env | Environment variables for the main proxyd container (simple key-value) | object | `{}` |
+ | proxyd.envFrom | envFrom entries for the main container (array of objects, e.g. secretRef/configMapRef) | list | `[]` |
+ | proxyd.envRaw | Raw env entries for the main container (use when you need valueFrom, secretKeyRef, etc.) | list | `[]` |
  | proxyd.existingConfigMap | Name of an existing ConfigMap with proxyd configuration. proxyd.configTemplating.enable must be set to false | string | `""` |
  | proxyd.extraArgs | Additional CLI arguments to pass to `proxyd` | list | `[]` |
+ | proxyd.initContainer | Init container configuration used for config rendering | object | `{"env":{},"envFrom":[],"envRaw":[],"image":{"pullPolicy":"IfNotPresent","repository":"bitnami/envsubst","tag":"latest"}}` |
+ | proxyd.initContainer.env | Environment variables for the init container (simple key-value) | object | `{}` |
+ | proxyd.initContainer.envFrom | envFrom entries for the init container (array of objects, e.g. secretRef/configMapRef) | list | `[]` |
+ | proxyd.initContainer.envRaw | Raw env entries for the init container (when you need valueFrom, secretKeyRef, etc.) | list | `[]` |
+ | proxyd.initContainer.image | Container image for envsubst rendering (dedicated envsubst image) | object | `{"pullPolicy":"IfNotPresent","repository":"bitnami/envsubst","tag":"latest"}` |
  | proxyd.nodeSelector |  | object | `{}` |
  | proxyd.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | proxyd.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337,"seccompProfile":{"type":"RuntimeDefault"}}` |

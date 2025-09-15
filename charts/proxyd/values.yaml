@@ -95,6 +95,13 @@ proxyd:
     seccompProfile:
       type: RuntimeDefault
 
+  # -- Environment variables for the main proxyd container (simple key-value)
+  env: {}
+  # -- Raw env entries for the main container (use when you need valueFrom, secretKeyRef, etc.)
+  envRaw: []
+  # -- envFrom entries for the main container (array of objects, e.g. secretRef/configMapRef)
+  envFrom: []
+
   service:
     type: ClusterIP
     ports:
@@ -132,6 +139,26 @@ proxyd:
   configTemplating:
     # -- Enables config templating from the values. If set to false, must provide an existing ConfigMap
     enabled: true
+    # -- Runtime envsubst rendering of the generated config (initContainer)
+    envsubst:
+      # -- Enable initContainer-based envsubst of the config
+      enabled: true
+      # -- Optional list of required env var names; init will fail if any are unset/empty
+      requiredVars: []
+
+  # -- Init container configuration used for config rendering
+  initContainer:
+    # -- Container image for envsubst rendering (dedicated envsubst image)
+    image:
+      repository: bitnami/envsubst
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    # -- Environment variables for the init container (simple key-value)
+    env: {}
+    # -- Raw env entries for the init container (when you need valueFrom, secretKeyRef, etc.)
+    envRaw: []
+    # -- envFrom entries for the init container (array of objects, e.g. secretRef/configMapRef)
+    envFrom: []
 
   # -- Name of an existing ConfigMap with proxyd configuration. proxyd.configTemplating.enable must be set to false
   existingConfigMap: ""
