@@ -88,6 +88,40 @@ These mappings are pre-configured for the default backend groups, but you can ch
 
 {{ template "graphops.configurationTemplateSection" }}
 
+### Secret-Driven Config Rendering (envsubst)
+
+When your backend URLs or other config values contain secrets, you can keep them out of Helm values and inject them at runtime using environment variables and an initContainer that renders the final config with `envsubst`.
+
+- Enable rendering: set `proxyd.configTemplating.envsubst.enabled: true` (default).
+- The chart mounts the rendered config at `/config/config.toml` and proxyd reads from there.
+- Provide env vars to the init container using `proxyd.initContainer.env`, `proxyd.initContainer.envRaw`, or `proxyd.initContainer.envFrom` (e.g., from a Secret). The default image is `bytesco/envsubst:latest`, which includes the `envsubst` binary.
+- Optionally enforce presence of variables via `proxyd.configTemplating.envsubst.requiredVars`.
+
+Example:
+
+```yaml
+proxyd:
+  # Template may include placeholders like ${RPC_USER}:${RPC_PASS}
+  configTemplating:
+    envsubst:
+      enabled: true
+      requiredVars: ["RPC_USER", "RPC_PASS"]
+
+  initContainer:
+    envFrom:
+      - secretRef:
+          name: my-rpc-credentials
+
+  # Optional: also expose env to main container if needed
+  envRaw:
+    - name: SOME_FLAG
+      value: "1"
+```
+
+Notes:
+- When `envsubst` is enabled (default), the config `ConfigMap` is mounted as a read-only template and an `emptyDir` is used for the rendered config. Disabling `envsubst` falls back to mounting the `ConfigMap` directly at `/config`.
+- For strict security, inject secrets only into the init container via `envFrom` or `envRaw` and avoid exposing them to the main container unless required.
+
 ### Computed Template Variables
 
 The following additional template variables are computed and injected into the template context under the `computed` key:

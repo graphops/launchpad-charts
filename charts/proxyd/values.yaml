@@ -40,6 +40,33 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: "1"
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: "blockchain"
+    folderUID: ""
+    uid: "proxyd-overview-v90"
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec:
+      datasources:
+        - datasourceName: "datasource"
+          inputName: "prometheus"
+        - datasourceName: "loki_datasource"
+          inputName: "loki"
 
 proxyd:
   # -- Additional CLI arguments to pass to `proxyd`
@@ -53,6 +80,8 @@ proxyd:
   # can lead to data integrity issues
   # -- Amount of time to wait before force-killing the proxyd process
   terminationGracePeriodSeconds: 60
+  # -- Soft nofile limit to set before starting proxyd (0 or empty to skip)
+  ulimitNoFile: 65536
 
   # -- Annotations for the `Pod`
   podAnnotations: {}
@@ -63,6 +92,15 @@ proxyd:
     runAsUser: 101337
     runAsGroup: 101337
     fsGroup: 101337
+    seccompProfile:
+      type: RuntimeDefault
+
+  # -- Environment variables for the main proxyd container (simple key-value)
+  env: {}
+  # -- Raw env entries for the main container (use when you need valueFrom, secretKeyRef, etc.)
+  envRaw: []
+  # -- envFrom entries for the main container (array of objects, e.g. secretRef/configMapRef)
+  envFrom: []
 
   service:
     type: ClusterIP
@@ -101,6 +139,26 @@ proxyd:
   configTemplating:
     # -- Enables config templating from the values. If set to false, must provide an existing ConfigMap
     enabled: true
+    # -- Runtime envsubst rendering of the generated config (initContainer)
+    envsubst:
+      # -- Enable initContainer-based envsubst of the config
+      enabled: true
+      # -- Optional list of required env var names; init will fail if any are unset/empty
+      requiredVars: []
+
+  # -- Init container configuration used for config rendering
+  initContainer:
+    # -- Container image for envsubst rendering (dedicated envsubst image)
+    image:
+      repository: bytesco/envsubst
+      tag: "latest"
+      pullPolicy: IfNotPresent
+    # -- Environment variables for the init container (simple key-value)
+    env: {}
+    # -- Raw env entries for the init container (when you need valueFrom, secretKeyRef, etc.)
+    envRaw: []
+    # -- envFrom entries for the init container (array of objects, e.g. secretRef/configMapRef)
+    envFrom: []
 
   # -- Name of an existing ConfigMap with proxyd configuration. proxyd.configTemplating.enable must be set to false
   existingConfigMap: ""
