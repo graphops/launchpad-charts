@@ -102,6 +102,7 @@ nitro:
     # -- Enabled default arguments on the chart
     defaultArgs:
       - "--execution.caching.archive"
+      - "--execution.rpc.log-history=0"
 
     # -- Additional CLI arguments to pass to `nitro`
     extraArgs: []
