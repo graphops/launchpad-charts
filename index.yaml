@@ -1409,6 +1409,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2025-09-16T12:54:27Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: af6f99fefea81d98eda66962a39791447adf2ac74fc67bb06889f24f7203b2b0
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.21/graph-network-indexer-0.5.21.tgz
+      version: 0.5.21
+    - apiVersion: v2
       created: "2025-07-29T16:33:44Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: cc635bcefc9b2526f3e8264717840e97b0bdad015f6527979bb1b38ab0be373d
@@ -1713,6 +1722,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.40.1
+      created: "2025-09-16T12:54:27Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: d7b78cd3e42036ce2c1b8fa57143ac4ba83340d8fd96bcabefc61c11a1f5fcbc
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.3/graph-node-0.6.3.tgz
+      version: 0.6.3
     - apiVersion: v2
       appVersion: v0.39.1
       created: "2025-07-24T13:44:35Z"
@@ -2277,6 +2296,26 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.3.1
+      created: "2025-09-16T13:01:52Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 14d8812aead03d39c20197109bdb2ed5e3c003f827961754fe60cd2b9861cb5a
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.6/heimdall-v2-0.0.6.tgz
+      version: 0.0.6
+    - apiVersion: v2
+      appVersion: 0.3.0
+      created: "2025-09-16T12:34:16Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 8b7bf7c6e40b9ab057e95e523de100d01191941ddead718af779c0af4a43b40c
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.5/heimdall-v2-0.0.5.tgz
+      version: 0.0.5
+    - apiVersion: v2
       appVersion: 0.2.17
       created: "2025-08-17T03:57:39Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -2781,6 +2820,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v25.9.0
+      created: "2025-09-16T12:35:45Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 99ff9e87b2bb55d9a3a220e050843b2a6b58e52be3a58013c9a0b3b1846137c4
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.8/nimbus-0.6.8.tgz
+      version: 0.6.8
+    - apiVersion: v2
       appVersion: multiarch-v25.7.1
       created: "2025-08-05T16:06:13Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -3201,6 +3250,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.1.0/nimbus-0.1.0.tgz
       version: 0.1.0
   openebs-rawfile-localpv:
+    - apiVersion: v2
+      appVersion: 0.8.0
+      created: "2025-09-16T13:55:38Z"
+      description: RawFile Driver Container Storage Interface
+      digest: fab157ebe8578f8e2fbe9b88570b8c41c2ebd33beb05043adc11e3103ffb1453
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.9.0/openebs-rawfile-localpv-0.9.0.tgz
+      version: 0.9.0
     - apiVersion: v2
       appVersion: 0.8.0
       created: "2023-10-24T22:20:05Z"
@@ -4003,4 +4062,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-09-16T12:34:17.926263433Z"
+generated: "2025-09-16T14:06:49.877395223Z"
