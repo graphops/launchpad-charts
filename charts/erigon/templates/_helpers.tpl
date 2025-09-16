@@ -65,18 +65,90 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{/*
+P2P helpers
+*/}}
+{{- define "erigon.p2p.nodePortBase" -}}
+{{- $values := . -}}
+{{- if and $values.p2p $values.p2p.service $values.p2p.service.nodePort $values.p2p.service.nodePort.base -}}
+{{- $values.p2p.service.nodePort.base -}}
+{{- else if and $values.p2pNodePort $values.p2pNodePort.port -}}
+{{- $values.p2pNodePort.port -}}
+{{- else -}}
+31000
+{{- end -}}
+{{- end -}}
+
+{{/*
+Erigon P2P ports: two explicit ports (protocol 68 and 67)
+*/}}
+{{- define "erigon.p2p.port1" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.allowedPorts -}}
+  {{- index $v.p2p.allowedPorts 0 -}}
+{{- else -}}
+  {{- include "erigon.p2p.containerPortBase" $v -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "erigon.p2p.port2" -}}
+{{- $v := . -}}
+{{- if and $v.p2p $v.p2p.allowedPorts -}}
+  {{- if ge (len $v.p2p.allowedPorts) 2 -}}
+    {{- index $v.p2p.allowedPorts 1 -}}
+  {{- else -}}
+    {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
+  {{- end -}}
+{{- else -}}
+  {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "erigon.p2p.containerPortBase" -}}
+{{- $values := . -}}
+{{- if and $values.p2p $values.p2p.port -}}
+{{- $values.p2p.port -}}
+{{- else -}}
+30303
+{{- end -}}
+{{- end -}}
+
+{{- define "erigon.p2p.isNodePort" -}}
+{{- $values := . -}}
+{{- if and $values.p2p $values.p2p.service $values.p2p.service.enabled -}}
+  {{- if eq (default "NodePort" $values.p2p.service.type) "NodePort" -}}
+true
+  {{- else -}}
+false
+  {{- end -}}
+{{- else if and $values.p2pNodePort $values.p2pNodePort.enabled -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end -}}
+
+{{- define "erigon.p2p.isLoadBalancer" -}}
+{{- $values := . -}}
+{{- if and $values.p2p $values.p2p.service $values.p2p.service.enabled (eq (default "" $values.p2p.service.type) "LoadBalancer") -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end -}}
+
 {{- define "erigon.p2pPort" -}}
-{{- if .p2pNodePort.enabled }}
-{{- print .p2pNodePort.port }}
-{{- else }}
-{{- printf "30303" -}}
-{{- end }}
+{{- if (include "erigon.p2p.isNodePort" . | trim | eq "true") -}}
+{{- include "erigon.p2p.nodePortBase" . -}}
+{{- else -}}
+{{- include "erigon.p2p.containerPortBase" . -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "erigon.replicas" -}}
-{{- if .p2pNodePort.enabled }}
-{{- print 1 }}
-{{ else }}
-{{- default 1 .replicaCount  }}
-{{- end}}
+{{- if (include "erigon.p2p.isNodePort" . | trim | eq "true") -}}
+{{- print 1 -}}
+{{- else -}}
+{{- print (default 1 .replicaCount) -}}
+{{- end -}}
 {{- end -}}

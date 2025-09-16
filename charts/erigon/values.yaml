@@ -66,6 +66,28 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: "1"
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: ""
+    folderUID: ""
+    uid: ""
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec: {}
 
 statefulNode:
   # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
@@ -205,6 +227,54 @@ statefulNode:
     antiAffinityByHostname: true
 
   affinity: {}
+
+  # RPC configuration
+  rpc:
+    batch:
+      # -- Maximum number of requests in a batch (erigon: --rpc.batch.limit)
+      limit: 100
+      # -- Goroutines to process a single batch request (erigon: --rpc.batch.concurrency)
+      concurrency: 2
+
+  # Private API (gRPC) configuration
+  privateApi:
+    # -- Max simultaneous private API requests (erigon: --private.api.ratelimit)
+    ratelimit: 31872
+  # P2P configuration (supersedes p2pNodePort)
+  p2p:
+    # -- Two explicit P2P ports to allow (protocol 68,67). Services and container ports will match these.
+    #    If not set, defaults to [30303, 30304].
+    allowedPorts: [30303, 30304]
+    service:
+      # -- Enable creation of a P2P Service
+      enabled: false
+      # -- Service type for P2P exposure (NodePort or LoadBalancer)
+      type: NodePort
+      # -- Annotations to add to the P2P Service (useful for cloud LBs)
+      annotations: {}
+      # -- Additional labels to add to the P2P Service
+      labels: {}
+      # -- External traffic policy for NodePort/LoadBalancer
+      externalTrafficPolicy: Local
+      # -- Toggle publishing not ready addresses for p2p service
+      publishNotReadyAddresses: false
+      # -- Fixed external IPs to bind the P2P Service to (NodePort or LoadBalancer); requires upstream routing
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, reserve a specific IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
+      # -- IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP)
+      advertiseIP: ""
+      # -- When type is NodePort, base nodePort to use (port and port+1 are used)
+      nodePort:
+        base: 31000
+      # -- (Advanced) override initContainer image used in NodePort mode
+      initContainer:
+        image:
+          repository: lachlanevenson/k8s-kubectl
+          tag: v1.25.4
+          pullPolicy: IfNotPresent
 
   p2pNodePort:
     # -- Expose P2P port via NodePort
