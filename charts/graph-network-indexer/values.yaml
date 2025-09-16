@@ -112,7 +112,7 @@ indexerAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    tag: "v0.24.2"
+    tag: "v0.24.3"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
