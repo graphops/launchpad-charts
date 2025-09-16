@@ -29,6 +29,28 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: ""
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: ""
+    folderUID: ""
+    uid: ""
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec: {}
 
 
 heimdall:
@@ -153,6 +175,34 @@ heimdall:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
+
+  # P2P configuration (supersedes p2pNodePort)
+  p2p:
+    # -- P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).
+    #    Notes:
+    #      - LoadBalancer: the Service exposes this port and targets the container on the same port
+    #      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available
+    #      - Choose a value in your cluster’s NodePort range (typically 30000–32767)
+    port: 31000
+    service:
+      # -- Enable creation of a P2P Service
+      enabled: false
+      # -- Service type for P2P exposure (NodePort or LoadBalancer)
+      type: NodePort
+      # -- Annotations to add to the P2P Service (useful for cloud LBs)
+      annotations: {}
+      # -- Additional labels to add to the P2P Service
+      labels: {}
+      # -- External traffic policy for NodePort/LoadBalancer
+      externalTrafficPolicy: Local
+      # -- IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP)
+      advertiseIP: ""
+      # -- Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing)
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, set a specific LB IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
 
   # -- Enable a readiness probe that checks if heimdall is synced
   readyAfterSync: false

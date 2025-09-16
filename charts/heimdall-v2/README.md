@@ -2,7 +2,7 @@
 
 Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.4](https://img.shields.io/badge/Version-0.0.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.2.17](https://img.shields.io/badge/AppVersion-0.2.17-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.0.5](https://img.shields.io/badge/Version-0.0.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.3.0](https://img.shields.io/badge/AppVersion-0.3.0-informational?style=flat-square)
 
 ## Features
 
@@ -12,6 +12,7 @@ Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside 
 - Readiness checks to ensure traffic only hits `Pod`s that are healthy and ready to serve requests
 - Support for `PodMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
 - Support for configuring Grafana dashboards for polygon ([grafana](https://github.com/grafana/helm-charts/tree/main/charts/grafana))
+ - P2P exposure via NodePort or LoadBalancer with matching container ports
 
 ## Quickstart
 
@@ -47,6 +48,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `""` |
+ | grafana.operatorDashboards | Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/` | object | `{"allowCrossNamespaceImport":false,"annotations":{},"enabled":false,"extraSpec":{},"folder":"","folderUID":"","instanceSelector":{"matchLabels":{}},"labels":{},"namespace":"","resyncPeriod":"","suspend":false,"uid":""}` |
+ | grafana.operatorDashboards.allowCrossNamespaceImport | Allow matching Grafana instances outside current namespace | bool | `false` |
+ | grafana.operatorDashboards.extraSpec | Additional spec fields to merge into GrafanaDashboard.spec | object | `{}` |
+ | grafana.operatorDashboards.folder | Optional folder metadata | string | `""` |
+ | grafana.operatorDashboards.instanceSelector | Selector to match Grafana instances managed by the operator | object | `{"matchLabels":{}}` |
+ | grafana.operatorDashboards.labels | Extra labels and annotations on the GrafanaDashboard resources | object | `{}` |
+ | grafana.operatorDashboards.namespace | Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace) | string | `""` |
+ | grafana.operatorDashboards.resyncPeriod | Operator sync behavior | string | `""` |
  | heimdall.affinity |  | object | `{}` |
  | heimdall.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple Heimdall instances on the same host | bool | `true` |
  | heimdall.config.borRpcUrl | Bor RPC address | string | `""` |
@@ -72,6 +81,16 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | heimdall.image.repository | Image for Heimdall | string | `"0xpolygon/heimdall-v2"` |
  | heimdall.image.tag | Overrides the image tag | string | Chart.appVersion |
  | heimdall.nodeSelector |  | object | `{}` |
+ | heimdall.p2p.port | P2P listen port used by BOTH the container and the P2P Service (regardless of Service type).    Notes:      - LoadBalancer: the Service exposes this port and targets the container on the same port      - NodePort: the Service uses this value as the nodePort; ensure it is allowed by cluster policy and available      - Choose a value in your cluster’s NodePort range (typically 30000–32767) | int | `31000` |
+ | heimdall.p2p.service.advertiseIP | IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP) | string | `""` |
+ | heimdall.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
+ | heimdall.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
+ | heimdall.p2p.service.externalIPs | Fixed external IPs to bind the Service to (works for NodePort or LoadBalancer; requires upstream routing) | list | `[]` |
+ | heimdall.p2p.service.externalTrafficPolicy | External traffic policy for NodePort/LoadBalancer | string | `"Local"` |
+ | heimdall.p2p.service.labels | Additional labels to add to the P2P Service | object | `{}` |
+ | heimdall.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, set a specific LB IP | string | `""` |
+ | heimdall.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
+ | heimdall.p2p.service.type | Service type for P2P exposure (NodePort or LoadBalancer) | string | `"NodePort"` |
  | heimdall.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | heimdall.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | heimdall.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
