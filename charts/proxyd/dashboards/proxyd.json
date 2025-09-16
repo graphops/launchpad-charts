@@ -19,7 +19,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 102,
+  "id": 105,
   "links": [],
   "panels": [
     {
@@ -80,6 +80,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -142,6 +143,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -214,6 +216,7 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -281,6 +284,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -372,6 +376,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -481,6 +489,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -582,6 +594,7 @@
               "mode": "off"
             }
           },
+          "displayName": "${__field.labels[\"namespace\"]} / ${__field.labels[\"backend_name\"]}",
           "mappings": [],
           "noValue": "0",
           "thresholds": {
@@ -590,6 +603,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -627,8 +644,10 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "sum by (backend_name) (rate(proxyd_http_response_codes_total{app_launchpad_graphops_xyz_chain=~\"$chain\", app_launchpad_graphops_xyz_network=~\"$network\", namespace=~\"$namespace\", app_kubernetes_io_instance=~\"$instance\", status_code=~\"5..\"}[$__rate_interval]))",
+          "editorMode": "code",
+          "expr": "sum by (namespace, backend_name) (\n    rate(proxyd_rpc_backend_http_response_codes_total{\n        app_launchpad_graphops_xyz_chain=~\"$chain\",\n        app_launchpad_graphops_xyz_network=~\"$network\",\n        namespace=~\"$namespace\",\n        app_kubernetes_io_instance=~\"$instance\",\n        status_code=~\"5..\"\n    }[$__rate_interval])\n)\n\n# Part 2: Use OR to fill in the gaps with zeros for backends that have NO errors\nor on(namespace, backend_name)\n\n# Part 3: Create a vector with a value of 0 for ALL existing backends\n(\n    group by (namespace, backend_name) (\n        proxyd_rpc_backend_http_response_codes_total{\n            app_launchpad_graphops_xyz_chain=~\"$chain\",\n            app_launchpad_graphops_xyz_network=~\"$network\",\n            namespace=~\"$namespace\",\n            app_kubernetes_io_instance=~\"$instance\"\n        }\n    ) * 0\n)",
           "legendFormat": "{{backend_name}}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -674,6 +693,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -718,7 +741,8 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "sum by (method_name)(rate(proxyd_http_response_codes_total{app_launchpad_graphops_xyz_chain=~\"$chain\", app_launchpad_graphops_xyz_network=~\"$network\", namespace=~\"$namespace\", app_kubernetes_io_instance=~\"$instance\", status_code=~\"5..\"}[5m]))",
+          "editorMode": "code",
+          "expr": "sum by (method_name) (\n    rate(proxyd_rpc_backend_http_response_codes_total{\n        app_launchpad_graphops_xyz_chain=~\"$chain\",\n        app_launchpad_graphops_xyz_network=~\"$network\",\n        namespace=~\"$namespace\",\n        app_kubernetes_io_instance=~\"$instance\",\n        status_code=~\"5..\"\n    }[$__rate_interval])\n)\n\n# Part 2: Use OR to fill in the gaps with zeros for backends that have NO errors\nor on(method_name)\n\n# Part 3: Create a vector with a value of 0 for ALL existing backends\n(\n    group by (method_name) (\n        proxyd_rpc_backend_http_response_codes_total{   \n            app_launchpad_graphops_xyz_chain=~\"$chain\",\n            app_launchpad_graphops_xyz_network=~\"$network\",\n            namespace=~\"$namespace\",\n            app_kubernetes_io_instance=~\"$instance\"\n        }\n    ) * 0\n)",
           "instant": true,
           "legendFormat": "{{method_name}}",
           "refId": "A"
@@ -791,6 +815,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -887,6 +915,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -983,6 +1015,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -1365,6 +1401,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -1766,7 +1806,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 79
+        "y": 71
       },
       "id": 700,
       "panels": [],
@@ -1797,6 +1837,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ]
           },
@@ -1808,7 +1852,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 80
+        "y": 72
       },
       "id": 701,
       "options": {
@@ -1853,17 +1897,17 @@
             "excludeByName": {},
             "indexByName": {
               "app_kubernetes_io_instance": 2,
+              "app_kubernetes_io_version": 5,
               "app_launchpad_graphops_xyz_chain": 3,
               "app_launchpad_graphops_xyz_network": 4,
-              "app_kubernetes_io_version": 5,
               "namespace": 1,
               "pod": 0
             },
             "renameByName": {
               "app_kubernetes_io_instance": "Instance",
+              "app_kubernetes_io_version": "Version",
               "app_launchpad_graphops_xyz_chain": "Chain",
               "app_launchpad_graphops_xyz_network": "Network",
-              "app_kubernetes_io_version": "Version",
               "namespace": "Namespace",
               "pod": "Replica"
             }
@@ -1889,7 +1933,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 88
+        "y": 80
       },
       "id": 500,
       "panels": [],
@@ -1909,7 +1953,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 81
       },
       "id": 501,
       "options": {
@@ -1939,6 +1983,7 @@
       "type": "logs"
     }
   ],
+  "preload": false,
   "refresh": "30s",
   "schemaVersion": 40,
   "tags": [
@@ -1951,8 +1996,8 @@
     "list": [
       {
         "current": {
-          "text": "Prometheus",
-          "value": "prometheus"
+          "text": "VictoriaMetrics",
+          "value": "3cfda04b-e80b-4c89-8a01-79122ed6ccb1"
         },
         "description": "Select the Grafana Datasource for Prometheus.",
         "includeAll": false,
@@ -1997,7 +2042,6 @@
         "query": "label_values(proxyd_rpc_requests_total, app_launchpad_graphops_xyz_chain)",
         "refresh": 2,
         "regex": "",
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2018,7 +2062,6 @@
         "query": "label_values(proxyd_rpc_requests_total{app_launchpad_graphops_xyz_chain=~\"$chain\"}, app_launchpad_graphops_xyz_network)",
         "refresh": 2,
         "regex": "",
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2039,7 +2082,6 @@
         "query": "label_values(proxyd_rpc_requests_total{app_launchpad_graphops_xyz_chain=~\"$chain\", app_launchpad_graphops_xyz_network=~\"$network\"}, namespace)",
         "refresh": 2,
         "regex": "",
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2060,7 +2102,6 @@
         "query": "label_values(proxyd_rpc_requests_total{app_launchpad_graphops_xyz_chain=~\"$chain\", app_launchpad_graphops_xyz_network=~\"$network\", namespace=~\"$namespace\"}, app_kubernetes_io_instance)",
         "refresh": 2,
         "regex": "",
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2081,19 +2122,18 @@
         "query": "label_values(proxyd_rpc_requests_total{app_launchpad_graphops_xyz_chain=~\"$chain\", app_launchpad_graphops_xyz_network=~\"$network\", namespace=~\"$namespace\", app_kubernetes_io_instance=~\"$instance\"}, pod)",
         "refresh": 2,
         "regex": "",
-        "sort": 0,
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Proxyd SRE Overview v0.9.0",
-  "uid": "proxyd-sre-overview-v0_9_0",
-  "version": 90,
+  "title": "Proxyd SRE Overview v0.9.1",
+  "uid": "proxyd-sre-overview-v0_9_1",
+  "version": 91,
   "weekStart": ""
 }
