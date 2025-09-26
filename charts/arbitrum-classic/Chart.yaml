@@ -22,4 +22,4 @@ version: 0.2.1
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=offchainlabs/arb-node
-appVersion: "v1.4.5-e97c1a4"
+appVersion: "v1.4.6-551a39b3"
