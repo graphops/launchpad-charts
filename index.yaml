@@ -84,6 +84,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.7.4-9244576
+      created: "2025-09-27T17:11:14Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 8dc116a01cfae463b5a767c52e3883547b2dfb471fd324fc344d9578a3e378eb
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.7.1/arbitrum-nitro-0.7.1.tgz
+      version: 0.7.1
+    - apiVersion: v2
       appVersion: v3.7.2-42be4fe
       created: "2025-09-16T12:29:44Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -566,6 +576,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v3.1.0
+      created: "2025-09-27T16:32:50Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 59557d7b04593904f03054c14c0186796adf57bac7dc12ae9b6a110c2ad8f9be
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.1/erigon-0.12.1.tgz
+      version: 0.12.1
     - apiVersion: v2
       appVersion: v3.0.17
       created: "2025-09-16T11:53:11Z"
@@ -4092,4 +4112,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-09-27T17:19:06.274162683Z"
+generated: "2025-09-27T17:19:08.765556219Z"
