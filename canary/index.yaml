@@ -14,6 +14,16 @@ entries:
   arbitrum-classic:
     - apiVersion: v2
       appVersion: v1.4.6-551a39b3
+      created: "2025-09-27T17:10:50Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: ad93e59f9ba3ad66d4e54c6b43f6df71e22d91fc7bb588f9b4b67c2d0b70ebf8
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.2.2-canary.4/arbitrum-classic-0.2.2-canary.4.tgz
+      version: 0.2.2-canary.4
+    - apiVersion: v2
+      appVersion: v1.4.6-551a39b3
       created: "2025-09-26T20:07:54Z"
       description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
       digest: 86a72cb57ef17ec9c39563b78a4a333d4522ab088e5664d3452ab67e7d5acc1f
@@ -233,6 +243,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
       version: 0.1.0
   arbitrum-nitro:
+    - apiVersion: v2
+      appVersion: v3.7.4-9244576
+      created: "2025-09-27T17:10:50Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: dd906736df345e5338fc41874b3e932bf45088314e5695a483896f985b79dcd7
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.7.1-canary.3/arbitrum-nitro-0.7.1-canary.3.tgz
+      version: 0.7.1-canary.3
     - apiVersion: v2
       appVersion: v3.7.4-9244576
       created: "2025-09-26T20:07:54Z"
@@ -9107,6 +9127,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v25.9.2
+      created: "2025-09-27T17:11:57Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9777d7bdbf5c09a3c5f2d54310305271811cf802f9bf08ee25717c58a0bb071c
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.9-canary.3/nimbus-0.6.9-canary.3.tgz
+      version: 0.6.9-canary.3
+    - apiVersion: v2
+      appVersion: multiarch-v25.9.2
       created: "2025-09-26T20:37:48Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: 4c7933f8ec9c726ea91e867b980ae9719465030607041965aeeea4bb9dbbcbda
@@ -11910,7 +11940,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-09-27T16:48:47.039654703Z"
+      created: "2025-09-27T17:15:53.958355392Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -11920,7 +11950,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-09-27T16:48:47.039062084Z"
+      created: "2025-09-27T17:15:53.957732484Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -12460,4 +12490,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-09-27T16:48:45.865474782Z"
+generated: "2025-09-27T17:15:52.770091309Z"
