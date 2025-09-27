@@ -2296,6 +2296,16 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.4.0
+      created: "2025-09-27T16:33:12Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 220c60943e889be87547f4c76e33e54286dce8560ffd8be3cee8373894df3c7f
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.7/heimdall-v2-0.0.7.tgz
+      version: 0.0.7
+    - apiVersion: v2
       appVersion: 0.3.1
       created: "2025-09-16T13:01:52Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -2820,6 +2830,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v25.9.2
+      created: "2025-09-27T17:12:15Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: f1dc26f06af6b1c2e987c2a7daeafc832fe8bdfc221f73b1b9979d7400e25f8e
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.9/nimbus-0.6.9.tgz
+      version: 0.6.9
+    - apiVersion: v2
       appVersion: multiarch-v25.9.0
       created: "2025-09-16T12:35:45Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -3311,6 +3331,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.20.0
+      created: "2025-09-27T16:44:13Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 2a4be6158c682b2ce11e06e2881e60786715e191b3de8924e630337e5d8484df
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.2/proxyd-0.7.2.tgz
+      version: 0.7.2
     - apiVersion: v2
       appVersion: v4.18.0
       created: "2025-09-16T11:45:03Z"
@@ -4062,4 +4092,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-09-16T14:06:49.877395223Z"
+generated: "2025-09-27T17:19:06.274162683Z"
