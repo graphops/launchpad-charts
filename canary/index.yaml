@@ -255,6 +255,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.7.6-c0fe95e
+      created: "2025-10-21T12:50:24Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 6915a389c1bd942f14af6ad914cfefc1d64f60f1364df9a09643c303eae7b64e
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.7.2/arbitrum-nitro-0.7.2.tgz
+      version: 0.7.2
+    - apiVersion: v2
+      appVersion: v3.7.6-c0fe95e
       created: "2025-10-21T12:50:02Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 9f0569a05e8a0554b09c64dc21a68f8de3d8ad35b484708513e5fc58e33a955e
@@ -2165,6 +2175,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
+    - apiVersion: v2
+      appVersion: v3.2.1
+      created: "2025-10-21T12:51:43Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 2a0050ab6bd6fe6dd1be3e7310c23f897be5eef138a0a78c804490029649f9f3
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.2/erigon-0.12.2.tgz
+      version: 0.12.2
     - apiVersion: v2
       appVersion: v3.2.1
       created: "2025-10-21T12:51:21Z"
@@ -4593,6 +4613,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2025-10-21T14:12:25Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 4983613b5a73652564dfadf2cc23e64e60740ba36313b81301609f28b6831053
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.5.22-canary.7/graph-network-indexer-0.5.22-canary.7.tgz
+      version: 0.5.22-canary.7
+    - apiVersion: v2
       created: "2025-10-20T17:36:30Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 1ce48b80d64cc13fd98c5ec82204303b5493c32c4c04774f8a8e5c61d27b0993
@@ -5844,6 +5873,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.41.0
+      created: "2025-10-21T14:12:25Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: b3d05df78a39f4e54a853558d3b8e9c0f7c4f4f3f80418a7d2ef92cce6d43e8c
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.5-canary.2/graph-node-0.6.5-canary.2.tgz
+      version: 0.6.5-canary.2
     - apiVersion: v2
       appVersion: v0.41.0
       created: "2025-10-20T17:36:30Z"
@@ -7337,6 +7376,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   heimdall-v2:
+    - apiVersion: v2
+      appVersion: 0.4.2
+      created: "2025-10-21T12:49:19Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 82374bc6045d35d3850ac67c82bb479af0c7ab4daee9eaa9b6fc6a5a1e4768b2
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.8/heimdall-v2-0.0.8.tgz
+      version: 0.0.8
     - apiVersion: v2
       appVersion: 0.4.2
       created: "2025-10-21T12:48:51Z"
@@ -10725,6 +10774,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.21.0
+      created: "2025-10-21T13:44:42Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 378aef4276a4d9e46ef5d21bdb68a063d51730cda7aa2897b10b32d2a5d9b955
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.3/proxyd-0.7.3.tgz
+      version: 0.7.3
+    - apiVersion: v2
+      appVersion: v4.21.0
       created: "2025-10-21T13:44:13Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 51951015c06029adec2943e448bcffe28cf8f8c4ae1b57f527235fb0cff6c788
@@ -12186,7 +12245,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-10-21T13:53:41.269368667Z"
+      created: "2025-10-21T14:18:18.427898131Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -12196,7 +12255,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-10-21T13:53:41.268785245Z"
+      created: "2025-10-21T14:18:18.426847316Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -12736,4 +12795,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-10-21T13:53:40.064154464Z"
+generated: "2025-10-21T14:18:17.219488277Z"
