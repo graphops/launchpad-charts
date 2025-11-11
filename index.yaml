@@ -94,6 +94,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.8.0-62c0aa7
+      created: "2025-11-11T14:50:02Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 51b86db7611e07894f6f76d05d30d14e5afa54434199c14deb7854fb132e2a2b
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.8.0/arbitrum-nitro-0.8.0.tgz
+      version: 0.8.0
+    - apiVersion: v2
       appVersion: v3.7.6-c0fe95e
       created: "2025-10-21T12:50:24Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -596,6 +606,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v3.2.2
+      created: "2025-11-11T14:48:40Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 0ea79a77b15c321729a707e0573232e3b68e456b8a8bbfcfab3eef2d5467f38e
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.3/erigon-0.12.3.tgz
+      version: 0.12.3
     - apiVersion: v2
       appVersion: v3.2.1
       created: "2025-10-21T12:51:43Z"
@@ -1773,6 +1793,16 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.41.1
+      created: "2025-11-11T14:48:18Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: a585811de298b78b256c3bfc0799a20e9e5e8ff3e4de7c80ed1b6f55e3f0500b
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.6/graph-node-0.6.6.tgz
+      version: 0.6.6
+    - apiVersion: v2
       appVersion: v0.41.0
       created: "2025-10-21T14:12:53Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -2930,6 +2960,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v25.11.0
+      created: "2025-11-11T14:50:02Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 54d80396b12c784c06f7c649c84e8b7482852ce143214ed1d30181f23e4ea7cb
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.10/nimbus-0.6.10.tgz
+      version: 0.6.10
+    - apiVersion: v2
       appVersion: multiarch-v25.9.2
       created: "2025-09-27T17:12:15Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -3431,6 +3471,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.22.0
+      created: "2025-11-11T14:50:20Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 9718cfb26dcefb8c54bc3ef16a8f2419380020521518b24393a57e01a3ef0783
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.4/proxyd-0.7.4.tgz
+      version: 0.7.4
     - apiVersion: v2
       appVersion: v4.21.0
       created: "2025-10-21T13:44:42Z"
@@ -4202,4 +4252,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-11-11T14:52:55.73152979Z"
+generated: "2025-11-11T14:53:22.792901307Z"
