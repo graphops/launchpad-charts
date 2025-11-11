@@ -72,6 +72,8 @@ lighthouse:
   executionClientUrl: "" # e.g. http://erigon:8551
   # -- Prune blobs? leave false for an archive node that retains hisotrical blobs
   pruneBlobs: false
+  # -- Super Node? post Fusaka, to subscribe and acquire all data one must run a super node
+  superNode: true
   # -- JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`.
   jwt:
     # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.

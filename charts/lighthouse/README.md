@@ -109,6 +109,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.service.ports.udp-transport | For experimental QUIC protocol support | int | `9001` |
  | lighthouse.service.topologyAwareRouting.enabled |  | bool | `false` |
  | lighthouse.service.type |  | string | `"ClusterIP"` |
+ | lighthouse.superNode | Super Node? post Fusaka, to subscribe and acquire all data one must run a super node | bool | `true` |
  | lighthouse.terminationGracePeriodSeconds | Amount of time to wait before force-killing the container | int | `60` |
  | lighthouse.tolerations |  | list | `[]` |
  | lighthouse.volumeClaimSpec | [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for storage | object | `{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"3Ti"}},"storageClassName":null}` |
