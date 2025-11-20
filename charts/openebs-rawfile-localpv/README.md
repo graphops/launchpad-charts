@@ -52,7 +52,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
 |-----|-------------|------|---------|
  | controller.<<.image.pullPolicy |  | string | `"Always"` |
  | controller.<<.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
- | controller.<<.image.tag |  | string | `"v0.11.0"` |
+ | controller.<<.image.tag |  | string | `"v0.12.0"` |
  | controller.<<.resources.limits.cpu |  | int | `1` |
  | controller.<<.resources.limits.memory |  | string | `"100Mi"` |
  | controller.<<.resources.requests.cpu |  | string | `"10m"` |
@@ -60,7 +60,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | controller.<<.tolerations |  | list | `[]` |
  | defaults.image.pullPolicy |  | string | `"Always"` |
  | defaults.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
- | defaults.image.tag |  | string | `"v0.11.0"` |
+ | defaults.image.tag |  | string | `"v0.12.0"` |
  | defaults.resources.limits.cpu |  | int | `1` |
  | defaults.resources.limits.memory |  | string | `"100Mi"` |
  | defaults.resources.requests.cpu |  | string | `"10m"` |
@@ -69,7 +69,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets |  | list | `[]` |
  | node.<<.image.pullPolicy |  | string | `"Always"` |
  | node.<<.image.repository |  | string | `"docker.io/openebs/rawfile-localpv"` |
- | node.<<.image.tag |  | string | `"v0.11.0"` |
+ | node.<<.image.tag |  | string | `"v0.12.0"` |
  | node.<<.resources.limits.cpu |  | int | `1` |
  | node.<<.resources.limits.memory |  | string | `"100Mi"` |
  | node.<<.resources.requests.cpu |  | string | `"10m"` |
