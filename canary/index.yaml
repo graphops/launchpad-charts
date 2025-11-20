@@ -10988,6 +10988,16 @@ entries:
   openebs-rawfile-localpv:
     - apiVersion: v2
       appVersion: 0.8.0
+      created: "2025-11-20T16:42:54Z"
+      description: RawFile Driver Container Storage Interface
+      digest: b75c8268543d98edbc5108f494588a052e9b29316f013daadcf3621127c109d3
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.9.1-canary.1/openebs-rawfile-localpv-0.9.1-canary.1.tgz
+      version: 0.9.1-canary.1
+    - apiVersion: v2
+      appVersion: 0.8.0
       created: "2025-09-16T13:55:38Z"
       description: RawFile Driver Container Storage Interface
       digest: fab157ebe8578f8e2fbe9b88570b8c41c2ebd33beb05043adc11e3103ffb1453
@@ -12570,7 +12580,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-11-20T01:43:56.24531167Z"
+      created: "2025-11-20T16:52:01.708334768Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -12580,7 +12590,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-11-20T01:43:56.24469883Z"
+      created: "2025-11-20T16:52:01.707730986Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -13120,4 +13130,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-11-20T01:43:54.978622582Z"
+generated: "2025-11-20T16:52:00.433581963Z"
