@@ -152,7 +152,9 @@ spec:
               exec lighthouse beacon_node \
                 --datadir=/storage \
                 --prune-blobs={{ $values.pruneBlobs }} \
-                --supernode={{ $values.superNode }} \
+              {{- if $values.superNode }}
+                --supernode \
+              {{- end }}
               {{- if $values.executionClientUrl }}
                 --execution-endpoint={{ $values.executionClientUrl }} \
               {{- end }}
