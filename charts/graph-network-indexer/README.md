@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.5.21](https://img.shields.io/badge/Version-0.5.21-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.0](https://img.shields.io/badge/Version-0.6.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 ## Introduction
 
@@ -107,11 +107,12 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | imagePullSecrets | Pull secrets required to fetch the Image | list | `[]` |
  | indexerAgent.affinity |  | object | `{}` |
  | indexerAgent.affinityPresets.antiAffinityByHostname | Configure anti-affinity rules to prevent multiple instances on the same host | bool | `true` |
- | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-admin-endpoint":"test","indexer-management-port":8000}` |
+ | indexerAgent.config | Config to be supplied as CLI arguments, specified using YAML keys to allow overriding | object | `{"ethereum":null,"ethereum-network":"mainnet","graph-node-admin-endpoint":"test","indexer-management-port":8000,"max-provision-initial-size":100000}` |
  | indexerAgent.config.ethereum-network | Name of the network that you have specified a node URL for in `ethereum` | string | `"mainnet"` |
+ | indexerAgent.config.max-provision-initial-size | Setting for automated initial provision for Horizon migration | int | `100000` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs |  | list | `[]` |
- | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.24.3"}` |
+ | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.25.0"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -122,9 +123,10 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.service.type |  | string | `"ClusterIP"` |
  | indexerAgent.terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
  | indexerAgent.tolerations |  | list | `[]` |
- | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"service":{"host_and_port":"0.0.0.0:7600"},"subgraphs.escrow":{"query_url":"http://your-graph-node-query:8000/subgraphs/id/TAP_ESCROW_SUBGRAPH","syncing_interval_secs":60},"subgraphs.network":{"query_url":"http://your-graph-node-query:8000/subgraphs/id/NETWORK_SUBGRAPH","syncing_interval_secs":60},"tap.rav_request":{"trigger_value_divisor":100}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"postgresConfig":{"database":"your_database","host":"localhost","port":5432}}` |
+ | indexerDefaults | Value defaults that apply to both indexer-agent and indexer-service | object | `{"config":{"blockchain":{"chain_id":"valid_blockchain_chain_id","horizon":{"enabled":false},"receipts_verifier_address":"valid_blockchain_receipts_verifier_address"},"graph_node":{"query_url":"your_graph_node_query_url","status_url":"your_graph_node_status_endpoint"},"indexer":{"indexer_address":"your_indexer_address"},"service":{"host_and_port":"0.0.0.0:7600"},"subgraphs.escrow":{"query_url":"http://your-graph-node-query:8000/subgraphs/id/TAP_ESCROW_SUBGRAPH","syncing_interval_secs":60},"subgraphs.network":{"query_url":"http://your-graph-node-query:8000/subgraphs/id/NETWORK_SUBGRAPH","syncing_interval_secs":60},"tap.rav_request":{"trigger_value_divisor":100}},"env":{},"metrics":{"address":"0.0.0.0","enabled":true,"port":7300},"postgresConfig":{"database":"your_database","host":"localhost","port":5432}}` |
  | indexerDefaults.config."subgraphs.escrow".query_url | Query URL for the Graph Escrow subgraph. For optimal performance, it's recommended to locally index the subgraph. If locally indexed, use a combination of `deployment_id` and `query_url` pointing to your graph-node-query. If not locally indexed, use the gateway URL. | required | `"http://your-graph-node-query:8000/subgraphs/id/TAP_ESCROW_SUBGRAPH"` |
  | indexerDefaults.config."subgraphs.network".query_url | Query URL for the Graph Network subgraph. For optimal performance, it's recommended to locally index the subgraph. If locally indexed, use a combination of `deployment_id` and `query_url` pointing to your graph-node-query. If not locally indexed, use the gateway URL. | required | `"http://your-graph-node-query:8000/subgraphs/id/NETWORK_SUBGRAPH"` |
+ | indexerDefaults.config.blockchain.horizon | Toggle to enable Horizon | object | `{"enabled":false}` |
  | indexerDefaults.config.graph_node.query_url | URL for your graph node query endpoint (probably a load balancer address) | required | `"your_graph_node_query_url"` |
  | indexerDefaults.config.graph_node.status_url | URL for your graph node status endpoint (probably a load balancer address) | required | `"your_graph_node_status_endpoint"` |
  | indexerDefaults.config.indexer.indexer_address | Ethereum address of your Indexer | required | `"your_indexer_address"` |
@@ -134,7 +136,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.config |  | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.5.7"}` |
+ | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.7.0"}` |
  | indexerService.nodeSelector |  | object | `{}` |
  | indexerService.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerService.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -151,7 +153,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.command | Entrypoint command to run | string | `"/usr/local/bin/indexer-tap-agent"` |
  | indexerTapAgent.config |  | object | `{}` |
  | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.9.7"}` |
+ | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.11.0"}` |
  | indexerTapAgent.nodeSelector |  | object | `{}` |
  | indexerTapAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |

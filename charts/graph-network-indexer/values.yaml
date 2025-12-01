@@ -96,6 +96,13 @@ indexerDefaults:
       chain_id: "valid_blockchain_chain_id"
       # find TAPVerifier address at https://github.com/semiotic-ai/timeline-aggregation-protocol-contracts/blob/main/addresses.json
       receipts_verifier_address: "valid_blockchain_receipts_verifier_address"
+      # -- Verifier Address v2 (Horizon)
+      # receipts_verifier_address_v2: 0x382863e7B662027117449bd2c49285582bbBd21B
+      # -- Subgraph service address (Horizon)
+      # subgraph_service_address: 0xc24A3dAC5d06d771f657A48B20cE1a671B78f26b
+      # -- Toggle to enable Horizon
+      horizon:
+        enabled: false
     tap.rav_request:
       trigger_value_divisor: 100
 
@@ -112,7 +119,7 @@ indexerAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    tag: "v0.24.3"
+    tag: "v0.25.0"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
@@ -134,6 +141,8 @@ indexerAgent:
     # dai-contract: null
     # # -- (optional) Query endpoint for syncing status of EBO and its contract state.
     # epoch-subgraph-endpoint: null
+    # -- Setting for automated initial provision for Horizon migration
+    max-provision-initial-size: 100000
 
   secretEnv: {}
     # -- We recommend that you set the following environment variables in the indexer-agent secret
@@ -204,7 +213,7 @@ indexerService:
   image:
     repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
-    tag: "v1.5.7"
+    tag: "v1.7.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-service-rs
@@ -286,7 +295,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    tag: "v1.9.7"
+    tag: "v1.11.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
