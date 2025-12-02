@@ -100,9 +100,9 @@ indexerDefaults:
       # receipts_verifier_address_v2: 0x382863e7B662027117449bd2c49285582bbBd21B
       # -- Subgraph service address (Horizon)
       # subgraph_service_address: 0xc24A3dAC5d06d771f657A48B20cE1a671B78f26b
-      # -- Toggle to enable Horizon
-      horizon:
-        enabled: false
+    # -- Toggle to enable Horizon
+    horizon:
+      enabled: false
     tap.rav_request:
       trigger_value_divisor: 100
 
