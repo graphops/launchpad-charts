@@ -3,7 +3,7 @@ provisionerName: "rawfile.csi.openebs.io"
 defaults: &defaults
   image:
     repository: docker.io/openebs/rawfile-localpv
-    tag: v0.11.0
+    tag: v0.12.1
     pullPolicy: Always
   resources:
     limits:
