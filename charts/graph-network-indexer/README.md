@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 ## Introduction
 
@@ -112,7 +112,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.config.max-provision-initial-size | Setting for automated initial provision for Horizon migration | int | `100000` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs |  | list | `[]` |
- | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.25.0"}` |
+ | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.25.1"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -136,7 +136,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerService.config |  | object | `{}` |
  | indexerService.env |  | object | `{}` |
  | indexerService.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.7.0"}` |
+ | indexerService.image | Image for indexer-service | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-service-rs","tag":"v1.8.0"}` |
  | indexerService.nodeSelector |  | object | `{}` |
  | indexerService.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerService.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
@@ -153,7 +153,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerTapAgent.command | Entrypoint command to run | string | `"/usr/local/bin/indexer-tap-agent"` |
  | indexerTapAgent.config |  | object | `{}` |
  | indexerTapAgent.extraArgs | Additional CLI arguments to pass to `indexer-service` | list | `[]` |
- | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.11.0"}` |
+ | indexerTapAgent.image | Image for indexer-tap-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-tap-agent","tag":"v1.12.1"}` |
  | indexerTapAgent.nodeSelector |  | object | `{}` |
  | indexerTapAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerTapAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |
