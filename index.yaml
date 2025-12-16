@@ -94,6 +94,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.9.4-7f582c3
+      created: "2025-12-16T15:07:32Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 71a42b22885e8b8ea211a6ab19777d88c4a289e46d114767935e9e4c1100ff96
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.2/arbitrum-nitro-0.9.2.tgz
+      version: 0.9.2
+    - apiVersion: v2
       appVersion: v3.9.3-8bc5554
       created: "2025-11-28T15:30:20Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -626,6 +636,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
+    - apiVersion: v2
+      appVersion: v3.3.2
+      created: "2025-12-16T15:08:30Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: e896f03ad6b0ce0548601c7e50589b86f5c02a9f37d45a560f8586d8c32faf74
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.6/erigon-0.12.6.tgz
+      version: 0.12.6
     - apiVersion: v2
       appVersion: v3.3.1
       created: "2025-12-09T15:36:24Z"
@@ -2471,6 +2491,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   heimdall-v2:
+    - apiVersion: v2
+      appVersion: 0.5.3
+      created: "2025-12-16T15:08:03Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: f9a9f894825c3bf364e3bf0e670bd72bafff43414bbe7e8a554073019e3bb319
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.13/heimdall-v2-0.0.13.tgz
+      version: 0.0.13
     - apiVersion: v2
       appVersion: 0.5.2
       created: "2025-12-09T15:35:54Z"
@@ -4388,4 +4418,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-12-12T14:26:18.890417303Z"
+generated: "2025-12-16T15:11:51.8408264Z"
