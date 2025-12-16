@@ -255,26 +255,6 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.9.4-7f582c3
-      created: "2025-12-16T15:07:32Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: 71a42b22885e8b8ea211a6ab19777d88c4a289e46d114767935e9e4c1100ff96
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.2/arbitrum-nitro-0.9.2.tgz
-      version: 0.9.2
-    - apiVersion: v2
-      appVersion: v3.9.4-7f582c3
-      created: "2025-12-16T15:07:10Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: d20fc1c5dc970fd6ae3e425e33a91995234e0969763a832bae6f7a1af009a0c4
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.2-canary.2/arbitrum-nitro-0.9.2-canary.2.tgz
-      version: 0.9.2-canary.2
-    - apiVersion: v2
-      appVersion: v3.9.4-7f582c3
       created: "2025-12-11T03:56:00Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: c4b7fd5639d7b85387f80f86808a4afcc79da3b1d7d53e528ee42255a767b4e2
@@ -2305,16 +2285,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
-    - apiVersion: v2
-      appVersion: v3.3.2
-      created: "2025-12-16T15:08:30Z"
-      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
-      digest: e896f03ad6b0ce0548601c7e50589b86f5c02a9f37d45a560f8586d8c32faf74
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.6/erigon-0.12.6.tgz
-      version: 0.12.6
     - apiVersion: v2
       appVersion: v3.3.2
       created: "2025-12-16T15:05:51Z"
@@ -7811,16 +7781,6 @@ entries:
   heimdall-v2:
     - apiVersion: v2
       appVersion: 0.5.3
-      created: "2025-12-16T15:08:03Z"
-      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
-      digest: f9a9f894825c3bf364e3bf0e670bd72bafff43414bbe7e8a554073019e3bb319
-      name: heimdall-v2
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.13/heimdall-v2-0.0.13.tgz
-      version: 0.0.13
-    - apiVersion: v2
-      appVersion: 0.5.3
       created: "2025-12-16T15:06:33Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
       digest: 5a01d3c8f7b14483fff8b46d79c40512ca67e472082f47eb7f0306f18daf7116
@@ -10103,16 +10063,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
-    - apiVersion: v2
-      appVersion: multiarch-v25.11.1
-      created: "2025-12-16T15:09:40Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: bf99b828400a6870c74a29637844f680eadab2ecf194ac648690c402ccec5074
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.11-canary.2/nimbus-0.6.11-canary.2.tgz
-      version: 0.6.11-canary.2
     - apiVersion: v2
       appVersion: multiarch-v25.11.1
       created: "2025-11-28T21:34:38Z"
@@ -13098,7 +13048,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-12-16T15:15:40.419816676Z"
+      created: "2025-12-16T15:15:43.202274927Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -13108,7 +13058,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2025-12-16T15:15:40.419218731Z"
+      created: "2025-12-16T15:15:43.201067809Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -13648,4 +13598,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2025-12-16T15:15:39.121588022Z"
+generated: "2025-12-16T15:15:41.910744754Z"
