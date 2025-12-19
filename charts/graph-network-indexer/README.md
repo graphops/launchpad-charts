@@ -2,7 +2,7 @@
 
 Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.3](https://img.shields.io/badge/Version-0.6.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.4](https://img.shields.io/badge/Version-0.6.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 
 ## Introduction
 
@@ -112,7 +112,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | indexerAgent.config.max-provision-initial-size | Setting for automated initial provision for Horizon migration | int | `100000` |
  | indexerAgent.env |  | object | `{}` |
  | indexerAgent.extraArgs |  | list | `[]` |
- | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.25.3"}` |
+ | indexerAgent.image | Image for indexer-agent | object | `{"pullPolicy":"IfNotPresent","repository":"ghcr.io/graphprotocol/indexer-agent","tag":"v0.25.5"}` |
  | indexerAgent.nodeSelector |  | object | `{}` |
  | indexerAgent.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | indexerAgent.podSecurityContext | Pod-wide security context | object | `{"fsGroup":101337,"runAsGroup":101337,"runAsNonRoot":true,"runAsUser":101337}` |

@@ -9,6 +9,7 @@ metadata:
     service.kubernetes.io/topology-aware-hints: "auto"
   {{- end }}
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
