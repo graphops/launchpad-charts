@@ -1539,6 +1539,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2025-12-19T17:56:48Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: f3b22f70992532fbd3b3a27ea33d72291fad3b2982d6a45f5db51535f2d44e06
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.6.4/graph-network-indexer-0.6.4.tgz
+      version: 0.6.4
+    - apiVersion: v2
       created: "2025-12-12T12:48:29Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 74acf057824a8f504652ab2fe3794ed1e0458bbf97de5e7d45af364b37484da8
@@ -1888,6 +1897,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.41.1
+      created: "2025-12-19T17:56:48Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 7abb1db17311723c84d9940320654bf0609b231dc6a9c6f503f4ed06246c31f5
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.7/graph-node-0.6.7.tgz
+      version: 0.6.7
     - apiVersion: v2
       appVersion: v0.41.1
       created: "2025-11-11T14:48:18Z"
@@ -4428,4 +4447,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2025-12-16T15:24:28.398226078Z"
+generated: "2025-12-19T18:05:30.495433079Z"
