@@ -7,6 +7,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}

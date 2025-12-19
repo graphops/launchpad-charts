@@ -11,6 +11,7 @@ apiVersion: apps/v1
 kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance of the indexer-tap-agent. We never want more than one indexer-tap-agent active at a time.
 metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-{{ $componentName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
