@@ -5,6 +5,7 @@ apiVersion: apps/v1
 kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
 metadata:
   name: {{ include "graph-toolbox.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-toolbox.labels" . | nindent 4 }}
 spec:
