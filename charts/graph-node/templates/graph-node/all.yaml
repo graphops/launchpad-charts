@@ -36,6 +36,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "graph-node.fullname" . }}-config
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
 data:
@@ -57,6 +58,7 @@ apiVersion: apps/v1
 kind: {{ $values.kind }}
 metadata:
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -306,6 +308,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}-headless
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -334,6 +337,7 @@ metadata:
     {{- end }}
   {{- end }}
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
@@ -358,6 +362,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "graph-node.fullname" . }}-{{ $groupName }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "graph-node.labels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
