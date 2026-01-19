@@ -255,6 +255,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.9.5-66e42c4
+      created: "2026-01-19T12:43:37Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 31600a45754a07ce045e7a60b1141f3fdbb3537e5c81dcf9581bc278f0f034eb
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.3-canary.2/arbitrum-nitro-0.9.3-canary.2.tgz
+      version: 0.9.3-canary.2
+    - apiVersion: v2
+      appVersion: v3.9.5-66e42c4
       created: "2026-01-08T13:17:54Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: a296348f72b68c646f31614b00f5dc99b5b1fc20fdd54454a9718b8321f3181c
@@ -13283,7 +13293,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-01-19T12:48:38.81572052Z"
+      created: "2026-01-19T12:49:29.988822908Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -13293,7 +13303,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-01-19T12:48:38.815096638Z"
+      created: "2026-01-19T12:49:29.987951466Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -13833,4 +13843,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2026-01-19T12:48:37.48056013Z"
+generated: "2026-01-19T12:49:28.577388712Z"
