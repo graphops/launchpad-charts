@@ -255,6 +255,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.9.5-66e42c4
+      created: "2026-01-19T12:47:06Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 49dd00e7f4d52af8c9d9509da806dc939ebcc1f64ee55bc6f9b8750adb8e46be
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.3/arbitrum-nitro-0.9.3.tgz
+      version: 0.9.3
+    - apiVersion: v2
+      appVersion: v3.9.5-66e42c4
       created: "2026-01-19T12:43:37Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 31600a45754a07ce045e7a60b1141f3fdbb3537e5c81dcf9581bc278f0f034eb
@@ -2325,6 +2335,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
+    - apiVersion: v2
+      appVersion: v3.3.3
+      created: "2026-01-19T12:46:41Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: d735ba8be999f62f262435ce6931b740d81ba101f7fd233fe2372cc94c374901
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.7/erigon-0.12.7.tgz
+      version: 0.12.7
     - apiVersion: v2
       appVersion: v3.3.3
       created: "2026-01-19T12:42:58Z"
@@ -4902,6 +4922,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-01-19T12:47:59Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: bcafef30a8932b18185c209bd1d4437d9a89474c56039c6cfb6e5544ae22241e
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.6.5/graph-network-indexer-0.6.5.tgz
+      version: 0.6.5
     - apiVersion: v2
       created: "2026-01-19T12:44:28Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -7933,6 +7962,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   heimdall-v2:
+    - apiVersion: v2
+      appVersion: 0.5.6
+      created: "2026-01-19T12:45:46Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 2beb8ebb39007c3eac4a5fa36bd32a8a3c5f6c31ad56b19f5f4d203277bb59cd
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.14-canary.4/heimdall-v2-0.0.14-canary.4.tgz
+      version: 0.0.14-canary.4
     - apiVersion: v2
       appVersion: 0.5.6
       created: "2026-01-13T18:07:45Z"
@@ -13302,7 +13341,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-01-19T12:52:05.792406267Z"
+      created: "2026-01-19T12:53:46.248181922Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -13312,7 +13351,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-01-19T12:52:05.791808364Z"
+      created: "2026-01-19T12:53:46.247561634Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -13852,4 +13891,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2026-01-19T12:52:04.47324944Z"
+generated: "2026-01-19T12:53:44.769902764Z"
