@@ -1,13 +1,20 @@
-{{ $values := $.Values.grafana }}
-{{- if $values.dashboards }}
+{{- $g := $.Values.grafana -}}
+{{- $operatorDashboardsEnabled := and $g.operatorDashboards $g.operatorDashboards.enabled -}}
+{{- if or $g.dashboards $operatorDashboardsEnabled }}
+{{- $namespace := .Release.Namespace -}}
+{{- if and $operatorDashboardsEnabled $g.operatorDashboards.namespace }}
+{{- $namespace = $g.operatorDashboards.namespace -}}
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "graph-network-indexer.fullname" . }}-dashboards
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "graph-network-indexer.labels" . | nindent 4 }}
-    {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
+    {{- if $g.dashboards }}
+    {{ $g.dashboardsConfigMapLabel }}: {{ $g.dashboardsConfigMapLabelValue | quote }}
+    {{- end }}
 data:
 {{- (.Files.Glob "dashboards/*").AsConfig | nindent 2 }}
 {{- end }}
