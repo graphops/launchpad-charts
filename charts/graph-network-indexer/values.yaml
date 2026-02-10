@@ -124,7 +124,7 @@ indexerDefaults:
       # subgraph_service_address: 0xc24A3dAC5d06d771f657A48B20cE1a671B78f26b
     # -- Toggle to enable Horizon
     horizon:
-      enabled: false
+      enabled: true
     tap.rav_request:
       trigger_value_divisor: 100
 
