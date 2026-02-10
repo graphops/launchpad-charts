@@ -5003,6 +5003,24 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-02-10T14:42:56Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 00e37b816962afb61500a3d08cceea35d43dd5cd370530fb5f1e3214a0cd19c5
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.0/graph-network-indexer-0.7.0.tgz
+      version: 0.7.0
+    - apiVersion: v2
+      created: "2026-02-10T14:42:26Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: ad9cb6c91495dd231a704758cdc805ea7089c475ce96c724d81c7a694e61dc30
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.6.8-canary.3/graph-network-indexer-0.6.8-canary.3.tgz
+      version: 0.6.8-canary.3
+    - apiVersion: v2
       created: "2026-02-05T21:43:21Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: f44d05c2ed37e8f88713111490a8d2621f40d1cf3da3d1057ec3ca4bd8891c7e
@@ -8667,6 +8685,26 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.1-canary.1/heimdall-v2-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   lighthouse:
+    - apiVersion: v2
+      appVersion: v8.1.0
+      created: "2026-02-10T14:39:10Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 0a02d31499e63031d89402fff9a5ca1d515de9f6eb11aec53ad4511a083921ba
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.3/lighthouse-0.8.3.tgz
+      version: 0.8.3
+    - apiVersion: v2
+      appVersion: v8.1.0
+      created: "2026-02-10T14:38:51Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: e8ba58a4a077815a17a12db53b4a7ecb0d720c638b6f0713ee1f96f646861f86
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.3-canary.2/lighthouse-0.8.3-canary.2.tgz
+      version: 0.8.3-canary.2
     - apiVersion: v2
       appVersion: v8.1.0
       created: "2026-02-05T05:49:20Z"
@@ -13575,7 +13613,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-02-05T21:52:27.727394571Z"
+      created: "2026-02-10T14:48:38.985177525Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -13585,7 +13623,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-02-05T21:52:27.72680268Z"
+      created: "2026-02-10T14:48:38.984584539Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -14125,4 +14163,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2026-02-05T21:52:26.381290271Z"
+generated: "2026-02-10T14:48:37.615532541Z"
