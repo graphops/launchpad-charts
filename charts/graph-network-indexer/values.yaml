@@ -124,7 +124,7 @@ indexerDefaults:
       # subgraph_service_address: 0xc24A3dAC5d06d771f657A48B20cE1a671B78f26b
     # -- Toggle to enable Horizon
     horizon:
-      enabled: false
+      enabled: true
     tap.rav_request:
       trigger_value_divisor: 100
 
@@ -235,7 +235,7 @@ indexerService:
   image:
     repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
-    tag: "v1.8.1"
+    tag: "v2.0.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-service-rs
@@ -317,7 +317,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    tag: "v1.12.4"
+    tag: "v2.0.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
