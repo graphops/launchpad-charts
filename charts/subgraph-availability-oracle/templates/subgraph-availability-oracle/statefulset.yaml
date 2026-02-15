@@ -5,6 +5,7 @@ apiVersion: apps/v1
 kind: StatefulSet # StatefulSet is better behaved when trying to maintain a single instance
 metadata:
   name: {{ include "subgraph-availability-oracle.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
     {{- with $values.extraLabels }}

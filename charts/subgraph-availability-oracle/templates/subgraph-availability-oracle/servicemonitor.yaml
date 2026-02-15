@@ -5,6 +5,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ include "subgraph-availability-oracle.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
     {{- with $values.extraLabels }}
