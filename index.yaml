@@ -1579,6 +1579,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-02-10T14:42:56Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 00e37b816962afb61500a3d08cceea35d43dd5cd370530fb5f1e3214a0cd19c5
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.0/graph-network-indexer-0.7.0.tgz
+      version: 0.7.0
+    - apiVersion: v2
       created: "2026-01-27T14:38:25Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 3e20e42c8357d8b94513ce69655a2a6f9504c3601f0c58619ecbb8e4546e66ba
@@ -2748,6 +2757,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.1/heimdall-v2-0.0.1.tgz
       version: 0.0.1
   lighthouse:
+    - apiVersion: v2
+      appVersion: v8.1.0
+      created: "2026-02-10T14:39:10Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 0a02d31499e63031d89402fff9a5ca1d515de9f6eb11aec53ad4511a083921ba
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.3/lighthouse-0.8.3.tgz
+      version: 0.8.3
     - apiVersion: v2
       appVersion: v8.0.1
       created: "2025-12-01T17:23:02Z"
@@ -4294,6 +4313,16 @@ entries:
       version: 0.1.0
   subgraph-availability-oracle:
     - apiVersion: v2
+      appVersion: 1.4.0
+      created: "2026-02-15T23:37:40Z"
+      description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
+      digest: 4fe74d0c5330e58f09f9d97922f9172193d237e129895a84d2cc53d14af60e83
+      name: subgraph-availability-oracle
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-availability-oracle-0.8.0/subgraph-availability-oracle-0.8.0.tgz
+      version: 0.8.0
+    - apiVersion: v2
       appVersion: v1.2.0
       created: "2025-07-10T22:10:46Z"
       description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
@@ -4574,4 +4603,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-02-03T17:05:02.126743858Z"
+generated: "2026-02-15T23:57:17.84612793Z"
