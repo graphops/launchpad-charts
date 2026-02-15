@@ -4,6 +4,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "subgraph-availability-oracle.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
     {{- with .Values.extraLabels }}
@@ -16,6 +17,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "subgraph-availability-oracle.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
     {{- with .Values.extraLabels }}
@@ -28,6 +30,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ include "subgraph-availability-oracle.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

@@ -61,6 +61,28 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: "1"
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: ""
+    folderUID: ""
+    uid: ""
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec: {}
 
 serviceAccount:
   # -- Specifies whether a service account should be created

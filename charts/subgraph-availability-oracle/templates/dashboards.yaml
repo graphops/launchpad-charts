@@ -4,6 +4,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "subgraph-availability-oracle.fullname" . }}-dashboards
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "subgraph-availability-oracle.labels" . | nindent 4 }}
     {{- with .Values.extraLabels }}
