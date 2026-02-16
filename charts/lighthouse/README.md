@@ -78,6 +78,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | grafana.dashboards | Enable creation of Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace` | bool | `false` |
  | grafana.dashboardsConfigMapLabel | Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"grafana_dashboard"` |
  | grafana.dashboardsConfigMapLabelValue | Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) | string | `"1"` |
+ | grafana.operatorDashboards | Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/` | object | `{"allowCrossNamespaceImport":false,"annotations":{},"enabled":false,"extraSpec":{},"folder":"","folderUID":"","instanceSelector":{"matchLabels":{}},"labels":{},"namespace":"","resyncPeriod":"","suspend":false,"uid":""}` |
+ | grafana.operatorDashboards.allowCrossNamespaceImport | Allow matching Grafana instances outside current namespace | bool | `false` |
+ | grafana.operatorDashboards.extraSpec | Additional spec fields to merge into GrafanaDashboard.spec | object | `{}` |
+ | grafana.operatorDashboards.folder | Optional folder metadata | string | `""` |
+ | grafana.operatorDashboards.instanceSelector | Selector to match Grafana instances managed by the operator | object | `{"matchLabels":{}}` |
+ | grafana.operatorDashboards.labels | Extra labels and annotations on the GrafanaDashboard resources | object | `{}` |
+ | grafana.operatorDashboards.namespace | Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace) | string | `""` |
+ | grafana.operatorDashboards.resyncPeriod | Operator sync behavior | string | `""` |
  | image.pullPolicy |  | string | `"IfNotPresent"` |
  | image.repository | Image for lighthouse | string | `"sigp/lighthouse"` |
  | image.tag | Overrides the image tag | string | Chart.appVersion |
@@ -93,6 +101,15 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | lighthouse.jwt.existingSecret.name | Name of the Secret resource in the same namespace | string | `""` |
  | lighthouse.jwt.fromLiteral | Use this literal value for the JWT | string | `""` |
  | lighthouse.nodeSelector |  | object | `{}` |
+ | lighthouse.p2p.service.advertiseIP | IP address to explicitly advertise in ENR (overrides autodetection and LB IP) | string | `""` |
+ | lighthouse.p2p.service.annotations | Annotations to add to the P2P Service (e.g., Cilium sharing keys) | object | `{}` |
+ | lighthouse.p2p.service.enabled | Enable a dedicated P2P Service | bool | `false` |
+ | lighthouse.p2p.service.externalIPs | Fixed external IPs to bind the Service to (requires upstream routing) | list | `[]` |
+ | lighthouse.p2p.service.externalTrafficPolicy | External traffic policy | string | `"Local"` |
+ | lighthouse.p2p.service.labels | Additional labels to add to the P2P Service | object | `{}` |
+ | lighthouse.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, set a specific LB IP | string | `""` |
+ | lighthouse.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
+ | lighthouse.p2p.service.type | Service type for P2P exposure | string | `"LoadBalancer"` |
  | lighthouse.p2pHostPort.enabled | Expose P2P ports via hostPort | bool | `false` |
  | lighthouse.p2pHostPort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | lighthouse.p2pHostPort.initContainer.image.repository | Container image to fetch IP/port information | string | `"lachlanevenson/k8s-kubectl"` |
