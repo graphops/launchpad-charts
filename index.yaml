@@ -1974,6 +1974,16 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.41.2
+      created: "2026-02-16T17:42:25Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 263146e2f5fb2b38364470c5af636ab2c26f2523f7538c5642f616c90dca6b09
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.9/graph-node-0.6.9.tgz
+      version: 0.6.9
+    - apiVersion: v2
       appVersion: v0.41.1
       created: "2026-01-26T19:42:35Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -4314,6 +4324,16 @@ entries:
   subgraph-availability-oracle:
     - apiVersion: v2
       appVersion: 1.4.0
+      created: "2026-02-16T17:37:43Z"
+      description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
+      digest: 56484456179f7315315ab7155f68176c6858799a09ca3c4e7476a979487d62bc
+      name: subgraph-availability-oracle
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/subgraph-availability-oracle-0.8.1/subgraph-availability-oracle-0.8.1.tgz
+      version: 0.8.1
+    - apiVersion: v2
+      appVersion: 1.4.0
       created: "2026-02-15T23:37:40Z"
       description: Deploy a Subgraph Availability Oracle into your Kubernetes stack
       digest: 4fe74d0c5330e58f09f9d97922f9172193d237e129895a84d2cc53d14af60e83
@@ -4603,4 +4623,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-02-15T23:57:17.84612793Z"
+generated: "2026-02-16T17:46:06.595556949Z"
