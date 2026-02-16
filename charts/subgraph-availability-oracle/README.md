@@ -2,7 +2,7 @@
 
 Deploy a Subgraph Availability Oracle into your Kubernetes stack
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.0](https://img.shields.io/badge/AppVersion-1.4.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.4.0](https://img.shields.io/badge/AppVersion-1.4.0-informational?style=flat-square)
 
 ## Introduction
 
@@ -73,9 +73,6 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | prometheus.serviceMonitors.labels |  | object | `{}` |
  | prometheus.serviceMonitors.relabelings |  | list | `[]` |
  | prometheus.serviceMonitors.scrapeTimeout |  | string | `nil` |
- | rbac.clusterRules | Required ClusterRole rules | list | See `values.yaml` |
- | rbac.create | Specifies whether RBAC resources are to be created | bool | `true` |
- | rbac.rules | Required ClusterRole rules | list | See `values.yaml` |
  | readinessProbe | Define readinessProbe as needed | list | `[]` |
  | resources |  | object | `{}` |
  | secretEnv.ORACLE_SIGNING_KEY.key | Name of the data key in the secret that contains your Oracle Secret Key | string | `nil` |
@@ -84,6 +81,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | service.topologyAwareRouting.enabled |  | bool | `false` |
  | service.type |  | string | `"ClusterIP"` |
  | serviceAccount.annotations | Annotations to add to the service account | object | `{}` |
+ | serviceAccount.automountServiceAccountToken | Automatically mount a ServiceAccount's API credentials | bool | `false` |
  | serviceAccount.create | Specifies whether a service account should be created | bool | `true` |
  | serviceAccount.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `""` |
  | terminationGracePeriodSeconds | Amount of time to wait before force-killing the process | int | `10` |
