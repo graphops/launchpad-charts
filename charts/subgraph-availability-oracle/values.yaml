@@ -16,32 +16,6 @@ service:
     # -- Service Port to expose Prometheus metrics on
     http-metrics: 8090
 
-rbac:
-  # -- Specifies whether RBAC resources are to be created
-  create: true
-  # -- Required ClusterRole rules
-  # @default -- See `values.yaml`
-  clusterRules:
-     # Required to obtain the nodes external IP
-    - apiGroups: [""]
-      resources:
-      - "nodes"
-      verbs:
-      - "get"
-      - "list"
-      - "watch"
-  # -- Required ClusterRole rules
-  # @default -- See `values.yaml`
-  rules:
-    # Required to get information about the serices nodePort.
-    - apiGroups: [""]
-      resources:
-      - "services"
-      verbs:
-      - "get"
-      - "list"
-      - "watch"
-
 # -- Additional labels to add to all resources
 extraLabels: {}
 
@@ -87,6 +61,8 @@ grafana:
 serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
+  # -- Automatically mount a ServiceAccount's API credentials
+  automountServiceAccountToken: false
   # -- Annotations to add to the service account
   annotations: {}
   # -- The name of the service account to use.
