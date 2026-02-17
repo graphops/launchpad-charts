@@ -69,14 +69,6 @@ spec:
           env:
             - name: ORACLE_METRICS_PORT
               value: "8090"
-          {{- with $values.env }}
-          {{- range $key, $val := .}}
-          {{- if not (kindIs "invalid" $val) }}
-            - name: {{ $key | quote }}
-              value: {{ $val | quote }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
           {{- with $values.secretEnv }}
           {{- range $key, $val := .}}
             - name: {{ $key | quote }}
@@ -85,6 +77,14 @@ spec:
                   name: {{ $val.secretName | quote }}
                   key: {{ $val.key | quote }}
                   optional: false
+          {{- end }}
+          {{- end }}
+          {{- with $values.env }}
+          {{- range $key, $val := .}}
+          {{- if not (kindIs "invalid" $val) }}
+            - name: {{ $key | quote }}
+              value: {{ $val | quote }}
+          {{- end }}
           {{- end }}
           {{- end }}
           {{- with $values.extraArgs }}
