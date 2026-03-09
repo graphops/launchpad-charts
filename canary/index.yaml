@@ -8776,6 +8776,16 @@ entries:
       version: 0.0.1-canary.1
   lighthouse:
     - apiVersion: v2
+      appVersion: v8.1.2
+      created: "2026-03-09T09:18:05Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 4aa44386450ae00de1707160fcc2299f70e22691ca42b2a03c104af247a10db1
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.5-canary.1/lighthouse-0.8.5-canary.1.tgz
+      version: 0.8.5-canary.1
+    - apiVersion: v2
       appVersion: v8.1.1
       created: "2026-03-02T09:24:48Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -13873,7 +13883,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-03-07T18:54:52.565934101Z"
+      created: "2026-03-09T09:23:57.070463103Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -13883,7 +13893,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-03-07T18:54:52.565360439Z"
+      created: "2026-03-09T09:23:57.069883723Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -14423,4 +14433,4 @@ entries:
       version: 0.1.1-canary.1
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
-generated: "2026-03-07T18:54:51.171571652Z"
+generated: "2026-03-09T09:23:55.675458774Z"
