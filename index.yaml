@@ -657,6 +657,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.3.10
+      created: "2026-03-31T12:49:37Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 6d2967c2a5445efaa63779de65e917d7114db10bcfe0aea51f3c81c7f52f2ebf
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.12/erigon-0.12.12.tgz
+      version: 0.12.12
+    - apiVersion: v2
       appVersion: v3.3.9
       created: "2026-03-10T16:34:16Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -1608,6 +1618,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-03-31T12:48:19Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 7c8b133d18359dcfd9e72252213b963bf8f08236f1c936f2877b47dce9b6d2cc
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.2/graph-network-indexer-0.7.2.tgz
+      version: 0.7.2
     - apiVersion: v2
       created: "2026-03-10T16:30:03Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -4752,4 +4771,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-03-31T13:03:20.449915167Z"
+generated: "2026-03-31T13:03:45.434278703Z"
