@@ -3330,6 +3330,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v26.3.1
+      created: "2026-03-31T12:50:35Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 48e202ce8808e3b4ce10212380aab8c10c9576740f7305ddb3a32517f3099cad
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.14/nimbus-0.6.14.tgz
+      version: 0.6.14
+    - apiVersion: v2
       appVersion: multiarch-v26.3.0
       created: "2026-03-02T09:25:26Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -3871,6 +3881,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.7.0/openebs-rawfile-localpv-0.7.0.tgz
       version: 0.7.0
   proxyd:
+    - apiVersion: v2
+      appVersion: v4.26.0
+      created: "2026-03-31T12:47:20Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 82f26a604fed7983a8f30fcddb1ea3142eddea62e485858d393b0b1efad04da7
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.8/proxyd-0.7.8.tgz
+      version: 0.7.8
     - apiVersion: v2
       appVersion: v4.25.0
       created: "2026-03-02T09:24:30Z"
@@ -4712,4 +4732,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-03-10T17:11:31.913888009Z"
+generated: "2026-03-31T13:03:15.270572603Z"
