@@ -141,7 +141,7 @@ indexerAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-agent
     pullPolicy: IfNotPresent
-    tag: "v0.25.7"
+    tag: "v0.25.9"
 
   # -- Config to be supplied as CLI arguments, specified using YAML keys to allow overriding
   config:
@@ -235,7 +235,7 @@ indexerService:
   image:
     repository: ghcr.io/graphprotocol/indexer-service-rs
     pullPolicy: IfNotPresent
-    tag: "v2.0.1"
+    tag: "v2.1.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-service-rs
@@ -317,7 +317,7 @@ indexerTapAgent:
   image:
     repository: ghcr.io/graphprotocol/indexer-tap-agent
     pullPolicy: IfNotPresent
-    tag: "v2.0.1"
+    tag: "v2.1.0"
 
   # -- Entrypoint command to run
   command: /usr/local/bin/indexer-tap-agent
