@@ -1,0 +1,14 @@
+{{- $values := $.Values.grafana }}
+{{- if $values.dashboards }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reth.fullname" . }}-dashboards
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{ $values.dashboardsConfigMapLabel }}: {{ $values.dashboardsConfigMapLabelValue | quote }}
+  annotations:
+    {{- include "reth.dashboardProvenanceAnnotations" . | nindent 4 }}
+data:
+{{- (.Files.Glob "dashboards/*.json").AsConfig | nindent 2 }}
+{{- end }}
