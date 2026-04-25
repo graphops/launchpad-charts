@@ -1,0 +1,22 @@
+{{- $values := $.Values.reth }}
+{{- $componentName := "reth" }}
+{{- $componentLabel := include "reth.componentLabelFor" $componentName }}
+{{- if $values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  {{- if $values.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ $values.podDisruptionBudget.maxUnavailable }}
+  {{- else }}
+  minAvailable: {{ default 1 $values.podDisruptionBudget.minAvailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reth.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+{{- end }}
