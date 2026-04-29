@@ -8511,6 +8511,16 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.7.1
+      created: "2026-04-29T19:03:16Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: c21a7aca31f21c05a249cefcf82f7e29e0efe6c2949d8b5476f5df09308bfff7
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.16-canary.1/heimdall-v2-0.0.16-canary.1.tgz
+      version: 0.0.16-canary.1
+    - apiVersion: v2
       appVersion: 0.6.0
       created: "2026-01-27T14:18:30Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -14208,7 +14218,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-04-28T23:06:51.548725395Z"
+      created: "2026-04-29T19:13:33.877220872Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14380,7 +14390,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-04-28T23:06:51.59387151Z"
+      created: "2026-04-29T19:13:33.934158668Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14390,7 +14400,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-04-28T23:06:51.593289148Z"
+      created: "2026-04-29T19:13:33.933198044Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -14931,4 +14941,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-04-28T23:06:50.080614593Z"
+generated: "2026-04-29T19:13:32.287662528Z"
