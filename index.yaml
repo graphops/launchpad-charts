@@ -667,6 +667,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.4.0
+      created: "2026-05-04T12:49:11Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 1675b5ef103a9056012276e501fd2f2a6fd1bf354cd5c9961fb437b596f9b675
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.13/erigon-0.12.13.tgz
+      version: 0.12.13
+    - apiVersion: v2
       appVersion: v3.3.10
       created: "2026-03-31T12:49:37Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -1629,6 +1639,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-05-04T12:52:32Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: adf261af4105fd4f8b755d64b4ce2e8e7efea27df2267e85c8dbd57fe1bb6d72
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.3/graph-network-indexer-0.7.3.tgz
+      version: 0.7.3
+    - apiVersion: v2
       created: "2026-03-31T12:48:19Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 7c8b133d18359dcfd9e72252213b963bf8f08236f1c936f2877b47dce9b6d2cc
@@ -2041,6 +2060,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.43.0
+      created: "2026-05-04T12:52:32Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: c9fa620529d804d9c3ba2dd85b8903eb39579b85885637a6d8a8fdaa310eafbc
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.11/graph-node-0.6.11.tgz
+      version: 0.6.11
     - apiVersion: v2
       appVersion: v0.42.1
       created: "2026-03-31T12:48:19Z"
@@ -2694,6 +2723,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   heimdall-v2:
+    - apiVersion: v2
+      appVersion: 0.7.1
+      created: "2026-05-04T12:39:51Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 632a521bd73507353d81bca776bb3ff0eac87fa1ee5be7725518c05a28e33478
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.16/heimdall-v2-0.0.16.tgz
+      version: 0.0.16
     - apiVersion: v2
       appVersion: 0.6.0
       created: "2026-01-27T14:18:30Z"
@@ -3931,6 +3970,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.27.1
+      created: "2026-05-04T13:00:45Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 2a63dfb43fb1d470668b0a790f23d85a0bb0f67223ecc7b59d56f4f4c0889a23
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.9/proxyd-0.7.9.tgz
+      version: 0.7.9
+    - apiVersion: v2
       appVersion: v4.26.0
       created: "2026-03-31T12:47:20Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -4781,4 +4830,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-03-31T13:19:20.271650039Z"
+generated: "2026-05-04T13:03:36.708002094Z"
