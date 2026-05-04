@@ -2407,6 +2407,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v3.4.0
+      created: "2026-05-04T12:49:11Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 1675b5ef103a9056012276e501fd2f2a6fd1bf354cd5c9961fb437b596f9b675
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.13/erigon-0.12.13.tgz
+      version: 0.12.13
+    - apiVersion: v2
+      appVersion: v3.4.0
       created: "2026-05-04T12:48:48Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 53fcf7b3fd94281f258d4fa40fa5636ff6ffac1a5b399a2506a515f26175acd2
@@ -5182,6 +5192,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-05-04T12:52:32Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: adf261af4105fd4f8b755d64b4ce2e8e7efea27df2267e85c8dbd57fe1bb6d72
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.3/graph-network-indexer-0.7.3.tgz
+      version: 0.7.3
     - apiVersion: v2
       created: "2026-05-04T12:52:00Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -12747,6 +12766,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.27.1
+      created: "2026-05-04T13:00:45Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 2a63dfb43fb1d470668b0a790f23d85a0bb0f67223ecc7b59d56f4f4c0889a23
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.9/proxyd-0.7.9.tgz
+      version: 0.7.9
+    - apiVersion: v2
+      appVersion: v4.27.1
       created: "2026-05-04T12:58:42Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 81e0aa8e308371ddc69e0a1b7058a40397d8e8e3cb63512c1b788d401de8ffc7
@@ -14287,7 +14316,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-04T13:11:25.752162505Z"
+      created: "2026-05-04T13:14:06.208204571Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14459,7 +14488,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-04T13:11:25.791388491Z"
+      created: "2026-05-04T13:14:06.248591177Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14469,7 +14498,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-04T13:11:25.790718113Z"
+      created: "2026-05-04T13:14:06.247972224Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15010,4 +15039,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-04T13:11:24.313129055Z"
+generated: "2026-05-04T13:14:04.736739111Z"
