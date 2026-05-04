@@ -12727,6 +12727,16 @@ entries:
   proxyd:
     - apiVersion: v2
       appVersion: v4.27.1
+      created: "2026-05-04T12:58:42Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 81e0aa8e308371ddc69e0a1b7058a40397d8e8e3cb63512c1b788d401de8ffc7
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.9-canary.4/proxyd-0.7.9-canary.4.tgz
+      version: 0.7.9-canary.4
+    - apiVersion: v2
+      appVersion: v4.27.1
       created: "2026-04-16T20:49:47Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
       digest: 8be62c7db46b35e25fd5350efa1d1fd476d30cea268ecff291cd27850e05c01f
@@ -14257,7 +14267,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-04T13:02:10.94032251Z"
+      created: "2026-05-04T13:06:06.872274609Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14429,7 +14439,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-04T13:02:10.980868492Z"
+      created: "2026-05-04T13:06:06.912839475Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14439,7 +14449,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-04T13:02:10.980241682Z"
+      created: "2026-05-04T13:06:06.912236018Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -14980,4 +14990,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-04T13:02:09.492580682Z"
+generated: "2026-05-04T13:06:05.413723358Z"
