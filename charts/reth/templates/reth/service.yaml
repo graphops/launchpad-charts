@@ -1,0 +1,267 @@
+{{- $values := $.Values.reth }}
+{{- $componentName := "reth" }}
+{{- $componentLabel := include "reth.componentLabelFor" $componentName }}
+{{- $mainServiceHasPorts := (include "reth.mainService.hasPorts" $values | trim | eq "true") }}
+{{- $p2pContainerPort := (include "reth.p2p.containerPort" $values | int) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-headless
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: {{ default false $values.service.publishNotReadyAddresses.headless }}
+  ports:
+    - port: {{ $p2pContainerPort }}
+      targetPort: tcp-p2p
+      protocol: TCP
+      name: tcp-p2p
+    - port: {{ $p2pContainerPort }}
+      targetPort: udp-p2p
+      protocol: UDP
+      name: udp-p2p
+    {{- if $values.http.enabled }}
+    - port: {{ index $values.service.ports "http-jsonrpc" }}
+      targetPort: http-jsonrpc
+      protocol: TCP
+      name: http-jsonrpc
+    {{- end }}
+    {{- if $values.ws.enabled }}
+    - port: {{ index $values.service.ports "ws-rpc" }}
+      targetPort: ws-rpc
+      protocol: TCP
+      name: ws-rpc
+    {{- end }}
+    {{- if $values.authrpc.enabled }}
+    - port: {{ index $values.service.ports "http-engineapi" }}
+      targetPort: http-engineapi
+      protocol: TCP
+      name: http-engineapi
+    {{- end }}
+    {{- if $values.metrics.enabled }}
+    - port: {{ index $values.service.ports "http-metrics" }}
+      targetPort: http-metrics
+      protocol: TCP
+      name: http-metrics
+    {{- end }}
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- if $mainServiceHasPorts }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  {{- if or $values.service.topologyAwareRouting.enabled $values.service.annotations }}
+  annotations:
+    {{- if $values.service.topologyAwareRouting.enabled }}
+    {{- if semverCompare ">= 1.27-0" .Capabilities.KubeVersion.GitVersion }}
+    service.kubernetes.io/topology-mode: "auto"
+    {{- else }}
+    service.kubernetes.io/topology-aware-hints: "auto"
+    {{- end }}
+    {{- end }}
+    {{- with $values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    {{- with $values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  type: {{ $values.service.type }}
+  publishNotReadyAddresses: {{ default false $values.service.publishNotReadyAddresses.main }}
+  {{- if and (ne $values.service.type "ClusterIP") $values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ $values.service.externalTrafficPolicy }}
+  {{- end }}
+  {{- if eq $values.service.type "LoadBalancer" }}
+  {{- with $values.service.loadBalancerClass }}
+  loadBalancerClass: {{ . }}
+  {{- end }}
+  {{- with $values.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- with $values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- with $values.service.externalIPs }}
+  externalIPs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  ports:
+    {{- if $values.http.enabled }}
+    - port: {{ index $values.service.ports "http-jsonrpc" }}
+      targetPort: http-jsonrpc
+      protocol: TCP
+      name: http-jsonrpc
+      {{- with (index $values.service.nodePorts "http-jsonrpc") }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- end }}
+    {{- if $values.ws.enabled }}
+    - port: {{ index $values.service.ports "ws-rpc" }}
+      targetPort: ws-rpc
+      protocol: TCP
+      name: ws-rpc
+      {{- with (index $values.service.nodePorts "ws-rpc") }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- end }}
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
+{{- if and $values.authrpc.enabled $values.authrpc.service.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-engine
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    {{- with $values.authrpc.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $values.authrpc.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  publishNotReadyAddresses: {{ default false $values.authrpc.service.publishNotReadyAddresses }}
+  ports:
+    - port: {{ index $values.service.ports "http-engineapi" }}
+      targetPort: http-engineapi
+      protocol: TCP
+      name: http-engineapi
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
+{{- if $values.metrics.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-metrics
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    serviceMonitorTarget: "true"
+    {{- with $values.metrics.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $values.metrics.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  publishNotReadyAddresses: {{ default false $values.metrics.service.publishNotReadyAddresses }}
+  ports:
+    - port: {{ index $values.service.ports "http-metrics" }}
+      targetPort: http-metrics
+      protocol: TCP
+      name: http-metrics
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
+{{- if (include "reth.p2p.isNodePort" $values | trim | eq "true") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-p2p-0
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    pod: {{ include "reth.fullname" . }}-{{ $componentName }}-0
+    type: p2p
+    {{- with $values.p2p.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $values.p2p.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: NodePort
+  externalTrafficPolicy: {{ default "Local" $values.p2p.service.externalTrafficPolicy }}
+  publishNotReadyAddresses: {{ default false $values.p2p.service.publishNotReadyAddresses }}
+  {{- if $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml $values.p2p.service.externalIPs | nindent 4 }}
+  {{- end }}
+  ports:
+    - name: tcp-p2p
+      port: {{ $values.p2p.port }}
+      protocol: TCP
+      targetPort: tcp-p2p
+      {{- with $values.p2p.service.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+    - name: udp-p2p
+      port: {{ $values.p2p.port }}
+      protocol: UDP
+      targetPort: udp-p2p
+      {{- with $values.p2p.service.nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: "{{ include "reth.fullname" $ }}-{{ $componentName }}-0"
+{{- end }}
+{{- if (include "reth.p2p.isLoadBalancer" $values | trim | eq "true") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-p2p
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    {{- with $values.p2p.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $values.p2p.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: {{ default "Local" $values.p2p.service.externalTrafficPolicy }}
+  publishNotReadyAddresses: {{ default false $values.p2p.service.publishNotReadyAddresses }}
+  {{- with $values.p2p.service.loadBalancerIP }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- if $values.p2p.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml $values.p2p.service.loadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
+  {{- if $values.p2p.service.externalIPs }}
+  externalIPs:
+    {{- toYaml $values.p2p.service.externalIPs | nindent 4 }}
+  {{- end }}
+  ports:
+    - name: tcp-p2p
+      port: {{ $values.p2p.port }}
+      protocol: TCP
+      targetPort: tcp-p2p
+    - name: udp-p2p
+      port: {{ $values.p2p.port }}
+      protocol: UDP
+      targetPort: udp-p2p
+  selector:
+    {{- include "reth.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
