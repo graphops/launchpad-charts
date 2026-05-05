@@ -1,0 +1,8 @@
+dynamicComponents: false
+
+components:
+  - scroll
+
+componentLayering:
+  scroll:
+    - scrollDefaults
