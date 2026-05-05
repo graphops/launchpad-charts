@@ -81,3 +81,57 @@ spec:
   selector:
     {{- include "lighthouse.selectorLabels" . | nindent 4 }}
     {{- $componentLabel | nindent 4 }}
+{{/* Dedicated P2P LoadBalancer Service */}}
+{{- if and $values.p2p $values.p2p.service $values.p2p.service.enabled (eq (default "" $values.p2p.service.type) "LoadBalancer") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "lighthouse.fullname" . }}-{{ $componentName }}-p2p
+  labels:
+    {{- include "lighthouse.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    {{- with $values.p2p.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $values.p2p.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: {{ default "Local" $values.p2p.service.externalTrafficPolicy }}
+  {{- with $values.p2p.service.loadBalancerIP }}
+  {{- if . }}
+  loadBalancerIP: {{ . }}
+  {{- end }}
+  {{- end }}
+  {{- with $values.p2p.service.loadBalancerSourceRanges }}
+  {{- if . }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- end }}
+  {{- with $values.p2p.service.externalIPs }}
+  {{- if . }}
+  externalIPs:
+    {{- toYaml . | nindent 2 }}
+  {{- end }}
+  {{- end }}
+  ports:
+    - name: tcp-transport
+      port: {{ include "lighthouse.port" $values }}
+      targetPort: tcp-transport
+      protocol: TCP
+    - name: udp-discovery
+      port: {{ include "lighthouse.discoveryPort" $values }}
+      targetPort: udp-discovery
+      protocol: UDP
+    - name: udp-transport
+      port: {{ include "lighthouse.quicPort" $values }}
+      targetPort: udp-transport
+      protocol: UDP
+  selector:
+    {{- include "lighthouse.selectorLabels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+{{- end }}
