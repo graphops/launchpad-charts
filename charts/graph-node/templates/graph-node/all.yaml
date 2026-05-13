@@ -133,11 +133,11 @@ spec:
                   key: {{ $val.key | quote }}
                   optional: false
           {{- end }}
+          {{- if $.Values.grafana.datasources }}
           command:
             - sh
             - -c
             - |
-              {{- if $.Values.grafana.datasources }}
               {{- if eq $groupName $.Values.grafana.datasourcesGraphNodeGroupName }}
               apply_grafana_datasources(){
               echo "Grafana Datasource creation enabled for this group, {{ $groupName }}"
@@ -195,13 +195,7 @@ spec:
               {{- else }}
               echo "Grafana Datasource creation enabled for {{ $.Values.grafana.datasourcesGraphNodeGroupName }}, not this group, {{ $groupName }}. Skipping..."
               {{- end }}
-              {{- end }}
-              set -ex
-              ulimit -n 65536
-              ulimit -a
-
-          securityContext:
-            privileged: true # required for ulimit change
+        {{- end }}
         {{- with $values.extraInitContainers }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
