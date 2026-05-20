@@ -12694,6 +12694,16 @@ entries:
   openebs-rawfile-localpv:
     - apiVersion: v2
       appVersion: 0.8.0
+      created: "2026-05-20T10:38:13Z"
+      description: RawFile Driver Container Storage Interface
+      digest: 9404818b26917ebf50c7629a13abd7ccc0cd92d29aed6400bbe0aeea47769c38
+      name: openebs-rawfile-localpv
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/openebs-rawfile-localpv-0.9.1-canary.6/openebs-rawfile-localpv-0.9.1-canary.6.tgz
+      version: 0.9.1-canary.6
+    - apiVersion: v2
+      appVersion: 0.8.0
       created: "2026-03-11T17:21:37Z"
       description: RawFile Driver Container Storage Interface
       digest: 73f05f8bbc23cd5dc0b2336587fa32869f90bfd2e78e58d4c3d1b0484a63b527
@@ -14385,7 +14395,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-19T05:01:32.630865445Z"
+      created: "2026-05-20T10:44:05.897629849Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14557,7 +14567,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-19T05:01:32.670904872Z"
+      created: "2026-05-20T10:44:05.951346073Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14567,7 +14577,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-19T05:01:32.670335572Z"
+      created: "2026-05-20T10:44:05.950400694Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15108,4 +15118,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-19T05:01:31.16141487Z"
+generated: "2026-05-20T10:44:04.261375795Z"
