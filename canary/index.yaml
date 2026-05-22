@@ -2037,6 +2037,16 @@ entries:
   celo:
     - apiVersion: v2
       appVersion: 1.8.9
+      created: "2026-05-22T23:26:23Z"
+      description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
+      digest: b82b54a7c4a64f2d3705d40a4c362fcb52f586de8e2b5f120bbd0e4efead189f
+      name: celo
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.11-canary.1/celo-0.1.11-canary.1.tgz
+      version: 0.1.11-canary.1
+    - apiVersion: v2
+      appVersion: 1.8.9
       created: "2025-03-05T23:09:08Z"
       description: Deploy and scale [Celo](https://github.com/celo-org/celo-blockchain) Nodes inside Kubernetes with ease
       digest: d9044625785064c982ff2393aef1db98d277d151c30feb6e8142c634c4fef4b9
@@ -10472,6 +10482,16 @@ entries:
   nethermind:
     - apiVersion: v2
       appVersion: 1.37.2
+      created: "2026-05-22T23:26:40Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 80a4e02abf71c6d0c26c346a630c496bb07cec4763516da4e02a903f9bf848c1
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.58/nethermind-0.4.3-canary.58.tgz
+      version: 0.4.3-canary.58
+    - apiVersion: v2
+      appVersion: 1.37.2
       created: "2026-05-05T03:47:36Z"
       description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
       digest: 0d054e1ab865f5094ffebb420ca9d12862c1ddbec8786358bf950e6068a9dc05
@@ -14405,7 +14425,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-22T16:30:50.682110558Z"
+      created: "2026-05-22T23:31:44.007758206Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14577,7 +14597,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-22T16:30:50.721852446Z"
+      created: "2026-05-22T23:31:44.049476666Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14587,7 +14607,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-22T16:30:50.721212615Z"
+      created: "2026-05-22T23:31:44.0488785Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15128,4 +15148,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-22T16:30:49.22395862Z"
+generated: "2026-05-22T23:31:42.515436486Z"
