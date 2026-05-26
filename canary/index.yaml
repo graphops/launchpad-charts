@@ -255,6 +255,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.10.1-d7f07be
+      created: "2026-05-26T14:42:16Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: d059e7c5cd1c0a918fc608cc37b584990a879be28953ada5a5cdb416f6b40b96
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.6/arbitrum-nitro-0.9.6.tgz
+      version: 0.9.6
+    - apiVersion: v2
+      appVersion: v3.10.1-d7f07be
       created: "2026-05-26T14:41:48Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: 577a8ce1215c6a401c092796155dde3a34f2916f615a5fc79c04b18a99bf75c0
@@ -2455,6 +2465,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
+    - apiVersion: v2
+      appVersion: v3.4.2
+      created: "2026-05-26T14:53:39Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 9573811472ac0ae08c2911e726a96c2d1fe4d9c041e280ce0b6411614ae164e1
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.14/erigon-0.12.14.tgz
+      version: 0.12.14
     - apiVersion: v2
       appVersion: v3.4.2
       created: "2026-05-26T14:52:18Z"
@@ -5272,6 +5292,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-05-26T14:40:45Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 55aa0bdf83acba9fa7457f1f520a06467b12216c3670e2cc93e5a5c4d2e94973
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.4/graph-network-indexer-0.7.4.tgz
+      version: 0.7.4
     - apiVersion: v2
       created: "2026-05-26T14:40:24Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -11272,6 +11301,26 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v26.5.0
+      created: "2026-05-26T14:54:41Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 0f6f325ba7981fe0bc9138bbf70af6266fe9fa9c2ff9d9377171b90d53ca9f75
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.15/nimbus-0.6.15.tgz
+      version: 0.6.15
+    - apiVersion: v2
+      appVersion: multiarch-v26.5.0
+      created: "2026-05-26T14:54:17Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9b47b5a2c50f6d638a437dc74a6c980a30f43aa2b4a83c3886c18c5139de7f29
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.15-canary.3/nimbus-0.6.15-canary.3.tgz
+      version: 0.6.15-canary.3
+    - apiVersion: v2
+      appVersion: multiarch-v26.5.0
       created: "2026-05-22T23:26:59Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: d613887712331d93337905de807f24f3ff348bd92a89f521c7913108cce0b3d8
@@ -14464,7 +14513,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-26T15:04:17.250284207Z"
+      created: "2026-05-26T15:04:23.454747974Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14636,7 +14685,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-26T15:04:17.291528524Z"
+      created: "2026-05-26T15:04:23.494602057Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14646,7 +14695,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-26T15:04:17.289824417Z"
+      created: "2026-05-26T15:04:23.494002234Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15187,4 +15236,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-26T15:04:15.790682348Z"
+generated: "2026-05-26T15:04:21.968274115Z"
