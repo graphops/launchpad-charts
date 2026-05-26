@@ -667,6 +667,26 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.4.2
+      created: "2026-05-26T14:53:39Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 9573811472ac0ae08c2911e726a96c2d1fe4d9c041e280ce0b6411614ae164e1
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.14/erigon-0.12.14.tgz
+      version: 0.12.14
+    - apiVersion: v2
+      appVersion: v3.4.0
+      created: "2026-05-04T12:49:11Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 1675b5ef103a9056012276e501fd2f2a6fd1bf354cd5c9961fb437b596f9b675
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.13/erigon-0.12.13.tgz
+      version: 0.12.13
+    - apiVersion: v2
       appVersion: v3.3.10
       created: "2026-03-31T12:49:37Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
@@ -1628,6 +1648,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-05-26T14:40:45Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 55aa0bdf83acba9fa7457f1f520a06467b12216c3670e2cc93e5a5c4d2e94973
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.4/graph-network-indexer-0.7.4.tgz
+      version: 0.7.4
     - apiVersion: v2
       created: "2026-05-04T12:52:32Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -3408,6 +3437,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v26.5.0
+      created: "2026-05-26T14:54:41Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 0f6f325ba7981fe0bc9138bbf70af6266fe9fa9c2ff9d9377171b90d53ca9f75
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.15/nimbus-0.6.15.tgz
+      version: 0.6.15
+    - apiVersion: v2
       appVersion: multiarch-v26.3.1
       created: "2026-03-31T12:50:35Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -4820,4 +4859,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-05-04T13:05:49.577751364Z"
+generated: "2026-05-26T15:01:01.768080276Z"
