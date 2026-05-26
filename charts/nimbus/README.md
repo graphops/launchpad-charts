@@ -2,7 +2,7 @@
 
 Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.14](https://img.shields.io/badge/Version-0.6.14-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v26.3.1](https://img.shields.io/badge/AppVersion-multiarch--v26.3.1-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.6.15](https://img.shields.io/badge/Version-0.6.15-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: multiarch-v26.5.0](https://img.shields.io/badge/AppVersion-multiarch--v26.5.0-informational?style=flat-square)
 
 ## Chart Features
 
@@ -116,7 +116,7 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | nimbus.initChownData.enabled | Init container to set the correct permissions to access data directories | bool | `true` |
  | nimbus.initChownData.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | nimbus.initChownData.image.repository | Container repository | string | `"busybox"` |
- | nimbus.initChownData.image.tag | Container tag | string | `"1.37.0"` |
+ | nimbus.initChownData.image.tag | Container tag | string | `"1.38.0"` |
  | nimbus.jwt | JWT to use to authenticate with Execution Client. Specify either `existingSecret` OR `fromLiteral`. | object | `{"existingSecret":{"key":"","name":""},"fromLiteral":""}` |
  | nimbus.jwt.existingSecret | Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set. | object | `{"key":"","name":""}` |
  | nimbus.jwt.existingSecret.key | Data key for the JWT in the Secret | string | `""` |
