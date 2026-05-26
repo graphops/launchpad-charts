@@ -2457,6 +2457,16 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v3.4.2
+      created: "2026-05-26T14:52:18Z"
+      description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+      digest: 97e9d309d000228d061e3c78f3d305c9d7124d056775819dd169b768a312f471
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.14-canary.3/erigon-0.12.14-canary.3.tgz
+      version: 0.12.14-canary.3
+    - apiVersion: v2
+      appVersion: v3.4.2
       created: "2026-05-22T16:20:41Z"
       description: Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
       digest: 358a6ba916ee27ff495856655e5c5c3382a2262f25b31739d2cbeb0ff896df11
@@ -11262,6 +11272,16 @@ entries:
   nimbus:
     - apiVersion: v2
       appVersion: multiarch-v26.5.0
+      created: "2026-05-26T14:54:17Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9b47b5a2c50f6d638a437dc74a6c980a30f43aa2b4a83c3886c18c5139de7f29
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.15-canary.3/nimbus-0.6.15-canary.3.tgz
+      version: 0.6.15-canary.3
+    - apiVersion: v2
+      appVersion: multiarch-v26.5.0
       created: "2026-05-22T23:26:59Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
       digest: d613887712331d93337905de807f24f3ff348bd92a89f521c7913108cce0b3d8
@@ -14454,7 +14474,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-05-26T14:51:40.077068265Z"
+      created: "2026-05-26T15:03:09.386214422Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -14626,7 +14646,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-26T14:51:40.116342151Z"
+      created: "2026-05-26T15:03:09.42774715Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -14636,7 +14656,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-05-26T14:51:40.1157435Z"
+      created: "2026-05-26T15:03:09.426722089Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15177,4 +15197,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-05-26T14:51:38.611328728Z"
+generated: "2026-05-26T15:03:07.859956109Z"
