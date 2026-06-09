@@ -108,7 +108,9 @@ spec:
           configMap:
             # Provide the name of the ConfigMap you want to mount.
             name: {{ include "graph-node.fullname" . }}-config
+      {{- if or $.Values.grafana.datasources $values.extraInitContainers }}
       initContainers:
+        {{- if $.Values.grafana.datasources }}
         - name: {{ $groupName }}-init
           image: lachlanevenson/k8s-kubectl:v1.25.4
           imagePullPolicy: IfNotPresent
@@ -137,7 +139,6 @@ spec:
             - sh
             - -c
             - |
-              {{- if $.Values.grafana.datasources }}
               {{- if eq $groupName $.Values.grafana.datasourcesGraphNodeGroupName }}
               apply_grafana_datasources(){
               echo "Grafana Datasource creation enabled for this group, {{ $groupName }}"
@@ -195,16 +196,11 @@ spec:
               {{- else }}
               echo "Grafana Datasource creation enabled for {{ $.Values.grafana.datasourcesGraphNodeGroupName }}, not this group, {{ $groupName }}. Skipping..."
               {{- end }}
-              {{- end }}
-              set -ex
-              ulimit -n 65536
-              ulimit -a
-
-          securityContext:
-            privileged: true # required for ulimit change
+        {{- end }}
         {{- with $values.extraInitContainers }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- end }}
       containers:
         - name: {{ $groupName }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
