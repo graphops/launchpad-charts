@@ -94,6 +94,16 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
+      appVersion: v3.10.2-db30ef0
+      created: "2026-06-08T23:15:32Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 8a79198d0f898583473b6f94e52fe9533f5875e2927fdb151835b7492ce265a4
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.7/arbitrum-nitro-0.9.7.tgz
+      version: 0.9.7
+    - apiVersion: v2
       appVersion: v3.10.1-d7f07be
       created: "2026-05-26T14:42:16Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -2090,6 +2100,26 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.44.0
+      created: "2026-06-09T00:27:46Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 3a1d1a886e0cd0bd63f3da972381f7dd7ca94c3ef3ff04ca25532a3543773ee4
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.13/graph-node-0.6.13.tgz
+      version: 0.6.13
+    - apiVersion: v2
+      appVersion: v0.44.0
+      created: "2026-06-08T23:09:22Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: 4199fd20c373aa3d84376486de2c794dbf08c850f5fd51e69a5ec061f12cf317
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.12/graph-node-0.6.12.tgz
+      version: 0.6.12
+    - apiVersion: v2
       appVersion: v0.43.0
       created: "2026-05-04T12:52:32Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -4009,6 +4039,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.27.5
+      created: "2026-06-08T23:16:58Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 5f18f836cf26e947efb9344d4c85cba2cba858cfab9508951532cf80b4503f84
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.10/proxyd-0.7.10.tgz
+      version: 0.7.10
+    - apiVersion: v2
       appVersion: v4.27.1
       created: "2026-05-04T13:00:45Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -4869,4 +4909,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-05-26T15:01:28.187873176Z"
+generated: "2026-06-09T00:32:09.982933416Z"
