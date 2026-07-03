@@ -1,8 +1,8 @@
 # Erigon Helm Chart
 
-Deploy and scale [Erigon](https://github.com/ledgerwatch/erigon) inside Kubernetes with ease
+Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.12.16](https://img.shields.io/badge/Version-0.12.16-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.0](https://img.shields.io/badge/AppVersion-v3.5.0-informational?style=flat-square)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) ![Version: 0.12.17](https://img.shields.io/badge/Version-0.12.17-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v3.5.0](https://img.shields.io/badge/AppVersion-v3.5.0-informational?style=flat-square)
 
 ## Features
 
@@ -82,9 +82,11 @@ By default, your Erigon node will not have an internet-accessible port for P2P t
 To expose P2P you can now use either NodePort or LoadBalancer:
 
 - NodePort (legacy and default behavior when enabled): set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=NodePort` (or `statefulNode.p2pNodePort.enabled=true` for backwards compatibility). This mode locks `statefulNode.replicaCount` to `1` and uses an initContainer to discover the Node's external IP for correct ENR advertisement.
-- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service ports will match the container P2P flags.
+- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service port will match the container P2P flag.
 
-Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward.
+Erigon v3.5+ multiplexes all eth protocol versions on a single `--port` listener. The chart exposes one TCP/UDP P2P port pair and no longer renders `--p2p.allowed-ports`.
+
+Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward. `statefulNode.p2p.allowedPorts` is deprecated; when set, only its first value is used.
 
 ```yaml
 # values.yaml
@@ -194,7 +196,8 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.jwt.fromLiteral | Use this literal value for the JWT | string | `nil` |
  | statefulNode.livenessProbe | Sets a livenessProbe configuration for the container | object | `{}` |
  | statefulNode.nodeSelector |  | object | `{}` |
- | statefulNode.p2p.allowedPorts | Two explicit P2P ports to allow (protocol 68,67). Services and container ports will match these.    If not set, defaults to [30303, 30304]. | list | `[30303,30304]` |
+ | statefulNode.p2p.allowedPorts | Deprecated compatibility setting. When non-empty, only the first port is used as the P2P listener port. | list | `[]` |
+ | statefulNode.p2p.port | P2P listener port. Erigon v3.5+ multiplexes all eth protocol versions on this single port. | int | `30303` |
  | statefulNode.p2p.service.advertiseIP | IP address to explicitly advertise on the P2P network (overrides autodetection and LB IP) | string | `""` |
  | statefulNode.p2p.service.annotations | Annotations to add to the P2P Service (useful for cloud LBs) | object | `{}` |
  | statefulNode.p2p.service.enabled | Enable creation of a P2P Service | bool | `false` |
@@ -204,14 +207,14 @@ We do not recommend that you upgrade the application by overriding `image.tag`. 
  | statefulNode.p2p.service.labels | Additional labels to add to the P2P Service | object | `{}` |
  | statefulNode.p2p.service.loadBalancerIP | When using a LoadBalancer and your cloud supports it, reserve a specific IP | string | `""` |
  | statefulNode.p2p.service.loadBalancerSourceRanges | Restrict which source ranges can access the LoadBalancer (CIDRs) | list | `[]` |
- | statefulNode.p2p.service.nodePort | When type is NodePort, base nodePort to use (port and port+1 are used) | object | `{"base":31000}` |
+ | statefulNode.p2p.service.nodePort | When type is NodePort, nodePort to use for the single multiplexed P2P listener | object | `{"base":31000}` |
  | statefulNode.p2p.service.publishNotReadyAddresses | Toggle publishing not ready addresses for p2p service | bool | `false` |
  | statefulNode.p2p.service.type | Service type for P2P exposure (NodePort or LoadBalancer) | string | `"NodePort"` |
  | statefulNode.p2pNodePort.enabled | Expose P2P port via NodePort | bool | `false` |
  | statefulNode.p2pNodePort.initContainer.image.pullPolicy | Container pull policy | string | `"IfNotPresent"` |
  | statefulNode.p2pNodePort.initContainer.image.repository | Container image to fetch nodeport information | string | `"lachlanevenson/k8s-kubectl"` |
  | statefulNode.p2pNodePort.initContainer.image.tag | Container tag | string | `"v1.25.4"` |
- | statefulNode.p2pNodePort.port | Start NodePort to be used in a range (2 ports for protocol versions 68 and 67). Must be unique. | int | `31000` |
+ | statefulNode.p2pNodePort.port | NodePort to use for the single multiplexed P2P listener. Must be unique. | int | `31000` |
  | statefulNode.podAnnotations | Annotations for the `Pod` | object | `{}` |
  | statefulNode.podSecurityContext | Pod-wide security context | object | `{"fsGroup":1000,"runAsGroup":1000,"runAsNonRoot":true,"runAsUser":1000}` |
  | statefulNode.privateApi.ratelimit |  | int | `31872` |
