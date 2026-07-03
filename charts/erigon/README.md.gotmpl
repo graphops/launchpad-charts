@@ -82,9 +82,11 @@ By default, your Erigon node will not have an internet-accessible port for P2P t
 To expose P2P you can now use either NodePort or LoadBalancer:
 
 - NodePort (legacy and default behavior when enabled): set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=NodePort` (or `statefulNode.p2pNodePort.enabled=true` for backwards compatibility). This mode locks `statefulNode.replicaCount` to `1` and uses an initContainer to discover the Node's external IP for correct ENR advertisement.
-- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service ports will match the container P2P flags.
+- LoadBalancer: set `statefulNode.p2p.service.enabled=true` and `statefulNode.p2p.service.type=LoadBalancer`. You can add cloud-specific annotations via `statefulNode.p2p.service.annotations` and the P2P Service port will match the container P2P flag.
 
-Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward.
+Erigon v3.5+ multiplexes all eth protocol versions on a single `--port` listener. The chart exposes one TCP/UDP P2P port pair and no longer renders `--p2p.allowed-ports`.
+
+Note: `statefulNode.p2pNodePort.*` remains supported for backwards compatibility, but `statefulNode.p2p.service.*` is preferred going forward. `statefulNode.p2p.allowedPorts` is deprecated; when set, only its first value is used.
 
 ```yaml
 # values.yaml

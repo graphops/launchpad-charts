@@ -68,9 +68,13 @@ Create the name of the service account to use
 {{/*
 P2P helpers
 */}}
-{{- define "erigon.p2p.nodePortBase" -}}
+{{- define "erigon.p2p.nodePort" -}}
 {{- $values := . -}}
-{{- if and $values.p2p $values.p2p.service $values.p2p.service.nodePort $values.p2p.service.nodePort.base -}}
+{{- if and $values.p2p $values.p2p.allowedPorts (gt (len $values.p2p.allowedPorts) 0) -}}
+{{- index $values.p2p.allowedPorts 0 -}}
+{{- else if and $values.p2p $values.p2p.service $values.p2p.service.nodePort $values.p2p.service.nodePort.port -}}
+{{- $values.p2p.service.nodePort.port -}}
+{{- else if and $values.p2p $values.p2p.service $values.p2p.service.nodePort $values.p2p.service.nodePort.base -}}
 {{- $values.p2p.service.nodePort.base -}}
 {{- else if and $values.p2pNodePort $values.p2pNodePort.port -}}
 {{- $values.p2pNodePort.port -}}
@@ -80,36 +84,16 @@ P2P helpers
 {{- end -}}
 
 {{/*
-Erigon P2P ports: two explicit ports (protocol 68 and 67)
+Erigon v3.5+ multiplexes all eth protocol versions on one P2P port.
 */}}
-{{- define "erigon.p2p.port1" -}}
+{{- define "erigon.p2p.containerPort" -}}
 {{- $v := . -}}
-{{- if and $v.p2p $v.p2p.allowedPorts -}}
+{{- if and $v.p2p $v.p2p.allowedPorts (gt (len $v.p2p.allowedPorts) 0) -}}
   {{- index $v.p2p.allowedPorts 0 -}}
+{{- else if and $v.p2p $v.p2p.port -}}
+  {{- $v.p2p.port -}}
 {{- else -}}
-  {{- include "erigon.p2p.containerPortBase" $v -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "erigon.p2p.port2" -}}
-{{- $v := . -}}
-{{- if and $v.p2p $v.p2p.allowedPorts -}}
-  {{- if ge (len $v.p2p.allowedPorts) 2 -}}
-    {{- index $v.p2p.allowedPorts 1 -}}
-  {{- else -}}
-    {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
-  {{- end -}}
-{{- else -}}
-  {{- add (include "erigon.p2p.containerPortBase" $v | int) 1 -}}
-{{- end -}}
-{{- end -}}
-
-{{- define "erigon.p2p.containerPortBase" -}}
-{{- $values := . -}}
-{{- if and $values.p2p $values.p2p.port -}}
-{{- $values.p2p.port -}}
-{{- else -}}
-30303
+  30303
 {{- end -}}
 {{- end -}}
 
@@ -139,9 +123,9 @@ false
 
 {{- define "erigon.p2pPort" -}}
 {{- if (include "erigon.p2p.isNodePort" . | trim | eq "true") -}}
-{{- include "erigon.p2p.nodePortBase" . -}}
+{{- include "erigon.p2p.nodePort" . -}}
 {{- else -}}
-{{- include "erigon.p2p.containerPortBase" . -}}
+{{- include "erigon.p2p.containerPort" . -}}
 {{- end -}}
 {{- end -}}
 
