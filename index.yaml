@@ -697,6 +697,16 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
+      appVersion: v3.5.2
+      created: "2026-07-14T00:05:37Z"
+      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
+      digest: 5b795eca0f9f43f2211bc2b04607897d160128babe1008d1c9ccf6f758610caf
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.18/erigon-0.12.18.tgz
+      version: 0.12.18
+    - apiVersion: v2
       appVersion: v3.5.0
       created: "2026-07-03T22:22:57Z"
       description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
@@ -3556,6 +3566,16 @@ entries:
       version: 0.1.0
   nimbus:
     - apiVersion: v2
+      appVersion: multiarch-v26.7.0
+      created: "2026-07-14T00:19:09Z"
+      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
+      digest: 9551aa00f2091c7bd2065bba07ef641dfb1857564b258dac350fb4ee8bc4eaa8
+      name: nimbus
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.16/nimbus-0.6.16.tgz
+      version: 0.6.16
+    - apiVersion: v2
       appVersion: multiarch-v26.5.0
       created: "2026-05-26T14:54:41Z"
       description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
@@ -4998,4 +5018,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-07-14T00:22:08.811015253Z"
+generated: "2026-07-14T00:22:19.770743043Z"
