@@ -2547,16 +2547,6 @@ entries:
   erigon:
     - apiVersion: v2
       appVersion: v3.5.2
-      created: "2026-07-14T00:05:37Z"
-      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
-      digest: 5b795eca0f9f43f2211bc2b04607897d160128babe1008d1c9ccf6f758610caf
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.18/erigon-0.12.18.tgz
-      version: 0.12.18
-    - apiVersion: v2
-      appVersion: v3.5.2
       created: "2026-07-14T00:05:18Z"
       description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
       digest: 7401bb273fe850800df008fc9ada5493838f1e99d0ee328569a0947217a6e261
@@ -8984,16 +8974,6 @@ entries:
   heimdall-v2:
     - apiVersion: v2
       appVersion: 0.9.0
-      created: "2026-07-14T00:17:53Z"
-      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
-      digest: 2a30cc424952d7e8cec7c800c650b73321036a5389001d368986566ccba9775d
-      name: heimdall-v2
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.18/heimdall-v2-0.0.18.tgz
-      version: 0.0.18
-    - apiVersion: v2
-      appVersion: 0.9.0
       created: "2026-07-14T00:17:14Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
       digest: cc185e905265c6e2f2fa9958f46959047c418f79f434b06c18a29427dfc0291b
@@ -11716,16 +11696,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
-    - apiVersion: v2
-      appVersion: multiarch-v26.7.0
-      created: "2026-07-14T00:19:09Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: 9551aa00f2091c7bd2065bba07ef641dfb1857564b258dac350fb4ee8bc4eaa8
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.16/nimbus-0.6.16.tgz
-      version: 0.6.16
     - apiVersion: v2
       appVersion: multiarch-v26.7.0
       created: "2026-07-14T00:18:53Z"
@@ -15100,7 +15070,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-07-14T00:27:28.321154666Z"
+      created: "2026-07-14T00:27:04.156098802Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15272,7 +15242,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-14T00:27:28.352316143Z"
+      created: "2026-07-14T00:27:04.195447229Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15282,7 +15252,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-14T00:27:28.351849331Z"
+      created: "2026-07-14T00:27:04.194853696Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15823,4 +15793,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-07-14T00:27:27.123945281Z"
+generated: "2026-07-14T00:27:02.6207804Z"
