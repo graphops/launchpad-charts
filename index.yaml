@@ -697,16 +697,6 @@ entries:
       version: 0.1.0
   erigon:
     - apiVersion: v2
-      appVersion: v3.5.2
-      created: "2026-07-14T00:05:37Z"
-      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
-      digest: 5b795eca0f9f43f2211bc2b04607897d160128babe1008d1c9ccf6f758610caf
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.18/erigon-0.12.18.tgz
-      version: 0.12.18
-    - apiVersion: v2
       appVersion: v3.5.0
       created: "2026-07-03T22:22:57Z"
       description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
@@ -2842,16 +2832,6 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
-      appVersion: 0.9.0
-      created: "2026-07-14T00:17:53Z"
-      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
-      digest: 2a30cc424952d7e8cec7c800c650b73321036a5389001d368986566ccba9775d
-      name: heimdall-v2
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.18/heimdall-v2-0.0.18.tgz
-      version: 0.0.18
-    - apiVersion: v2
       appVersion: 0.8.1
       created: "2026-06-08T23:18:20Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -3565,16 +3545,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.1.0/nethermind-0.1.0.tgz
       version: 0.1.0
   nimbus:
-    - apiVersion: v2
-      appVersion: multiarch-v26.7.0
-      created: "2026-07-14T00:19:09Z"
-      description: Deploy and scale [Nimbus](https://github.com/status-im/nimbus-eth2) inside Kubernetes with ease
-      digest: 9551aa00f2091c7bd2065bba07ef641dfb1857564b258dac350fb4ee8bc4eaa8
-      name: nimbus
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/nimbus-0.6.16/nimbus-0.6.16.tgz
-      version: 0.6.16
     - apiVersion: v2
       appVersion: multiarch-v26.5.0
       created: "2026-05-26T14:54:41Z"
@@ -5018,4 +4988,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-07-14T00:21:39.827765577Z"
+generated: "2026-07-14T00:21:58.431356971Z"
