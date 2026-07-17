@@ -5503,6 +5503,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-07-17T04:14:30Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: c4d4fd1792114436ffbdba45ecfeba6605bee439cd87124e8f8d2295c0526bab
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.6-canary.1/graph-network-indexer-0.7.6-canary.1.tgz
+      version: 0.7.6-canary.1
+    - apiVersion: v2
       created: "2026-06-08T23:09:22Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 70b225d14e2c8f27551d0abeeeaed563bbbfadbb1e7def4d8808491f50d2cf42
@@ -15110,7 +15119,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-07-15T14:55:49.10457702Z"
+      created: "2026-07-17T04:23:48.367912191Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15282,7 +15291,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-15T14:55:49.155270182Z"
+      created: "2026-07-17T04:23:48.4093297Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15292,7 +15301,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-15T14:55:49.154628478Z"
+      created: "2026-07-17T04:23:48.408751472Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15833,4 +15842,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-07-15T14:55:47.350994957Z"
+generated: "2026-07-17T04:23:46.829814704Z"
