@@ -2546,6 +2546,16 @@ entries:
       version: 0.0.1-canary.1
   erigon:
     - apiVersion: v2
+      appVersion: v3.5.8899
+      created: "2026-07-18T14:23:54Z"
+      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
+      digest: da63c248dbb4eacaab8d0503ae5d42feba51eb440d3262c8e0399fe9ff6256e9
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.12.19-canary.3/erigon-0.12.19-canary.3.tgz
+      version: 0.12.19-canary.3
+    - apiVersion: v2
       appVersion: v3.5.9999
       created: "2026-07-18T13:01:37Z"
       description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
@@ -15149,7 +15159,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-07-18T13:07:33.616099192Z"
+      created: "2026-07-18T14:31:24.217870022Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15321,7 +15331,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-18T13:07:33.657054763Z"
+      created: "2026-07-18T14:31:24.256024467Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15331,7 +15341,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-18T13:07:33.656424987Z"
+      created: "2026-07-18T14:31:24.255397111Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15872,4 +15882,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-07-18T13:07:32.003705473Z"
+generated: "2026-07-18T14:31:22.633086949Z"
