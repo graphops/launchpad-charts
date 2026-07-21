@@ -9693,6 +9693,16 @@ entries:
       version: 0.0.1-canary.1
   lighthouse:
     - apiVersion: v2
+      appVersion: v8.2.1
+      created: "2026-07-21T05:36:31Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: c5220ae31ace6616ea75d72e9b93b903f277809d6195d410b70789236ec73808
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.8-canary.1/lighthouse-0.8.8-canary.1.tgz
+      version: 0.8.8-canary.1
+    - apiVersion: v2
       appVersion: v8.2.0
       created: "2026-07-14T00:16:27Z"
       description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
@@ -15169,7 +15179,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-07-20T21:53:21.499026461Z"
+      created: "2026-07-21T05:43:56.25643524Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15341,7 +15351,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-20T21:53:21.530540084Z"
+      created: "2026-07-21T05:43:56.297711503Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15351,7 +15361,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-20T21:53:21.530050397Z"
+      created: "2026-07-21T05:43:56.297130689Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -15892,4 +15902,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-07-20T21:53:20.277284821Z"
+generated: "2026-07-21T05:43:54.676373228Z"
