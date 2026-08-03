@@ -5593,6 +5593,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-08-03T17:08:12Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: cda962f649f2936d33e29dbeb35a1738e094323812febf732275416203ddbdb9
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.6-canary.2/graph-network-indexer-0.7.6-canary.2.tgz
+      version: 0.7.6-canary.2
+    - apiVersion: v2
       created: "2026-07-17T04:14:30Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: c4d4fd1792114436ffbdba45ecfeba6605bee439cd87124e8f8d2295c0526bab
@@ -7349,6 +7358,16 @@ entries:
       version: 0.1.0
   graph-node:
     - apiVersion: v2
+      appVersion: v0.45.0
+      created: "2026-08-03T17:08:12Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: cc206cd69a74cbd00dcbdb9635db5a653ed49441ebaba7b7da33f9e343529ac6
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.14-canary.1/graph-node-0.6.14-canary.1.tgz
+      version: 0.6.14-canary.1
+    - apiVersion: v2
       appVersion: v0.44.0
       created: "2026-06-09T00:27:46Z"
       description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
@@ -9081,6 +9100,26 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-1.0.0/heimdall-1.0.0.tgz
       version: 1.0.0
   heimdall-v2:
+    - apiVersion: v2
+      appVersion: 0.10.0
+      created: "2026-07-30T22:02:22Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: d7c71a98312c274c2af8b5d29b181f01fa22352a4eef62a09e61a36fa96809bd
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.20/heimdall-v2-0.0.20.tgz
+      version: 0.0.20
+    - apiVersion: v2
+      appVersion: 0.10.0
+      created: "2026-07-30T22:02:23Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 1b50829fe3fd90a5b5060fd72eec1bdad2cee6b99794de3d1f75c40b1258f73a
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.19-canary.3/heimdall-v2-0.0.19-canary.3.tgz
+      version: 0.0.19-canary.3
     - apiVersion: v2
       appVersion: 0.10.0
       created: "2026-07-30T21:56:42Z"
@@ -15319,7 +15358,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-07-30T22:13:47.51623642Z"
+      created: "2026-08-03T17:18:55.992143066Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15491,7 +15530,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-30T22:13:47.557847552Z"
+      created: "2026-08-03T17:18:56.031695824Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15501,7 +15540,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-07-30T22:13:47.557175033Z"
+      created: "2026-08-03T17:18:56.031105632Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -16042,4 +16081,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-07-30T22:13:45.944943363Z"
+generated: "2026-08-03T17:18:54.420811536Z"
