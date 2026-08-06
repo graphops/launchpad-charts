@@ -1,0 +1,388 @@
+{{- $values := $.Values.reth }}
+{{- $componentName := "reth" }}
+{{- $componentLabel := include "reth.componentLabelFor" $componentName }}
+{{- $jwtEnabled := or $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- $jwtSecretName := default (print (include "reth.fullname" .) "-" $componentName "-jwt") $values.jwt.existingSecret.name }}
+{{- $jwtSecretKey := default "jwt.hex" $values.jwt.existingSecret.key }}
+{{- $p2pEnabled := (include "reth.p2p.enabled" $values | trim | eq "true") }}
+{{- $p2pNodePort := (include "reth.p2p.isNodePort" $values | trim | eq "true") }}
+{{- $p2pLoadBalancer := (include "reth.p2p.isLoadBalancer" $values | trim | eq "true") }}
+{{- $p2pContainerPort := (include "reth.p2p.containerPort" $values | int) }}
+{{- $p2pNeedsEndpointInit := and $p2pEnabled (not $values.p2p.service.advertiseIP) }}
+{{- $p2pNeedsKubeAPI := $p2pNeedsEndpointInit }}
+{{- $configFileEnabled := (include "reth.configFile.enabled" $values | trim | eq "true") }}
+{{- $configPath := include "reth.configPath" $values | trim }}
+{{- $rpcJwtSecretFromExistingSecret := (include "reth.rpcJwtSecretFromExistingSecret.enabled" $values | trim | eq "true") }}
+{{- $needsRuntimeWrapper := or $p2pNeedsEndpointInit $rpcJwtSecretFromExistingSecret }}
+{{- $pruningMode := default "archive" $values.pruning.mode }}
+{{- if and $p2pEnabled (not (or $p2pNodePort $p2pLoadBalancer)) }}
+{{- fail "reth.p2p.service.type must be either NodePort or LoadBalancer when reth.p2p.service.enabled=true" }}
+{{- end }}
+{{- if and $p2pNodePort (not $values.p2p.service.nodePort) }}
+{{- fail "reth.p2p.service.nodePort must be set when reth.p2p.service.type=NodePort because Reth cannot advertise a different port from the one it listens on" }}
+{{- end }}
+{{- if and $values.p2p.service.advertiseIP (not (include "reth.isIPAddress" $values.p2p.service.advertiseIP | trim | eq "true")) }}
+{{- fail "reth.p2p.service.advertiseIP must be an IP address; Reth --nat=extip does not accept hostnames" }}
+{{- end }}
+{{- if and $p2pEnabled $values.p2p.disableNat }}
+{{- fail "reth.p2p.disableNat cannot be true when reth.p2p.service.enabled=true because the chart must advertise the external P2P endpoint" }}
+{{- end }}
+{{- if and (ne $values.p2p.maxPeers nil) (or (ne $values.p2p.maxInboundPeers nil) (ne $values.p2p.maxOutboundPeers nil)) }}
+{{- fail "reth.p2p.maxPeers cannot be combined with reth.p2p.maxInboundPeers or reth.p2p.maxOutboundPeers" }}
+{{- end }}
+{{- if not (has $values.service.type (list "ClusterIP" "NodePort" "LoadBalancer")) }}
+{{- fail "reth.service.type must be one of: ClusterIP, NodePort, LoadBalancer" }}
+{{- end }}
+{{- if not (has $pruningMode (list "archive" "full" "minimal")) }}
+{{- fail "reth.pruning.mode must be one of: archive, full, minimal" }}
+{{- end }}
+{{- if and $values.jwt.existingSecret.name $values.jwt.fromLiteral }}
+{{- fail "Only one of reth.jwt.existingSecret.name or reth.jwt.fromLiteral may be set" }}
+{{- end }}
+{{- if and $values.jwt.fromLiteral (not (regexMatch "^[0-9A-Fa-f]{64}$" $values.jwt.fromLiteral)) }}
+{{- fail "reth.jwt.fromLiteral must be a 32-byte hex string, for example output from: openssl rand -hex 32" }}
+{{- end }}
+{{- if and $values.rpc.jwtSecret $values.rpc.jwtSecretFromExistingSecret.name }}
+{{- fail "Only one of reth.rpc.jwtSecret or reth.rpc.jwtSecretFromExistingSecret.name may be set" }}
+{{- end }}
+{{- if and $values.rpc.jwtSecret (not (regexMatch "^[0-9A-Fa-f]{64}$" $values.rpc.jwtSecret)) }}
+{{- fail "reth.rpc.jwtSecret must be a 32-byte hex string" }}
+{{- end }}
+{{- $configSources := list }}
+{{- if $values.configFile.inline }}
+{{- $configSources = append $configSources "inline" }}
+{{- end }}
+{{- if $values.configFile.existingConfigMap.name }}
+{{- $configSources = append $configSources "existingConfigMap" }}
+{{- end }}
+{{- if $values.configFile.existingSecret.name }}
+{{- $configSources = append $configSources "existingSecret" }}
+{{- end }}
+{{- if gt (len $configSources) 1 }}
+{{- fail "Only one Reth config source may be set: reth.configFile.inline, reth.configFile.existingConfigMap.name, or reth.configFile.existingSecret.name" }}
+{{- end }}
+{{- if and $values.config $configFileEnabled }}
+{{- fail "reth.config cannot be combined with chart-managed config sources under reth.configFile" }}
+{{- end }}
+{{- if and $configFileEnabled (not (hasPrefix "/" $configPath)) }}
+{{- fail "reth.configFile.path must be an absolute path" }}
+{{- end }}
+{{- if and $configFileEnabled (eq (dir $configPath) "/") }}
+{{- fail "reth.configFile.path must include a non-root parent directory, for example /etc/reth/reth.toml" }}
+{{- end }}
+{{- if and $values.podDisruptionBudget.enabled $values.podDisruptionBudget.minAvailable $values.podDisruptionBudget.maxUnavailable }}
+{{- fail "Only one of reth.podDisruptionBudget.minAvailable or reth.podDisruptionBudget.maxUnavailable may be set" }}
+{{- end }}
+{{- $rethArgs := get (fromJson (include "reth.computedArgs" $values)) "computedArgs" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+spec:
+  serviceName: {{ include "reth.fullname" . }}-{{ $componentName }}-headless
+  replicas: {{ include "reth.replicas" $values }}
+  selector:
+    matchLabels:
+      {{- include "reth.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        {{- toYaml $values.volumeClaimSpec | nindent 8 }}
+  {{- if eq $values.updateStrategyType "OnDelete" }}
+  updateStrategy:
+    type: OnDelete
+  {{- else if eq $values.updateStrategyType "RollingUpdate" }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      partition: {{ default 0 ($values.rollingUpdatePartition | quote | atoi) }}
+  {{- end }}
+  template:
+    metadata:
+      {{- with $values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "reth.selectorLabels" . | nindent 8 }}
+        {{- $componentLabel | nindent 8 }}
+        {{- with $values.extraLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "reth.serviceAccountName" . }}
+      automountServiceAccountToken: {{ or $values.automountServiceAccountToken $p2pNeedsKubeAPI }}
+      {{- with $values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.priorityClassName }}
+      priorityClassName: {{ . | quote }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ $values.terminationGracePeriodSeconds | default "60" }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        {{- if $configFileEnabled }}
+        - name: reth-config
+          {{- if $values.configFile.inline }}
+          configMap:
+            name: {{ include "reth.fullname" . }}-{{ $componentName }}-config
+          {{- else if $values.configFile.existingConfigMap.name }}
+          configMap:
+            name: {{ $values.configFile.existingConfigMap.name }}
+          {{- else if $values.configFile.existingSecret.name }}
+          secret:
+            secretName: {{ $values.configFile.existingSecret.name }}
+          {{- end }}
+            items:
+              - key: {{ default "reth.toml" (ternary $values.configFile.existingSecret.key $values.configFile.existingConfigMap.key (not (empty $values.configFile.existingSecret.name))) }}
+                path: {{ base $configPath }}
+        {{- end }}
+        {{- if $jwtEnabled }}
+        - name: jwt
+          secret:
+            secretName: {{ $jwtSecretName }}
+            items:
+              - key: {{ $jwtSecretKey }}
+                path: jwt.hex
+        {{- end }}
+        {{- if $p2pNeedsEndpointInit }}
+        - name: env-external-endpoint
+          emptyDir: {}
+        {{- end }}
+        {{- with $values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- if or $p2pNeedsEndpointInit $values.extraInitContainers }}
+      initContainers:
+        {{- if $p2pNeedsEndpointInit }}
+        - name: init-external-endpoint
+          image: "{{ $values.p2p.initContainer.image.repository }}:{{ $values.p2p.initContainer.image.tag }}"
+          imagePullPolicy: {{ $values.p2p.initContainer.image.pullPolicy }}
+          {{- with $values.p2p.initContainer.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: SITES
+              value: "https://v4.ident.me https://api.ipify.org https://ifconfig.me"
+          command:
+            - sh
+            - -c
+            - |
+              set -ex;
+              {{- if $p2pNodePort }}
+              EXTERNAL_IP="";
+              if [ -z "$EXTERNAL_IP" ]; then
+                EXTERNAL_IP="$(kubectl get nodes "${NODE_NAME}" -o jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}')";
+              fi
+              until [ -n "$EXTERNAL_IP" ]; do
+                for SITE in $SITES; do
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    EXTERNAL_IP="$(curl --silent --max-time 5 "$SITE")";
+                    if [ -n "$EXTERNAL_IP" ]; then
+                      break;
+                    fi
+                  fi
+                done
+                if [ -z "$EXTERNAL_IP" ]; then
+                  sleep 1;
+                fi
+              done
+              {{- else if $p2pLoadBalancer }}
+              EXTERNAL_IP="";
+              if [ -z "$EXTERNAL_IP" ]; then
+                while [ -z "$EXTERNAL_IP" ]; do
+                  EXTERNAL_IP="$(kubectl get service "{{ include "reth.fullname" . }}-{{ $componentName }}-p2p" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')";
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    EXTERNAL_IP="$(kubectl get service "{{ include "reth.fullname" . }}-{{ $componentName }}-p2p" -o jsonpath='{.spec.loadBalancerIP}')";
+                  fi
+                  EXTERNAL_HOSTNAME="$(kubectl get service "{{ include "reth.fullname" . }}-{{ $componentName }}-p2p" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')";
+                  if [ -n "$EXTERNAL_HOSTNAME" ]; then
+                    echo "Reth requires an IP address for --nat=extip, but the LoadBalancer reported hostname: ${EXTERNAL_HOSTNAME}" >&2;
+                    echo "Set reth.p2p.service.advertiseIP to a stable external IP, or configure the LoadBalancer to allocate an IP address." >&2;
+                    exit 1;
+                  fi
+                  if [ -z "$EXTERNAL_IP" ]; then
+                    sleep 2;
+                  fi
+                done
+              fi
+              {{- end }}
+              echo "EXTERNAL_IP=$EXTERNAL_IP" > /env/reth-p2p;
+              cat /env/reth-p2p;
+          volumeMounts:
+            - name: env-external-endpoint
+              mountPath: /env
+        {{- end }}
+        {{- with $values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ $componentName }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with $values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if or $values.env $rpcJwtSecretFromExistingSecret }}
+          env:
+            {{- if $rpcJwtSecretFromExistingSecret }}
+            - name: RETH_RPC_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $values.rpc.jwtSecretFromExistingSecret.name }}
+                  key: {{ default "jwt.hex" $values.rpc.jwtSecretFromExistingSecret.key }}
+            {{- end }}
+            {{- range $key, $val := $values.env }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+            {{- end }}
+          {{- end }}
+          {{- if $needsRuntimeWrapper }}
+          command:
+            - sh
+            - -ec
+            - |
+              {{- if $p2pNeedsEndpointInit }}
+              while IFS='=' read -r key value; do
+                case "$key" in
+                  EXTERNAL_IP) EXTERNAL_IP="$value" ;;
+                esac
+              done < /env/reth-p2p
+              : "${EXTERNAL_IP:?missing EXTERNAL_IP}"
+              set -- "--nat=extip:${EXTERNAL_IP}" "$@"
+              {{- end }}
+              {{- if $rpcJwtSecretFromExistingSecret }}
+              : "${RETH_RPC_JWT_SECRET:?missing RETH_RPC_JWT_SECRET}"
+              set -- "--rpc.jwtsecret=${RETH_RPC_JWT_SECRET}" "$@"
+              {{- end }}
+              exec reth node "$@"
+            - reth-node
+          {{- else }}
+          command:
+            - reth
+            - node
+          {{- end }}
+          args:
+            {{- toYaml $rethArgs | nindent 12 }}
+          ports:
+            {{- if $values.http.enabled }}
+            - name: http-jsonrpc
+              containerPort: {{ index $values.service.ports "http-jsonrpc" }}
+              protocol: TCP
+            {{- end }}
+            {{- if $values.ws.enabled }}
+            - name: ws-rpc
+              containerPort: {{ index $values.service.ports "ws-rpc" }}
+              protocol: TCP
+            {{- end }}
+            {{- if $values.authrpc.enabled }}
+            - name: http-engineapi
+              containerPort: {{ index $values.service.ports "http-engineapi" }}
+              protocol: TCP
+            {{- end }}
+            {{- if $values.metrics.enabled }}
+            - name: http-metrics
+              containerPort: {{ index $values.service.ports "http-metrics" }}
+              protocol: TCP
+            {{- end }}
+            - name: tcp-p2p
+              containerPort: {{ $p2pContainerPort }}
+              protocol: TCP
+            - name: udp-p2p
+              containerPort: {{ $p2pContainerPort }}
+              protocol: UDP
+          volumeMounts:
+            {{- if $configFileEnabled }}
+            - name: reth-config
+              mountPath: {{ dir $configPath }}
+              readOnly: true
+            {{- end }}
+            {{- if $p2pNeedsEndpointInit }}
+            - name: env-external-endpoint
+              mountPath: /env
+            {{- end }}
+            {{- if $jwtEnabled }}
+            - name: jwt
+              mountPath: /jwt
+            {{- end }}
+            - name: storage
+              mountPath: {{ $values.datadir }}
+            - name: tmp
+              mountPath: /tmp
+            {{- with $values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if $values.readinessProbe.enabled }}
+          readinessProbe:
+            {{- include "reth.renderProbe" (dict "values" $values "probe" $values.readinessProbe) | trim | nindent 12 }}
+          {{- end }}
+          {{- if $values.livenessProbe.enabled }}
+          livenessProbe:
+            {{- include "reth.renderProbe" (dict "values" $values "probe" $values.livenessProbe) | trim | nindent 12 }}
+          {{- end }}
+          {{- if $values.startupProbe.enabled }}
+          startupProbe:
+            {{- include "reth.renderProbe" (dict "values" $values "probe" $values.startupProbe) | trim | nindent 12 }}
+          {{- end }}
+          {{- with $values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or $values.affinity $values.affinityPresets.antiAffinityByHostname }}
+      affinity:
+      {{- with $values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $values.affinityPresets.antiAffinityByHostname }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - {{ $.Release.Name }}
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - {{ $componentName }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- end }}
+      {{- with $values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,40 @@
+{{- $values := $.Values.reth }}
+{{- $componentName := "reth" }}
+{{- $componentLabel := include "reth.componentLabelFor" $componentName }}
+{{- if and $.Values.prometheus.serviceMonitors.enabled $values.metrics.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+    {{- with .Values.prometheus.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  jobLabel: "{{ .Release.Name }}"
+  selector:
+    matchLabels:
+      {{- include "reth.selectorLabels" . | nindent 6 }}
+      {{- $componentLabel | nindent 6 }}
+      serviceMonitorTarget: "true"
+  endpoints:
+    - port: http-metrics
+      path: /
+      {{- with .Values.prometheus.serviceMonitors.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.prometheus.serviceMonitors.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+      honorLabels: true
+      {{- if .Values.prometheus.serviceMonitors.relabelings }}
+      relabelings:
+      {{- toYaml .Values.prometheus.serviceMonitors.relabelings | nindent 8 }}
+      {{- end }}
+      {{- if .Values.prometheus.serviceMonitors.metricRelabelings }}
+      metricRelabelings:
+      {{- toYaml .Values.prometheus.serviceMonitors.metricRelabelings | nindent 8 }}
+      {{- end }}
+{{- end }}
