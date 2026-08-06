@@ -1,0 +1,500 @@
+global:
+  # -- Set a default storage class to use everywhere by default
+  storageClassName: openebs-zfs-localpv-compressed-8k
+  nameOverride: ""
+  fullnameOverride: ""
+  # -- Global labels added to all resources
+  labels: &globalLabels
+    helm.sh/chart: '{{ include "common.metadata.chart" . }}'
+    app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+    app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+    app.kubernetes.io/version: '{{ .Root.Chart.AppVersion }}'
+    app.kubernetes.io/managed-by: '{{ .Root.Release.Service }}'
+    app.kubernetes.io/component: '{{ .componentName }}'
+    app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
+  # -- Global annotations added to all resources
+  annotations: {}
+
+scroll:
+  __enabled: true
+  workload:
+    __enabled: true
+    replicaCount: 1
+
+scrollDefaults:
+  # -- Image configuration for scroll
+  image:
+    # -- Docker image repository
+    repository: "docker.io/scrolltech/l2geth"
+    # -- Image pull policy
+    pullPolicy: "IfNotPresent"
+    # -- Overrides the image reference using a tag
+    # digest takes precedence over tag if both are set
+    tag: '{{ .Root.Chart.AppVersion }}'
+    # -- Overrides the image reference using a specific digest
+    digest: ""
+  config:
+    # -- Enable support for metrics
+    metrics:
+      enabled: true
+      addr: 0.0.0.0
+      port: 9090
+
+    # -- Enable pprof interface support for profiling data
+    pprof:
+      enabled: true
+      addr: 127.0.0.1
+      port: 6060
+
+    # -- Enable a NodePort for P2P support in node
+    p2p:
+      # -- Expose P2P port via NodePort
+      enabled: true
+      # -- protocol versions to use, as "protocolVersion: NodePort", i.e. "67: 30301"
+      # -- NodePorts must be unique, or left as empty string "" to be obtained dynamically.
+      #
+      port: 30303
+
+    args:
+      __separator: "="
+      __prefix: "--"
+      datadir: /storage
+      scroll: "__none"
+      syncmode: full
+      gcmode: archive
+      rollup.verify: "__none"
+      http: "__none"
+      http.addr: 0.0.0.0
+      http.port: 8545
+      http.vhosts: "*"
+      http.corsdomain: "*"
+      http.api: "eth,net,web3,debug,scroll"
+      ws: true
+      ws.port: 8546
+      ws.api: "eth,net,web3,debug,scroll"
+      ws.origins: "*"
+      metrics: '{{ $metrics.enabled | ternary (print "__none") nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.addr: '{{ $metrics.enabled | ternary ($metrics.addr | quote) nil }} @needs(.Self.config.metrics as metrics)'
+      metrics.port: '{{ $metrics.enabled | ternary ($metrics.port | int) nil }} @needs(.Self.config.metrics as metrics)'
+      pprof: '{{ $pprof.enabled | ternary (print "__none") nil }} @needs(.Self.config.pprof as pprof)'
+      pprof.addr: '{{ $pprof.enabled | ternary ($pprof.addr | quote) nil }} @needs(.Self.config.pprof as pprof)'
+      pprof.port: '{{ $pprof.enabled | ternary ($pprof.port | int) nil }} @needs(.Self.config.pprof as pprof)'
+      port: '{{ $p2p.enabled | ternary "30301" nil }} @needs(.Self.config.p2p as p2p)'
+      nat: '{{ $p2p.enabled | ternary "extip:${EXTERNAL_IP}" nil }} @needs(.Self.config.p2p as p2p)'
+      l1.endpoint: http://proxyd-proxyd.eth-mainnet.svc.cluster.local.:8545
+      da.blob.beaconnode: http://nimbus-1-nimbus.eth-mainnet-canary.svc.cluster.local.:5052
+      cache.noprefetch: "__none"
+      da.sync: false
+    argsOrder: []
+  services:
+    default:
+      __enabled: true
+      metadata:
+        name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}'
+        # -- Additional service labels
+        labels:
+          <<: *globalLabels
+        # -- Additional service annotations
+        annotations: {}
+      spec: &defaultServiceSpec
+        # -- Service type
+        type: "ClusterIP"
+        # -- Service ports configuration
+        ports:
+          http-metrics:
+            __enabled: '{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)'
+            name: http-metrics
+            port: '{{ $metrics.port | int }} @needs(.Self.config.metrics as metrics)'
+            protocol: TCP
+          http-jsonrpc:
+            __enabled: '{{ if $args.http }}true{{else}}false{{ end }} @needs(.Self.config.args as args)'
+            name: http-jsonrpc
+            port: '{{ index $args "http.port" | int }} @needs(.Self.config.args as args)'
+            protocol: TCP
+          ws-rpc:
+            __enabled: '{{ index $args "ws" }} @needs(.Self.config.args as args)'
+            name: ws-rpc
+            port: '{{ index $args "ws.port" | int }} @needs(.Self.config.args as args)'
+            protocol: TCP
+        selector:
+          app.kubernetes.io/component: '{{ .componentName }}'
+          app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+          app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+    headless:
+      __enabled: true
+      metadata:
+        name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-headless'
+        # -- Additional service labels
+        labels:
+          <<: *globalLabels
+        # -- Additional service annotations
+        annotations: {}
+      spec:
+        <<: *defaultServiceSpec
+        ClusterIP: None
+    p2p:
+      __enabled: '{{ $p2p.enabled }} @needs(.Self.config.p2p as p2p)'
+      metadata:
+        name: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-p2p'
+        # -- Additional service labels
+        labels:
+          <<: *globalLabels
+          type: p2p
+          pod: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-0'
+        # -- Additional service annotations
+        annotations: {}
+      spec:
+        ports:
+          p2p-udp:
+            __enabled: true
+            name: p2p-udp
+            containerPort: null
+            port: 30303
+            nodePort: |
+              {{- if not (empty $p2p.port) }}
+              {{ $p2p.port | int }}
+              {{- else }}
+              null
+              {{- end }}
+              @needs(.Self.config.p2p as p2p)
+            protocol: UDP
+          p2p-tcp:
+            __enabled: true
+            name: p2p-tcp
+            containerPort: null
+            port: 30303
+            nodePort: |
+              {{- if not (empty $p2p.port) }}
+              {{ $p2p.port | int }}
+              {{- else }}
+              null
+              {{- end }}
+              @needs(.Self.config.p2p as p2p)
+            protocol: TCP
+        selector:
+          app.kubernetes.io/component: '{{ .componentName }}'
+          app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+          app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+
+  # -- ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    __enabled: true
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ printf "%s-%s" (include "common.metadata.fullname" $) .componentName }}'
+    spec:
+      # Endpoint overrides, keyed by port name
+      endpoints:
+        http-metrics:
+          # Override or add any endpoint-specific fields
+          interval: "30s"
+          scrapeTimeout: "10s"
+          path: /metrics
+          honorLabels: true
+          # ... any other endpoint-specific fields
+      # Any other top-level ServiceMonitor spec fields
+      jobLabel: '{{- .Root.Release.Name }}'
+      namespaceSelector:
+        matchNames:
+          - '{{- .Root.Release.Namespace }}'
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: '{{ .componentName }}'
+          app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+          app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+
+  # -- Service account configuration
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    __enabled: true
+    # -- Rest spec
+    metadata:
+      # -- The name of the service account to use.
+      # If not set and create is true, a name is generated using the fullname template
+      name: '{{ printf "%s-%s" (include "common.metadata.fullname" $) .componentName }}'
+      # -- Annotations to add to the service account
+      annotations: {}
+      # -- Labels to add to the service account
+      labels:
+        <<: *globalLabels
+    # secrets: []
+
+  # -- RBAC role and binding configuration
+  role:
+    __enabled: '{{ $SAEnabled }} @needs(.Self.serviceAccount.__enabled as SAEnabled)'
+    __name: "role"
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ printf "%s-%s-%s" .Root.Release.Name .componentName $roleName }} @needs(.Self.role.__name as roleName)'
+    rules:
+      - apiGroups: [""]
+        resources:
+          - "services"
+        verbs:
+          - "get"
+          - "list"
+          - "watch"
+      - apiGroups: [""]
+        resources:
+          - "secrets"
+        verbs:
+          - "get"
+          - "create"
+
+  roleBinding:
+    __enabled: '{{ $roleEnabled }} @needs(.Self.role.__enabled as roleEnabled)'
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ printf "%s-%s-%s" .Root.Release.Name .componentName $roleName }} @needs(.Self.role.__name as roleName)'
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: '{{ $roleName }} @needs(.Self.role.metadata.name as roleName)'
+    subjects:
+      - kind: ServiceAccount
+        name: '{{ $SAName }} @needs(.Self.serviceAccount.metadata.name as SAName)'
+        namespace: '{{ .Root.Release.Namespace }}'
+
+  # -- Cluster scoped RBAC role and binding configuration
+  # Used by the P2P init-container
+  clusterRole:
+    __enabled: true
+    __name: "role"
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ printf "%s-%s-%s" .Root.Release.Name .componentName $roleName }} @needs(.Self.clusterRole.__name as roleName)'
+    rules:
+      - apiGroups: [""]
+        resources:
+          - "nodes"
+        verbs:
+          - "get"
+          - "list"
+          - "watch"
+
+  clusterRoleBinding:
+    __enabled: true
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ print "%s-binding" $roleName }} @needs(.Self.clusterRole.metadata.name as roleName)'
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: '{{ $roleName }} @needs(.Self.clusterRole.metadata.name as roleName)'
+    subjects:
+      default:
+        kind: ServiceAccount
+        name: '{{ $SAName }} @needs(.Self.serviceAccount.metadata.name as SAName)'
+        namespace: '{{ .Root.Release.Namespace }}'
+
+  # --.Self.Disruption Budget configuration
+  podDisruptionBudget:
+    __enabled: true
+    spec:
+      # minAvailable: 1
+      # or
+      # maxUnavailable: 25%
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: '{{ .componentName }}'
+          app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+          app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+    metadata:
+      labels:
+        <<: *globalLabels
+      annotations: {}
+      name: '{{ .Root.Release.Name }}-{{ .componentName }}'
+
+  workload:
+    __enabled: true
+    kind: StatefulSet
+    metadata:
+      # -- Component level annotations (templated)
+      annotations: {}
+      # -- Component level labels (templated)
+      labels:
+        <<: *globalLabels
+        app.kubernetes.io/component: '{{ .componentName }}'
+        app.kubernetes.io/part-of: '{{ .Root.Release.Name }}'
+      name: '{{ printf "%s-%s" (include "common.metadata.fullname" $) .componentName }}'
+    spec:
+      # -- Required for StatefulSets
+      serviceName: '{{ include "common.metadata.fullname" $ }}-{{ .componentName }}-headless'
+      selector:
+        matchLabels:
+          app.kubernetes.io/component: '{{ .componentName }}'
+          app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
+          app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
+      # -- (StatefulSet only), scaling behavior: (OrderedReady | Parallel)
+      podManagementPolicy: '{{ eq $kind "StatefulSet" | ternary "OrderedReady" nil }} @needs(.Self.workload.kind as kind)'
+      # -- Update Strategy, (RollingUpdate | Recreate) for Deployments, (RollingUpdate | OnDelete) for StatefulSets
+      volumeClaimTemplates:
+        storage:
+          __enabled: true
+          metadata:
+            labels:
+              <<: *globalLabels
+            name: storage
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: '{{ default nil .Root.Values.global.storageClassName }}'
+            resources:
+              requests:
+                # -- The amount of disk space to provision for Erigon
+                storage: 2Ti
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          partition: 0
+      template:
+        metadata:
+          labels:
+            <<: *globalLabels
+        spec:
+          serviceAccountName: '{{ $sa.__enabled | ternary $sa.metadata.name nil }} @needs(.Self.serviceAccount as sa)'
+          # Increasing the grace termination period prevents Kubernetes
+          # from killing the node process prematurely. Premature shutdown
+          # can lead to data integrity issues
+          # -- Amount of time to wait before force-killing the process
+          terminationGracePeriodSeconds: 10
+          # --.Self.wide security context
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: '{{ $runAsUser }} @needs(.Self.workload.spec.template.spec.securityContext.runAsUser as runAsUser)'
+            fsGroup: '{{ $runAsUser }} @needs(.Self.workload.spec.template.spec.securityContext.runAsUser as runAsUser)'
+          # -- Node selector configuration
+          nodeSelector: {}
+          # -- Tolerations configuration
+          tolerations: []
+          # -- Affinity configuration
+          affinity: {}
+          # -- Topology spread constraints
+          topologySpreadConstraints: []
+          # --.Self.volumes
+          volumes:
+            tmp:
+              emptyDir: {}
+            env-dir:
+              __enabled: '{{ $p2p.enabled }} @needs(.Self.config.p2p as p2p)'
+              emptyDir:
+                medium: Memory
+          containers:
+            scroll:
+              image: '{{ printf "%s:%s" $repository $tag }} @needs(.Self.image.repository as repository) @needs(.Self.image.tag as tag)'
+              imagePullPolicy: IfNotPresent
+              # -- Container entrypoint
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -ex
+
+                  ENV_DIR="/env"
+
+                  if [ -d /env ]; then
+                    set -o allexport
+                    for env_file in "$ENV_DIR"/*; do
+                      [ -f "$env_file" ] && source "$env_file"
+                    done
+                    set +o allexport
+                  fi
+
+                  {{- $__parameters := dict
+                    "map" $args
+                    "orderList" ( $argsOrder | default list )
+                  }}
+                  {{- $argsList := include "common.utils.generateArgsList" $__parameters | fromYamlArray }}
+                  exec /usr/local/bin/geth \
+                  {{ join " \\\n" (initial $argsList) }}
+                  {{ (last $argsList) }}
+                  @needs(.Self.config.args as args)
+                  @needs(.Self.config.argsOrder as argsOrder)
+              ports:
+                http-metrics:
+                  __enabled: '{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)'
+                  name: http-metrics
+                  containerPort: '{{ $metrics.port | int }} @needs(.Self.config.metrics as metrics)'
+                  protocol: TCP
+                http-jsonrpc:
+                  __enabled: '{{ index $args "http.enabled" }} @needs(.Self.config.args as args)'
+                  name: http-jsonrpc
+                  containerPort: '{{ index $args "http.port" }} @needs(.Self.config.args as args)'
+                  protocol: TCP
+                ws-rpc:
+                  __enabled: '{{ index $args "ws" }} @needs(.Self.config.args as args)'
+                  name: ws-rpc
+                  containerPort: '{{ index $args "ws.port" }} @needs(.Self.config.args as args)'
+                  protocol: TCP
+                p2p-tcp:
+                  __enabled: '{{ $p2p.enabled }} @needs(.Self.config.p2p as p2p)'
+                  name: p2p-tcp
+                  containerPort: 30303
+                  protocol: TCP
+                p2p-udp:
+                  __enabled: '{{ $p2p.enabled }} @needs(.Self.config.p2p as p2p)'
+                  name: p2p-udp
+                  containerPort: 30303
+                  protocol: UDP
+              volumeMounts:
+                storage:
+                  name: storage
+                  mountPath: /storage
+                tmp:
+                  name: tmp
+                  mountPath: /tmp
+                env-dir:
+                  mountPath: /env
+              # -- Environment variables
+              env:
+                POD_NAME:
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+              # -- Container level security context overrides
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              # -- Resource requests and limits
+              resources:
+                # We usually recommend not to specify default resources and to leave this as a conscious
+                # choice for the user. This also increases chances charts run on environments with little
+                # resources, such as Minikube. If you do want to specify resources, uncomment the following
+                # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+                # limits:
+                #   cpu: 100m
+                #   memory: 128Mi
+                #   ephemeral-storage: 100Mi
+                # requests:
+                #   cpu: 100m
+                #   memory: 128Mi
+                #   ephemeral-storage: 100Mi
+                requests:
+                  cpu: 2
+                  memory: 24Gi
+                limits:
+                  cpu: 2
+                  memory: 24Gi
+              # -- Lifecycle hooks
+              lifecycle: {}
+          # -- Init containers configuration
+          initContainers:
+            10-init-nodeport@common:
+              __enabled: '{{ $p2p.enabled }} @needs(.Self.config.p2p as p2p)'
+              image: ghcr.io/graphops/docker-builds/init-toolbox:main
+              imagePullPolicy: IfNotPresent
+              resources: {}
