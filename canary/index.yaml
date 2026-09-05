@@ -255,6 +255,16 @@ entries:
   arbitrum-nitro:
     - apiVersion: v2
       appVersion: v3.11.3-beb2108
+      created: "2026-09-05T04:51:36Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 28fa31587de5f90df6a78fa7478cd4b5b335cd1bd4366b51d969b07edc161916
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.9/arbitrum-nitro-0.9.9.tgz
+      version: 0.9.9
+    - apiVersion: v2
+      appVersion: v3.11.3-beb2108
       created: "2026-09-05T04:51:05Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
       digest: d7fc8cfc541a9699ac5ac60b0967df9af6a0de4aa9446024e40730899b912703
@@ -2565,6 +2575,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/common-0.0.1-canary.1/common-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   erigon:
+    - apiVersion: v2
+      appVersion: v3.6.0
+      created: "2026-09-05T05:32:58Z"
+      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
+      digest: 242ee9fb530c1ed31bc36cdb54d1054dda95b9bbedf0fa8902d7bf73e738e3b4
+      name: erigon
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.13.0/erigon-0.13.0.tgz
+      version: 0.13.0
     - apiVersion: v2
       appVersion: v3.6.0
       created: "2026-09-05T05:32:36Z"
@@ -7425,6 +7445,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
+    - apiVersion: v2
+      appVersion: v0.45.0
+      created: "2026-09-05T05:40:02Z"
+      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
+      digest: b3d6c615d54086cc2002162fd7913f23d64ba0fe05fc2950443d4c0b5af4f009
+      name: graph-node
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.14/graph-node-0.6.14.tgz
+      version: 0.6.14
     - apiVersion: v2
       appVersion: v0.45.0
       created: "2026-09-05T05:39:34Z"
@@ -15626,7 +15656,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-09-05T06:06:27.31096554Z"
+      created: "2026-09-05T06:06:28.260025519Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -15798,7 +15828,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-09-05T06:06:27.343958833Z"
+      created: "2026-09-05T06:06:28.298527048Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -15808,7 +15838,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-09-05T06:06:27.342824494Z"
+      created: "2026-09-05T06:06:28.297961467Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -16349,4 +16379,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-09-05T06:06:25.958922117Z"
+generated: "2026-09-05T06:06:26.675245514Z"
