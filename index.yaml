@@ -94,16 +94,6 @@ entries:
       version: 0.1.0
   arbitrum-nitro:
     - apiVersion: v2
-      appVersion: v3.11.3-beb2108
-      created: "2026-09-05T04:51:36Z"
-      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
-      digest: 28fa31587de5f90df6a78fa7478cd4b5b335cd1bd4366b51d969b07edc161916
-      name: arbitrum-nitro
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.9/arbitrum-nitro-0.9.9.tgz
-      version: 0.9.9
-    - apiVersion: v2
       appVersion: v3.11.2-3599aca
       created: "2026-07-14T00:06:39Z"
       description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
@@ -706,16 +696,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/celo-0.1.0/celo-0.1.0.tgz
       version: 0.1.0
   erigon:
-    - apiVersion: v2
-      appVersion: v3.6.0
-      created: "2026-09-05T05:32:58Z"
-      description: Deploy and scale [Erigon](https://github.com/erigontech/erigon) inside Kubernetes with ease
-      digest: 242ee9fb530c1ed31bc36cdb54d1054dda95b9bbedf0fa8902d7bf73e738e3b4
-      name: erigon
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/erigon-0.13.0/erigon-0.13.0.tgz
-      version: 0.13.0
     - apiVersion: v2
       appVersion: v3.5.4
       created: "2026-07-30T21:48:56Z"
@@ -2188,16 +2168,6 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.1.0/graph-network-indexer-0.1.0.tgz
       version: 0.1.0
   graph-node:
-    - apiVersion: v2
-      appVersion: v0.45.0
-      created: "2026-09-05T05:40:02Z"
-      description: Deploy and scale [Graph Node](https://github.com/graphprotocol/graph-node) inside Kubernetes with ease
-      digest: b3d6c615d54086cc2002162fd7913f23d64ba0fe05fc2950443d4c0b5af4f009
-      name: graph-node
-      type: application
-      urls:
-        - https://github.com/graphops/launchpad-charts/releases/download/graph-node-0.6.14/graph-node-0.6.14.tgz
-      version: 0.6.14
     - apiVersion: v2
       appVersion: v0.44.0
       created: "2026-06-09T00:27:46Z"
@@ -5118,4 +5088,4 @@ entries:
       urls:
         - https://github.com/graphops/launchpad-charts/releases/download/subgraph-radio-0.2.0/subgraph-radio-0.2.0.tgz
       version: 0.2.0
-generated: "2026-09-05T06:00:02.905470216Z"
+generated: "2026-09-05T06:00:05.21929207Z"
