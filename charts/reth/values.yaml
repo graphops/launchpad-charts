@@ -1,0 +1,489 @@
+# Default values for reth.
+# This is a YAML-formatted file.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  # -- Image for Reth
+  repository: ghcr.io/paradigmxyz/reth
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag
+  # @default -- Chart.appVersion
+  tag: ""
+
+# -- Pull secrets required to fetch the Image
+imagePullSecrets: []
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+rbac:
+  # -- Specifies whether RBAC resources are to be created when P2P endpoint discovery needs Kubernetes API access
+  create: true
+  # -- Required ClusterRole rules
+  # @default -- See `values.yaml`
+  clusterRules:
+    # Required to obtain the node external IP for P2P advertisement when using NodePort without `reth.p2p.service.advertiseIP`.
+    - apiGroups: [""]
+      resources:
+        - "nodes"
+      verbs:
+        - "get"
+  # -- Required Role rules
+  # @default -- See `values.yaml`
+  rules:
+    # Required to inspect Service metadata for P2P endpoint discovery when using LoadBalancer without `reth.p2p.service.advertiseIP`.
+    - apiGroups: [""]
+      resources:
+        - "services"
+      verbs:
+        - "get"
+
+prometheus:
+  serviceMonitors:
+    # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+    enabled: false
+    labels: {}
+    interval:
+    scrapeTimeout:
+    relabelings: []
+    metricRelabelings: []
+
+grafana:
+  # -- Enable creation of bundled workload-aligned Reth Grafana dashboards. [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart) must be configured to search this namespace, see `sidecar.dashboards.searchNamespace`
+  dashboards: false
+  # -- Must match `sidecar.dashboards.label` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabel: grafana_dashboard
+  # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
+  dashboardsConfigMapLabelValue: "1"
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: ""
+    folderUID: ""
+    uid: ""
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec: {}
+
+reth:
+  # -- Optional path to a Reth TOML configuration file passed to `reth node --config`
+  config: ""
+
+  configFile:
+    # -- Mount path used when the chart manages the Reth TOML configuration file
+    path: /etc/reth/reth.toml
+    # -- Inline Reth TOML configuration. Mutually exclusive with `existingConfigMap` and `existingSecret`.
+    inline: ""
+    existingConfigMap:
+      # -- Existing ConfigMap name containing the Reth TOML configuration
+      name: null
+      # -- Existing ConfigMap key containing the Reth TOML configuration
+      key: reth.toml
+    existingSecret:
+      # -- Existing Secret name containing the Reth TOML configuration
+      name: null
+      # -- Existing Secret key containing the Reth TOML configuration
+      key: reth.toml
+
+  # -- Chain name or chain spec path passed to `reth node --chain`
+  chain: mainnet
+
+  # -- Number of Reth Pods to run when dedicated P2P exposure is disabled
+  replicaCount: 1
+
+  # -- JWT for clients to authenticate with the Engine API. Specify either `existingSecret` OR `fromLiteral`.
+  jwt:
+    # -- Load the JWT from an existing Kubernetes Secret. Takes precedence over `fromLiteral` if set.
+    existingSecret:
+      # -- Name of the Secret resource in the same namespace
+      name: null
+      # -- Data key for the JWT in the Secret
+      key: null
+    # -- Use this literal value for the JWT
+    fromLiteral: null
+
+  http:
+    # -- Enable the HTTP JSON-RPC server
+    enabled: true
+    # -- Listen address for HTTP JSON-RPC
+    addr: "0.0.0.0"
+    # -- Comma-separated list of HTTP JSON-RPC modules
+    api: "eth,net,web3"
+    # -- Optional CORS domain configuration
+    corsDomain: ""
+    # -- Disable compression for HTTP JSON-RPC responses
+    disableCompression: false
+
+  ws:
+    # -- Enable the WebSocket JSON-RPC server
+    enabled: false
+    # -- Listen address for WebSocket JSON-RPC
+    addr: "0.0.0.0"
+    # -- Comma-separated list of WebSocket JSON-RPC modules
+    api: "eth,net,web3"
+    # -- Optional WebSocket origins configuration
+    origins: ""
+
+  authrpc:
+    # -- Enable the authenticated Engine API server
+    enabled: true
+    # -- Listen address for the authenticated Engine API server
+    addr: "0.0.0.0"
+    # -- Enable the authenticated Engine API over IPC
+    ipc: false
+    # -- Authenticated Engine API IPC path
+    ipcPath: ""
+    service:
+      # -- Create a dedicated ClusterIP Service for the authenticated Engine API
+      enabled: true
+      # -- Additional labels for the Engine API Service
+      labels: {}
+      # -- Additional annotations for the Engine API Service
+      annotations: {}
+      # -- Publish not-ready addresses on the Engine API Service
+      publishNotReadyAddresses: false
+
+  rpc:
+    # -- Hex encoded JWT secret to authenticate regular HTTP/WS RPC servers. Not used for Engine API auth.
+    jwtSecret: ""
+    jwtSecretFromExistingSecret:
+      # -- Existing Secret name containing the regular HTTP/WS RPC JWT secret
+      name: null
+      # -- Existing Secret key containing the regular HTTP/WS RPC JWT secret
+      key: jwt.hex
+    # -- Maximum RPC server connections
+    maxConnections:
+    # -- Maximum number of blocks scanned per filter request
+    maxBlocksPerFilter:
+    # -- Maximum logs returned in a single response
+    maxLogsPerResponse:
+    # -- Maximum gas limit for `eth_call` and call tracing RPC methods
+    gasCap:
+    # -- Maximum transaction fee in ether accepted by RPC APIs
+    txFeeCap:
+
+  metrics:
+    # -- Enable Prometheus metrics
+    enabled: true
+    # -- Listen address for Prometheus metrics
+    addr: "0.0.0.0"
+    service:
+      # -- Additional labels for the metrics Service
+      labels: {}
+      # -- Additional annotations for the metrics Service
+      annotations: {}
+      # -- Publish not-ready addresses on the metrics Service
+      publishNotReadyAddresses: false
+
+  ipc:
+    # -- Enable the regular JSON-RPC IPC server. Disabled by default so only explicitly exposed RPC transports are available.
+    enabled: false
+    # -- IPC socket path for the regular JSON-RPC server
+    path: ""
+    # -- Optional octal permissions for the regular JSON-RPC IPC socket
+    permissions: ""
+
+  pruning:
+    # -- Storage pruning mode (`archive`, `full`, or `minimal`)
+    mode: archive
+
+  storage:
+    # -- Enable Storage V2 for new databases. Existing database metadata always takes precedence.
+    v2: true
+    datadir:
+      # -- Absolute path to store static files separately from `reth.datadir`
+      staticFiles: ""
+      # -- Absolute path to store RocksDB separately from `reth.datadir`
+      rocksdb: ""
+      # -- Absolute path to store pprof dumps separately from `reth.datadir`
+      pprofDumps: ""
+
+  logging:
+    stdout:
+      # -- Format for logs written to stdout (`json`, `log-fmt`, or `terminal`)
+      format: log-fmt
+      # -- Filter directive for logs written to stdout
+      filter: ""
+    file:
+      # -- Directory for Reth file logs
+      directory: ""
+      # -- Maximum number of Reth log files. Defaults to `0` to disable file logging under read-only root filesystems.
+      maxFiles: 0
+    # -- ANSI color mode for logs (`always`, `auto`, or `never`)
+    color: never
+
+  engine:
+    # -- Cross-block execution cache size in megabytes. Leave unset to use the Reth default.
+    crossBlockCacheSize:
+
+  # -- Additional CLI arguments to pass to `reth node`
+  extraArgs: []
+
+  # -- Environment variables to pass to the Reth container
+  env: {}
+
+  # -- Extra labels to attach to the Pod for matching against
+  extraLabels: {}
+
+  # -- Automount the service account token. Forced on only when P2P endpoint discovery needs Kubernetes API access.
+  automountServiceAccountToken: false
+
+  # -- The path to the Reth data directory
+  datadir: /storage
+
+  # -- [PersistentVolumeClaimSpec](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#persistentvolumeclaimspec-v1-core) for Reth storage
+  volumeClaimSpec:
+    accessModes: ["ReadWriteOnce"]
+    # -- The storage class to use when provisioning a persistent volume for Reth
+    storageClassName:
+    resources:
+      requests:
+        # -- The amount of disk space to provision for Reth
+        storage: 3Ti
+
+  # -- Amount of time to wait before force-killing the Reth process
+  terminationGracePeriodSeconds: 60
+
+  # -- PriorityClass name for the Reth Pod
+  priorityClassName: ""
+
+  # -- Choice of StatefulSet updateStrategy (OnDelete|RollingUpdate)
+  updateStrategyType: RollingUpdate
+
+  # -- When using a RollingUpdate update strategy in the StatefulSet, sets a partition index to only update PODs with that index or higher
+  rollingUpdatePartition: 0
+
+  readinessProbe:
+    # -- Enable the default Reth readiness probe. Uses the metrics endpoint when enabled, otherwise falls back to TCP on an enabled Reth service port.
+    enabled: true
+    # -- Full Kubernetes readinessProbe override. Leave empty to use the chart's workload-aware default.
+    custom: {}
+    # -- How often to run the readiness probe
+    periodSeconds: 10
+    # -- Seconds after which the readiness probe times out
+    timeoutSeconds: 5
+    # -- Consecutive readiness probe failures before the Pod is marked not ready
+    failureThreshold: 3
+
+  livenessProbe:
+    # -- Enable the default Reth liveness probe. Uses the metrics endpoint when enabled, otherwise falls back to TCP on an enabled Reth service port.
+    enabled: true
+    # -- Full Kubernetes livenessProbe override. Leave empty to use the chart's workload-aware default.
+    custom: {}
+    # -- How often to run the liveness probe
+    periodSeconds: 30
+    # -- Seconds after which the liveness probe times out
+    timeoutSeconds: 5
+    # -- Consecutive liveness probe failures before Kubernetes restarts the container
+    failureThreshold: 6
+
+  startupProbe:
+    # -- Enable the default Reth startup probe. Keeps liveness/readiness gated while Reth opens its database and starts serving endpoints.
+    enabled: true
+    # -- Full Kubernetes startupProbe override. Leave empty to use the chart's workload-aware default.
+    custom: {}
+    # -- How often to run the startup probe
+    periodSeconds: 10
+    # -- Seconds after which the startup probe times out
+    timeoutSeconds: 5
+    # -- Consecutive startup probe failures before Kubernetes restarts the container
+    failureThreshold: 120
+
+  # -- Annotations for the `Pod`
+  podAnnotations: {}
+
+  # -- Pod-wide security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+
+  # -- Container security context
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+  service:
+    topologyAwareRouting:
+      # -- Toggle for topology aware routing
+      enabled: false
+    publishNotReadyAddresses:
+      # -- Toggle publishing not ready addresses for the headless service
+      headless: false
+      # -- Toggle publishing not ready addresses for the user-facing RPC service
+      main: false
+    # -- Service type for the user-facing HTTP/WS RPC Service (`ClusterIP`, `NodePort`, or `LoadBalancer`)
+    type: ClusterIP
+    # -- Additional labels for the user-facing HTTP/WS RPC Service
+    labels: {}
+    # -- Additional annotations for the user-facing HTTP/WS RPC Service
+    annotations: {}
+    # -- Optional `externalTrafficPolicy` for `NodePort` or `LoadBalancer` mode
+    externalTrafficPolicy: ""
+    # -- Optional `loadBalancerClass` for `LoadBalancer` mode
+    loadBalancerClass: ""
+    # -- Optional `loadBalancerIP` for `LoadBalancer` mode
+    loadBalancerIP: ""
+    # -- Optional `loadBalancerSourceRanges` for `LoadBalancer` mode
+    loadBalancerSourceRanges: []
+    # -- Optional `externalIPs` for the user-facing HTTP/WS RPC Service
+    externalIPs: []
+    # -- Optional fixed NodePorts for the user-facing HTTP/WS RPC Service when `type=NodePort` or `type=LoadBalancer`
+    nodePorts:
+      http-jsonrpc:
+      ws-rpc:
+    ports:
+      # Valid keys are names of ports that are exposed by the Pod.
+      # -- Service port to expose JSON-RPC over HTTP on
+      http-jsonrpc: 8545
+      # -- Service port to expose JSON-RPC over WebSocket on
+      ws-rpc: 8546
+      # -- Service port to expose the Engine API on
+      http-engineapi: 8551
+      # -- Service port to expose Prometheus metrics on
+      http-metrics: 9001
+
+  p2p:
+    # -- Network listening address
+    addr: "0.0.0.0"
+    # -- TCP/UDP port for Reth P2P traffic
+    port: 30303
+    discovery:
+      # -- Enable P2P discovery
+      enabled: true
+      # -- Enable DNS discovery
+      dns: true
+      # -- Enable discv4 discovery
+      discv4: true
+      # -- Enable discv5 discovery
+      discv5: false
+      # -- UDP address for devp2p discovery v4
+      addr: "0.0.0.0"
+    # -- Comma-separated enode URLs for P2P discovery bootstrap
+    bootnodes: ""
+    # -- Comma-separated enode URLs of trusted peers
+    trustedPeers: ""
+    # -- Only connect to or accept connections from trusted peers
+    trustedOnly: false
+    # -- Do not persist known peers
+    noPersistPeers: false
+    # -- Disable NAT discovery
+    disableNat: false
+    # -- Maximum number of outbound peers
+    maxOutboundPeers:
+    # -- Maximum number of inbound peers
+    maxInboundPeers:
+    # -- Maximum number of total peers
+    maxPeers:
+    # -- Restrict network communication to the given CIDR ranges
+    netrestrict: ""
+    # -- Disable transaction pool gossip
+    disableTxGossip: false
+    service:
+      # -- Enable exposing P2P traffic with a dedicated Service
+      enabled: false
+      # -- Service type for the P2P endpoint (`NodePort` or `LoadBalancer`)
+      type: NodePort
+      # -- Fixed external NodePort. Required when `type=NodePort` because Reth cannot advertise a different port from the one it listens on.
+      nodePort: null
+      # -- Optional external IP address to advertise instead of auto-discovery. Reth requires an IP address here; hostnames are not accepted.
+      advertiseIP: ""
+      # -- Additional labels for the P2P Service
+      labels: {}
+      # -- Additional annotations for the P2P Service
+      annotations: {}
+      # -- Optional `loadBalancerIP` for `LoadBalancer` mode
+      loadBalancerIP: ""
+      # -- Optional `loadBalancerSourceRanges` for `LoadBalancer` mode
+      loadBalancerSourceRanges: []
+      # -- Optional `externalIPs` for the P2P Service
+      externalIPs: []
+      # -- `externalTrafficPolicy` for the P2P Service
+      externalTrafficPolicy: Local
+      # -- Publish not-ready addresses on the P2P Service
+      publishNotReadyAddresses: false
+    initContainer:
+      image:
+        # -- Container image used to discover the externally reachable P2P endpoint
+        repository: lachlanevenson/k8s-kubectl
+        # -- Container tag used to discover the externally reachable P2P endpoint
+        tag: v1.25.4
+        # -- Container pull policy used to discover the externally reachable P2P endpoint
+        pullPolicy: IfNotPresent
+      # -- Security context for the P2P endpoint discovery init container
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+
+  # -- Kubernetes resource requirements for the Reth container. Mainnet production nodes should set CPU, memory, and ephemeral-storage requests deliberately.
+  resources: {}
+    # limits:
+    #   memory: 32Gi
+    # requests:
+    #   cpu: "4"
+    #   memory: 16Gi
+    #   ephemeral-storage: 1Gi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  # -- Pod topology spread constraints
+  topologySpreadConstraints: []
+
+  affinityPresets:
+    # -- Configure anti-affinity rules to prevent multiple instances on the same host
+    antiAffinityByHostname: true
+
+  affinity: {}
+
+  podDisruptionBudget:
+    # -- Create a PodDisruptionBudget for voluntary disruption protection
+    enabled: false
+    # -- Minimum available Reth Pods during voluntary disruptions. Mutually exclusive with `maxUnavailable`.
+    minAvailable:
+    # -- Maximum unavailable Reth Pods during voluntary disruptions. Mutually exclusive with `minAvailable`.
+    maxUnavailable:
+
+  # -- Additional init containers to inject into the Reth StatefulSet
+  extraInitContainers: []
+
+  # -- Additional sidecar containers to inject into the Reth StatefulSet
+  extraContainers: []
+
+  # -- Additional volumes to inject into the Reth StatefulSet
+  extraVolumes: []
+
+  # -- Additional volume mounts to inject into the Reth container
+  extraVolumeMounts: []
