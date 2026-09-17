@@ -1,0 +1,204 @@
+  config: {}
+  fullnameOverride: indexer-network
+  grafana:
+    dashboards: true
+    dashboardsConfigMapLabel: grafana_dashboard
+    dashboardsConfigMapLabelValue: "1"
+    datasources: false
+    datasourcesGraphNodeGroupName: block-ingestor
+    datasourcesSecretLabel: grafana_datasource
+    datasourcesSecretLabelValue: "1"
+  imagePullSecrets: []
+  indexerAgent:
+    affinity: {}
+    affinityPresets:
+      antiAffinityByHostname: true
+    config:
+      epoch-subgraph-deployment: QmeqJqJTZg3xqYaYhvc35JzyB7RBqEyJeexjTBDykvxNkJ
+      epoch-subgraph-endpoint: http://indexer-node-query.graph-arbitrum-one.svc.cluster.local.:8000/subgraphs/id/QmeqJqJTZg3xqYaYhvc35JzyB7RBqEyJeexjTBDykvxNkJ
+      ethereum: http://proxy.arbitrum-one.svc.cluster.local./indexing/evm/421614
+      ethereum-network: arbitrum-one
+      gateway-endpoint: https://gateway-arbitrum.network.thegraph.com/collect-receipts
+      graph-node-admin-endpoint: http://indexer-node-block-ingestor.graph-arbitrum-one.svc.cluster.local.:8020
+      indexer-management-port: 8000
+      log-level: debug
+      offchain-subgraphs: QmdKXcBUHR3UyURqVRQHu1oV6VUkBrhi2vNvMx3bNDnUCc,QmUhiH6Z5xo6o3GNzsSvqpGKLmCt6w5WzKQ1yHk6C8AA8S,QmeqJqJTZg3xqYaYhvc35JzyB7RBqEyJeexjTBDykvxNkJ
+      public-indexer-url: http://dummy.dum.dum
+    env: {}
+    extraArgs: []
+    image:
+      pullPolicy: IfNotPresent
+      repository: ghcr.io/graphprotocol/indexer-agent
+      tag: v0.24.3
+    nodeSelector: {}
+    podAnnotations: {}
+    podSecurityContext:
+      fsGroup: 101337
+      runAsGroup: 101337
+      runAsNonRoot: true
+      runAsUser: 101337
+    resources:
+      limits: {}
+      requests:
+        cpu: 1
+        memory: 4.294967296e+09
+    secretEnv:
+      INDEXER_AGENT_MNEMONIC:
+        key: mnemonic
+        secretName: indexer-operator-mnemonic
+      INDEXER_AGENT_POSTGRES_PASSWORD:
+        key: password
+        secretName: graph.indexer-db-metadata
+      INDEXER_AGENT_POSTGRES_USERNAME:
+        key: username
+        secretName: graph.indexer-db-metadata
+    service:
+      ports:
+        http-mgmtapi: 8000
+      topologyAwareRouting:
+        enabled: false
+      type: ClusterIP
+    terminationGracePeriodSeconds: 10
+    tolerations: []
+  indexerDefaults:
+    config:
+      blockchain:
+        chain_id: 42161
+        receipts_verifier_address: 0x33f9E93266ce0E108fc85DdE2f71dab555A0F05a
+      graph_node:
+        query_url: http://indexer-node-query.graph-arbitrum-one.svc.cluster.local.:8000
+        status_url: http://indexer-node-query.graph-arbitrum-one.svc.cluster.local.:8030/graphql
+      indexer:
+        indexer_address: 0x0A857190618c700A1C40bBcB1f0ff8047D4Fc794
+      service.tap:
+        max_receipt_value_grt: 20
+      subgraphs.escrow:
+        deployment_id: QmUhiH6Z5xo6o3GNzsSvqpGKLmCt6w5WzKQ1yHk6C8AA8S
+        query_url: http://indexer-node-query.graph-arbitrum-one.svc.cluster.local.:8000/subgraphs/id/QmUhiH6Z5xo6o3GNzsSvqpGKLmCt6w5WzKQ1yHk6C8AA8S
+      subgraphs.network:
+        deployment_id: QmdKXcBUHR3UyURqVRQHu1oV6VUkBrhi2vNvMx3bNDnUCc
+        query_url: http://indexer-node-query.graph-arbitrum-one.svc.cluster.local.:8000/subgraphs/id/QmdKXcBUHR3UyURqVRQHu1oV6VUkBrhi2vNvMx3bNDnUCc
+      tap:
+        max_amount_willing_to_lose_grt: 400
+        sender_timeout_secs: 60
+      tap.rav_request:
+        max_receipts_per_request: 10000
+        request_timeout_secs: 100
+        timestamp_buffer_secs: 60
+        trigger_value_divisor: 10
+    postgresConfig:
+      database: graph
+      host: indexer-db-metadata-rw
+      port: 5432
+  indexerService:
+    additionalVolumeMounts: []
+    additionalVolumes: []
+    affinity: {}
+    affinityPresets:
+      antiAffinityByHostname: true
+    command: /usr/local/bin/indexer-service-rs
+    config: {}
+    env:
+      POSTGRES_DATABASE: graph
+      POSTGRES_HOST: indexer-db-metadata-rw
+      POSTGRES_PORT: "5432"
+      RUST_LOG: debug
+    extraArgs: []
+    image:
+      pullPolicy: IfNotPresent
+      repository: ghcr.io/graphprotocol/indexer-service-rs
+      tag: v1.5.7
+    initContainers: []
+    nodeSelector: {}
+    podAnnotations: {}
+    podSecurityContext:
+      fsGroup: 101337
+      runAsGroup: 101337
+      runAsNonRoot: true
+      runAsUser: 101337
+    replicas: 1
+    resources:
+      limits: {}
+      requests:
+        cpu: 1
+        memory: 4.294967296e+09
+    secretEnv:
+      INDEXER_SERVICE_INDEXER__OPERATOR_MNEMONIC:
+        key: mnemonic
+        secretName: indexer-operator-mnemonic
+      POSTGRES_PASSWORD:
+        key: password
+        secretName: graph.indexer-db-metadata
+      POSTGRES_USERNAME:
+        key: username
+        secretName: graph.indexer-db-metadata
+    service:
+      ports:
+        http-queryapi: 7600
+      topologyAwareRouting:
+        enabled: false
+      type: ClusterIP
+    terminationGracePeriodSeconds: 10
+    tolerations: []
+  indexerTapAgent:
+    additionalVolumeMounts: []
+    additionalVolumes: []
+    affinity: {}
+    affinityPresets:
+      antiAffinityByHostname: true
+    command: /usr/local/bin/indexer-tap-agent
+    config: {}
+    env:
+      POSTGRES_DATABASE: graph
+      POSTGRES_HOST: indexer-db-metadata-rw
+      POSTGRES_PORT: "5432"
+      RUST_LOG: debug
+    extraArgs: []
+    image:
+      pullPolicy: IfNotPresent
+      repository: ghcr.io/graphprotocol/indexer-tap-agent
+      tag: v1.9.7
+    initContainers: []
+    nodeSelector: {}
+    podAnnotations: {}
+    podSecurityContext:
+      fsGroup: 101337
+      runAsGroup: 101337
+      runAsNonRoot: true
+      runAsUser: 101337
+    resources:
+      limits: {}
+      requests:
+        cpu: 1
+        memory: 4.294967296e+09
+    secretEnv:
+      POSTGRES_PASSWORD:
+        key: password
+        secretName: graph.indexer-db-metadata
+      POSTGRES_USERNAME:
+        key: username
+        secretName: graph.indexer-db-metadata
+      TAP_AGENT_INDEXER__OPERATOR_MNEMONIC:
+        key: mnemonic
+        secretName: indexer-operator-mnemonic
+    service:
+      ports:
+        http-queryapi: 7600
+      topologyAwareRouting:
+        enabled: false
+      type: ClusterIP
+    terminationGracePeriodSeconds: 10
+    tolerations: []
+  nameOverride: ""
+  prometheus:
+    serviceMonitors:
+      enabled: true
+      interval: ""
+      labels: {}
+      metricRelabelings: []
+      relabelings: []
+      scrapeTimeout: ""
+  serviceAccount:
+    annotations: {}
+    create: true
+    name: ""

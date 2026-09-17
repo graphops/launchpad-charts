@@ -129,8 +129,10 @@ indexerDefaults:
       trigger_value_divisor: 100
 
     # -- (required) Example of how to specify a sender aggregator endpoint. Sender address is the address of the TAP sender and the value is the URL of the sender aggregator.
+    # Graph Tally: keep both the old and new sender addresses during the rotation.
     # tap.sender_aggregator_endpoints:
-    #   0x0000000000000000000000000000000000000000: "https://sender-aggregator-url.com"
+    #   "0xDDE4cfFd3D9052A9cb618fC05a1Cd02be1f2F467": "https://tap-aggregator.network.thegraph.com"
+    #   "0x6AA2Ace7Ec77C06C1DAb1b0aFaC9d56d9C9D0e50": "https://tap-aggregator.network.thegraph.com"
 
   env: 
     {}

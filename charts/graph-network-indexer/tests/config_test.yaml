@@ -1,0 +1,42 @@
+suite: TOML configuration arrays
+templates:
+  - templates/indexer-service/configmap.yaml
+  - templates/indexer-tap-agent/configmap.yaml
+tests:
+  - it: leaves trusted senders unset by default
+    asserts:
+      - notMatchRegex:
+          path: data["config.toml"]
+          pattern: trusted_senders
+  - it: renders shared trusted senders as quoted comma-separated strings
+    set:
+      indexerDefaults.config.tap.trusted_senders:
+        - "0xDDE4cfFd3D9052A9cb618fC05a1Cd02be1f2F467"
+        - "0x6AA2Ace7Ec77C06C1DAb1b0aFaC9d56d9C9D0e50"
+    asserts:
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'trusted_senders = \["0xDDE4cfFd3D9052A9cb618fC05a1Cd02be1f2F467","0x6AA2Ace7Ec77C06C1DAb1b0aFaC9d56d9C9D0e50"\]'
+  - it: renders an explicit empty list
+    set:
+      indexerDefaults.config.tap.trusted_senders: []
+    asserts:
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'trusted_senders = \[\]'
+  - it: lets each component override the shared list independently
+    set:
+      indexerDefaults.config.tap.trusted_senders:
+        - "0xDDE4cfFd3D9052A9cb618fC05a1Cd02be1f2F467"
+      indexerService.config.tap.trusted_senders: []
+      indexerTapAgent.config.tap.trusted_senders:
+        - "0x6AA2Ace7Ec77C06C1DAb1b0aFaC9d56d9C9D0e50"
+    asserts:
+      - template: templates/indexer-service/configmap.yaml
+        matchRegex:
+          path: data["config.toml"]
+          pattern: 'trusted_senders = \[\]'
+      - template: templates/indexer-tap-agent/configmap.yaml
+        matchRegex:
+          path: data["config.toml"]
+          pattern: 'trusted_senders = \["0x6AA2Ace7Ec77C06C1DAb1b0aFaC9d56d9C9D0e50"\]'
