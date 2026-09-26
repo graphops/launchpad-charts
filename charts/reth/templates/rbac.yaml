@@ -1,0 +1,57 @@
+{{- $p2pEnabled := (include "reth.p2p.enabled" .Values.reth | trim | eq "true") }}
+{{- $p2pNodePort := (include "reth.p2p.isNodePort" .Values.reth | trim | eq "true") }}
+{{- $p2pLoadBalancer := (include "reth.p2p.isLoadBalancer" .Values.reth | trim | eq "true") }}
+{{- $discoverEndpoint := and $p2pEnabled (not .Values.reth.p2p.service.advertiseIP) }}
+{{- $needsNodeLookup := and $discoverEndpoint $p2pNodePort }}
+{{- $needsServiceLookup := and $discoverEndpoint $p2pLoadBalancer }}
+{{- if and .Values.rbac.create $needsServiceLookup }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "reth.serviceAccountName" . }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+rules:
+{{- toYaml .Values.rbac.rules | nindent 0 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "reth.serviceAccountName" . }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "reth.serviceAccountName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "reth.serviceAccountName" . }}
+{{- end }}
+{{- if and .Values.rbac.create $needsNodeLookup }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "reth.serviceAccountName" . }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+rules:
+{{- toYaml .Values.rbac.clusterRules | nindent 0 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "reth.serviceAccountName" . }}
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "reth.serviceAccountName" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "reth.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

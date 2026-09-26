@@ -1,0 +1,16 @@
+{{- $values := $.Values.reth }}
+{{- $componentName := "reth" }}
+{{- $componentLabel := include "reth.componentLabelFor" $componentName }}
+{{- if $values.configFile.inline }}
+{{- $configPath := default "/etc/reth/reth.toml" $values.configFile.path }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "reth.fullname" . }}-{{ $componentName }}-config
+  labels:
+    {{- include "reth.labels" . | nindent 4 }}
+    {{- $componentLabel | nindent 4 }}
+data:
+  {{ base $configPath }}: |-
+    {{- $values.configFile.inline | nindent 4 }}
+{{- end }}

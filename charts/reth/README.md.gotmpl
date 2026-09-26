@@ -1,0 +1,166 @@
+{{ template "graphops.title" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "graphops.badges" . }}
+
+## Chart Features
+
+- Actively maintained by [GraphOps](https://graphops.xyz) and contributors
+- Official [`ghcr.io/paradigmxyz/reth`](https://github.com/paradigmxyz/reth/pkgs/container/reth) image pinned to the current chart app version
+- Defaults aligned with Reth v2.1.x, including Storage V2 for new databases
+- Support for JWT-managed Engine API authentication for pairing with Consensus Clients
+- Dedicated Services for user RPC, Engine API, metrics, and optional P2P exposure
+- Support for exposing inbound P2P via `NodePort` or `LoadBalancer`
+- Support for `ServiceMonitor`s to configure Prometheus to scrape metrics ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
+- Support for provenance-marked upstream Reth Grafana dashboards aligned with the chart's Reth metrics workload
+
+## Quickstart
+
+To install the chart with the release name `my-release`:
+
+```console
+$ helm repo add graphops http://graphops.github.io/launchpad-charts
+$ helm install my-release graphops/{{ template "chart.name" . }}
+```
+
+## Specifying the Engine API JWT
+
+To use Reth on a network that requires a Consensus Client, you will generally want to configure a JWT that is shared with that Consensus Client and used to authenticate against the Engine API on port `8551`.
+
+You can specify the JWT for Reth either as a literal value, or as a reference to a key in an existing Kubernetes Secret. If you specify a literal value, it will be wrapped into a new Kubernetes Secret and passed into the Reth Pod.
+
+Using a literal value:
+
+```yaml
+# values.yaml
+
+reth:
+  jwt:
+    fromLiteral: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef # Generate with: openssl rand -hex 32
+```
+
+Using an existing Kubernetes Secret:
+
+```yaml
+# values.yaml
+
+reth:
+  jwt:
+    existingSecret:
+      name: my-ethereum-mainnet-jwt-secret
+      key: jwt
+```
+
+If no JWT is configured, Reth will generate one inside its data directory on first start. That works for standalone nodes, but a user-managed Secret is usually the better fit when pairing Reth with a separate Consensus Client.
+
+## Storage and Pruning
+
+Reth v2.1.x defaults new databases to Storage V2. This chart keeps that default explicit with `reth.storage.v2=true`. Existing databases continue using the storage layout recorded in their metadata.
+
+By default this chart leaves Reth in its archive-style pruning mode. If you want to enable Reth's `--full` pruning mode, set:
+
+```yaml
+# values.yaml
+
+reth:
+  pruning:
+    mode: full
+```
+
+You can also set `reth.pruning.mode=minimal` for Reth's minimal storage mode. Advanced pruning segment configuration should be supplied through a Reth TOML config file, either by setting `reth.configFile.inline`, mounting an existing ConfigMap/Secret through `reth.configFile`, or mounting your own file and pointing `reth.config` at it.
+
+## Reth configuration file
+
+For chart-managed Reth TOML, use one of the config file sources under `reth.configFile`:
+
+```yaml
+# values.yaml
+
+reth:
+  configFile:
+    inline: |
+      [stages.headers]
+      downloader_max_buffered_responses = 100
+```
+
+Existing ConfigMaps and Secrets are also supported:
+
+```yaml
+# values.yaml
+
+reth:
+  configFile:
+    existingSecret:
+      name: my-reth-config
+      key: reth.toml
+```
+
+The chart mounts the managed file at `reth.configFile.path` and passes that path to `reth node --config`.
+
+## Runtime Security
+
+The Reth container runs as a non-root UID/GID by default and relies on Kubernetes `fsGroup` volume ownership handling for writable PVC access. The chart does not run a root `chown` init container by default because new PVCs should be handled by the kubelet and CSI driver. If you are migrating an old root-owned PVC or restoring data with restrictive ownership, use `extraInitContainers` for that one-off migration.
+
+Reth's file log sink is disabled by default with `--log.file.max-files=0` so the container can keep `readOnlyRootFilesystem=true`. Logs are emitted to stdout in `log-fmt` without ANSI color.
+
+The regular JSON-RPC IPC server is disabled by default with `--ipcdisable`. Enable `reth.ipc.enabled` only when another container in the same Pod needs the IPC socket.
+
+## Services and monitoring
+
+The chart keeps service trust boundaries separate:
+
+- `<release>-reth` exposes user-facing HTTP/WS JSON-RPC when those transports are enabled.
+- `<release>-reth-engine` exposes the authenticated Engine API as a ClusterIP Service for Consensus Clients.
+- `<release>-reth-metrics` exposes Prometheus metrics as a ClusterIP Service.
+- Optional P2P Services are created only when `reth.p2p.service.enabled=true`.
+
+The metrics Service is the only Service labelled `serviceMonitorTarget: "true"`, matching the convention used by other charts in this repository. The ServiceMonitor selects that label and scrapes the `http-metrics` port.
+
+## Grafana dashboards
+
+The chart vendors upstream Reth Grafana dashboards from `paradigmxyz/reth` at commit `d577814eb1c3bbf6393448dcabd0d152ce45ccc4`. The dashboard JSON files include provenance metadata in their descriptions, tags, and dashboard source links, and rendered dashboard ConfigMaps/GrafanaDashboard resources carry `dashboards.launchpad.graphops.xyz/*` provenance annotations.
+
+Only dashboards aligned with the Reth workload deployed by this chart are included. The upstream `metrics-exporter.json` dashboard is intentionally omitted because it requires the separate `ethereum-metrics-exporter` workload, which this chart does not deploy. See `dashboards/PROVENANCE.md` for the source commit and workload-alignment table.
+
+## Workload lifecycle
+
+The chart enables readiness, liveness, and startup probes by default. These use Kubernetes-native probes because the Reth image does not ship curl/wget-style healthcheck tools.
+
+By default probes hit the Reth metrics endpoint on `http-metrics` with HTTP GET `/`. If metrics are disabled, the chart automatically falls back to a TCP probe against an enabled Reth service port: HTTP JSON-RPC, Engine API, WebSocket, then P2P. You can replace any generated probe with the corresponding `*.custom` value.
+
+## Advanced Reth tuning
+
+The chart exposes first-class values for Kubernetes wiring, common operator workflows, and safety controls for exposed services. More specialized Reth runtime tuning should use `reth.extraArgs` or a Reth TOML config supplied through `reth.configFile` or mounted separately and referenced by `reth.config`.
+
+In practice this means regular RPC keeps first-class values for authentication and common public-endpoint guardrails, while specialized tracing, cache, transaction pool, database, and most Engine execution tuning stays in `extraArgs`. The Engine section intentionally keeps only `crossBlockCacheSize`, because it is directly tied to pod memory sizing.
+
+## Enabling inbound P2P dials
+
+By default, your Reth node will not have an internet-accessible port for P2P traffic. This makes it harder to establish a strong set of peers because you cannot accept inbound P2P dials.
+
+To expose P2P you can use either `NodePort` or `LoadBalancer`:
+
+- `NodePort`: set `reth.p2p.service.enabled=true`, `reth.p2p.service.type=NodePort`, and a fixed `reth.p2p.service.nodePort`. This mode locks `reth.replicaCount` to `1` and discovers the Node's external IP to advertise it to peers. The Service still uses named `targetPort`s (`tcp-p2p` and `udp-p2p`) for Service-to-Pod wiring; the fixed NodePort is required because Reth cannot advertise a different P2P port from the one it listens on.
+- `LoadBalancer`: set `reth.p2p.service.enabled=true` and `reth.p2p.service.type=LoadBalancer`. Reth's `--nat=extip` only accepts IP addresses, so the chart waits for a LoadBalancer IP address. LoadBalancers that expose only a hostname require you to set `reth.p2p.service.advertiseIP` to a stable external IP or configure the LoadBalancer to allocate one.
+
+Example:
+
+```yaml
+# values.yaml
+
+reth:
+  p2p:
+    service:
+      enabled: true
+      type: NodePort
+      nodePort: 31000
+```
+
+{{ template "graphops.upgradingSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "graphops.contributingSection" . }}
