@@ -5733,6 +5733,33 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-10-02T01:25:32Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 570f89c9e0fcf43103bbba999c3301881b36f225187e1072389eb56c938c8b0c
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.7-canary.10/graph-network-indexer-0.7.7-canary.10.tgz
+      version: 0.7.7-canary.10
+    - apiVersion: v2
+      created: "2026-10-01T16:44:18Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 198697b53ab2f66b20d4d7af46b0e1ae43bd7fb5d5c4533859dcdd35d5bcddac
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.7-canary.9/graph-network-indexer-0.7.7-canary.9.tgz
+      version: 0.7.7-canary.9
+    - apiVersion: v2
+      created: "2026-10-01T02:22:59Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 08322660dc384c23cd7af6d403b73af6c1067ff8a76ebdf62f392f956cede013
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.7-canary.8/graph-network-indexer-0.7.7-canary.8.tgz
+      version: 0.7.7-canary.8
+    - apiVersion: v2
       created: "2026-09-30T07:09:07Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: 7c989948507028c3af49e6ed607aeff2b5c443b8ff9ee70103df8ec66e013362
@@ -9406,6 +9433,16 @@ entries:
       version: 1.0.0
   heimdall-v2:
     - apiVersion: v2
+      appVersion: 0.12.1
+      created: "2026-10-01T16:44:18Z"
+      description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
+      digest: 63c0212fb9039ab57ba022f2d7282c8f52be441bd2cab21eab6efb830e29f3f7
+      name: heimdall-v2
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.22-canary.1/heimdall-v2-0.0.22-canary.1.tgz
+      version: 0.0.22-canary.1
+    - apiVersion: v2
       appVersion: 0.11.0
       created: "2026-09-05T04:50:29Z"
       description: Deploy and scale [Heimdall-v2](https://github.com/0xPolygon/heimdall-v2) inside Kubernetes with ease
@@ -10136,6 +10173,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/heimdall-v2-0.0.1-canary.1/heimdall-v2-0.0.1-canary.1.tgz
       version: 0.0.1-canary.1
   lighthouse:
+    - apiVersion: v2
+      appVersion: v8.2.3
+      created: "2026-10-01T02:22:59Z"
+      description: Deploy and scale [Lighthouse](https://github.com/sigp/lighthouse) inside Kubernetes with ease
+      digest: 843655cffccac3dd38c904a1a4093a3e0a417cd7f417df611ebab1912891ccb4
+      name: lighthouse
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/lighthouse-0.8.10-canary.1/lighthouse-0.8.10-canary.1.tgz
+      version: 0.8.10-canary.1
     - apiVersion: v2
       appVersion: v8.2.2
       created: "2026-09-05T04:49:22Z"
@@ -11498,6 +11545,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/listener-radio-0.1.0/listener-radio-0.1.0.tgz
       version: 0.1.0
   nethermind:
+    - apiVersion: v2
+      appVersion: 2.1.0
+      created: "2026-10-02T01:25:32Z"
+      description: Deploy and scale [Nethermind](https://github.com/NethermindEth/nethermind) inside Kubernetes with ease
+      digest: 8ed2309629c1a5015d77e6242bef4268eb7c73913ad186a3fb5636d47cc05627
+      name: nethermind
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/nethermind-0.4.3-canary.66/nethermind-0.4.3-canary.66.tgz
+      version: 0.4.3-canary.66
     - apiVersion: v2
       appVersion: 2.0.0
       created: "2026-09-22T17:54:52Z"
@@ -15943,7 +16000,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-09-30T07:23:35.017054334Z"
+      created: "2026-10-02T01:35:47.580512227Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -16125,7 +16182,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-09-30T07:23:35.049085211Z"
+      created: "2026-10-02T01:35:47.620894629Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -16135,7 +16192,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-09-30T07:23:35.048600121Z"
+      created: "2026-10-02T01:35:47.620263437Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -16676,4 +16733,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-09-30T07:23:33.755578256Z"
+generated: "2026-10-02T01:35:45.933586417Z"
