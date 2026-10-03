@@ -66,6 +66,28 @@ grafana:
   dashboardsConfigMapLabel: grafana_dashboard
   # -- Must match `sidecar.dashboards.labelValue` value for the [Grafana chart](https://github.com/grafana/helm-charts/tree/main/charts/grafana#grafana-helm-chart)
   dashboardsConfigMapLabelValue: "1"
+  # -- Create GrafanaDashboard CRDs via Grafana Operator from files in `dashboards/`
+  operatorDashboards:
+    enabled: false
+    # -- Optional target namespace for the GrafanaDashboard CRDs (defaults to release namespace)
+    namespace: ""
+    # -- Extra labels and annotations on the GrafanaDashboard resources
+    labels: {}
+    annotations: {}
+    # -- Selector to match Grafana instances managed by the operator
+    instanceSelector:
+      matchLabels: {}
+    # -- Allow matching Grafana instances outside current namespace
+    allowCrossNamespaceImport: false
+    # -- Optional folder metadata
+    folder: ""
+    folderUID: ""
+    uid: ""
+    # -- Operator sync behavior
+    resyncPeriod: ""
+    suspend: false
+    # -- Additional spec fields to merge into GrafanaDashboard.spec
+    extraSpec: {}
 
 lighthouse:
   # -- URL to the Execution Client Engine API. Will use configured JWT to authenticate.
@@ -174,3 +196,25 @@ lighthouse:
         tag: v1.25.4
         # -- Container pull policy
         pullPolicy: IfNotPresent
+
+  # P2P Service exposure (alternative to hostPort)
+  p2p:
+    service:
+      # -- Enable a dedicated P2P Service
+      enabled: false
+      # -- Service type for P2P exposure
+      type: LoadBalancer
+      # -- Additional labels to add to the P2P Service
+      labels: {}
+      # -- Annotations to add to the P2P Service (e.g., Cilium sharing keys)
+      annotations: {}
+      # -- External traffic policy
+      externalTrafficPolicy: Local
+      # -- Fixed external IPs to bind the Service to (requires upstream routing)
+      externalIPs: []
+      # -- When using a LoadBalancer and your cloud supports it, set a specific LB IP
+      loadBalancerIP: ""
+      # -- Restrict which source ranges can access the LoadBalancer (CIDRs)
+      loadBalancerSourceRanges: []
+      # -- IP address to explicitly advertise in ENR (overrides autodetection and LB IP)
+      advertiseIP: ""
