@@ -1,6 +1,6 @@
 dependencies:
 - name: common
-  repository: file://../common
-  version: 0.1.0
-digest: sha256:636a65e9846bdff17cc4e65b0849061f783759a37aa51fb85ff6fd8ba5e68467
-generated: "2024-11-24T23:41:11.186990172Z"
+  repository: https://graphops.github.io/launchpad-charts/canary
+  version: 0.0.1-canary.1
+digest: sha256:a9a3cce331167526694ad8b671ba324064cb901b8ddfd3faad6bfa4d9d1c1a81
+generated: "2026-10-18T16:07:34.671256251+01:00"
