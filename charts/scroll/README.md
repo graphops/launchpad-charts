@@ -1,8 +1,13 @@
 # scroll
 
-![Version: 0.0.1](https://img.shields.io/badge/Version-0.0.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: scroll-v5.8.5](https://img.shields.io/badge/AppVersion-scroll--v5.8.5-informational?style=flat-square)
+![Version: 0.0.2](https://img.shields.io/badge/Version-0.0.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: scroll-v5.8.5](https://img.shields.io/badge/AppVersion-scroll--v5.8.5-informational?style=flat-square)
 
 Deploy and scale [Scroll](https://github.com/scroll-tech/go-ethereum) inside Kubernetes with ease
+
+Metrics are collected from `/debug/metrics/prometheus`. The monitor selects the
+regular Service marked `monitoring.graphops.xyz/endpoint=metrics`, so the same
+Pod is not scraped through both regular and headless Services. Disabling
+`scrollDefaults.config.metrics.enabled` also disables its monitor.
 
 ## Requirements
 
@@ -104,7 +109,7 @@ Deploy and scale [Scroll](https://github.com/scroll-tech/go-ethereum) inside Kub
  | scrollDefaults.serviceAccount.metadata.labels | Labels to add to the service account | object | `{"<<":{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/instance":"{{ .Root.Release.Name }}","app.kubernetes.io/managed-by":"{{ .Root.Release.Service }}","app.kubernetes.io/name":"{{ .Root.Chart.Name }}","app.kubernetes.io/part-of":"{{ .Root.Release.Name }}","app.kubernetes.io/version":"{{ .Root.Chart.AppVersion }}","helm.sh/chart":"{{ include \"common.metadata.chart\" . }}"}}` |
  | scrollDefaults.serviceAccount.metadata.name | The name of the service account to use. If not set and create is true, a name is generated using the fullname template | string | `"{{ printf \"%s-%s\" (include \"common.metadata.fullname\" $) .componentName }}"` |
  | scrollDefaults.serviceMonitor | ServiceMonitor configuration for Prometheus Operator | object | `{"__enabled":true,"metadata":{"annotations":{},"labels":{"<<":{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/instance":"{{ .Root.Release.Name }}","app.kubernetes.io/managed-by":"{{ .Root.Release.Service }}","app.kubernetes.io/name":"{{ .Root.Chart.Name }}","app.kubernetes.io/part-of":"{{ .Root.Release.Name }}","app.kubernetes.io/version":"{{ .Root.Chart.AppVersion }}","helm.sh/chart":"{{ include \"common.metadata.chart\" . }}"}},"name":"{{ printf \"%s-%s\" (include \"common.metadata.fullname\" $) .componentName }}"},"spec":{"endpoints":{"http-metrics":{"honorLabels":true,"interval":"30s","path":"/metrics","scrapeTimeout":"10s"}},"jobLabel":"{{- .Root.Release.Name }}","namespaceSelector":{"matchNames":["{{- .Root.Release.Namespace }}"]},"selector":{"matchLabels":{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/instance":"{{ .Root.Release.Name }}","app.kubernetes.io/name":"{{ .Root.Chart.Name }}"}}}}` |
- | scrollDefaults.serviceMonitor.__enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | bool | `true` |
+ | scrollDefaults.serviceMonitor.__enabled | Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator)) | string | `"{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)"` |
  | scrollDefaults.services.default.__enabled |  | bool | `true` |
  | scrollDefaults.services.default.metadata.annotations | Additional service annotations | object | `{}` |
  | scrollDefaults.services.default.metadata.labels | Additional service labels | object | `{"<<":{"app.kubernetes.io/component":"{{ .componentName }}","app.kubernetes.io/instance":"{{ .Root.Release.Name }}","app.kubernetes.io/managed-by":"{{ .Root.Release.Service }}","app.kubernetes.io/name":"{{ .Root.Chart.Name }}","app.kubernetes.io/part-of":"{{ .Root.Release.Name }}","app.kubernetes.io/version":"{{ .Root.Chart.AppVersion }}","helm.sh/chart":"{{ include \"common.metadata.chart\" . }}"}}` |

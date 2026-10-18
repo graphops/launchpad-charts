@@ -94,6 +94,7 @@ scrollDefaults:
         # -- Additional service labels
         labels:
           <<: *globalLabels
+          monitoring.graphops.xyz/endpoint: metrics
         # -- Additional service annotations
         annotations: {}
       spec: &defaultServiceSpec
@@ -179,7 +180,7 @@ scrollDefaults:
   # -- ServiceMonitor configuration for Prometheus Operator
   serviceMonitor:
     # -- Enable monitoring by creating `ServiceMonitor` CRDs ([prometheus-operator](https://github.com/prometheus-operator/prometheus-operator))
-    __enabled: true
+    __enabled: '{{ $metrics.enabled }} @needs(.Self.config.metrics as metrics)'
     metadata:
       labels:
         <<: *globalLabels
@@ -192,7 +193,7 @@ scrollDefaults:
           # Override or add any endpoint-specific fields
           interval: "30s"
           scrapeTimeout: "10s"
-          path: /metrics
+          path: /debug/metrics/prometheus
           honorLabels: true
           # ... any other endpoint-specific fields
       # Any other top-level ServiceMonitor spec fields
@@ -202,6 +203,7 @@ scrollDefaults:
           - '{{- .Root.Release.Namespace }}'
       selector:
         matchLabels:
+          monitoring.graphops.xyz/endpoint: metrics
           app.kubernetes.io/component: '{{ .componentName }}'
           app.kubernetes.io/instance: '{{ .Root.Release.Name }}'
           app.kubernetes.io/name: '{{ .Root.Chart.Name }}'
