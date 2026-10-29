@@ -5803,6 +5803,15 @@ entries:
       version: 0.1.0
   graph-network-indexer:
     - apiVersion: v2
+      created: "2026-10-29T19:14:10Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: 57595513bb4740e48c07da1783a8e8607f040af00ed0f254d129dee54c00a8c7
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.7-canary.34/graph-network-indexer-0.7.7-canary.34.tgz
+      version: 0.7.7-canary.34
+    - apiVersion: v2
       created: "2026-10-29T13:35:35Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
       digest: e06408a3b649842fe7bbd8918f0bce0c850015c83ec47844792b7f66254cfa89
@@ -14586,6 +14595,16 @@ entries:
       version: 0.7.0
   proxyd:
     - apiVersion: v2
+      appVersion: v4.35.2
+      created: "2026-10-29T19:14:10Z"
+      description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
+      digest: 234691781469edf675327e7fa016419fa1301c27b3685a3d8a220860b24d6807
+      name: proxyd
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/proxyd-0.7.14-canary.9/proxyd-0.7.14-canary.9.tgz
+      version: 0.7.14-canary.9
+    - apiVersion: v2
       appVersion: v4.35.1
       created: "2026-10-29T13:35:35Z"
       description: Deploy and scale [proxyd](https://github.com/ethereum-optimism/infra/tree/main/proxyd) inside Kubernetes with ease
@@ -16427,7 +16446,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-10-29T13:49:33.496257918Z"
+      created: "2026-10-29T19:25:50.883450541Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -16619,7 +16638,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-10-29T13:49:33.533157089Z"
+      created: "2026-10-29T19:25:50.9251394Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -16629,7 +16648,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-10-29T13:49:33.532674337Z"
+      created: "2026-10-29T19:25:50.924536282Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -17170,4 +17189,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-10-29T13:49:32.166731472Z"
+generated: "2026-10-29T19:25:49.174188063Z"
