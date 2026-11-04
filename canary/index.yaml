@@ -13,6 +13,16 @@ entries:
       version: 0.1.0
   arbitrum-classic:
     - apiVersion: v2
+      appVersion: v1.4.7-dd4595f8
+      created: "2026-11-04T21:15:31Z"
+      description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
+      digest: 4d539b005d153631c9de3a9e80ed3fa3687ca0979c5e361022a05e21fb1de28e
+      name: arbitrum-classic
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.2.3-canary.1/arbitrum-classic-0.2.3-canary.1.tgz
+      version: 0.2.3-canary.1
+    - apiVersion: v2
       appVersion: v1.4.6-551a39b3
       created: "2025-09-27T17:11:14Z"
       description: Deploy and scale [Arbitrum-Classic](https://github.com/OffchainLabs/arbitrum) inside Kubernetes with ease
@@ -253,6 +263,16 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-classic-0.1.0/arbitrum-classic-0.1.0.tgz
       version: 0.1.0
   arbitrum-nitro:
+    - apiVersion: v2
+      appVersion: v3.12.2-5f02f3f
+      created: "2026-11-04T21:15:31Z"
+      description: Deploy and scale [Arbitrum-Nitro](https://github.com/OffchainLabs/nitro/) inside Kubernetes with ease
+      digest: 645c4af7b2f77c6e2eb80ce6fc6687b17ef809f1202119c67410354780b96ee4
+      name: arbitrum-nitro
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/arbitrum-nitro-0.9.11-canary.4/arbitrum-nitro-0.9.11-canary.4.tgz
+      version: 0.9.11-canary.4
     - apiVersion: v2
       appVersion: v3.12.2-5f02f3f
       created: "2026-10-27T13:34:43Z"
@@ -5802,6 +5822,15 @@ entries:
         - https://github.com/graphops/launchpad-charts/releases/download/generic-app-0.1.0/generic-app-0.1.0.tgz
       version: 0.1.0
   graph-network-indexer:
+    - apiVersion: v2
+      created: "2026-11-04T21:15:31Z"
+      description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
+      digest: f4a934e0bc84ead229fd093641476bfdb60a8f9562a82d9d6ecada4eeb84db3f
+      name: graph-network-indexer
+      type: application
+      urls:
+        - https://github.com/graphops/launchpad-charts/releases/download/graph-network-indexer-0.7.7-canary.35/graph-network-indexer-0.7.7-canary.35.tgz
+      version: 0.7.7-canary.35
     - apiVersion: v2
       created: "2026-10-29T19:14:10Z"
       description: Deploy and scale the [Graph Network Indexer](https://github.com/graphprotocol/indexer) components inside Kubernetes with ease
@@ -16446,7 +16475,7 @@ entries:
   reth:
     - apiVersion: v2
       appVersion: v2.1.0
-      created: "2026-10-29T19:25:50.883450541Z"
+      created: "2026-11-04T21:29:31.439018418Z"
       description: Deploy and scale [Reth](https://github.com/paradigmxyz/reth) inside Kubernetes with ease
       digest: 250c08184b5f4c52db7125d55e9a39d697850abf83a9d13988dfddfff1d88a7f
       name: reth
@@ -16638,7 +16667,7 @@ entries:
       version: 0.2.18
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-10-29T19:25:50.9251394Z"
+      created: "2026-11-04T21:29:31.464650777Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 8e5a2f4bf7cbfc1af03891f1211e10ec0abd62e486b76b368882fd34c4d58610
       name: subgraph-radio
@@ -16648,7 +16677,7 @@ entries:
       version: v0.2.18-canary.3
     - apiVersion: v2
       appVersion: 1.0.7
-      created: "2026-10-29T19:25:50.924536282Z"
+      created: "2026-11-04T21:29:31.464274661Z"
       description: Deploy a Graphcast Subgraph Radio into your Kubernetes stack
       digest: 78a6d4736c7e0576143afa159191a8d451c4bce118a4a566122f672e97973906
       name: subgraph-radio
@@ -17189,4 +17218,4 @@ entries:
   subgraph-radio-v0.2.18-canary.2: []
   subgraph-radio-v0.2.18-canary.3: []
   reth-v0.1.0-canary.1: []
-generated: "2026-10-29T19:25:49.174188063Z"
+generated: "2026-11-04T21:29:30.326122247Z"
